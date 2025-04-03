@@ -1,0 +1,174 @@
+<div class="container mt-5">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="firebase-tab" data-bs-toggle="tab" data-bs-target="#firebase"
+                type="button" role="tab">Firebase Credential</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="helpSupport-tab" data-bs-toggle="tab" data-bs-target="#helpSupport"
+                type="button" role="tab">Help & Support</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="applicationLinks-tab" data-bs-toggle="tab" data-bs-target="#contact"
+                type="button" role="tab">Application Link</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="appVersion-tab" data-bs-toggle="tab" data-bs-target="#appVersion" type="button"
+                role="tab">App Version</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="smsCredentials-tab" data-bs-toggle="tab" data-bs-target="#twilioCred"
+                type="button" role="tab">SMS Credential</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="smsCredentials-tab" data-bs-toggle="tab" data-bs-target="#awsS3" type="button"
+                role="tab">S3 Credential</button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="myTabContent">
+        <!-- Firebase Credentials Form -->
+        <div class="tab-pane fade show active" id="firebase" role="tabpanel">
+            <form id="firebaseForm">
+                <input type="hidden" name="firebase">
+                <div class="mb-3">
+                    <label class="form-label">Project ID</label>
+                    <input type="text" class="form-control" id="projectId"
+                        value="<%= settings?.firebase?.projectId || '' %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Firebase Email</label>
+                    <input type="email" class="form-control" id="firebaseEmail"
+                        value="<%= settings?.firebase?.firebaseEmail || '' %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Firebase ID</label>
+                    <input type="text" class="form-control" id="firebaseId"
+                        value="<%= settings?.firebase?.firebaseId || '' %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Token URL</label>
+                    <input type="url" class="form-control" id="tokenUrl"
+                        value="<%= settings?.firebase?.tokenUrl || '' %>" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+
+        <!-- Help & Support Form -->
+        <div class="tab-pane fade" id="helpSupport" role="tabpanel">
+            <form id="helpSupportForm">
+                <input type="hidden" name="helpSupport">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="supportEmail"
+                        value="<%= settings?.helpSupport?.supportEmail || '' %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mobile</label>
+                    <input type="tel" class="form-control" id="supportMobile"
+                        value="<%= settings?.helpSupport?.supportMobile || '' %>" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+
+        <!-- Application Links Form -->
+        <div class="tab-pane fade" id="contact" role="tabpanel">
+            <form>
+                <div class="mb-3">
+                    <label for="androidClientUrl" class="form-label">Android Client APP URL</label>
+                    <input type="url" class="form-control" id="androidClientUrl" required>
+                </div>
+                <div class="mb-3">
+                    <label for="androidDriverUrl" class="form-label">Android Driver APP URL</label>
+                    <input type="url" class="form-control" id="androidDriverUrl" required>
+                </div>
+                <div class="mb-3">
+                    <label for="iosClientUrl" class="form-label">iOS Client APP URL</label>
+                    <input type="url" class="form-control" id="iosClientUrl" required>
+                </div>
+                <div class="mb-3">
+                    <label for="iosDriverUrl" class="form-label">iOS Driver APP URL</label>
+                    <input type="url" class="form-control" id="iosDriverUrl" required>
+                </div>
+                <button type="submit" class="btn btn-info">Submit</button>
+            </form>
+        </div>
+
+        <!-- App Version Form -->
+        <div class="tab-pane fade" id="appVersion" role="tabpanel">
+            <form>
+                <div class="mb-3">
+                    <label for="androidClientVersion" class="form-label">Android Client APP Version</label>
+                    <input type="text" class="form-control" id="androidClientVersion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="androidDriverVersion" class="form-label">Android Driver APP Version</label>
+                    <input type="text" class="form-control" id="androidDriverVersion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="iosClientVersion" class="form-label">iOS Client APP Version</label>
+                    <input type="text" class="form-control" id="iosClientVersion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="iosDriverVersion" class="form-label">iOS Driver APP Version</label>
+                    <input type="text" class="form-control" id="iosDriverVersion" required>
+                </div>
+                <button type="submit" class="btn btn-info">Submit</button>
+            </form>
+        </div>
+
+        <!-- Twilio Credentials Form -->
+        <div class="tab-pane fade" id="twilioCred" role="tabpanel">
+            <form>
+                <div class="mb-3">
+                    <label for="twilioSid" class="form-label">Twilio Account SID</label>
+                    <input type="text" class="form-control" id="twilioSid" required>
+                </div>
+                <div class="mb-3">
+                    <label for="twilioToken" class="form-label">Twilio Auth Token</label>
+                    <input type="text" class="form-control" id="twilioToken" required>
+                </div>
+                <div class="mb-3">
+                    <label for="twilioNumber" class="form-label">Twilio Number</label>
+                    <input type="tel" class="form-control" id="twilioNumber" required>
+                </div>
+                <div class="mb-3">
+                    <label for="twilioCallUrl" class="form-label">Twilio Call URL</label>
+                    <input type="url" class="form-control" id="twilioCallUrl" required>
+                </div>
+                <button type="submit" class="btn btn-info">Submit</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function saveForm(formId, dataKey) {
+            document.getElementById(formId).addEventListener("submit", function (e) {
+                e.preventDefault();
+                let formData = {
+                    [dataKey]: {}
+                };
+                this.querySelectorAll("input").forEach(input => {
+                    formData[dataKey][input.id] = input.value;
+                });
+
+                fetch("/save-settings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                })
+                    .then(response => response.json())
+                    .then(data => alert(data.message))
+                    .catch(error => console.error("Error:", error));
+            });
+        }
+
+        saveForm("firebaseForm", "firebase");
+        saveForm("helpSupportForm", "helpSupport");
+    });
+</script>

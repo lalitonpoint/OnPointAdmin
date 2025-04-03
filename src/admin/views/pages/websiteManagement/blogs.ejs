@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
+    <style>
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+        }
+
+        .btn-pink:hover {
+            background-color: #c2185b;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-weight: bold;
+        }
+
+        .ck-editor__editable {
+            min-height: 300px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold">📢 Blog Management</h3>
+            <button class="btn btn-pink" id="addBlogBtn">
+                <i class="fas fa-plus"></i> Add Blog
+            </button>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table id="blogTable" class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Blog Title</th>
+                            <th>Banner Image</th>
+                            <th>Poster Image</th>
+                            <th>Description</th>
+                            <th>Tags</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Blog Modal -->
+    <div class="modal fade" id="blogModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="blogForm" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="blog_id" id="blog_id">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Add Blog</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Blog Title</label>
+                            <input type="text" class="form-control" name="title" id="blog_title" required>
+                        </div>
+                        <!-- <div class="mb-3">
+                            <label class="form-label">Banner Image</label>
+                            <input type="file" class="form-control" name="banner" id="banner_image" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Poster Image</label>
+                            <input type="file" class="form-control" name="poster" id="poster_image" accept="image/*">
+                        </div> -->
+                        <div class="mb-3">
+                            <label class="form-label">Blog Status</label>
+                            <select class="form-select" name="status" id="blog_status" required>
+                                <option value="">Select Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Blog Tags</label>
+                            <input type="text" class="form-control" name="tags" id="blog_tags"
+                                placeholder="Comma separated tags" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Blog Description</label>
+                            <textarea class="form-control" name="description" id="blog_description"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="submitBtn">Save Blog</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let blogEditor;
+            const blogModal = new bootstrap.Modal(document.getElementById('blogModal'));
+
+            // Initialize CKEditor
+            ClassicEditor.create(document.querySelector('#blog_description'), {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'undo', 'redo']
+            }).then(editor => {
+                blogEditor = editor;
+            }).catch(error => console.error(error));
+
+            // Initialize DataTable
+            let table = $('#blogTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/blogs/blogsList',
+                    method: 'POST'
+                },
+                columns: [
+                    { data: '_id', render: (data, type, row, meta) => meta.row + 1 },
+                    { data: 'title' },
+                    { data: 'banner_image', render: (data) => `<img src="/uploads/${data}" class="img-thumbnail" width="80" />` },
+                    { data: 'poster_image', render: (data) => `<img src="/uploads/${data}" class="img-thumbnail" width="80" />` },
+                    { data: 'description', render: (data) => data.substring(0, 50) + '...' },
+                    { data: 'tags' },
+                    { data: 'status' },
+                    {
+                        data: '_id', render: (data) => `
+                        <button class="btn btn-warning btn-sm editBtn" data-id="${data}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-danger btn-sm deleteBtn" data-id="${data}"><i class="fas fa-trash"></i> Delete</button>`
+                    }
+                ]
+            });
+
+            // Add/Edit blog
+            $('#addBlogBtn').on('click', function () {
+                $('#blogForm')[0].reset();
+                blogModal.show();
+                $('#blog_id').val('');
+                $('#submitBtn').text('Save Blog');
+            });
+
+            $('#blogTable').on('click', '.editBtn', function () {
+                const blogId = $(this).data('id');
+                $.ajax({
+                    url: `/blogs/getBlog/${blogId}`,
+                    method: 'GET',
+                    success: function (response) {
+                        $('#blog_id').val(response.data._id);
+                        $('#blog_title').val(response.data.title);
+                        $('#blog_description').val(response.data.description);
+                        $('#blog_tags').val(response.data.tags);
+                        $('#blog_status').val(response.data.status);
+                        blogEditor.setData(response.data.description);
+                        blogModal.show();
+                        $('#submitBtn').text('Update Blog');
+                    }
+                });
+            });
+
+            // Submit blog form
+            $('#blogForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const data = {
+                    title: $('#blog_title').val(),
+                    status: $('#blog_status').val(),
+                    tags: $('#blog_tags').val(),
+                    description: $('#blog_description').val()
+                };
+                const actionUrl = $('#blog_id').val() ? '/blogs/updateBlog/' + $('#blog_id').val() : '/blogs/saveBlog';
+
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    data: JSON.stringify(data),  // Convert the object to JSON string
+                    contentType: 'application/json',  // Specify content type as JSON
+                    success: function () {
+                        blogModal.hide();
+                        table.ajax.reload();
+                    }
+                });
+            });
+
+
+            // Delete blog
+            $('#blogTable').on('click', '.deleteBtn', function () {
+                const blogId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this blog?')) {
+                    $.ajax({
+                        url: '/blogs/deleteBlog/' + blogId,
+                        type: 'DELETE',
+                        success: function () {
+                            table.ajax.reload();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

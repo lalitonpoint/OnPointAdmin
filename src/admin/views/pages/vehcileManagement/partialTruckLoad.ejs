@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
+    <style>
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+        }
+
+        .btn-pink:hover {
+            background-color: #c2185b;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold">🚛 Vehicle Management(PTL)</h3>
+            <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#vehicleModal">Add Vehicle</button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table id="vehicleTable" class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Truck Name</th>
+                            <th>Status</th>
+                            <th>Vehicle Image</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="vehicleModal" tabindex="-1" aria-labelledby="vehicleModalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="vehicleModalTitle">Add Vehicle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vehicleForm" enctype="multipart/form-data">
+                        <input type="hidden" id="vehicleId" name="vehicleId">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Truck Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter truck name"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="">Select Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">In-Active</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="vechileImage" class="form-label">Vehicle Image</label>
+                            <input type="file" class="form-control" id="vechileImage" name="profileImage"
+                                accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-pink w-100">Save Vehicle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editVehicleModal" tabindex="-1" aria-labelledby="editVehicleModalTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editVehicleModalTitle">Edit Vehicle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editVehicleForm" enctype="multipart/form-data">
+                        <input type="hidden" id="editVehicleId" name="vehicleId">
+                        <ul class="nav nav-tabs mb-3" id="editTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="basic-details-tab" data-bs-toggle="tab"
+                                    href="#basic-details" role="tab" aria-controls="basic-details"
+                                    aria-selected="true">Basic Details</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="truck-details-tab" data-bs-toggle="tab" href="#truck-details"
+                                    role="tab" aria-controls="truck-details" aria-selected="false">Truck Details</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab"
+                                    aria-controls="documents" aria-selected="false">Documents</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="editTabsContent">
+                            <div class="tab-pane fade show active" id="basic-details" role="tabpanel"
+                                aria-labelledby="basic-details-tab">
+                                <div class="mb-3">
+                                    <label for="editName" class="form-label">Truck Name</label>
+                                    <input type="text" class="form-control" id="editName" name="name"
+                                        placeholder="Enter truck name" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="editStatus" class="form-label">Status</label>
+                                    <select class="form-control" id="editStatus" name="status">
+                                        <option value="">Select Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">In-Active</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="editVechileImage" class="form-label">Vehicle Image</label>
+                                    <input type="file" class="form-control" id="editVechileImage" name="profileImage"
+                                        accept="image/*">
+                                    <img id="viewEditVechileImage" src="" alt="Vehicle Image"
+                                        style="max-width: 100px; margin-top: 10px;">
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="truck-details" role="tabpanel"
+                                aria-labelledby="truck-details-tab">
+                                <div class="mb-3">
+                                    <label for="editMake" class="form-label">Make</label>
+                                    <input type="text" class="form-control" id="editMake" name="make"
+                                        placeholder="Enter truck make">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editModel" class="form-label">Model</label>
+                                    <input type="text" class="form-control" id="editModel" name="model"
+                                        placeholder="Enter truck model">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editYearOfManufacture" class="form-label">Year of Manufacture</label>
+                                    <input type="text" class="form-control" id="editYearOfManufacture"
+                                        name="yearOfManufacture" placeholder="Enter year of manufacture">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editLicensePlateNumber" class="form-label">License Plate Number</label>
+                                    <input type="text" class="form-control" id="editLicensePlateNumber"
+                                        name="licensePlateNumber" placeholder="Enter license plate number">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editVin" class="form-label">VIN (Vehicle Identification Number)</label>
+                                    <input type="text" class="form-control" id="editVin" name="vin"
+                                        placeholder="Enter VIN">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editTruckCapacity" class="form-label">Truck Capacity</label>
+                                    <input type="text" class="form-control" id="editTruckCapacity" name="truckCapacity"
+                                        placeholder="Enter truck capacity">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editFuelType" class="form-label">Fuel Type</label>
+                                    <input type="text" class="form-control" id="editFuelType" name="fuelType"
+                                        placeholder="Enter fuel type">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editOdometerReading" class="form-label">Odometer Reading</label>
+                                    <input type="text" class="form-control" id="editOdometerReading"
+                                        name="odometerReading" placeholder="Enter odometer reading">
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+                                <div class="mb-3">
+                                    <label for="editTruckRegistrationCertificate" class="form-label">Truck Registration
+                                        Certificate</label>
+                                    <input type="file" class="form-control" id="editTruckRegistrationCertificate"
+                                        name="truckRegistrationCertificate" accept="application/pdf,image/*">
+                                    <a id="viewEditTruckRegistrationCertificate" href="#" target="_blank"
+                                        style="margin-top: 10px; display: block;">View Document</a>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editInsuranceDocument" class="form-label">Insurance Document</label>
+                                    <input type="file" class="form-control" id="editInsuranceDocument"
+                                        name="insuranceDocument" accept="application/pdf,image/*">
+                                    <a id="viewEditInsuranceDocument" href="#" target="_blank"
+                                        style="margin-top: 10px; display: block;">View Document</a>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editRoadworthiness" class="form-label">Roadworthiness
+                                        Certificate</label>
+                                    <input type="file" class="form-control" id="editRoadworthiness"
+                                        name="roadworthiness" accept="application/pdf,image/*">
+                                    <a id="viewEditRoadworthiness" href="#" target="_blank"
+                                        style="margin-top: 10px; display: block;">View Document</a>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editPollutionCertificate" class="form-label">Pollution
+                                        Certificate</label>
+                                    <input type="file" class="form-control" id="editPollutionCertificate"
+                                        name="pollutionCertificate" accept="application/pdf,image/*">
+                                    <a id="viewEditPollutionCertificate" href="#" target="_blank"
+                                        style="margin-top: 10px; display: block;">View Document</a>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editDriverLicenseNumber" class="form-label">Driver's License
+                                        Number</label>
+                                    <input type="text" class="form-control" id="editDriverLicenseNumber"
+                                        name="driverLicenseNumber" placeholder="Enter driver's license number">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-pink">Update Vehicle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let table = $('#vehicleTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '/ptl/vehicleList', type: 'POST' }, // Updated URL for fetching vehicle data
+                columns: [
+                    { data: null, render: (data, type, row, meta) => meta.row + 1 },
+                    { data: 'name' }, // Truck Name
+                    { data: 'status' }, // Status
+                    {
+                        data: 'profileImage',
+                        render: (data) => {
+                            if (data) {
+                                return `<img src="${data}" alt="Vehicle Image" style="max-width: 50px; max-height: 50px;">`; // Display image thumbnail
+                            } else {
+                                return 'No Image';
+                            }
+                        }
+                    },
+                    { data: 'createdAt', render: (data) => new Date(data).toLocaleString() },
+                    {
+                        data: null,
+                        render: (data, type, row) => `
+                    <button class="btn btn-sm btn-warning editVehicleBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-sm btn-danger delVehicleBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>`
+                    }
+                ]
+            });
+            $('#vehicleForm').submit(function (e) {
+                e.preventDefault();
+                const formData = new FormData(this); // Use FormData to include files
+
+                const url = '/ptl/saveVehicle'; // Updated URL for saving vehicle data
+
+                $.ajax({
+                    url,
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, // Don't set content type, let browser handle it for FormData
+                    processData: false, // Don't process the data
+                    success: function (response) {
+                        alert(response.message); // Display success message (e.g., "Vehicle added successfully")
+                        if (typeof table !== 'undefined' && table.ajax) {
+                            table.ajax.reload();
+                        }
+                        $('#vehicleModal').modal('hide');
+                        $('#vehicleForm')[0].reset(); // Reset the correct form
+                        $('#vehicleModalTitle').text('Add Vehicle');
+                    },
+                    error: function () { alert('Failed to save vehicle'); } // Updated error message
+                });
+            });
+            $('#editVehicleForm').submit(function (e) {
+                e.preventDefault();
+                const id = $('#editVehicleId').val();
+                const formData = new FormData(this);
+
+                const url = `/ptl/updateVechile/${id}`;
+
+                $.ajax({
+                    url,
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        alert(response.message);
+                        if (typeof table !== 'undefined' && table.ajax) {
+                            table.ajax.reload();
+                        }
+                        $('#editVehicleModal').modal('hide');
+                    },
+                    error: function () { alert('Failed to update vehicle'); } // Updated error message
+                });
+            });
+
+            $('#vehicleTable').on('click', '.editVehicleBtn', function () {
+                const id = $(this).data('id');
+                $('#editVehicleModal').modal('show');
+
+                $.get(`/ptl/getVehicle/${id}`, function (data) {
+                    const vehicle = data.vehicle;
+                    $('#editVehicleId').val(vehicle._id);
+
+                    // Populate edit form fields
+                    $('#editName').val(vehicle.name);
+                    $('#editStatus').val(vehicle.status);
+                    $('#viewEditVechileImage').attr('src', vehicle.profileImage || '/images/default-vehicle.png');
+                    $('#editMake').val(vehicle.make);
+                    $('#editModel').val(vehicle.model);
+                    $('#editYearOfManufacture').val(vehicle.yearOfManufacture);
+                    $('#editLicensePlateNumber').val(vehicle.licensePlateNumber);
+                    $('#editVin').val(vehicle.vin);
+                    $('#editTruckCapacity').val(vehicle.truckCapacity);
+                    $('#editFuelType').val(vehicle.fuelType);
+                    $('#editOdometerReading').val(vehicle.odometerReading);
+                    $('#editDriverLicenseNumber').val(vehicle.driverLicenseNumber);
+                    // Handle document links - adjust the URLs as needed
+                    $('#viewEditTruckRegistrationCertificate').attr('href', vehicle.truckRegistrationCertificate || '#');
+                    $('#viewEditInsuranceDocument').attr('href', vehicle.insuranceDocument || '#');
+                    $('#viewEditRoadworthiness').attr('href', vehicle.roadworthiness || '#');
+                    $('#viewEditPollutionCertificate').attr('href', vehicle.pollutionCertificate || '#');
+                });
+            });
+
+            $('#vehicleTable').on('click', '.delVehicleBtn', function () {
+                const id = $(this).data('id');
+                if (confirm('Are you sure you want to delete this vehicle?')) {
+                    $.ajax({
+                        url: `/ptl/deleteVehicle/${id}`,
+                        type: 'DELETE',
+                        success: function (response) {
+                            alert(response.message);
+                            table.ajax.reload();
+                        },
+                        error: function () { alert('Failed to delete vehicle'); }
+                    });
+                }
+            });
+
+            $('#vehicleModal').on('hidden.bs.modal', function () {
+                $('#vehicleForm')[0].reset();
+                $('#vehicleModalTitle').text('Add Vehicle');
+                $('#vehicleId').val('');
+            });
+            $('#editVehicleModal').on('hidden.bs.modal', function () {
+                $('#editVehicleForm')[0].reset();
+                $('#editVehicleId').val('');
+                $('#editTabs a:first').tab('show'); // Show the first tab on modal close
+            });
+        });
+    </script>
+</body>
+
+</html>

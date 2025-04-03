@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Permission Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h3>Add Sub Admin</h3>
+        <form id="adminForm">
+            <div class="mb-3">
+                <label>Name:</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label>Mobile:</label>
+                <input type="text" class="form-control" name="mobile" required>
+            </div>
+            <div class="mb-3">
+                <label>Email:</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label>Admin Type:</label>
+                <select class="form-control" name="admin_type" id="adminType">
+                    <option value="Admin">Admin</option>
+                    <option value="Sub Admin">Sub Admin</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Password:</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+            <div class="mb-3">
+                <input type="checkbox" name="country_access"> Enable Country Based Access Control
+            </div>
+            <div class="mb-3">
+                <input type="checkbox" name="city_access"> Enable City Based Access Control
+            </div>
+
+            <div id="permissionsSection">
+                <h4>Permissions</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th><input type="checkbox" id="selectAllAdd"> Add</th>
+                            <th><input type="checkbox" id="selectAllEdit"> Edit</th>
+                            <th><input type="checkbox" id="selectAllDelete"> Delete</th>
+                            <th><input type="checkbox" id="selectAllExport"> Export</th>
+                        </tr>
+                    </thead>
+                    <tbody id="permissionsTable">
+                        <tr>
+                            <td>Dashboard
+                                <input type="hidden" class="url" value="dashboard">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>User Management
+                                <input type="hidden" class="url" value="userManagement">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>Role Management
+                                <input type="hidden" class="url" value="rolesManagement">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>Backend User Management
+                                <input type="hidden" class="url" value="backendUserManagement">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>Fleet Management
+                                <input type="hidden" class="url" value="fleetManagement">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>Order Management
+                                <input type="hidden" class="url" value="orderManagement">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>Shipment Management
+                                <input type="hidden" class="url" value="shipmentManagement">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>Warehouse Management
+                                <input type="hidden" class="url" value="warehouseManagement">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                        <tr>
+                            <td>App Setting
+                                <input type="hidden" class="url" value="appSetting">
+                            </td>
+                            <td><input type="checkbox" class="add"></td>
+                            <td><input type="checkbox" class="edit"></td>
+                            <td><input type="checkbox" class="delete"></td>
+                            <td><input type="checkbox" class="export"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Admin</button>
+        </form>
+    </div>
+
+    <script>
+        // Select All
+        function selectAll(columnClass, selectAllId) {
+            $(selectAllId).on("change", function () {
+                $("." + columnClass).prop("checked", this.checked);
+            });
+        }
+
+        selectAll("add", "#selectAllAdd");
+        selectAll("edit", "#selectAllEdit");
+        selectAll("delete", "#selectAllDelete");
+        selectAll("export", "#selectAllExport");
+
+        // Hide/show permissions based on admin type
+        $("#adminType").on("change", function () {
+            if ($(this).val() === "Admin") {
+                $("#permissionsSection").hide();
+            } else {
+                $("#permissionsSection").show();
+            }
+        }).trigger("change");
+
+        // Form Submission
+        $("#adminForm").on("submit", function (event) {
+            event.preventDefault();
+
+            let formData = {
+                name: $("input[name='name']").val(),
+                mobile: $("input[name='mobile']").val(),
+                email: $("input[name='email']").val(),
+                admin_type: $("select[name='admin_type']").val(),
+                password: $("input[name='password']").val(),
+                country_access: $("input[name='country_access']").prop("checked"),
+                city_access: $("input[name='city_access']").prop("checked"),
+                permissions: []
+            };
+
+            if (formData.admin_type === "Sub Admin") {
+                $("#permissionsTable tr").each(function () {
+                    let module = $(this).find(".url").val();
+                    let permission = {
+                        module: module,
+                        add: $(this).find(".add").prop("checked"),
+                        edit: $(this).find(".edit").prop("checked"),
+                        delete: $(this).find(".delete").prop("checked"),
+                        export: $(this).find(".export").prop("checked"),
+                    };
+                    formData.permissions.push(permission);
+                });
+            }
+
+            $.post("/roles/saveRoles", formData, function (response) {
+                alert("Admin saved successfully!");
+                $("#adminForm")[0].reset();
+                $("#adminType").trigger("change");
+            }).fail(function () {
+                alert("Error saving admin!");
+            });
+        });
+    </script>
+</body>
+
+</html>

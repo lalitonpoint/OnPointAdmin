@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics Admin Panel</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background: #343a40;
+            color: #fff;
+            padding: 1rem;
+        }
+
+        .sidebar a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover,
+        .sidebar .nav-link.active {
+            background: #495057;
+            color: #fff;
+            padding-left: 10px;
+            transition: 0.3s;
+        }
+
+        .nav-link i {
+            transition: transform 0.3s;
+        }
+
+        .nav-link[aria-expanded="true"] i.bi-chevron-down {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar p-3">
+            <h4 class="text-center mb-4">🚚 Logistics</h4>
+            <ul class="nav flex-column" id="sidebarMenu">
+                <li class="nav-item mb-2">
+                    <a href="/dashboard" class="nav-link"><i class="bi bi-house me-2"></i>Dashboard</a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#roleMenu" role="button">
+                        <span><i class="bi bi-person-gear me-2"></i> Role Management</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="roleMenu">
+                        <li><a href="/roles/rolesManagement" class="nav-link sub-link"><i
+                                    class="bi bi-briefcase me-2"></i>Manage Roles</a></li>
+                        <li><a href="/roles/backendUserManagement" class="nav-link sub-link"><i
+                                    class="bi bi-person me-2"></i>Backend Users</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#userMenu" role="button">
+                        <span><i class="bi bi-people me-2"></i> User Management</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="userMenu">
+                        <li><a href="/users/userManagement" class="nav-link sub-link"><i
+                                    class="bi bi-person-lines-fill me-2"></i>Manage Users</a></li>
+                        <li><a href="/fleet/fleetManagement" class="nav-link sub-link"><i
+                                    class="bi bi-truck me-2"></i>Manage Fleet</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#orderMenu" role="button">
+                        <span><i class="bi bi-box-seam me-2"></i> Orders & Shipments</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="orderMenu">
+                        <li><a href="/order/orderManagement" class="nav-link sub-link"><i
+                                    class="bi bi-card-checklist me-2"></i>Order Management</a></li>
+                        <li><a href="/shipment/shipmentManagement" class="nav-link sub-link"><i
+                                    class="bi bi-truck-flatbed me-2"></i>Shipment Management</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#warehouseMenu" role="button">
+                        <span><i class="bi bi-building me-2"></i> Warehouse Management</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="warehouseMenu">
+                        <li><a href="/warehouse/warehouseManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Manage Warehouse </a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#configuration" role="button">
+                        <span><i class="bi bi-building me-2"></i> Configuration</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="configuration">
+                        <li><a href="/configuration/appSetting" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>App
+                                Setting </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#websiteManagement" role="button">
+                        <span><i class="bi bi-building me-2"></i> Website Management</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="websiteManagement">
+                        <li><a href="/banner/bannerManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Banner
+                                Management </a></li>
+                        <li><a href="/blogs/blogsManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Blogs
+                                Management </a></li>
+                        <!-- <li><a href="/gallery/galleryManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Gallery
+                                Management </a></li> -->
+                        <li><a href="/contact/contactUs" class="nav-link sub-link"><i class="bi bi-boxes me-2"></i>
+                                Contact Us </a></li>
+                        <li><a href="/testimonial/testimonialManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>
+                                Testimonial Management </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#driverManagement" role="button">
+                        <span><i class="bi bi-building me-2"></i> Driver Management</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="driverManagement">
+                        <li><a href="/document/documentManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Manage Document
+                            </a></li>
+                        <li><a href="/driver/driverManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Manage
+                                Drivers
+                            </a></li>
+                    </ul>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                        href="#driverManagement" role="button">
+                        <span><i class="bi bi-building me-2"></i>Vehcile Management</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <ul class="collapse list-unstyled ps-3" id="driverManagement">
+                        <li><a href="/ptl/ptlManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Partial Truck load (PTL)
+                            </a></li>
+                        <li><a href="/document/documentManagement" class="nav-link sub-link"><i
+                                    class="bi bi-boxes me-2"></i>Full Truck load (FTL)
+                            </a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item mt-4">
+                    <a href="/logout" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand navbar-light px-4">
+                <div class="container-fluid">
+                    <span class="navbar-brand">Admin Panel</span>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="bi bi-bell-fill"></i></a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile</a>
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="/logout"><i
+                                            class="bi bi-box-arrow-right"></i>
+                                        Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Content -->
+            <div class="container mt-4">
+                <%- body %> <!-- EJS content here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const links = document.querySelectorAll(".sidebar .nav-link");
+
+            links.forEach(link => {
+                link.addEventListener("click", function () {
+                    // Remove active class from all links
+                    links.forEach(l => l.classList.remove("active"));
+
+                    // Add active class to clicked link
+                    this.classList.add("active");
+
+                    // Ensure parent module stays open when clicking submodule
+                    if (this.classList.contains("sub-link")) {
+                        const parentMenu = this.closest("ul.collapse");
+                        if (parentMenu) {
+                            const parentModule = parentMenu.previousElementSibling;
+                            if (parentModule) {
+                                parentModule.classList.add("active");
+                                parentMenu.classList.add("show");
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Preserve active state on page load
+            const currentPath = window.location.pathname;
+            links.forEach(link => {
+                if (link.getAttribute("href") === currentPath) {
+                    link.classList.add("active");
+
+                    if (link.classList.contains("sub-link")) {
+                        const parentMenu = link.closest("ul.collapse");
+                        if (parentMenu) {
+                            parentMenu.classList.add("show");
+                            const parentModule = parentMenu.previousElementSibling;
+                            if (parentModule) {
+                                parentModule.classList.add("active");
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

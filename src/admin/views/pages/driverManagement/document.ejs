@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
+    <style>
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+        }
+
+        .btn-pink:hover {
+            background-color: #c2185b;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold">📂 Document Management</h3>
+            <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#documentModal">Add Document</button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table id="documentTable" class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Mandatory</th>
+                            <th>Unique</th>
+                            <th>Type</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Add Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="documentForm">
+                        <input type="hidden" id="documentId">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="uniqueType" class="form-label">Type</label>
+                            <select class="form-control" id="uniqueType">
+                                <option value="Driver">Driver</option>
+                                <option value="User">User</option>
+                                <option value="Vendor">Vendor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="isMandatory" class="form-label">Mandatory</label>
+                            <select class="form-control" id="isMandatory">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="isUnique" class="form-label">Unique</label>
+                            <select class="form-control" id="isUnique">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-pink w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let table = $('#documentTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: { url: '/document/documentList', type: 'POST' },
+                columns: [
+                    { data: null, render: (data, type, row, meta) => meta.row + 1 },
+                    { data: 'name' },
+                    { data: 'isMandatory', render: (data) => data ? 'Yes' : 'No' },
+                    { data: 'isUnique', render: (data) => data ? 'Yes' : 'No' },
+                    { data: 'uniqueType' },
+                    { data: 'createdAt', render: (data) => new Date(data).toLocaleString() },
+                    {
+                        data: null,
+                        render: (data, type, row) => `
+                            <button class="btn btn-sm btn-warning editDocumentBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn btn-sm btn-danger delDocumentBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>`
+                    }
+                ]
+            });
+
+            $('#documentForm').submit(function (e) {
+                e.preventDefault();
+                const id = $('#documentId').val();
+                const data = {
+                    name: $('#name').val(),
+                    isMandatory: $('#isMandatory').val() === 'true',
+                    isUnique: $('#isUnique').val() === 'true',
+                    uniqueType: $('#uniqueType').val()
+                };
+                const url = id ? `/document/updateDocument/${id}` : '/document/saveDocument';
+                $.ajax({
+                    url,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        alert(response.message);
+                        table.ajax.reload();
+                        $('#documentModal').modal('hide');
+                        $('#documentForm')[0].reset();
+                    },
+                    error: function () { alert('Failed to save document'); }
+                });
+            });
+
+            $('#documentTable').on('click', '.editDocumentBtn', function () {
+                const id = $(this).data('id');
+                $.get(`/document/getDocument/${id}`, function (document) {
+                    $('#documentId').val(document._id);
+                    $('#name').val(document.name);
+                    $('#isMandatory').val(document.isMandatory.toString());
+                    $('#isUnique').val(document.isUnique.toString());
+                    $('#uniqueType').val(document.uniqueType);
+                    $('#modalTitle').text('Edit Document');
+                    $('#documentModal').modal('show');
+                });
+            });
+
+            $('#documentTable').on('click', '.delDocumentBtn', function () {
+                const id = $(this).data('id');
+                if (confirm('Are you sure you want to delete this document?')) {
+                    $.ajax({
+                        url: `/document/deleteDocument/${id}`,
+                        type: 'DELETE',
+                        success: function (response) {
+                            alert(response.message);
+                            table.ajax.reload();
+                        },
+                        error: function () { alert('Failed to delete document'); }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
