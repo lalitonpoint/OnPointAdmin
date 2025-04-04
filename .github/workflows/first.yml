@@ -1,12 +1,15 @@
 name: Deploy OnPoint
 
-#on:
- # push:
-  #  branches:
-   #   - main  # Runs when code is pushed to main branch
 on:
   workflow_dispatch:  # Manually trigger only
 
+
+#on:
+ # push:
+  #  branches:
+   #   - main  # Runs when code is pushed to the main branch
+
+ # workflow_dispatch:  # Allows manual trigger
 
 jobs:
   deploy:
@@ -21,19 +24,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H SERVER_IP >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Server
         run: |
-          ssh SERVER_USER@SERVER_IP << 'EOF'
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             cd /var/www/html/onpoint/OnPointAdmin
-
             # Pull latest changes
             git pull origin main || git reset --hard origin/main
-
             # Install dependencies
             npm install
-
             # Restart PM2 service
             pm2 restart Onadmin
           EOF
