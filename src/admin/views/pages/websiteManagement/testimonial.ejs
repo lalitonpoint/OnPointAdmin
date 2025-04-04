@@ -22,6 +22,10 @@
     .modal-title {
         font-weight: bold;
     }
+
+    .ck-editor__editable {
+        min-height: 300px !important;
+    }
 </style>
 
 <div class="container mt-5">
@@ -60,12 +64,40 @@
                 <form id="testimonialForm">
                     <input type="hidden" id="testimonialId">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">Profile Name</label>
                         <input type="text" class="form-control" id="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
-                        <textarea class="form-control" id="message" required></textarea>
+                        <label for="designation" class="form-label">Profile Designation</label>
+                        <input type="text" class="form-control" id="designation" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Profile Image</label>
+                        <input type="file" class="form-control" name="image" id="profile_image" accept="image/*"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Rating</label>
+                        <select class="form-select" name="rating" id="rating" required>
+                            <option value="">Select Rating</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status" id="status" required>
+                            <option value="">Select Status</option>
+                            <option value="1">Active</option>
+                            <option value="2">In-Active</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="message">Blog Description</label>
+                        <textarea class="form-control" name="description" id="testmonial_description"></textarea>
                     </div>
                     <button type="submit" class="btn btn-pink w-100">Save</button>
                 </form>
@@ -78,9 +110,20 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
 
 <script>
     $(document).ready(function () {
+
+        // Initialize CKEditor
+        ClassicEditor.create(document.querySelector('#testmonial_description'), {
+            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'undo', 'redo']
+        }).then(editor => {
+            blogEditor = editor;
+        }).catch(error => console.error(error));
+
+
         let table = $('#testimonialTable').DataTable({
             processing: true,
             serverSide: true,
@@ -102,20 +145,40 @@
         // Add/Edit Testimonial
         $('#testimonialForm').submit(function (e) {
             e.preventDefault();
+
             const id = $('#testimonialId').val();
-            const data = { name: $('#name').val(), message: $('#message').val() };
+
+            // Gather form data
+            const formData = new FormData();
+            formData.append('name', $('#name').val());
+            formData.append('designation', $('#designation').val());
+            formData.append('image', $('#profile_image')[0].files[0]);
+            formData.append('rating', $('#rating').val());
+            formData.append('description', $('#testmonial_description').val());
+            formData.append('status', $('#status').val());
+
+            // Set URL and method based on ID
             const url = id ? `/testimonial/editTestimonial/${id}` : '/testimonial/addTestimonial';
             const method = id ? 'PUT' : 'POST';
+
+            // Perform the AJAX request
             $.ajax({
-                url, type: method, data,
+                url: url,
+                type: method,
+                data: formData,
+                contentType: false,  // Don't set content type for FormData
+                processData: false,  // Don't process the data as a query string
                 success: function (response) {
                     alert(response.message);
-                    table.ajax.reload();
-                    $('#testimonialModal').modal('hide');
+                    table.ajax.reload();  // Refresh the table (assuming you have a table variable)
+                    $('#testimonialModal').modal('hide');  // Close the modal
                 },
-                error: function () { alert('Failed to save testimonial'); }
+                error: function () {
+                    alert('Failed to save testimonial');
+                }
             });
         });
+
 
         // Edit Button Click
         $('#testimonialTable').on('click', '.editTestimonialBtn', function () {

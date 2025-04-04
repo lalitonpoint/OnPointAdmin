@@ -9,5 +9,6 @@ router.get('/', AuthCtrl.loginPage);
 router.get('/permissionDenied', AuthCtrl.permissionDenied);
 router.get('/logout', isAuthenticated, AuthCtrl.logout);
 router.post('/checkLogin', AuthCtrl.checkLogin);
+router.get('/createFirstBackendUser', AuthCtrl.createFirstBackendUser);
 
 module.exports = router;

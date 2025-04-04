@@ -1,8 +1,8 @@
 
 
-const mongoose = require('mongoose');
 const Testimonial = require('../../models/websiteManagement/testimonialModel');
-
+const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
+const multiparty = require('multiparty');
 
 const testmonialPage = (req, res) => {
     res.render('pages/WebsiteManagement/testimonial');
@@ -32,14 +32,61 @@ const testimonialList = async (req, res) => {
     }
 };
 
-// Save testimonial
 const saveTestimonial = async (req, res) => {
     try {
-        const { name, message } = req.body;
-        const testimonial = new Testimonial({ name, message });
-        await testimonial.save();
-        res.json({ success: true, message: 'Testimonial saved successfully' });
+        const form = new multiparty.Form();
+
+        // Parse the form data
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                console.error("Error parsing form data:", err);
+                return res.status(500).json({ error: "Failed to parse form data" });
+            }
+
+            // Extract data from fields
+            const name = fields.name ? fields.name[0] : '';
+            const status = fields.status ? fields.status[0] : '';
+            const designation = fields.designation ? fields.designation[0] : '';
+            const rating = fields.rating ? fields.rating[0] : '';
+            const description = fields.description ? fields.description[0] : '';
+
+            // Validation for required fields
+            if (!name || !status || !designation || !rating || !description) {
+                return res.status(400).json({ error: "Name, status, designation, rating, and description are required" });
+            }
+
+            // Handle file upload
+            const file = files.image ? files.image[0] : null;
+            if (!file) {
+                return res.status(400).json({ error: "No file uploaded" });
+            }
+
+            if (!file.path || !file.originalFilename) {
+                return res.status(400).json({ error: "File data is incomplete" });
+            }
+
+            // Upload the image and get the file URL
+            const result = await uploadImage(file);
+            const imageUrl = result.success ? result.url : `http://localhost:${process.env.PORT || 3000}${result.path}`;
+
+            // Create a new Testimonial document with the data from the form
+            const testimonial = new Testimonial({
+                name,
+                designation,
+                rating,
+                description,
+                profileImage: imageUrl, // Save the file path in the database
+            });
+
+            // Save the testimonial to the database
+            await testimonial.save();
+
+            // Return success response
+            res.json({ success: true, message: 'Testimonial saved successfully' });
+        });
+
     } catch (error) {
+        console.error("Error saving testimonial:", error);
         res.status(500).json({ error: error.message });
     }
 };

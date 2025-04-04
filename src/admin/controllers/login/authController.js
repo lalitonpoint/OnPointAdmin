@@ -60,10 +60,48 @@ const checkLogin = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
+const createFirstBackendUser = async (req, res) => {
+    try {
+        // Check if there are any existing AdminUsers in the database
+        const existingAdminUser = await Admin.findOne();
+
+        // If an admin user already exists, return an appropriate message
+        if (existingAdminUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'Admin user already exists!'
+            });
+        }
+
+        // If no admin user exists, proceed with creating the first admin
+        const hashedPassword = await bcrypt.hash("admin~!@#$%^&*()_+", 10);
+        const adminUser = new Admin({
+            name: "admin",
+            mobile: "9876986698",
+            email: 'admin@gmail.com',
+            admin_type: 'admin',
+            password: hashedPassword,
+            country_access: "true",
+            city_access: "true",
+            permissions: []
+        });
+
+        // Save the new admin user
+        await adminUser.save();
+
+        // Return success response
+        res.json({ success: true, message: 'Admin saved successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error saving admin', error: error.message });
+    }
+};
+
 
 module.exports = {
     loginPage,
     logout,
     permissionDenied,
-    checkLogin
+    checkLogin,
+    createFirstBackendUser
 };
