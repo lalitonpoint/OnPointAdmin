@@ -11,6 +11,7 @@ const s3 = new AWS.S3({
 
 const uploadImage = async (file) => {
     try {
+
         if (!file || !file.path || !file.originalFilename) {
             throw new Error('File data is incomplete');
         }

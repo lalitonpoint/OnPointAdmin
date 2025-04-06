@@ -120,7 +120,6 @@ const saveTestimonial = async (req, res) => {
     try {
         const form = new multiparty.Form();
 
-        // Parse the form data
         form.parse(req, async (err, fields, files) => {
             if (err) {
                 console.error("Error parsing form data:", err);
@@ -141,13 +140,7 @@ const saveTestimonial = async (req, res) => {
 
             // Handle file upload
             const file = files.image ? files.image[0] : null;
-            if (!file) {
-                return res.status(400).json({ error: "No file uploaded" });
-            }
 
-            if (!file.path || !file.originalFilename) {
-                return res.status(400).json({ error: "File data is incomplete" });
-            }
 
             // Upload the image and get the file URL
             const result = await uploadImage(file);
