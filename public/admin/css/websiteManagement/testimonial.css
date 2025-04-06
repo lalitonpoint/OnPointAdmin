@@ -31,3 +31,8 @@
 .btn-pink:hover {
     background-color: #c2185b;
 }
+
+/* Initially hide the search testimonial div */
+#searchTestimonialsCard {
+    display: none;
+}

@@ -15,12 +15,19 @@ const testimonialList = async (req, res) => {
         let query = {};
         let sort = {};
 
-        // Individual column search
-        const nameSearch = columns[1]?.search?.value;
-        const designationSearch = columns[2]?.search?.value;
-        const ratingSearch = columns[4]?.search?.value;
-        const statusSearch = columns[5]?.search?.value;
-        const createdAtSearch = columns[6]?.search?.value;
+        // Individual column search (for default DataTable search, if you still want to use it)
+        // const nameSearch = columns[1]?.search?.value;
+        // const designationSearch = columns[2]?.search?.value;
+        // const ratingSearch = columns[4]?.search?.value;
+        // const statusSearch = columns[5]?.search?.value;
+        // const createdAtSearch = columns[6]?.search?.value;
+
+        // Custom search parameters sent from the frontend
+        const nameSearch = req.body.name;
+        const designationSearch = req.body.designation;
+        const ratingSearch = req.body.rating;
+        const statusSearch = req.body.status;
+        const createdAtSearch = req.body.createdAt;
 
         if (searchValue) {
             query.$or = [
@@ -36,12 +43,15 @@ const testimonialList = async (req, res) => {
                 query.designation = new RegExp(designationSearch, 'i');
             }
             if (ratingSearch) {
-                query.rating = parseInt(ratingSearch);
+                query.rating = ratingSearch ? parseInt(ratingSearch) : undefined;
+                if (query.rating === undefined) {
+                    delete query.rating; // Remove from query if empty
+                }
             }
             if (statusSearch) {
-                const statusValue = statusSearch === 'Active' ? 1 : (statusSearch === 'Inactive' ? 2 : null);
-                if (statusValue !== null) {
-                    query.status = statusValue;
+                // const statusValue = statusSearch === 'Active' ? 1 : (statusSearch === 'Inactive' ? 2 : null);
+                if (statusSearch !== null) {
+                    query.status = statusSearch;
                 }
             }
             if (createdAtSearch) {

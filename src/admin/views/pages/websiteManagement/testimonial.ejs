@@ -155,8 +155,6 @@
         </div>
     </div>
 </div>
-
-
 <script>
     $(document).ready(function () {
         // Initially hide the search testimonial card using jQuery
@@ -178,7 +176,14 @@
             searching: false, // This line disables the default DataTables search
             ajax: {
                 url: '/testimonial/testimonialList',
-                type: 'POST'
+                type: 'POST',
+                data: function (d) {
+                    d.name = $('#searchName').val();
+                    d.designation = $('#searchDesignation').val();
+                    d.rating = $('#searchRating').val();
+                    d.status = $('#searchStatus').val();
+                    d.createdAt = $('#searchCreatedAt').val();
+                }
             },
             columns: [{
                 data: null,
@@ -214,9 +219,9 @@
             {
                 data: null,
                 render: (data, type, row) => `
-                                        <button class="btn btn-sm btn-warning editTestimonialBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="btn btn-sm btn-danger delTestimonialBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>
-                                    `
+                                            <button class="btn btn-sm btn-warning editTestimonialBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="btn btn-sm btn-danger delTestimonialBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>
+                                        `
             }
             ]
         });
@@ -411,29 +416,7 @@
 
         // --- Custom Search Functionality ---
         $('#searchBtn').on('click', function () {
-            const name = $('#searchName').val();
-            const designation = $('#searchDesignation').val();
-            const rating = $('#searchRating').val();
-            const status = $('#searchStatus').val();
-            const createdAt = $('#searchCreatedAt').val();
-
-            table.column(1).search(name).draw(); // Search Name column (index 1)
-            table.column(2).search(designation).draw(); // Search Designation column (index 2)
-            table.column(4).search(rating).draw(); // Search Rating column (index 4)
-
-            // Search Status column (index 5) - Adjust value to match your data (1 for Active, 2 for Inactive)
-            let statusSearchValue = '';
-            if (status === '1') {
-                statusSearchValue = 'Active';
-            } else if (status === '2') {
-                statusSearchValue = 'Inactive';
-            }
-            table.column(5).search(statusSearchValue).draw();
-
-            // Search Created At column (index 6) - You might need more complex logic for date range searching
-            if (createdAt) {
-                table.column(6).search(new Date(createdAt).toLocaleDateString(), true, false).draw();
-            }
+            table.ajax.reload(); // Reload the DataTable, the search parameters are sent in the ajax.data function
         });
 
         $('#resetBtn').on('click', function () {
@@ -442,7 +425,7 @@
             $('#searchRating').val('');
             $('#searchStatus').val('');
             $('#searchCreatedAt').val('');
-            table.search('').columns().search('').draw(); // Clear all search filters
+            table.ajax.reload(); // Reload to clear all filters
         });
 
         // --- Custom Download All CSV Functionality ---

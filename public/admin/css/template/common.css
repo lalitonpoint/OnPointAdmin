@@ -19,8 +19,3 @@
  .toast-info {
      background-color: #17a2b8 !important;
  }
-
- /* Initially hide the search testimonial div */
- #searchTestimonialsCard {
-     display: none;
- }
