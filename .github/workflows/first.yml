@@ -1,15 +1,7 @@
 name: Deploy OnPoint
 
 on:
-  workflow_dispatch:  # Manually trigger only
-
-
-#on:
- # push:
-  #  branches:
-   #   - main  # Runs when code is pushed to the main branch
-
- # workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:  # Manual trigger only
 
 jobs:
   deploy:
@@ -28,12 +20,10 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd /var/www/html/onpoint/OnPointAdmin
-            # Pull latest changes
-            git pull origin main || git reset --hard origin/main
-            # Install dependencies
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            cd /var/www/html/onpoint/OnPointAdmin || exit 1
+            git fetch --all
+            git reset --hard origin/main
             npm install
-            # Restart PM2 service
             pm2 restart Onadmin
           EOF
