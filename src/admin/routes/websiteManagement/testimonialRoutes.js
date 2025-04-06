@@ -14,6 +14,8 @@ router.delete('/deleteTestimonial/:id', TestimonialCtrl.deleteTestimonial);
 
 router.get('/testimonialManagement', TestimonialCtrl.testmonialPage);
 router.get('/getTestimonial/:id', TestimonialCtrl.getTestimonial);
+router.get('/downloadAllCsv', TestimonialCtrl.downloadAllTestimonialsCsv); // Add this route
+
 
 
 module.exports = router;

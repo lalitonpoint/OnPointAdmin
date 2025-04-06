@@ -1,0 +1,26 @@
+ body {
+     font-family: 'Poppins', sans-serif;
+     background-color: #f8f9fa;
+ }
+
+ .toast-success {
+     background-color: #28a745 !important;
+ }
+
+ .toast-error {
+     background-color: #dc3545 !important;
+ }
+
+ .toast-warning {
+     background-color: #ffc107 !important;
+     color: #000 !important;
+ }
+
+ .toast-info {
+     background-color: #17a2b8 !important;
+ }
+
+ /* Initially hide the search testimonial div */
+ #searchTestimonialsCard {
+     display: none;
+ }

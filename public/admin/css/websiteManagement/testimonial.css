@@ -1,0 +1,33 @@
+.table th,
+.table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.modal-title {
+    font-weight: bold;
+}
+
+.custom-modal {
+    max-width: 70%;
+}
+
+.ck-editor__editable {
+    min-height: 200px !important;
+    /* Adjusted for better fit */
+}
+
+.table-responsive {
+    max-height: 600px;
+    /* Slightly increased for more content */
+    overflow-y: auto;
+}
+
+.btn-pink {
+    background-color: #e91e63;
+    color: white;
+}
+
+.btn-pink:hover {
+    background-color: #c2185b;
+}

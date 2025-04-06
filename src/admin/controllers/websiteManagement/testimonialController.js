@@ -10,9 +10,10 @@ const testmonialPage = (req, res) => {
 // Fetch testimonials (for DataTable)
 const testimonialList = async (req, res) => {
     try {
-        const { start, length, search, columns } = req.body;
+        const { start, length, search, columns, order } = req.body;
         const searchValue = search?.value;
         let query = {};
+        let sort = {};
 
         // Individual column search
         const nameSearch = columns[1]?.search?.value;
@@ -54,7 +55,43 @@ const testimonialList = async (req, res) => {
             }
         }
 
-        const testimonials = await Testimonial.find(query).skip(Number(start)).limit(Number(length));
+        // Add ordering functionality
+        if (order && order.length > 0) {
+            const columnIndex = order[0].column;
+            const sortDirection = order[0].dir === 'asc' ? 1 : -1;
+
+            // Determine the field to sort by based on the column index
+            switch (parseInt(columnIndex)) {
+                case 1: // Name column
+                    sort.name = sortDirection;
+                    break;
+                case 2: // Designation column
+                    sort.designation = sortDirection;
+                    break;
+                case 4: // Rating column
+                    sort.rating = sortDirection;
+                    break;
+                case 5: // Status column
+                    sort.status = sortDirection;
+                    break;
+                case 6: // Created At column
+                    sort.createdAt = sortDirection;
+                    break;
+                default:
+                    // Default sorting if no valid column is specified (e.g., by creation date descending)
+                    sort.createdAt = -1;
+                    break;
+            }
+        } else {
+            // Default sorting if no order is specified (e.g., by creation date descending)
+            sort.createdAt = -1;
+        }
+
+        const testimonials = await Testimonial.find(query)
+            .skip(Number(start))
+            .limit(Number(length))
+            .sort(sort); // Apply the sort order
+
         const totalRecords = await Testimonial.countDocuments();
         const filteredRecords = await Testimonial.countDocuments(query);
 
@@ -217,8 +254,6 @@ const changeStatus = async (req, res) => {
     }
 }
 
-
-
 const getTestimonial = async (req, res) => {
     try {
         const testimonial = await Testimonial.findById(req.params.id);
@@ -229,4 +264,57 @@ const getTestimonial = async (req, res) => {
     }
 };
 
-module.exports = { testmonialPage, getTestimonial, saveTestimonial, editTestimonial, deleteTestimonial, testimonialList, changeStatus };
+const downloadAllTestimonialsCsv = async (req, res) => {
+    try {
+        const testimonials = await Testimonial.find().sort({ createdAt: -1 }); // Fetch all testimonials, sorted by creation date (optional)
+
+        if (testimonials.length === 0) {
+            return res.status(200).send("No testimonials to download.");
+        }
+
+        // Define CSV headers
+        const headers = [
+            "Name",
+            "Designation",
+            "Rating",
+            "Status",
+            "Created At",
+            "Message"
+        ];
+
+        // Convert testimonial data to CSV format
+        const csvRows = testimonials.map(testimonial => [
+            `"${testimonial.name.replace(/"/g, '""')}"`, // Escape double quotes
+            `"${testimonial.designation.replace(/"/g, '""')}"`,
+            testimonial.rating,
+            testimonial.status === 1 ? "Active" : "Inactive",
+            moment(testimonial.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+            `"${testimonial.description.replace(/"/g, '""').replace(/\r?\n|\r/g, ' ')}"` // Escape quotes and replace newlines
+        ].join(","));
+
+        // Combine headers and data rows
+        const csvData = [headers.join(","), ...csvRows].join("\n");
+
+        // Set response headers for CSV download
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="testimonials.csv"');
+
+        // Send the CSV data as the response
+        res.status(200).send(csvData);
+
+    } catch (error) {
+        console.error("Error downloading all testimonials as CSV:", error);
+        res.status(500).send("Error downloading CSV file.");
+    }
+};
+
+module.exports = {
+    testmonialPage,
+    getTestimonial,
+    saveTestimonial,
+    editTestimonial,
+    deleteTestimonial,
+    testimonialList,
+    changeStatus,
+    downloadAllTestimonialsCsv // Export the new function
+};

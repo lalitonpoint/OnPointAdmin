@@ -1,0 +1,7 @@
+  .nav-link i {
+      transition: transform 0.3s;
+  }
+
+  .nav-link[aria-expanded="true"] i.bi-chevron-down {
+      transform: rotate(180deg);
+  }
