@@ -253,7 +253,11 @@ const changeStatus = async (req, res) => {
         res.json({ success: true, message: 'Testimonial status updated successfully', data: updatedTestimonial });
     } catch (error) {
         console.error('Error updating testimonial status:', error);
-        res.status(500).json({ error: error.message });
+        if (error.code === 11000)
+            res.json({ success: false, message: 'Duplicate Value Found' });
+        else
+            res.status(500).json({ message: error.message });
+
     }
 }
 
