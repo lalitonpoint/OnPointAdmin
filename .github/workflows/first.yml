@@ -1,0 +1,63 @@
+name: Deploy OnPointAdmin to Wow Server
+
+on:
+  workflow_dispatch:  # Manually trigger only
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+
+      - name: Deploy OnPointAdmin on Server
+        run: |
+          ssh $SERVER_USER@$SERVER_IP << 'EOF'
+            set -e  # Exit on error
+
+            # Ensure Node.js and npm are available
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+            if ! command -v npm &> /dev/null; then
+              echo "npm not found! Trying to load Node.js..."
+              source ~/.profile
+              source ~/.bashrc
+            fi
+
+            if ! command -v npm &> /dev/null; then
+              echo "npm is still not found. Please check if Node.js is installed."
+              exit 1
+            fi
+
+            cd /var/www/html/onpoint/OnPointAdmin
+
+            # Pull latest code
+            echo "Pulling latest code for OnPointAdmin"
+            git fetch --all
+            git reset --hard origin/main
+            git pull origin main --ff-only
+
+            # Install dependencies
+            echo "Installing dependencies"
+            npm install
+
+            # Restart PM2 process
+            echo "Restarting Onadmin in PM2"
+            pm2 restart Onadmin || pm2 start npm --name "Onadmin" -- start
+          EOF
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
