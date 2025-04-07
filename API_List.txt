@@ -1,0 +1,2 @@
+https://onadmin.onpointlogistics.in/api/web/webdata => Website Management
+https://onadmin.onpointlogistics.in/api/contactus/createContact => Contact Us
