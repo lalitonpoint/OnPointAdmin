@@ -41,7 +41,7 @@ router.use('/configuration', appSettingRoutes);
 router.use('/banner', bannerRoutes);
 router.use('/blogs', blogsRoutes);
 router.use('/gallery', galleryRoutes);
-router.use('/contact', contactRoutes);
+router.use('/contactUs', contactRoutes);
 router.use('/testimonial', testimonialRoutes);
 
 router.use('/document', documentRoutes);

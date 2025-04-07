@@ -39,6 +39,10 @@
                         placeholder="Enter Type of Service">
                 </div>
                 <div class="col-md-3">
+                    <label for="searchCreatedAt" class="form-label">Created At</label>
+                    <input type="date" class="form-control" id="searchCreatedAt">
+                </div>
+                <div class="col-md-3">
                     <div class="d-flex gap-2 align-items-end">
                         <button class="btn btn-primary" id="searchBtn">Search</button>
                         <button class="btn btn-secondary" id="resetBtn">Reset</button>
@@ -91,7 +95,7 @@
             scrollCollapse: true,
             searching: false, // This line disables the default DataTables search
             ajax: {
-                url: '/contactus/contactList', // Update the API endpoint
+                url: '/contactUs/contactList', // Update the API endpoint
                 type: 'POST',
                 data: function (d) {
                     d.name = $('#searchName').val(); // Update parameter name
@@ -99,8 +103,7 @@
                     d.mobile = $('#searchMobile').val(); // Update parameter name
                     d.status = $('#searchStatus').val();
                     d.typeOfService = $('#searchTypeOfService').val(); // Update parameter name
-                    // Remove or comment out the createdAt search if not needed
-                    // d.createdAt = $('#searchCreatedAt').val();
+                    d.createdAt = $('#searchCreatedAt').val(); // Add Created At for search
                 }
             },
             columns: [{
@@ -128,7 +131,8 @@
                 }
             },
             {
-                data: 'message' // Use the correct data field name from your API response
+                data: 'message', // Use the correct data field name from your API response
+                orderable: false // Make the Message column non-sortable
             },
             {
                 data: 'createdAt',
@@ -136,7 +140,7 @@
             }
             ],
             columnDefs: [
-                { orderable: true, targets: [1, 2, 3, 4, 5, 6, 7] } // Enable ordering on relevant columns
+                { orderable: true, targets: [1, 2, 3, 4, 5, 7] } // Enable ordering on Name, Email, Mobile, Type of Service, Status, Created At (index 7)
             ]
         });
 
@@ -151,7 +155,7 @@
             $('#searchMobile').val('');
             $('#searchStatus').val('');
             $('#searchTypeOfService').val('');
-            // $('#searchCreatedAt').val(''); // Remove or comment out if not used
+            $('#searchCreatedAt').val(''); // Clear the calendar input
             table.ajax.reload(); // Reload to clear all filters
         });
 
