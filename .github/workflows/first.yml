@@ -1,4 +1,4 @@
-name: Deploy OnPointAdmin to Wow Server
+name: Deploy OnPointAdmin
 
 on:
   workflow_dispatch:  # Manually trigger only
