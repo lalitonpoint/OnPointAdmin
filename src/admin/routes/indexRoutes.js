@@ -21,6 +21,7 @@ const driverRoutes = require('../routes/driverManagement/driverRoutes'); // Ensu
 const checkLoggedIn = require('../middleware/login/checkLoggedIn'); // Ensure correct path
 const logoutRoutes = require('../routes/login/logoutRoutes'); // Ensure correct path
 const ptlRoutes = require('./vehcileManagement/partialTruckLoadRoutes'); // Ensure correct path
+const serviceRoutes = require('./vehcileManagement/serviceManagementRoutes'); // Ensure correct path
 
 // Use a base path for login routes
 
@@ -46,7 +47,8 @@ router.use('/testimonial', testimonialRoutes);
 router.use('/document', documentRoutes);
 router.use('/driver', driverRoutes);
 
-router.use('/ptl', ptlRoutes);
+router.use('/service', serviceRoutes);
+// router.use('/truck', ptlRoutes);
 
 
 module.exports = router;

@@ -60,29 +60,3 @@ toastr.options = {
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
 };
-
-let ckEditor; // Declare editor outside the create function
-
-ClassicEditor.create(document.querySelector('#testmonial_description'))
-    .then(editor => {
-        ckEditor = editor;
-    })
-    .catch(error => {
-        console.error(error);
-    });
-
-// Image Preview Functionality
-$('.image_view').change(function () {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            $('#imagePreview').attr('src', e.target.result);
-            $('#imagePreviewContainer').show();
-        }
-        reader.readAsDataURL(file);
-    } else {
-        $('#imagePreview').attr('src', '#');
-        $('#imagePreviewContainer').hide();
-    }
-});
