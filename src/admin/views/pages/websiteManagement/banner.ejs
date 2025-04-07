@@ -1,236 +1,477 @@
-<!-- Bootstrap + FontAwesome + DataTable CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
-
-<style>
-    .btn-pink {
-        background-color: #e91e63;
-        color: white;
-    }
-
-    .btn-pink:hover {
-        background-color: #c2185b;
-    }
-
-    .table th,
-    .table td {
-        vertical-align: middle;
-        text-align: center;
-    }
-
-    .modal-title {
-        font-weight: bold;
-    }
-</style>
-
-<div class="container mt-5">
+<link rel="stylesheet" href="/admin/css/websiteManagement/testimonial.css">
+<div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">📢 Banner Management</h3>
-        <button class="btn btn-pink" id="addBannerBtn">
-            <i class="fas fa-plus"></i> Add Banner
-        </button>
+        <h3 class="fw-bold">✨ Banner Management</h3>
+        <div>
+            <button class="btn btn-success me-2" id="downloadAllCsv">
+                <i class="fas fa-download me-2"></i> Download CSV
+            </button>
+            <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#bannerModal">
+                <i class="fas fa-plus me-2"></i> Add Banner
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4" id="searchBannersCard">
+        <div class="card-body">
+            <h5 class="mb-3">Search Banners</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="searchBannerTitle" class="form-label">Banner Title</label>
+                    <input type="text" class="form-control" id="searchBannerTitle" placeholder="Enter Banner Title">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchBannerType" class="form-label">Banner Type</label>
+                    <select id="searchBannerType" class="form-select">
+                        <option value="">All</option>
+                        <option value="1">Image</option>
+                        <option value="2">Video</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="searchStatus" class="form-label">Status</label>
+                    <select id="searchStatus" class="form-select">
+                        <option value="">All</option>
+                        <option value="1">Active</option>
+                        <option value="2">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="searchCreatedAt" class="form-label">Created At</label>
+                    <input type="date" class="form-control" id="searchCreatedAt">
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex gap-2 align-items-end">
+                        <button class="btn btn-primary" id="searchBtn">Search</button>
+                        <button class="btn btn-secondary" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <table id="bannerTable" class="table table-bordered table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Banner Title</th>
-                        <th>Banner Image</th>
-                        <th>Banner Type</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="bannerTable" class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Banner Title</th>
+                            <th>Banner Image/Video</th>
+                            <th>Banner Type</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Add/Edit Banner Modal -->
-<div class="modal fade" id="bannerModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="bannerModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal">
         <div class="modal-content">
-            <form id="bannerForm" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="banner_id" id="banner_id" value="">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Banner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bannerForm">
+                    <input type="hidden" id="bannerId">
 
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Add Banner</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Banner Title</label>
-                        <input type="text" class="form-control" name="title" id="banner_title" required>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="bannerTitle" class="form-label">Banner Title <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="bannerTitle" name="bannerTitle"
+                                placeholder="Enter Banner Title">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="bannerType" class="form-label">Banner Type <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="bannerType" id="bannerType">
+                                <option value="">Select Banner Type</option>
+                                <option value="1">Image</option>
+                                <option value="2">Video</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Banner Image</label>
-                        <input type="file" class="form-control" name="image" id="banner_image" accept="image/*"
-                            required>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status <strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="status" id="status">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="2">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" id="bannerFileLabel">Banner File <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="file" class="form-control banner_file" name="bannerFile" id="bannerFile">
+                            <div id="filePreviewContainer" class="mt-2" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Banner Image Preview"
+                                    style="max-width: 100px; max-height: 100px; display: none;">
+                                <video id="videoPreview" width="200" height="150" controls
+                                    style="display: none;"></video>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Banner Status</label>
-                        <select class="form-select" name="status" id="banner_status" required>
-                            <option value="">Select Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Banner Type</label>
-                        <select class="form-select" name="type" id="banner_type" required>
-                            <option value="">Select Type</option>
-                            <option value="Homepage">Homepage</option>
-                            <option value="Sidebar">Sidebar</option>
-                            <option value="Popup">Popup</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100" id="submitBtn">Save Banner</button>
-                </div>
-            </form>
+                    <button type="submit" class="btn btn-pink w-100">Save</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
-<!-- JS dependencies -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-
 <script>
     $(document).ready(function () {
-        const bannerModal = new bootstrap.Modal(document.getElementById('bannerModal'));
+        // Initially hide the search banner card using jQuery
+        const searchBannersCard = $('#searchBannersCard');
+        searchBannersCard.hide();
 
-        let table = $('#bannerTable').DataTable({
+        // Slide down the search banner card when the page loads
+        $(window).on('load', function () {
+            searchBannersCard.slideDown(1000); // Adjust the duration (in milliseconds) as needed
+        });
+
+        // Function to update banner file label based on banner type
+        $('#bannerType').change(function () {
+            const bannerType = $(this).val();
+            if (bannerType === '1') {
+                $('#bannerFileLabel').text('Banner Image *');
+                $('#bannerFile').attr('accept', 'image/*');
+            } else if (bannerType === '2') {
+                $('#bannerFileLabel').text('Banner Video *');
+                $('#bannerFile').attr('accept', 'video/*');
+            } else {
+                $('#bannerFileLabel').text('Banner File *');
+                $('#bannerFile').removeAttr('accept');
+            }
+            // Hide previews when banner type changes
+            $('#filePreviewContainer').hide();
+            $('#imagePreview').hide();
+            $('#videoPreview').hide();
+            $('#imagePreview').attr('src', '#');
+            $('#videoPreview').attr('src', '#');
+        });
+
+        // Banner File Preview Functionality
+        $('.banner_file').change(function () {
+            const file = this.files[0];
+            const bannerType = $('#bannerType').val();
+            const filePreviewContainer = $('#filePreviewContainer');
+            const imagePreview = $('#imagePreview');
+            const videoPreview = $('#videoPreview');
+
+            if (file) {
+                filePreviewContainer.show();
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (bannerType === '1') {
+                        imagePreview.attr('src', e.target.result).show();
+                        videoPreview.hide();
+                    } else if (bannerType === '2') {
+                        videoPreview.attr('src', e.target.result).show();
+                        imagePreview.hide();
+                    } else {
+                        imagePreview.attr('src', '#').hide();
+                        videoPreview.attr('src', '#').hide();
+                        filePreviewContainer.hide();
+                    }
+                }
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.attr('src', '#').hide();
+                videoPreview.attr('src', '#').hide();
+                filePreviewContainer.hide();
+            }
+        });
+
+        let table = $('#bannerTable').DataTable({ // Initialize DataTable first
             processing: true,
             serverSide: true,
-            ajax: { url: '/banner/bannerList', type: 'POST' },
-            columns: [
-                { data: null, render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1 },
-                { data: 'title' },
-                {
-                    data: 'image',
-                    render: (data) => `<img src="${data}" class="img-thumbnail" width="80">`
-                },
-                { data: 'type' },
-                {
-                    data: 'status',
-                    render: (data) => data === "Active"
-                        ? '<span class="badge bg-success">Active</span>'
-                        : '<span class="badge bg-danger">Inactive</span>'
-                },
-                {
-                    data: null,
-                    render: (data, type, row) => `
-                        <button class="btn btn-sm btn-primary me-2 editBannerBtn" data-banner='${JSON.stringify(row)}'>
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-sm btn-danger delBannerBtn" data-id='${row._id}'>
-                            <i class="fas fa-trash"></i> Delete
-                        </button>`
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            scrollY: "400px",
+            scrollCollapse: true,
+            searching: false, // This line disables the default DataTables search
+            ajax: {
+                url: '/banner/bannerList',
+                type: 'POST',
+                data: function (d) {
+                    d.bannerTitle = $('#searchBannerTitle').val();
+                    d.bannerType = $('#searchBannerType').val();
+                    d.status = $('#searchStatus').val();
+                    d.createdAt = $('#searchCreatedAt').val();
                 }
+            },
+            columns: [{
+                data: null,
+                orderable: false, // Disable ordering for the serial number column
+                render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+            },
+            {
+                data: 'title'
+            },
+            {
+                data: null,
+                orderable: false,
+                render: function (data, type, row) {
+                    if (row.bannerType === 1 && row.bannerFile) {
+                        return `<img src="${row.bannerFile}" class="rounded" width="50" height="50">`;
+                    } else if (row.bannerType === 2 && row.bannerFile) {
+                        return `<video src="${row.bannerFile}" width="50" height="50" controls></video>`;
+                    } else {
+                        return '-';
+                    }
+                }
+            },
+            {
+                data: 'bannerType',
+                orderable: false,
+
+                render: function (data) {
+                    return data === 1 ? 'Image' : (data === 2 ? 'Video' : '-');
+                }
+            },
+            {
+                data: 'status',
+                render: (data, type, row) => {
+                    const statusText = data === 1 ? 'Active' : 'Inactive';
+                    const newStatus = data === 1 ? 2 : 1; // Toggle status
+                    return `<span class="badge ${data === 1 ? 'bg-success' : 'bg-secondary'} changeStatus" data-id='${row._id}' data-status='${newStatus}' style="cursor: pointer;">${statusText}</span>`;
+                }
+            },
+            {
+                data: 'createdAt',
+                render: (data) => new Date(data).toLocaleString()
+            },
+            {
+                data: null,
+                orderable: false,
+                render: (data, type, row) => `
+                            <button class="btn btn-sm btn-warning editBannerBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn btn-sm btn-danger delBannerBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>
+                        `
+            }
+            ],
+            columnDefs: [
+                { orderable: true, targets: [1, 4, 5] } // Enable ordering on Banner Title, Status, Created At
             ]
         });
 
-        // Add Banner Button Click
-        $('#addBannerBtn').click(() => {
-            resetForm();
-            $('#bannerModal .modal-title').text('Add Banner');
-            $('#submitBtn').text('Save Banner');
-            $('#bannerForm').attr('action', '/banner/saveBanner');
-            bannerModal.show();
-        });
 
         $('#bannerModal').on('submit', function (e) {
             e.preventDefault();
-            const form = $('#bannerForm');
-            // const data = new FormData(); // Create an empty FormData object
+            const formElement = document.getElementById('bannerForm');
+            if (formElement) {
+                let isValid = true;
 
-            // data.append('title', $('#banner_title').val());
-            // data.append('status', $('#banner_status').val());
-            // data.append('type', $('#banner_type').val());
-
-            var formData = new FormData($('#bannerForm')[0]);  // Assuming you are using a form
-
-
-
-
-
-            const fileInput = $('#banner_image')[0]; // Get the native DOM element
-            // if (fileInput.files.length > 0) {
-            //     data.append('banner_image', fileInput.files[0]);
-            // }
-
-
-            const actionUrl = $('#blog_id').val() ? '/banner/updateBlog/' + $('#blog_id').val() : '/banner/saveBanner';
-
-            $.ajax({
-                url: actionUrl,
-                type: 'POST',
-                data: formData, // Send the FormData object directly
-                processData: false, // Important for FormData
-                contentType: false, // Important for FormData
-                dataType: 'json',
-                success: function () {
-                    $('#bannerModal').modal('hide'); // Assuming you're using Bootstrap's modal
-                    table.ajax.reload();
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX request failed:", status, error, xhr);
+                const bannerTitle = $('#bannerTitle').val().trim();
+                if (!bannerTitle) {
+                    toastr.error('Banner Title is required.', 'Validation Error');
+                    return;
                 }
-            });
-        });
-        // Edit Banner Button Click
-        $('#bannerTable').on('click', '.editBannerBtn', function () {
-            let banner = $(this).data('banner');
-            $('#banner_id').val(banner._id);
-            $('#banner_title').val(banner.title);
-            $('#banner_status').val(banner.status);
-            $('#banner_type').val(banner.type);
-            $('#bannerModal .modal-title').text('Edit Banner');
-            $('#submitBtn').text('Update Banner');
-            $('#bannerForm').attr('action', '/updateBanner');
-            bannerModal.show();
+
+                const bannerType = $('#bannerType').val();
+                if (!bannerType) {
+                    toastr.error('Banner Type is required.', 'Validation Error');
+                    return;
+                }
+
+                const status = $('#status').val();
+                if (!status) {
+                    toastr.error('Status is required.', 'Validation Error');
+                    return;
+                }
+
+                const bannerFile = $('#bannerFile')[0].files[0];
+                const bannerId = $('#bannerId').val();
+                if (!bannerId && !bannerFile) { // Required on add
+                    toastr.error('Banner File is required when adding a new banner.', 'Validation Error');
+                    return;
+                }
+                if (bannerType === '1' && bannerFile && !bannerFile.type.startsWith('image/')) {
+                    toastr.error('Please upload a valid image file.', 'Validation Error');
+                    return;
+                }
+                if (bannerType === '2' && bannerFile && !bannerFile.type.startsWith('video/')) {
+                    toastr.error('Please upload a valid video file.', 'Validation Error');
+                    return;
+                }
+
+
+                const formData = new FormData(formElement);
+                const id = $('#bannerId').val();
+                const actionUrl = id ? '/banner/editBanner/' + id : '/banner/saveBanner';
+
+                $.ajax({
+                    url: actionUrl,
+                    type: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function () {
+                        $('.btn-close').click();
+                        table.ajax.reload();
+                        $('#bannerForm')[0].reset();
+                        $('#bannerId').val('');
+                        $('#modalTitle').text('Add Banner');
+                        $('#filePreviewContainer').hide();
+                        $('#imagePreview').hide().attr('src', '#');
+                        $('#videoPreview').hide().attr('src', '#');
+                        toastr.success('Banner saved successfully!', 'Success');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed:", status, error, xhr);
+                        toastr.error('An error occurred while saving the banner.', 'Error'); // Use toastr for AJAX error
+                    }
+                });
+            } else {
+                console.error("Error: The form element with ID 'bannerForm' was not found.");
+            }
         });
 
-        // Delete Banner
-        $('#bannerTable').on('click', '.delBannerBtn', function () {
-            const bannerId = $(this).data('id');
-            if (confirm(`Are you sure you want to delete this banner?`)) {
+        $('#bannerModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget); // Button that triggered the modal
+            const id = button.data('id'); // Extract info from data-* attributes
+            const modalTitle = $('#modalTitle');
+            const bannerId = $('#bannerId');
+            const form = $('#bannerForm')[0];
+            const imagePreview = $('#imagePreview');
+            const videoPreview = $('#videoPreview');
+            const filePreviewContainer = $('#filePreviewContainer');
+
+            form.reset(); // Reset the form every time the modal is shown
+            bannerId.val('');
+            imagePreview.attr('src', '#').hide();
+            videoPreview.attr('src', '#').hide();
+            filePreviewContainer.hide();
+            modalTitle.text('Add Banner');
+
+            if (id) {
+                modalTitle.text('Edit Banner');
+                bannerId.val(id);
+                // Fetch banner data and populate the form for editing
                 $.ajax({
-                    url: `/delete-banner/${bannerId}`,
-                    type: 'DELETE',
-                    success: function (response) {
-                        alert(response.message);
-                        table.ajax.reload();
+                    url: '/banner/getBanner/' + id, // Replace with your actual route
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#bannerTitle').val(data.title);
+                        $('#bannerType').val(data.bannerType);
+                        $('#status').val(data.status);
+                        if (data.bannerType === 1 && data.bannerFile) {
+                            filePreviewContainer.show();
+                            imagePreview.attr('src', data.bannerFile).show();
+                            videoPreview.hide();
+                            $('#bannerFileLabel').text('Banner Image *');
+                            $('#bannerFile').removeAttr('required');
+                            $('#bannerFile').attr('accept', 'image/*');
+                        } else if (data.bannerType === 2 && data.bannerFile) {
+                            filePreviewContainer.show();
+                            videoPreview.attr('src', data.bannerFile).show();
+                            imagePreview.hide();
+                            $('#bannerFileLabel').text('Banner Video *');
+                            $('#bannerFile').removeAttr('required');
+                            $('#bannerFile').attr('accept', 'video/*');
+                        } else {
+                            filePreviewContainer.hide();
+                            imagePreview.hide();
+                            videoPreview.hide();
+                            $('#bannerFileLabel').text('Banner File *');
+                            $('#bannerFile').removeAttr('accept');
+                        }
                     },
-                    error: function () {
-                        alert('Failed to delete banner');
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching banner:", status, error, xhr);
+                        toastr.error('Error fetching banner data for editing.', 'Error');
                     }
                 });
             }
         });
 
-        // Reset form on modal hide
-        $('#bannerModal').on('hidden.bs.modal', function () {
-            resetForm();
+        // Event delegation for Edit button
+        $('#bannerTable').on('click', '.editBannerBtn', function () {
+            const bannerId = $(this).data('id');
+            $('#bannerModal').modal('show', this); // Pass the button element for context
         });
 
-        function resetForm() {
-            $('#bannerForm')[0].reset();
-            $('#banner_id').val('');
-            $('#bannerModal .modal-title').text('Add Banner');
-            $('#submitBtn').text('Save Banner');
-            $('#bannerForm').attr('action', '/banner/saveBanner');
-        }
+        // Event delegation for Delete button
+        $('#bannerTable').on('click', '.delBannerBtn', function () {
+            const bannerId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this banner?')) {
+                $.ajax({
+                    url: '/banner/deleteBanner/' + bannerId, // Replace with your actual delete route
+                    type: 'delete',
+                    dataType: 'json',
+                    success: function () {
+                        table.ajax.reload();
+                        toastr.success('Banner deleted successfully!', 'Success');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting banner:", status, error, xhr);
+                        toastr.error('Error deleting banner.', 'Error');
+                    }
+                });
+            }
+        });
+        $('#bannerTable').on('click', '.changeStatus', function () {
+            const bannerId = $(this).data('id');
+            const newStatus = $(this).data('status'); // Get the new status from the data attribute
+            const statusText = parseInt(newStatus) === 1 ? 'Active' : 'Inactive'; // For confirmation message
+
+            if (confirm(`Are you sure you want to set the status to ${statusText}?`)) {
+                $.ajax({
+                    url: '/banner/changeStatus/' + bannerId,
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json', // Important for sending JSON data in the body
+                    data: JSON.stringify({ status: newStatus }), // Send the new status in the request body
+                    success: function (response) {
+                        if (response.success) {
+                            table.ajax.reload();
+                            toastr.success(response.message, 'Success');
+                        } else {
+                            toastr.error(response.message || 'Failed to change status.', 'Error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error changing status:", status, error, xhr);
+                        toastr.error('Error changing status.', 'Error');
+                    }
+                });
+            }
+        });
+        // Prevent modal from staying open on form submission error (if any)
+        $('#bannerModal').on('hidden.bs.modal', function () {
+            $(this).find('.is-invalid').removeClass('is-invalid');
+            $(this).find('.invalid-feedback').remove();
+        });
+
+        // --- Custom Search Functionality ---
+        $('#searchBtn').on('click', function () {
+            table.ajax.reload(); // Reload the DataTable, the search parameters are sent in the ajax.data function
+        });
+
+        $('#resetBtn').on('click', function () {
+            $('#searchBannerTitle').val('');
+            $('#searchBannerType').val('');
+            $('#searchStatus').val('');
+            $('#searchCreatedAt').val('');
+            table.ajax.reload(); // Reload to clear all filters
+        });
+
+        // --- Custom Download All CSV Functionality ---
+        $('#downloadAllCsv').on('click', function () {
+            window.location.href = '/banner/downloadAllCsv'; // Trigger a download by navigating to the URL
+        });
     });
 </script>
