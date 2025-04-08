@@ -1,4 +1,4 @@
-const Contact = require('../../../api/models/contactUsModel');
+const Contact = require('../../../api/web/models/contactUsModel');
 const moment = require('moment'); // For date manipulation if needed
 
 const contactUsPage = (req, res) => {
