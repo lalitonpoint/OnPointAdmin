@@ -1,6 +1,7 @@
 const twilio = require('twilio');
 const { generateOTP } = require('../utils/generateOtp');
 const { isValidPhoneNumber, parsePhoneNumber, ParseError } = require('libphonenumber-js');
+const User = require('../../user/models/userModal'); // Adjust path as needed
 
 const accountSid = process.env.SMS_ACCOUNT_ID; // Assuming you are using environment variables
 const authToken = process.env.SMS_AUTH_TOKEN;
@@ -60,9 +61,9 @@ const sendOtp = async (req, res) => {
         otpStorage[formattedMobileNumber] = otp;
         console.log(`Generated OTP for ${formattedMobileNumber}: ${otp}`);
 
-
         res.status(200).json({ status: true, message: 'OTP sent successfully.', otp: otp });
         return;
+
 
         try {
             const message = await client.messages.create({
@@ -72,16 +73,16 @@ const sendOtp = async (req, res) => {
             });
 
             console.log(`OTP sent to ${formattedMobileNumber} with SID: ${message.sid}`);
-            res.status(200).json({ status: true, message: 'OTP sent successfully.' });
+            return res.status(200).json({ status: true, message: 'OTP sent successfully.' });
 
         } catch (error) {
             console.error('Error sending OTP via SMS:', error);
-            res.status(500).json({ status: false, error: 'Failed to send OTP via SMS.' });
+            return res.status(500).json({ status: false, error: 'Failed to send OTP via SMS.' });
         }
 
     } catch (error) {
         console.error('Error in sendOtp function:', error);
-        res.status(500).json({ status: false, error: 'An unexpected error occurred.' });
+        return res.status(500).json({ status: false, error: 'An unexpected error occurred.' });
     }
 };
 const verifyOtp = async (req, res) => {
@@ -135,12 +136,24 @@ const verifyOtp = async (req, res) => {
             return res.status(404).json({ status: false, error: 'OTP not found for this mobile number or has expired.' });
         }
 
-        if ((otp === storedOTP) || otp == 123456) {
+        if (otp === storedOTP) {
             // OTP is valid
             console.log(`OTP verified successfully for ${formattedMobileNumber}`);
-            delete otpStorage[formattedMobileNumber]; // Remove OTP after successful verification
-            return res.json({ status: true, message: 'OTP verified successfully.' });
-            // Here you would typically generate a session token or log the user in
+            delete otpStorage[formattedMobileNumber]; // Remove OTP
+
+            // **Check if the mobile number is registered in the database**
+            const user = await User.findOne({ mobileNumber: formattedMobileNumber });
+
+            if (user) {
+                // Mobile number is registered, proceed with login
+                const jwt = require('jsonwebtoken');
+                const secretKey = process.env.JWT_SECRET || 'your-secret-key'; // Use a strong, environment-based secret
+                const token = jwt.sign({ userId: user._id, mobileNumber: user.mobileNumber }, secretKey, { expiresIn: '1h' }); // Adjust expiry as needed
+                return res.json({ status: true, message: 'OTP verified and login successful.', token: token, isRegistered: true });
+            } else {
+                // Mobile number is not registered
+                return res.status(200).json({ status: true, error: 'OTP verified But Mobile number is not registered.', isRegistered: 0 });
+            }
         } else {
             // OTP is invalid
             console.log(`Invalid OTP entered for ${formattedMobileNumber}`);
@@ -148,7 +161,7 @@ const verifyOtp = async (req, res) => {
         }
     } catch (error) {
         console.error('Error during OTP verification:', error);
-        return res.status(500).json({ status: false, error: 'An unexpected error occurred during OTP verification.' });
+        return res.status(500).json({ status: false, error: 'An unexpected error occurred during OTP verification.', isRegistered: false }); // Default to 0 in case of an error during the check
     }
 };
 
