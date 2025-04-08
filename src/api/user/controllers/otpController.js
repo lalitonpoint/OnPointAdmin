@@ -1,5 +1,6 @@
 const twilio = require('twilio');
 const { generateOTP } = require('../utils/generateOtp');
+const { isValidPhoneNumber, parsePhoneNumber, ParseError } = require('libphonenumber-js');
 
 const accountSid = process.env.SMS_ACCOUNT_ID; // Assuming you are using environment variables
 const authToken = process.env.SMS_AUTH_TOKEN;
@@ -17,32 +18,56 @@ const sendOtp = async (req, res) => {
         }
 
         let formattedMobileNumber = mobileNumber;
-        const startsWithPlus = formattedMobileNumber.startsWith('+');
+        let countryCode = null;
 
-        if (!startsWithPlus) {
-            formattedMobileNumber = '+91' + formattedMobileNumber; // Assuming India if no country code
-        }
+        try {
+            // Try to parse the number to extract the country code if present
+            const parsedNumber = parsePhoneNumber(mobileNumber);
 
-        // Basic validation for mobile number format
-        const mobileNumberRegex = /^\+\d{1,15}$/; // Matches '+' followed by 1 to 15 digits
-        if (!mobileNumberRegex.test(formattedMobileNumber)) {
-            return res.status(400).json({ status: false, error: 'Invalid mobile number format. Please include the country code (e.g., +91XXXXXXXXXX).' });
+            if (parsedNumber && parsedNumber.isValid()) {
+                formattedMobileNumber = parsedNumber.formatInternational(); // Format to international standard
+                countryCode = parsedNumber.country;
+            } else {
+                // If parsing fails, try your default assumption (India)
+                if (!formattedMobileNumber.startsWith('+')) {
+                    formattedMobileNumber = '+91' + formattedMobileNumber;
+                }
+                const parsedWithDefault = parsePhoneNumber(formattedMobileNumber);
+                if (parsedWithDefault && parsedWithDefault.isValid()) {
+                    formattedMobileNumber = parsedWithDefault.formatInternational();
+                    countryCode = parsedWithDefault.country;
+                } else {
+                    return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
+                }
+            }
+
+            // More explicit validation using isValidPhoneNumber
+            if (!isValidPhoneNumber(formattedMobileNumber)) {
+                return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
+            }
+        } catch (error) {
+            if (error instanceof ParseError && error.message === 'TOO_SHORT') {
+                return res.status(400).json({ status: false, error: 'Mobile number is too short.' });
+            }
+            // Handle other parsing errors if needed
+            console.error('Error during mobile number parsing:', error);
+            return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
         }
 
         const otp = generateOTP();
 
         // Store the OTP temporarily
         otpStorage[formattedMobileNumber] = otp;
-        console.log(`Generated OTP for ${formattedMobileNumber}: ${otp}`); // For debugging
+        console.log(`Generated OTP for ${formattedMobileNumber}: ${otp}`);
+
 
         res.status(200).json({ status: true, message: 'OTP sent successfully.', otp: otp });
         return;
 
-        // Attempt to send OTP via SMS
         try {
             const message = await client.messages.create({
                 body: `Your OTP for login is: ${otp}`,
-                to: formattedMobileNumber, // Using the formatted number
+                to: formattedMobileNumber,
                 from: twilioPhoneNumber,
             });
 
@@ -68,16 +93,40 @@ const verifyOtp = async (req, res) => {
         }
 
         let formattedMobileNumber = mobileNumber;
-        const startsWithPlus = formattedMobileNumber.startsWith('+');
+        let countryCode = null;
 
-        if (!startsWithPlus) {
-            formattedMobileNumber = '+91' + formattedMobileNumber; // Assuming India if no country code
-        }
+        try {
+            // Try to parse the number to extract the country code if present
+            const parsedNumber = parsePhoneNumber(mobileNumber);
 
-        // Basic validation for mobile number format
-        const mobileNumberRegex = /^\+\d{1,15}$/; // Matches '+' followed by 1 to 15 digits
-        if (!mobileNumberRegex.test(formattedMobileNumber)) {
-            return res.status(400).json({ status: false, error: 'Invalid mobile number format. Please include the country code (e.g., +91XXXXXXXXXX).' });
+            if (parsedNumber && parsedNumber.isValid()) {
+                formattedMobileNumber = parsedNumber.formatInternational(); // Format to international standard
+                countryCode = parsedNumber.country;
+            } else {
+                // If parsing fails, try your default assumption (India)
+                if (!formattedMobileNumber.startsWith('+')) {
+                    formattedMobileNumber = '+91' + formattedMobileNumber;
+                }
+                const parsedWithDefault = parsePhoneNumber(formattedMobileNumber);
+                if (parsedWithDefault && parsedWithDefault.isValid()) {
+                    formattedMobileNumber = parsedWithDefault.formatInternational();
+                    countryCode = parsedWithDefault.country;
+                } else {
+                    return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
+                }
+            }
+
+            // More explicit validation using isValidPhoneNumber
+            if (!isValidPhoneNumber(formattedMobileNumber)) {
+                return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
+            }
+        } catch (error) {
+            if (error instanceof ParseError && error.message === 'TOO_SHORT') {
+                return res.status(400).json({ status: false, error: 'Mobile number is too short.' });
+            }
+            // Handle other parsing errors if needed
+            console.error('Error during mobile number parsing:', error);
+            return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
         }
 
         const storedOTP = otpStorage[formattedMobileNumber];
@@ -90,17 +139,17 @@ const verifyOtp = async (req, res) => {
             // OTP is valid
             console.log(`OTP verified successfully for ${formattedMobileNumber}`);
             delete otpStorage[formattedMobileNumber]; // Remove OTP after successful verification
-            res.json({ status: true, message: 'OTP verified successfully.' });
+            return res.json({ status: true, message: 'OTP verified successfully.' });
             // Here you would typically generate a session token or log the user in
         } else {
             // OTP is invalid
             console.log(`Invalid OTP entered for ${formattedMobileNumber}`);
-            res.status(401).json({ status: false, error: 'Invalid OTP.' });
+            return res.status(401).json({ status: false, error: 'Invalid OTP.' });
         }
     } catch (error) {
         console.error('Error during OTP verification:', error);
-        res.status(500).json({ status: false, error: 'An unexpected error occurred during OTP verification.' });
+        return res.status(500).json({ status: false, error: 'An unexpected error occurred during OTP verification.' });
     }
 };
 
-module.exports = { sendOtp, verifyOtp }
+module.exports = { sendOtp, verifyOtp };
