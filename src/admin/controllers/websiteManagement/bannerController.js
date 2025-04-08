@@ -11,7 +11,7 @@ const bannerPage = (req, res) => {
 // Banner list (POST request to fetch the list of banners with pagination and search)
 const bannerList = async (req, res) => {
     try {
-        const { start, length, search, columns, order } = req.body;
+        const { start, length, search, order, columns } = req.body;
         const searchValue = search?.value;
         let query = {};
         let sort = {};
