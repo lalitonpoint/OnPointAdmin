@@ -117,6 +117,7 @@ const verifyOtp = async (req, res) => {
                 message: 'OTP verified and login successful.',
                 token,
                 isRegistered: true,
+                user: user
             });
         } else {
             return res.status(200).json({
