@@ -1,167 +1,136 @@
 const twilio = require('twilio');
+const jwt = require('jsonwebtoken');
 const { generateOTP } = require('../utils/generateOtp');
-const { isValidPhoneNumber, parsePhoneNumber, ParseError } = require('libphonenumber-js');
-const User = require('../../user/models/userModal'); // Adjust path as needed
+const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
+const User = require('../../user/models/userModal');
 
-const accountSid = process.env.SMS_ACCOUNT_ID; // Assuming you are using environment variables
+const accountSid = process.env.SMS_ACCOUNT_ID;
 const authToken = process.env.SMS_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.SMS_TWILIO_PHONE_NO;
+const secretKey = process.env.JWT_SECRET;
 
 const client = new twilio(accountSid, authToken);
 
-const otpStorage = {};
+const otpStorage = {}; // Use Redis for production
+
+const formatMobile = (countryCode, mobileNumber) => {
+    try {
+        const fullNumber = `${countryCode}${mobileNumber}`;
+        const parsed = parsePhoneNumber(fullNumber);
+        if (parsed && parsed.isValid()) {
+            return {
+                formatted: parsed.number, // E.164 format: +919354978804
+                countryCode: parsed.countryCallingCode,
+                nationalNumber: parsed.nationalNumber,
+            };
+        }
+        return null;
+    } catch (error) {
+        return null;
+    }
+};
+
 const sendOtp = async (req, res) => {
     try {
-        const { mobileNumber } = req.body;
+        const { countryCode, mobileNumber } = req.body;
 
-        if (!mobileNumber) {
-            return res.status(400).json({ status: false, error: 'Mobile number is required.' });
+        if (!countryCode || !mobileNumber) {
+            return res.status(400).json({ status: false, error: 'Country code and mobile number are required.' });
         }
 
-        let formattedMobileNumber = mobileNumber;
-        let countryCode = null;
+        const parsed = formatMobile(countryCode, mobileNumber);
 
-        try {
-            // Try to parse the number to extract the country code if present
-            const parsedNumber = parsePhoneNumber(mobileNumber);
-
-            if (parsedNumber && parsedNumber.isValid()) {
-                formattedMobileNumber = parsedNumber.formatInternational(); // Format to international standard
-                countryCode = parsedNumber.country;
-            } else {
-                // If parsing fails, try your default assumption (India)
-                if (!formattedMobileNumber.startsWith('+')) {
-                    formattedMobileNumber = '+91' + formattedMobileNumber;
-                }
-                const parsedWithDefault = parsePhoneNumber(formattedMobileNumber);
-                if (parsedWithDefault && parsedWithDefault.isValid()) {
-                    formattedMobileNumber = parsedWithDefault.formatInternational();
-                    countryCode = parsedWithDefault.country;
-                } else {
-                    return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
-                }
-            }
-
-            // More explicit validation using isValidPhoneNumber
-            if (!isValidPhoneNumber(formattedMobileNumber)) {
-                return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
-            }
-        } catch (error) {
-            if (error instanceof ParseError && error.message === 'TOO_SHORT') {
-                return res.status(400).json({ status: false, error: 'Mobile number is too short.' });
-            }
-            // Handle other parsing errors if needed
-            console.error('Error during mobile number parsing:', error);
+        if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
             return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
         }
 
         const otp = generateOTP();
+        otpStorage[parsed.formatted] = otp;
 
-        // Store the OTP temporarily
-        otpStorage[formattedMobileNumber] = otp;
-        console.log(`Generated OTP for ${formattedMobileNumber}: ${otp}`);
-
-        res.status(200).json({ status: true, message: 'OTP sent successfully.', otp: otp });
+        console.log(`Generated OTP for ${parsed.formatted}: ${otp}`);
+        res.status(200).json({ status: true, message: 'OTP sent successfully on ' + parsed.formatted, otp: otp });
         return;
-
 
         try {
             const message = await client.messages.create({
                 body: `Your OTP for login is: ${otp}`,
-                to: formattedMobileNumber,
+                to: parsed.formatted,
                 from: twilioPhoneNumber,
             });
 
-            console.log(`OTP sent to ${formattedMobileNumber} with SID: ${message.sid}`);
+            console.log(`OTP sent to ${parsed.formatted}, SID: ${message.sid}`);
             return res.status(200).json({ status: true, message: 'OTP sent successfully.' });
-
         } catch (error) {
-            console.error('Error sending OTP via SMS:', error);
+            console.error('Twilio Error:', error);
             return res.status(500).json({ status: false, error: 'Failed to send OTP via SMS.' });
         }
 
     } catch (error) {
-        console.error('Error in sendOtp function:', error);
-        return res.status(500).json({ status: false, error: 'An unexpected error occurred.' });
+        console.error('sendOtp Error:', error);
+        return res.status(500).json({ status: false, error: 'Unexpected error in sending OTP.' });
     }
 };
+
 const verifyOtp = async (req, res) => {
     try {
-        const { mobileNumber, otp } = req.body;
+        const { countryCode, mobileNumber, otp } = req.body;
 
-        if (!mobileNumber || !otp) {
-            return res.status(400).json({ status: false, error: 'Mobile number and OTP are required.' });
+        if (!countryCode || !mobileNumber || !otp) {
+            return res.status(400).json({ status: false, error: 'Country code, mobile number and OTP are required.' });
         }
 
-        let formattedMobileNumber = mobileNumber;
-        let countryCode = null;
+        const parsed = formatMobile(countryCode, mobileNumber);
 
-        try {
-            // Try to parse the number to extract the country code if present
-            const parsedNumber = parsePhoneNumber(mobileNumber);
-
-            if (parsedNumber && parsedNumber.isValid()) {
-                formattedMobileNumber = parsedNumber.formatInternational(); // Format to international standard
-                countryCode = parsedNumber.country;
-            } else {
-                // If parsing fails, try your default assumption (India)
-                if (!formattedMobileNumber.startsWith('+')) {
-                    formattedMobileNumber = '+91' + formattedMobileNumber;
-                }
-                const parsedWithDefault = parsePhoneNumber(formattedMobileNumber);
-                if (parsedWithDefault && parsedWithDefault.isValid()) {
-                    formattedMobileNumber = parsedWithDefault.formatInternational();
-                    countryCode = parsedWithDefault.country;
-                } else {
-                    return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
-                }
-            }
-
-            // More explicit validation using isValidPhoneNumber
-            if (!isValidPhoneNumber(formattedMobileNumber)) {
-                return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
-            }
-        } catch (error) {
-            if (error instanceof ParseError && error.message === 'TOO_SHORT') {
-                return res.status(400).json({ status: false, error: 'Mobile number is too short.' });
-            }
-            // Handle other parsing errors if needed
-            console.error('Error during mobile number parsing:', error);
+        if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
             return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
         }
 
-        const storedOTP = otpStorage[formattedMobileNumber];
+        const storedOTP = otpStorage[parsed.formatted];
 
         if (!storedOTP) {
-            return res.status(404).json({ status: false, error: 'OTP not found for this mobile number or has expired.' });
+            return res.status(404).json({ status: false, error: 'OTP expired or not found.' });
         }
 
-        if (otp === storedOTP) {
-            // OTP is valid
-            console.log(`OTP verified successfully for ${formattedMobileNumber}`);
-            delete otpStorage[formattedMobileNumber]; // Remove OTP
-
-            // **Check if the mobile number is registered in the database**
-            const user = await User.findOne({ mobileNumber: formattedMobileNumber });
-
-            if (user) {
-                // Mobile number is registered, proceed with login
-                const jwt = require('jsonwebtoken');
-                const secretKey = process.env.JWT_SECRET || 'your-secret-key'; // Use a strong, environment-based secret
-                const token = jwt.sign({ userId: user._id, mobileNumber: user.mobileNumber }, secretKey, { expiresIn: '1h' }); // Adjust expiry as needed
-                return res.json({ status: true, message: 'OTP verified and login successful.', token: token, isRegistered: true });
-            } else {
-                // Mobile number is not registered
-                return res.status(200).json({ status: true, error: 'OTP verified But Mobile number is not registered.', isRegistered: 0 });
-            }
-        } else {
-            // OTP is invalid
-            console.log(`Invalid OTP entered for ${formattedMobileNumber}`);
+        if (otp !== storedOTP) {
             return res.status(401).json({ status: false, error: 'Invalid OTP.' });
         }
+
+        delete otpStorage[parsed.formatted];
+        console.log(`OTP verified for ${parsed.formatted}`);
+
+        const user = await User.findOne({
+            countryCode,
+            mobileNumber,
+        });
+
+        if (user) {
+            const token = jwt.sign(
+                { userId: user._id, mobileNumber: user.mobileNumber },
+                secretKey,
+                { expiresIn: '7d' }
+            );
+
+            return res.status(200).json({
+                status: true,
+                message: 'OTP verified and login successful.',
+                token,
+                isRegistered: true,
+            });
+        } else {
+            return res.status(200).json({
+                status: true,
+                error: 'OTP verified but mobile number is not registered.',
+                isRegistered: false,
+            });
+        }
+
     } catch (error) {
-        console.error('Error during OTP verification:', error);
-        return res.status(500).json({ status: false, error: 'An unexpected error occurred during OTP verification.', isRegistered: false }); // Default to 0 in case of an error during the check
+        console.error('verifyOtp Error:', error);
+        return res.status(500).json({
+            status: false,
+            error: 'Unexpected error in OTP verification.',
+            isRegistered: false,
+        });
     }
 };
 
