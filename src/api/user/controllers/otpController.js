@@ -121,7 +121,7 @@ const verifyOtp = async (req, res) => {
         } else {
             return res.status(200).json({
                 status: true,
-                error: 'OTP verified but mobile number is not registered.',
+                message: 'OTP verified but mobile number is not registered.',
                 isRegistered: false,
             });
         }
