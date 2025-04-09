@@ -129,6 +129,7 @@ const verifyOtp = async (req, res) => {
         return res.status(500).json({
             status: false,
             error: 'Unexpected error in OTP verification.',
+            msg: error,
             isRegistered: false,
         });
     }
