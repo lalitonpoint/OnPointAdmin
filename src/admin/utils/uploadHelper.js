@@ -32,6 +32,7 @@ const uploadImage = async (file) => {
 
         return { success: true, url: s3Upload.Location };
     } catch (error) {
+        console.log('err', error.message)
         return { success: false, path: `/uploads/${file.filename}` };
     }
 };

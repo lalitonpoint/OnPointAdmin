@@ -3,92 +3,115 @@ const { uploadImage } = require("../../../admin/utils/uploadHelper");
 const multiparty = require('multiparty');
 const fs = require('fs').promises;
 
+// Utility function for normalizing and validating gender
+function normalizeGender(gender) {
+    const g = gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
+    const allowed = ['Male', 'Female', 'Other', 'Prefer not to say'];
+    return allowed.includes(g) ? g : null;
+}
+
 const createUser = async (req, res) => {
     const form = new multiparty.Form();
+
+    // Optional: limit file size to 5MB (can adjust as needed)
+    form.maxFilesSize = 5 * 1024 * 1024;
 
     form.parse(req, async (err, fields, files) => {
         if (err) {
             return res.status(400).json({ status: false, error: 'Failed to parse form data.' });
         }
 
+        // console.log('FIELDS:', fields);
+        // console.log('FILES:', files);
+
         const {
-            fullName: [fullName],
-            emailAddress: [emailAddress],
-            countryCode: [countryCode],
-            mobileNumber: [mobileNumber],
-            gender: [rawGender],
-            companyName: [companyName] = [''],
-            gstNumber: [gstNumber] = ['']
+            fullName = [],
+            emailAddress = [],
+            countryCode = [],
+            mobileNumber = [],
+            gender: rawGender = [],
+            companyName = [''],
+            gstNumber = ['']
         } = fields;
 
-        // Check for required fields
-        if (!fullName || !emailAddress || !countryCode || !mobileNumber || !rawGender) {
+        const [fName] = fullName;
+        const [email] = emailAddress;
+        const [code] = countryCode;
+        const [mobile] = mobileNumber;
+        const [g] = rawGender;
+
+        if (!fName || !email || !code || !mobile || !g) {
             return res.status(400).json({ status: false, error: 'Missing required fields.' });
         }
 
-        // Validate gender
-        const gender = rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase();
-        const allowedGenders = ['Male', 'Female', 'Other', 'Prefer not to say'];
-        if (!allowedGenders.includes(gender)) {
+        const gender = normalizeGender(g);
+        if (!gender) {
             return res.status(400).json({ status: false, error: 'Invalid gender value.' });
         }
 
         try {
-            // Check email or mobile duplication
             const existingUser = await User.findOne({
                 $or: [
-                    { emailAddress: emailAddress },
-                    { mobileNumber: mobileNumber }
+                    { emailAddress: email },
+                    { mobileNumber: mobile }
                 ]
             });
 
             if (existingUser) {
                 return res.status(409).json({
                     status: false,
-                    error: existingUser.emailAddress === emailAddress
+                    error: existingUser.emailAddress === email
                         ? 'Email already exists.'
                         : 'Mobile number already exists.'
                 });
             }
 
-            // Handle profile picture upload
             let profilePictureUrl = '';
             if (files?.profilePicture?.length > 0) {
                 const file = files.profilePicture[0];
                 const tempFile = {
                     path: file.path,
-                    originalname: file.originalFilename,
-                    mimetype: file.headers['content-type'],
+                    originalFilename: file.originalFilename,
+                    mimetype: file.headers?.['content-type'] || 'application/octet-stream',
                     size: file.size,
                 };
 
                 const result = await uploadImage(tempFile);
                 if (result.success) {
                     profilePictureUrl = result.url;
-                    await fs.unlink(file.path); // remove temp file
+                    // console.log('Uploaded URL:', profilePictureUrl);
                 } else {
                     return res.status(500).json({ status: false, error: 'Profile picture upload failed.' });
                 }
             }
 
-            // Save new user
             const newUser = new User({
-                fullName,
-                emailAddress,
-                countryCode,
-                mobileNumber,
+                fullName: fName,
+                emailAddress: email,
+                countryCode: code,
+                mobileNumber: mobile,
                 gender,
-                companyName,
-                gstNumber,
+                companyName: companyName[0] || '',
+                gstNumber: gstNumber[0] || '',
                 profilePicture: profilePictureUrl,
                 status: 'Active',
             });
 
             const savedUser = await newUser.save();
-            return res.status(201).json({ status: true, message: 'User created successfully.', user: savedUser });
+
+            return res.status(201).json({
+                status: true,
+                message: 'User created successfully.',
+                user: savedUser
+            });
 
         } catch (error) {
-            return res.status(500).json({ status: false, error: 'Internal server error.', details: error.message });
+            // console.error('Error in createUser:', error.message, error.stack);
+            return res.status(500).json({
+                status: false,
+                error: 'Internal server error.',
+                details: error.message,
+            });
         }
     });
 };
