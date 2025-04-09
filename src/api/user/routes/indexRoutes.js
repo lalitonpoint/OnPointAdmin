@@ -7,7 +7,7 @@ const servicesRoutes = require('./serviceRoutes');
 const { verifyToken } = require('../middleware/authentication');
 router.use('/otp', sendOtpRoutes);
 
-router.use('/user', userRoutes);
-router.use('/service', servicesRoutes);
+router.use('/user', verifyToken, userRoutes);
+router.use('/service', verifyToken, servicesRoutes);
 
 module.exports = router;
