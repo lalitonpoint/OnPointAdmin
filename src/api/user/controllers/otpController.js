@@ -76,31 +76,33 @@ const verifyOtp = async (req, res) => {
         const { countryCode, mobileNumber, otp } = req.body;
 
         if (!countryCode || !mobileNumber || !otp) {
-            return res.status(400).json({ status: false, error: 'Country code, mobile number and OTP are required.' });
+            return res.status(400).json({ status: false, error: 'Country code, mobile number and OTP are required.', isRegistered: false });
         }
 
         const parsed = formatMobile(countryCode, mobileNumber);
 
         if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
-            return res.status(400).json({ status: false, error: 'Invalid mobile number format.' });
+            return res.status(400).json({ status: false, error: 'Invalid mobile number format.', isRegistered: false });
         }
 
         const storedOTP = otpStorage[parsed.formatted];
 
         if (!storedOTP) {
-            return res.status(404).json({ status: false, error: 'OTP expired or not found.' });
+            return res.status(404).json({ status: false, error: 'OTP expired or not found.', isRegistered: false });
         }
 
         if (otp !== storedOTP) {
-            return res.status(401).json({ status: false, error: 'Invalid OTP.' });
+            return res.status(401).json({ status: false, error: 'Invalid OTP.', isRegistered: false });
         }
 
+        // OTP is valid, delete from storage
         delete otpStorage[parsed.formatted];
         console.log(`OTP verified for ${parsed.formatted}`);
 
+        // Now look for the user
         const user = await User.findOne({
-            countryCode,
-            mobileNumber,
+            countryCode: countryCode.replace('+', ''), // assuming in DB it's saved like "91"
+            mobileNumber
         });
 
         if (user) {
@@ -125,14 +127,15 @@ const verifyOtp = async (req, res) => {
         }
 
     } catch (error) {
-        console.error('verifyOtp Error:', error);
+        console.error('verifyOtp Error:', error.message); // Log specific error
         return res.status(500).json({
             status: false,
             error: 'Unexpected error in OTP verification.',
-            msg: error,
+            msg: error.message,
             isRegistered: false,
         });
     }
 };
+
 
 module.exports = { sendOtp, verifyOtp };
