@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema({
     }, emailAddress: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
         lowercase: true,
         index: true,
@@ -23,7 +22,6 @@ const userSchema = new mongoose.Schema({
     mobileNumber: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
     },
     gender: {
@@ -41,11 +39,8 @@ const userSchema = new mongoose.Schema({
         trim: true,
         default: ''
     },
-    status: {
-        type: String,
-        enum: ['Active', 'Inactive'],
-        default: 'Active'
-    },
+    status: { type: Number, enum: [1, 2, 3], default: 1 } // 1 = Active, 2 = Inactive , 3 => Delete
+    ,
     profilePicture: {
         type: String,
         default: ''

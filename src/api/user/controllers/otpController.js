@@ -102,7 +102,9 @@ const verifyOtp = async (req, res) => {
         // Now look for the user
         const user = await User.findOne({
             countryCode, // assuming in DB it's saved like "91"
-            mobileNumber
+            mobileNumber,
+            status: { $ne: 3 }
+
         });
 
         if (user) {
