@@ -1,0 +1,291 @@
+<link rel="stylesheet" href="/admin/css/faqManagement/faq.css">
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">✨ FAQ Management</h3>
+        <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#FaqModal">
+            <i class="fas fa-plus me-2"></i> Add FAQ
+        </button>
+    </div>
+
+    <div class="card shadow-sm mb-4" id="searchFaqCard">
+        <div class="card-body">
+            <h5 class="mb-3">Search FAQ</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="searchFaqTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="searchFaqTitle" placeholder="Enter Faq Title">
+                </div>
+                <div class="col-md-4">
+                    <label for="searchFaqtatus" class="form-label">Status</label>
+                    <select id="searchFaqtatus" class="form-select">
+                        <option value="">All</option>
+                        <option value="1">Active</option>
+                        <option value="2">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="searchCreatedAt" class="form-label">Created At</label>
+                    <input type="date" class="form-control" id="searchCreatedAt">
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex gap-2 align-items-end">
+                        <button class="btn btn-primary" id="searchBtn">Search</button>
+                        <button class="btn btn-secondary" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="FaqTable" class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Faq Title</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="FaqModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Faq</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="FaqForm">
+                    <input type="hidden" id="FaqId">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="FaqTitle" class="form-label">Faq Title <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="FaqTitle" name="title"
+                                placeholder="Enter Faq Title">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="Faqtatus" class="form-label">Faq Status <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="status" id="Faqtatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="2">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="FaqDescription">Faq Description <strong
+                                class="text-danger">*</strong></label>
+                        <textarea class="form-control" name="description" id="FaqDescription" rows="5"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-pink w-100">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script>
+    $(document).ready(function () {
+        const searchFaqCard = $('#searchFaqCard');
+        searchFaqCard.hide();
+        $(window).on('load', () => searchFaqCard.slideDown(1000));
+
+        let ckEditor;
+        ClassicEditor.create(document.querySelector('#FaqDescription'))
+            .then(editor => ckEditor = editor)
+            .catch(error => console.error(error));
+
+        const table = $('#FaqTable').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            scrollY: "400px",
+            scrollCollapse: true,
+            searching: false,
+            ajax: {
+                url: '/Faq/FaqList',
+                type: 'POST',
+                data: function (d) {
+                    d.title = $('#searchFaqTitle').val();
+                    d.status = $('#searchFaqtatus').val();
+                    d.createdAt = $('#searchCreatedAt').val();
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    orderable: false,
+                    render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                },
+                { data: 'title' },
+                { data: 'description', orderable: false },
+                {
+                    data: 'status',
+                    render: (data, type, row) => {
+                        const statusText = data === 1 ? 'Active' : 'Inactive';
+                        const newStatus = data === 1 ? 2 : 1;
+                        return `<span class="badge ${data === 1 ? 'bg-success' : 'bg-secondary'} changeStatus" data-id='${row._id}' data-status='${newStatus}' style="cursor: pointer;">${statusText}</span>`;
+                    }
+                },
+                {
+                    data: 'createdAt',
+                    render: data => moment(data).format('YYYY-MM-DD HH:mm:ss')
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    render: row => `
+                        <button class="btn btn-sm btn-warning editFaqBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-sm btn-danger delFaqBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>
+                    `
+                }
+            ]
+        });
+
+        $('#searchBtn').on('click', () => table.ajax.reload());
+        $('#resetBtn').on('click', function () {
+            $('#searchFaqTitle, #searchFaqtatus, #searchCreatedAt').val('');
+            table.ajax.reload();
+        });
+
+        $('#FaqTable').on('click', '.editFaqBtn', function () {
+            $('#FaqModal').modal('show', this); // Pass the button element for context
+        });
+
+        $('#FaqForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const id = $('#FaqId').val();
+            const title = $('#FaqTitle').val().trim();
+            const status = $('#Faqtatus').val();
+            const description = ckEditor ? ckEditor.getData().trim() : $('#FaqDescription').val().trim();
+
+            if (!title) return toastr.error('Faq Title is required.', 'Validation Error');
+            if (!status) return toastr.error('Faq Status is required.', 'Validation Error');
+            if (!description) return toastr.error('Faq Description is required.', 'Validation Error');
+
+            const payloadData = { title: title, 'status': status, 'description': description };
+
+            const url = id ? `/faq/updateFaq/${id}` : '/faq/createFaq';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(payloadData),
+                processData: false,
+                dataType: 'json',
+                contentType: 'application/json',
+
+                success: function () {
+                    $('.btn-close').click();
+                    table.ajax.reload();
+                    $('#FaqForm')[0].reset();
+                    if (ckEditor) ckEditor.setData('');
+                    $('#FaqId').val('');
+                    $('#modalTitle').text('Add Faq');
+                    toastr.success('Faq saved successfully!', 'Success');
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr, status, error);
+                    toastr.error('An error occurred while saving the Faq.', 'Error');
+                }
+            });
+        });
+
+        $('#FaqModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const id = button.data('id');
+            const form = $('#FaqForm')[0];
+            form.reset();
+            if (ckEditor) ckEditor.setData('');
+            $('#FaqId').val('');
+            $('#modalTitle').text('Add Faq');
+
+            if (id) {
+                $('#modalTitle').text('Edit Faq');
+                $('#FaqId').val(id);
+                $.ajax({
+                    url: '/Faq/getFaq/' + id,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#FaqTitle').val(data.title);
+                        $('#Faqtatus').val(data.status);
+                        if (ckEditor) ckEditor.setData(data.description);
+                    },
+                    error: () => toastr.error('Failed to fetch FAQ details.', 'Error')
+                });
+            }
+        });
+
+        // Placeholder for handling status change and delete logic
+        $(document).on('click', '.changeStatus', function () {
+            const id = $(this).data('id');
+            const status = $(this).data('status');
+            const statusText = parseInt(status) === 1 ? 'Active' : 'Inactive'; // For confirmation message
+
+
+            if (confirm(`Are you sure you want to set the status to ${statusText}?`)) {
+                $.ajax({
+                    url: '/faq/changeStatus/' + id, // Replace with your actual route
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json', // Important for sending JSON data in the body
+                    data: JSON.stringify({ status: status }), // Send the new status in the request body
+                    success: function (response) {
+                        if (response.success) {
+                            table.ajax.reload();
+                            toastr.success(response.message, 'Success');
+                        } else {
+                            toastr.error(response.message || 'Failed to change status.', 'Error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error changing status:", status, error, xhr);
+                        toastr.error('Error changing status.', 'Error');
+                    }
+                });
+            }
+
+        });
+
+        $(document).on('click', '.delFaqBtn', function () {
+            const id = $(this).data('id');
+            if (confirm('Are you sure you want to delete this Faq?')) {
+                $.ajax({
+                    url: '/faq/deleteFaq/' + id, // Replace with your actual delete route
+                    type: 'delete',
+                    dataType: 'json',
+                    success: function () {
+                        table.ajax.reload();
+                        toastr.success('Faq deleted successfully!', 'Success');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting Faq:", status, error, xhr);
+                        toastr.error('Error deleting Faq.', 'Error');
+                    }
+                });
+            }
+        });
+    });
+</script>
