@@ -1,15 +1,25 @@
+<link rel="stylesheet" href="/admin/css/configuration/appSetting.css">
+
 <div class="container mt-5">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="firebase-tab" data-bs-toggle="tab" data-bs-target="#firebase"
-                type="button" role="tab">Firebase Credential</button>
+            <button class="nav-link active" id="aboutUs-tab" data-bs-toggle="tab" data-bs-target="#aboutUs"
+                type="button" role="tab">About Us</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="termCondition-tab" data-bs-toggle="tab" data-bs-target="#termCondition"
+                type="button" role="tab">Term & Condition</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="helpSupport-tab" data-bs-toggle="tab" data-bs-target="#helpSupport"
                 type="button" role="tab">Help & Support</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="applicationLinks-tab" data-bs-toggle="tab" data-bs-target="#contact"
+            <button class="nav-link" id="firebase-tab" data-bs-toggle="tab" data-bs-target="#firebase" type="button"
+                role="tab">Firebase Credential</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="applicationLinks-tab" data-bs-toggle="tab" data-bs-target="#applicationLinks"
                 type="button" role="tab">Application Link</button>
         </li>
         <li class="nav-item" role="presentation">
@@ -21,61 +31,79 @@
                 type="button" role="tab">SMS Credential</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="smsCredentials-tab" data-bs-toggle="tab" data-bs-target="#awsS3" type="button"
+            <button class="nav-link" id="s3Credentials-tab" data-bs-toggle="tab" data-bs-target="#awsS3" type="button"
                 role="tab">S3 Credential</button>
         </li>
     </ul>
 
     <div class="tab-content mt-3" id="myTabContent">
-        <!-- Firebase Credentials Form -->
-        <div class="tab-pane fade show active" id="firebase" role="tabpanel">
-            <form id="firebaseForm">
-                <input type="hidden" name="firebase">
+        <!-- About Us -->
+        <div class="tab-pane fade show active" id="aboutUs" role="tabpanel">
+            <form id="aboutUsForm">
+                <input type="hidden" name="aboutUs">
                 <div class="mb-3">
-                    <label class="form-label">Project ID</label>
-                    <input type="text" class="form-control" id="projectId"
-                        value="<%= settings?.firebase?.projectId || '' %>" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Firebase Email</label>
-                    <input type="email" class="form-control" id="firebaseEmail"
-                        value="<%= settings?.firebase?.firebaseEmail || '' %>" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Firebase ID</label>
-                    <input type="text" class="form-control" id="firebaseId"
-                        value="<%= settings?.firebase?.firebaseId || '' %>" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Token URL</label>
-                    <input type="url" class="form-control" id="tokenUrl"
-                        value="<%= settings?.firebase?.tokenUrl || '' %>" required>
+                    <label class="form-label" for="aboutUsText">About Us </label>
+                    <textarea class="form-control" name="description" id="aboutUsText" rows="5"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </form>
         </div>
 
-        <!-- Help & Support Form -->
+        <!-- Term & Condition -->
+        <div class="tab-pane fade" id="termCondition" role="tabpanel">
+            <form id="termConditionForm">
+                <input type="hidden" name="termCondition">
+                <div class="mb-3">
+                    <label class="form-label" for="termConditionText">Term & Condition </label>
+                    <textarea class="form-control" name="description" id="termConditionText" rows="5"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+
+        <!-- Help & Support -->
         <div class="tab-pane fade" id="helpSupport" role="tabpanel">
             <form id="helpSupportForm">
                 <input type="hidden" name="helpSupport">
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input type="email" class="form-control" id="supportEmail"
-                        value="<%= settings?.helpSupport?.supportEmail || '' %>" required>
+                    <input type="email" class="form-control" name='supportEmail' id="supportEmail" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Mobile</label>
-                    <input type="tel" class="form-control" id="supportMobile"
-                        value="<%= settings?.helpSupport?.supportMobile || '' %>" required>
+                    <input type="tel" class="form-control" name="supportMobile" id="supportMobile" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </form>
         </div>
 
-        <!-- Application Links Form -->
-        <div class="tab-pane fade" id="contact" role="tabpanel">
-            <form>
+        <!-- Firebase -->
+        <div class="tab-pane fade" id="firebase" role="tabpanel">
+            <form id="firebaseForm">
+                <input type="hidden" name="firebase">
+                <div class="mb-3">
+                    <label class="form-label">Project ID</label>
+                    <input type="text" class="form-control" id="projectId" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Firebase Email</label>
+                    <input type="email" class="form-control" id="firebaseEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Firebase ID</label>
+                    <input type="text" class="form-control" id="firebaseId" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Token URL</label>
+                    <input type="url" class="form-control" id="tokenUrl" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+
+        <!-- Application Links -->
+        <div class="tab-pane fade" id="applicationLinks" role="tabpanel">
+            <form id="applicationLinksForm">
                 <div class="mb-3">
                     <label for="androidClientUrl" class="form-label">Android Client APP URL</label>
                     <input type="url" class="form-control" id="androidClientUrl" required>
@@ -96,9 +124,9 @@
             </form>
         </div>
 
-        <!-- App Version Form -->
+        <!-- App Version -->
         <div class="tab-pane fade" id="appVersion" role="tabpanel">
-            <form>
+            <form id="appVersionForm">
                 <div class="mb-3">
                     <label for="androidClientVersion" class="form-label">Android Client APP Version</label>
                     <input type="text" class="form-control" id="androidClientVersion" required>
@@ -119,9 +147,9 @@
             </form>
         </div>
 
-        <!-- Twilio Credentials Form -->
+        <!-- Twilio Credentials -->
         <div class="tab-pane fade" id="twilioCred" role="tabpanel">
-            <form>
+            <form id="twilioForm">
                 <div class="mb-3">
                     <label for="twilioSid" class="form-label">Twilio Account SID</label>
                     <input type="text" class="form-control" id="twilioSid" required>
@@ -142,33 +170,123 @@
             </form>
         </div>
 
+        <!-- AWS S3 Credential -->
+        <div class="tab-pane fade" id="awsS3" role="tabpanel">
+            <form id="s3Form">
+                <div class="mb-3">
+                    <label for="s3AccessKey" class="form-label">S3 Access Key</label>
+                    <input type="text" class="form-control" id="s3AccessKey" required>
+                </div>
+                <div class="mb-3">
+                    <label for="s3SecretKey" class="form-label">S3 Secret Key</label>
+                    <input type="text" class="form-control" id="s3SecretKey" required>
+                </div>
+                <div class="mb-3">
+                    <label for="s3Bucket" class="form-label">S3 Bucket</label>
+                    <input type="text" class="form-control" id="s3Bucket" required>
+                </div>
+                <button type="submit" class="btn btn-info">Submit</button>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        let ckEditorAboutUs; // Declare editor for aboutUsText
+        let ckEditorTerms;   // Declare editor for termConditionText
+
+        ClassicEditor.create(document.querySelector('#aboutUsText'))
+            .then(editor => {
+                ckEditorAboutUs = editor;
+            })
+            .catch(error => {
+                console.error('Error initializing CKEditor for aboutUsText:', error);
+            });
+
+        ClassicEditor.create(document.querySelector('#termConditionText'))
+            .then(editor => {
+                ckEditorTerms = editor;
+            })
+            .catch(error => {
+                console.error('Error initializing CKEditor for termConditionText:', error);
+            });
+
+
+
         function saveForm(formId, dataKey) {
-            document.getElementById(formId).addEventListener("submit", function (e) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+            form.addEventListener("submit", function (e) {
                 e.preventDefault();
-                let formData = {
-                    [dataKey]: {}
-                };
-                this.querySelectorAll("input").forEach(input => {
+                let formData = { [dataKey]: {} };
+                this.querySelectorAll("input, textarea").forEach(input => {
                     formData[dataKey][input.id] = input.value;
                 });
 
-                fetch("/save-settings", {
+                fetch("/configuration/saveSetting", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(formData)
                 })
                     .then(response => response.json())
-                    .then(data => alert(data.message))
+                    .then(data => {
+                        // console.log(data.data);
+                        toastr.success(data.message, 'Success');
+                    })
                     .catch(error => console.error("Error:", error));
             });
         }
 
-        saveForm("firebaseForm", "firebase");
+        saveForm("aboutUsForm", "aboutUs");
+        saveForm("termConditionForm", "termCondition");
         saveForm("helpSupportForm", "helpSupport");
+        saveForm("firebaseForm", "firebase");
+        saveForm("applicationLinksForm", "applicationLinks");
+        saveForm("appVersionForm", "appVersion");
+        saveForm("twilioForm", "twilioCred");
+        saveForm("s3Form", "awsS3");
+
+        function setData() {
+            $.ajax({
+                url: "/configuration/getSettings",
+                success: function (data) {
+                    // console.log(data.data);
+                    if (data.data?.aboutUs?.content) {
+                        ckEditorAboutUs.setData(data.data.aboutUs.content);
+                    }
+                    if (data.data?.termsAndConditions?.content) {
+                        ckEditorTerms.setData(data.data.termsAndConditions.content);
+                    }
+                    $('#supportEmail').val(data.data?.helpSupport?.supportEmail);
+                    $('#supportMobile').val(data.data?.helpSupport?.supportMobile);
+                    $('#projectId').val(data.data?.firebase?.projectId);
+                    $('#firebaseEmail').val(data.data?.firebase?.firebaseEmail);
+                    $('#firebaseId').val(data.data?.firebase?.firebaseId);
+                    $('#tokenUrl').val(data.data?.firebase?.tokenUrl);
+                    $('#androidClientUrl').val(data.data?.applicationLinks?.androidClientAppUrl);
+                    $('#androidDriverUrl').val(data.data?.applicationLinks?.androidDriverAppUrl);
+                    $('#iosClientUrl').val(data.data?.applicationLinks?.iosClientAppUrl);
+                    $('#iosDriverUrl').val(data.data?.applicationLinks?.iosDriverAppUrl);
+                    $('#androidClientVersion').val(data.data?.appVersion?.androidClientAppVersion);
+                    $('#androidDriverVersion').val(data.data?.appVersion?.androidDriverAppVersion);
+                    $('#iosClientVersion').val(data.data?.appVersion?.iosClientAppVersion);
+                    $('#iosDriverVersion').val(data.data?.appVersion?.iosDriverAppVersion);
+                    $('#twilioSid').val(data.data?.smsCredentials?.twilioSid);
+                    $('#twilioToken').val(data.data?.smsCredentials?.twilioAuthToken);
+                    $('#twilioNumber').val(data.data?.smsCredentials?.twilioNumber);
+                    $('#twilioCallUrl').val(data.data?.smsCredentials?.twilioCallUrl);
+                    $('#s3AccessKey').val(data.data?.s3Credentials?.s3AccessKey);
+                    $('#s3SecretKey').val(data.data?.s3Credentials?.s3SecretKey);
+                    $('#s3Bucket').val(data.data?.s3Credentials?.s3BucketKey); // Corrected ID
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error loading settings:", error);
+                    // Optionally provide feedback to the user
+                }
+            });
+        }
+        setData();
     });
+
 </script>
