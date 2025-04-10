@@ -1,7 +1,11 @@
 name: Deploy OnPointAdmin
 
 on:
-  workflow_dispatch:  # Manually trigger only
+  push:
+    branches:
+      - main
+#on:
+ # workflow_dispatch:  # Manually trigger only
 
 jobs:
   deploy:
