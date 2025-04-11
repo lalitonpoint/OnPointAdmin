@@ -23,6 +23,7 @@ const logoutRoutes = require('../routes/login/logoutRoutes'); // Ensure correct 
 const ptlRoutes = require('./vehcileManagement/partialTruckLoadRoutes'); // Ensure correct path
 const serviceRoutes = require('./vehcileManagement/serviceManagementRoutes'); // Ensure correct path
 const faqRoutes = require('./faqManagement/faqRoutes'); // Ensure correct path
+const vendorRoutes = require('./vendorManagement/vendorRoutes'); // Ensure correct path
 
 // Use a base path for login routes
 
@@ -50,6 +51,7 @@ router.use('/driver', driverRoutes);
 
 router.use('/service', serviceRoutes);
 router.use('/faq', faqRoutes);
+router.use('/vendor', vendorRoutes);
 
 
 module.exports = router;
