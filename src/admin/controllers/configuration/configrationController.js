@@ -4,7 +4,7 @@ const Settings = require("../../models/configuration/settingModel");
 const appSetting = async (req, res) => {
     try {
         const settings = await Settings.findOne(); // Fetch existing settings
-        res.render('pages/Configuration/appSetting', { settings });
+        res.render('pages/configuration/appSetting', { settings });
     } catch (error) {
         res.status(500).send("Error loading settings page");
     }
