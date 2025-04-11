@@ -1,9 +1,13 @@
 .sidebar {
-    height: 100vh;
+    height: auto;
     background: #343a40;
     color: #fff;
     padding: 1rem;
+    min-height: 100vh;
+    min-width: 300px !important;
 }
+
+
 
 .sidebar a {
     color: #adb5bd;

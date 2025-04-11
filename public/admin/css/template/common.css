@@ -19,3 +19,8 @@
  .toast-info {
      background-color: #17a2b8 !important;
  }
+
+ .bodyContentSection {
+     display: flex;
+     flex-direction: column;
+ }

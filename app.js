@@ -7,7 +7,6 @@ const indexRoutes = require('./src/admin/routes/indexRoutes');
 const apiRoutes = require('./apiRoutes');
 const expressLayouts = require('express-ejs-layouts');
 const { setGlobalPermissions } = require('./src/admin/middleware/login/checkPermission');
-const checkLoggedIn = require('./src/admin/middleware/login/checkLoggedIn');
 
 const app = express();
 
@@ -16,7 +15,6 @@ connectDB();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,7 +22,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'default_secret',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 10 * 60 * 100000 } // 10 minutes
+    cookie: { maxAge: 10 * 60 * 1000000 } // 10 minutes
 }));
 
 app.use(setGlobalPermissions);
