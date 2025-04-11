@@ -37,8 +37,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 // Routes
-app.use('/', indexRoutes);
 app.use('/api', apiRoutes);
+app.use('/', indexRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
