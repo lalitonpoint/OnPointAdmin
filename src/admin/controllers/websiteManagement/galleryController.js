@@ -1,5 +1,5 @@
 const galleryPage = (req, res) => {
-    res.render('pages/WebsiteManagement/gallery');
+    res.render('pages/websiteManagement/gallery');
 }
 
 module.exports = { galleryPage }

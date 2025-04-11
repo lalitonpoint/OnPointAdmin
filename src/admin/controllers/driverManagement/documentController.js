@@ -1,5 +1,5 @@
 const documentPage = (req, res) => {
-    res.render('pages/DriverManagement/document');
+    res.render('pages/driverManagement/document');
 };
 
 const Document = require('../../models/driverManagement/documentModel'); // Ensure this path is correct

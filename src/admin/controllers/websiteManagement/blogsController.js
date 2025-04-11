@@ -6,7 +6,7 @@ const moment = require('moment'); // For date manipulation
 
 // Render the blog management page
 const blogsPage = (req, res) => {
-    res.render('pages/WebsiteManagement/blogs');
+    res.render('pages/websiteManagement/blogs');
 };
 
 // Fetch list of blogs (for DataTable)

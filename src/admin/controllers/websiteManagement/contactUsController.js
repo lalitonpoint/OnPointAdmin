@@ -2,7 +2,7 @@ const Contact = require('../../../api/web/models/contactUsModel');
 const moment = require('moment'); // For date manipulation if needed
 
 const contactUsPage = (req, res) => {
-    res.render('pages/WebsiteManagement/contactUs');
+    res.render('pages/websiteManagement/contactUs');
 }
 
 const contactList = async (req, res) => {

@@ -4,7 +4,7 @@ const multiparty = require('multiparty');
 const moment = require('moment'); // For date manipulation
 
 const testmonialPage = (req, res) => {
-    res.render('pages/WebsiteManagement/testimonial');
+    res.render('pages/websiteManagement/testimonial');
 }
 
 // Fetch testimonials (for DataTable)
