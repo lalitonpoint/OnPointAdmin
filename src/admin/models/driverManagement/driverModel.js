@@ -3,9 +3,19 @@ const mongoose = require('mongoose');
 const driverSchema = new mongoose.Schema({
     name: { type: String, required: true, index: true },
     email: { type: String, required: true, unique: true, index: true },
+    countryCode: {
+        type: String,
+        required: true,
+        trim: true,
+        match: [/^\+\d{1,3}$/, 'Please enter a valid country code (e.g., +91)']
+    },
+    mobileNumber: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     dateOfBirth: { type: Date },
     gender: { type: String },
-    mobileNo: { type: String, required: true, index: true },
     alternateMobileNo: { type: String, index: true },
     profileImage: { type: String }, // Store the path or URL of the profile image
 
@@ -34,6 +44,8 @@ const driverSchema = new mongoose.Schema({
     currentCity: { type: String },
     currentState: { type: String },
     currentPinCode: { type: String },
+    status: { type: Number, enum: [1, 2, 3], default: 1 }, // 1 = Active, 2 = Inactive , 3 => Delete
+
 
     createdAt: { type: Date, default: Date.now, index: true }
 });

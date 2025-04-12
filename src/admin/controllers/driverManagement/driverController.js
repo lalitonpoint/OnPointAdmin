@@ -19,10 +19,10 @@ const saveDrivers = async (req, res) => {
             const email = fields.email ? fields.email[0] : '';
             const dateOfBirth = fields.dateOfBirth ? fields.dateOfBirth[0] : '';
             const gender = fields.gender ? fields.gender[0] : '';
-            const mobileNo = fields.mobileNo ? fields.mobileNo[0] : '';
+            const mobileNumber = fields.mobileNumber ? fields.mobileNumber[0] : '';
             const alternateMobileNo = fields.alternateMobileNo ? fields.alternateMobileNo[0] : '';
 
-            if (!name || !email || !mobileNo) {
+            if (!name || !email || !mobileNumber) {
                 return res.status(400).json({ error: "Name, Email, and Mobile No. are required" });
             }
 
@@ -39,7 +39,7 @@ const saveDrivers = async (req, res) => {
                 email,
                 dateOfBirth,
                 gender,
-                mobileNo,
+                mobileNumber,
                 alternateMobileNo,
                 profileImage: imageUrl,
             });
