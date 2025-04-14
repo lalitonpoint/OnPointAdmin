@@ -391,20 +391,40 @@
                 city_access: $("input[name='city_access']").prop("checked"),
                 permissions: []
             };
+            let adminType = $('#adminType').val();
 
-            $("#permissionsTable tr").each(function () {
-                const row = $(this);
-                const [module, url] = [row.find(".url").val(), row.find(".url").attr("url")];
-                const permission = {
-                    module,
-                    url,
-                    add: row.find(".add").prop("checked"),
-                    edit: row.find(".edit").prop("checked"),
-                    delete: row.find(".delete").prop("checked"),
-                    export: row.find(".export").prop("checked"),
-                };
-                formData.permissions.push(permission);
-            });
+            if (adminType === "Sub Admin") {
+                $("#permissionsTable tr").each(function () {
+                    const row = $(this);
+                    const [module, url] = [row.find(".url").val(), row.find(".url").attr("url")];
+                    const permission = {
+                        module,
+                        url,
+                        add: row.find(".add").prop("checked"),
+                        edit: row.find(".edit").prop("checked"),
+                        delete: row.find(".delete").prop("checked"),
+                        export: row.find(".export").prop("checked"),
+                    };
+                    formData.permissions.push(permission);
+                });
+            }
+
+
+            if (adminType === "Admin") {
+                $("#permissionsTable tr").each(function () {
+                    let module = $(this).find(".url").val(); // Correctly fetch hidden input
+                    let permission = {
+                        module: module,
+                        add: true,
+                        edit: true,
+                        delete: true,
+                        export: true,
+                        url: $(this).find(".url").attr("url"),
+                    };
+                    formData.permissions.push(permission);
+                });
+
+            }
 
             // console.log('FormData', formData); // For Debugging
 
@@ -421,6 +441,25 @@
 
 
 
+
+        $('#artistTable').on('click', '.delUserBtn', function () {
+            const buId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this Backend User?')) {
+                $.ajax({
+                    url: '/roles/deleteBackendUser/' + buId, // Replace with your actual delete route
+                    type: 'delete',
+                    dataType: 'json',
+                    success: function () {
+                        table.ajax.reload();
+                        toastr.success('Backend User deleted successfully!', 'Success');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting banner:", status, error, xhr);
+                        toastr.error('Error deleting banner.', 'Error');
+                    }
+                });
+            }
+        });
 
 
     });

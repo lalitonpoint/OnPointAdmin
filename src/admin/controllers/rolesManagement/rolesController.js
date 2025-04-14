@@ -1,7 +1,7 @@
 
 
 const AdminUser = require('../../models/login/adminModel');
-
+const { generateLogs } = require('../../utils/logsHelper');
 const bcrypt = require('bcrypt');
 
 const saveRolesPermissions = async (req, res) => {
@@ -21,6 +21,8 @@ const saveRolesPermissions = async (req, res) => {
         });
 
         await adminUser.save();
+        await generateLogs(req, 'Add', adminUser);
+
         res.json({ success: true, message: 'Admin saved successfully!' });
     } catch (error) {
         console.error(error);
@@ -122,4 +124,16 @@ const getList = async (req, res) => {
         res.status(500).json({ error: 'Something went wrong' });
     }
 };
-module.exports = { rolesPermissions, saveRolesPermissions, updateRolesPermissions, backendUser, getList, editRole }
+
+
+const deleteBackendUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await AdminUser.findByIdAndDelete(id);
+        res.json({ success: true, message: 'Backend User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { rolesPermissions, saveRolesPermissions, updateRolesPermissions, backendUser, getList, editRole, deleteBackendUser }

@@ -12,6 +12,7 @@ router.post('/getList', checkCrudPermission('isShow'), RolesCtrl.getList);
 router.post('/saveRoles', checkCrudPermission('add'), RolesCtrl.saveRolesPermissions)
 router.post('/updateRoles', checkCrudPermission('edit'), RolesCtrl.updateRolesPermissions)
 router.post('/editRole', checkCrudPermission('edit'), RolesCtrl.editRole);
+router.delete('/deleteBackendUser/:id', checkCrudPermission('delete'), RolesCtrl.deleteBackendUser);
 
 
 module.exports = router;

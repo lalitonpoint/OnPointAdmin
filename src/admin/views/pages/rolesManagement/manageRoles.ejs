@@ -28,7 +28,7 @@
             <div class="mb-3">
                 <label>Admin Type:</label>
                 <select class="form-control" name="admin_type" id="adminType">
-                    <option value="">Admin Type</option>
+                    <option value="">Select Admin Type</option>
                     <option value="Admin">Admin</option>
                     <option value="Sub Admin">Sub Admin</option>
                 </select>
@@ -258,6 +258,21 @@
                         edit: $(this).find(".edit").prop("checked"),
                         delete: $(this).find(".delete").prop("checked"),
                         export: $(this).find(".export").prop("checked"),
+                        url: $(this).find(".url").attr("url"),
+                    };
+                    formData.permissions.push(permission);
+                });
+
+            }
+            if (formData.admin_type === "Admin") {
+                $("#permissionsTable tr").each(function () {
+                    let module = $(this).find(".url").val(); // Correctly fetch hidden input
+                    let permission = {
+                        module: module,
+                        add: true,
+                        edit: true,
+                        delete: true,
+                        export: true,
                         url: $(this).find(".url").attr("url"),
                     };
                     formData.permissions.push(permission);
