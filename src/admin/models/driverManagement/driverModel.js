@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const driverSchema = new mongoose.Schema({
-    name: { type: String, required: true, index: true },
-    email: { type: String, required: true, unique: true, index: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     countryCode: {
         type: String,
         required: true,
@@ -16,7 +16,7 @@ const driverSchema = new mongoose.Schema({
     },
     dateOfBirth: { type: Date },
     gender: { type: String },
-    alternateMobileNo: { type: String, index: true },
+    alternateMobileNo: { type: String },
     profileImage: { type: String }, // Store the path or URL of the profile image
 
     emergencyName: { type: String },
@@ -47,7 +47,7 @@ const driverSchema = new mongoose.Schema({
     status: { type: Number, enum: [1, 2, 3], default: 1 }, // 1 = Active, 2 = Inactive , 3 => Delete
 
 
-    createdAt: { type: Date, default: Date.now, index: true }
+    createdAt: { type: Date, default: Date.now }
 });
 
 const Driver = mongoose.model('Driver', driverSchema);
