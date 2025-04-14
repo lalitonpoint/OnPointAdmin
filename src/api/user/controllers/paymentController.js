@@ -34,7 +34,7 @@ const addPaymentDetail = async (req, res) => {
 
         for (const [key, value] of Object.entries(requiredStrings)) {
             if (!value || typeof value !== 'string') {
-                return res.status(400).json({ success: false, message: `${key} is required and must be a string.` });
+                return res.status(200).json({ success: false, message: `${key} is required and must be a string.` });
             }
         }
 
@@ -48,12 +48,12 @@ const addPaymentDetail = async (req, res) => {
             typeof gst !== 'number' ||
             typeof totalPayment !== 'number'
         ) {
-            return res.status(400).json({ success: false, message: "Invalid or missing numeric fields" });
+            return res.status(200).json({ success: false, message: "Invalid or missing numeric fields" });
         }
 
         // Validate dimensions
         if (!Array.isArray(dimensions) || dimensions.length === 0) {
-            return res.status(400).json({ success: false, message: "At least one dimension entry is required" });
+            return res.status(200).json({ success: false, message: "At least one dimension entry is required" });
         }
 
         for (let i = 0; i < dimensions.length; i++) {
@@ -63,7 +63,7 @@ const addPaymentDetail = async (req, res) => {
                 typeof width !== 'number' || width <= 0 ||
                 typeof height !== 'number' || height <= 0
             ) {
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `Invalid dimension at index ${i}: All values must be positive numbers.`
                 });
@@ -107,13 +107,13 @@ const completePayment = async (req, res) => {
         const { paymentId, transactionStatus, transactionId, totalPayment, transactionDate } = req.body;
 
         if (!paymentId || !transactionStatus || !transactionId || !totalPayment || !transactionDate) {
-            return res.status(400).json({ success: false, message: "Missing required payment completion details" });
+            return res.status(200).json({ success: false, message: "Missing required payment completion details" });
         }
 
         const paymentRecord = await InitiatePayment.findOne({ preTransactionId: transactionId });
 
         if (!paymentRecord) {
-            return res.status(404).json({ success: false, message: "Payment record not found" });
+            return res.status(200).json({ success: false, message: "Payment record not found" });
         }
 
         paymentRecord.transactionStatus = transactionStatus; // e.g. 'Completed'

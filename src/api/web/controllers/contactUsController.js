@@ -6,7 +6,7 @@ const createContact = async (req, res) => {
 
         // Basic validation (you can add more robust validation)
         if (!name || !email || !mobile || !message) {
-            return res.status(400).json({ success: false, message: 'Please fill in all required fields.' });
+            return res.status(200).json({ success: false, message: 'Please fill in all required fields.' });
         }
 
         const newContact = new ContactUs({

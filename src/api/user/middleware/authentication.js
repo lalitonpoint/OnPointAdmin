@@ -8,7 +8,7 @@ const verifyToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
 
     if (!token) {
-        return res.status(403).json({ message: 'Token is missing' });
+        return res.status(200).json({ message: 'Token is missing' });
     }
 
     try {
@@ -16,7 +16,7 @@ const verifyToken = (req, res, next) => {
         req.user = decoded; // contains userId and mobileNumber
         next();
     } catch (err) {
-        return res.status(401).json({ message: 'Invalid token' });
+        return res.status(200).json({ message: 'Invalid token' });
     }
 };
 

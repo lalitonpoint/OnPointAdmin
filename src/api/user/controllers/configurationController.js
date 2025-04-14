@@ -5,12 +5,12 @@ const getSettingSection = async (req, res) => {
         const { section } = req.body;
 
         if (!section) {
-            return res.status(400).json({ success: false, msg: 'Section is required' });
+            return res.status(200).json({ success: false, msg: 'Section is required' });
         }
         const setting = await settingModel.findOne().sort({ createdAt: -1 });
 
         if (!setting || !setting[section]) {
-            return res.status(404).json({ success: false, msg: 'Section not found in settings' });
+            return res.status(200).json({ success: false, msg: 'Section not found in settings' });
         }
 
         res.status(200).json({

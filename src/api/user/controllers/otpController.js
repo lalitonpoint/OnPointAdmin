@@ -35,13 +35,13 @@ const sendOtp = async (req, res) => {
         const { countryCode, mobileNumber } = req.body;
 
         if (!countryCode || !mobileNumber) {
-            return res.status(400).json({ status: false, message: 'Country code and mobile number are required.' });
+            return res.status(200).json({ status: false, message: 'Country code and mobile number are required.' });
         }
 
         const parsed = formatMobile(countryCode, mobileNumber);
 
         if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
-            return res.status(400).json({ status: false, message: 'Invalid mobile number format.' });
+            return res.status(200).json({ status: false, message: 'Invalid mobile number format.' });
         }
 
         const otp = generateOTP();
@@ -76,23 +76,23 @@ const verifyOtp = async (req, res) => {
         const { countryCode, mobileNumber, otp } = req.body;
 
         if (!countryCode || !mobileNumber || !otp) {
-            return res.status(400).json({ status: false, message: 'Country code, mobile number and OTP are required.', isRegistered: false });
+            return res.status(200).json({ status: false, message: 'Country code, mobile number and OTP are required.', isRegistered: false });
         }
 
         const parsed = formatMobile(countryCode, mobileNumber);
 
         if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
-            return res.status(400).json({ status: false, message: 'Invalid mobile number format.', isRegistered: false });
+            return res.status(200).json({ status: false, message: 'Invalid mobile number format.', isRegistered: false });
         }
 
         const storedOTP = otpStorage[parsed.formatted];
 
         if (!storedOTP) {
-            return res.status(404).json({ status: false, message: 'OTP expired or not found.', isRegistered: false });
+            return res.status(200).json({ status: false, message: 'OTP expired or not found.', isRegistered: false });
         }
 
         if (otp !== storedOTP) {
-            return res.status(401).json({ status: false, message: 'Invalid OTP.', isRegistered: false });
+            return res.status(200).json({ status: false, message: 'Invalid OTP.', isRegistered: false });
         }
 
         // OTP is valid, delete from storage
