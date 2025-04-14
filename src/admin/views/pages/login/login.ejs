@@ -87,14 +87,15 @@
                             // Redirect to the dashboard using the URL from the server response
                             window.location.href = data.redirectUrl;
                         } else {
+
                             // Display the error message to the user
                             alert(data.message || 'Login failed. Please check your credentials.');
                         }
                     },
                     error: function (xhr, status, error) {
-                        // Handle errors during the AJAX request
+                        message = xhr.responseJSON.message;
                         console.error("AJAX request failed:", status, error, xhr);
-                        alert('An error occurred during login. Please try again later.');
+                        alert(message);
                     }
                 });
             });

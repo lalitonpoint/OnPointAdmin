@@ -17,13 +17,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.urlencoded({ extended: true }));
-
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'default_secret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 10 * 60 * 1000000 } // 10 minutes
+    cookie: { maxAge: 240 * 60 * 1000 } // 2 minutes
 }));
+
 
 app.use(setGlobalPermissions);
 
@@ -34,11 +34,16 @@ app.set('layout', 'layouts/main');
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.use((req, res, next) => {
+    res.locals.session = req.session;
+    next();
+});
 
 
 // Routes
 app.use('/api', apiRoutes);
 app.use('/', indexRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

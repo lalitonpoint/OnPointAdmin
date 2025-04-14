@@ -1,0 +1,28 @@
+[
+  {
+    "parentModule": "dashboard",
+    "route": "/admin/dashboard"
+  },
+  {
+    "parentModule": "rolesManagement",
+    "children": [
+      {
+        "submodule": "manageRoles",
+        "route": "/roles/rolesManagement"
+      },
+      {
+        "submodule": "backendUsers",
+        "route": "/roles/backendUserManagement"
+      }
+    ]
+  },
+  {
+    "parentModule": "userManagement",
+    "children": [
+      {
+        "submodule": "manageUsers",
+        "route": "/users/userManagement"
+      }
+    ]
+  }
+]

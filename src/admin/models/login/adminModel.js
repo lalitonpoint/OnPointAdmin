@@ -6,7 +6,8 @@ const PermissionSchema = new mongoose.Schema({
     add: { type: Boolean, default: false },
     edit: { type: Boolean, default: false },
     delete: { type: Boolean, default: false },
-    export: { type: Boolean, default: false }
+    export: { type: Boolean, default: false },
+    url: { type: String, default: "" }
 }, { _id: false });
 
 const AdminUserSchema = new mongoose.Schema({

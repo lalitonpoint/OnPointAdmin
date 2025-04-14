@@ -1,8 +1,7 @@
 module.exports = (req, res, next) => {
     if (req.session && req.session.isLoggedIn) {
         // User is logged in
-        console.log('rtyuio');
-        console.log('session', req.session.modulePermissions);
+        // console.log('session', req.session.modulePermissions);
 
         if (req.originalUrl === '/' || req.originalUrl === '/login') {
             return res.redirect('/dashboard'); // Redirect to dashboard if trying to access login page while logged in
@@ -11,9 +10,8 @@ module.exports = (req, res, next) => {
             return next();
         }
     } else {
-        console.log('uuuuuu');
-
         // User not logged in
+
         if (req.originalUrl === '/login') {
             return next(); // Allow access to the login page
         } else if (req.originalUrl === '/') {

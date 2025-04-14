@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const { checkCrudPermission } = require('../../middleware/permission/checkCrudPermission');
 
 
 const RolesCtrl = require('../../controllers/rolesManagement/rolesController');
 
+router.get('/rolesManagement', checkCrudPermission(), RolesCtrl.rolesPermissions);
+router.get('/backendUserManagement', checkCrudPermission(), RolesCtrl.backendUser);
 
-router.get('/rolesManagement', RolesCtrl.rolesPermissions);
-router.get('/backendUserManagement', RolesCtrl.backendUser);
-
-router.post('/saveRoles', RolesCtrl.saveRolesPermissions)
-router.post('/updateRoles', RolesCtrl.updateRolesPermissions)
-router.post('/editRole', RolesCtrl.editRole);
-router.post('/getList', RolesCtrl.getList);
+router.post('/getList', checkCrudPermission('isShow'), RolesCtrl.getList);
+router.post('/saveRoles', checkCrudPermission('add'), RolesCtrl.saveRolesPermissions)
+router.post('/updateRoles', checkCrudPermission('edit'), RolesCtrl.updateRolesPermissions)
+router.post('/editRole', checkCrudPermission('edit'), RolesCtrl.editRole);
 
 
 module.exports = router;

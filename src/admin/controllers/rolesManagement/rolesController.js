@@ -73,6 +73,8 @@ const editRole = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
+
+
         res.json({ success: true, data: user }); // Return user data
     } catch (error) {
         console.error('Error fetching role:', error);
