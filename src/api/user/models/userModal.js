@@ -5,11 +5,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
-    }, emailAddress: {
+    }
+    ,
+    emailAddress: {
         type: String,
         required: true,
         trim: true,
-        lowercase: true
+        lowercase: true,
+
     }
     ,
     countryCode: {

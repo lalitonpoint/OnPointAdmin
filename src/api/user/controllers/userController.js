@@ -111,7 +111,7 @@ const createUser = async (req, res) => {
             });
 
             const savedUser = await newUser.save();
-            return res.status(400).json({ status: false, savedUser: newUser });
+            // return res.status(400).json({ status: false, savedUser: newUser });
 
 
             const token = jwt.sign(
@@ -130,7 +130,7 @@ const createUser = async (req, res) => {
             console.error('Error in createUser:', error.message, error.stack);
             return res.status(500).json({
                 status: false,
-                error: 'Internal server error.',
+                message: 'Internal server error.',
                 details: error.message,
             });
         }
