@@ -11,7 +11,7 @@ const getServices = async (req, res) => {
         });
     } catch (err) {
         console.error('Error fetching active services:', err);
-        res.status(500).json({ success: false, msg: 'Server Error', error: err.message });
+        res.status(500).json({ success: false, message: 'Server Error', error: err.message });
     }
 };
 
