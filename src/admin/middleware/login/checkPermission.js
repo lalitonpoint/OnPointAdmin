@@ -28,13 +28,13 @@ const setGlobalPermissions = async (req, res, next) => {
     const menuStructure = extractSidebarStructure('./src/admin/views/partials/sidebar.ejs');
 
     const updatedSidebar = getModuleVisibility(modulePermissions, menuStructure);
-    // console.log('Final Sidebar Permissions:', updatedSidebar);
+    console.log('Final Sidebar Permissions:', updatedSidebar);
 
     req.session.modulePermissions = modulePermissions;
     req.session.sidebar = updatedSidebar;
     res.locals.modulePermissions = modulePermissions;
     res.locals.sidebar = updatedSidebar;
-    // console.log('mod->', modulePermissions)
+    console.log('updatedSidebar->', updatedSidebar)
 
     next();
 };

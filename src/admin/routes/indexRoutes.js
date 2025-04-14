@@ -24,13 +24,14 @@ const ptlRoutes = require('./vehcileManagement/partialTruckLoadRoutes'); // Ensu
 const serviceRoutes = require('./vehcileManagement/serviceManagementRoutes'); // Ensure correct path
 const faqRoutes = require('./faqManagement/faqRoutes'); // Ensure correct path
 const vendorRoutes = require('./vendorManagement/vendorRoutes'); // Ensure correct path
+const trackingRoutes = require('./websiteManagement/trackingRoutes'); // Ensure correct path
 
 // Use a base path for login routes
 
 router.use('/login', loginRoutes);
 router.get('/logout', logoutRoutes);
 
-router.use(checkLoggedIn);
+// router.use(checkLoggedIn);
 router.use('/dashboard', dashboardRoutes);
 router.use('/roles', rolesRoutes);
 router.use('/users', usersRoutes);
@@ -52,6 +53,7 @@ router.use('/driver', driverRoutes);
 router.use('/service', serviceRoutes);
 router.use('/faq', faqRoutes);
 router.use('/vendor', vendorRoutes);
+router.use('/tracking', trackingRoutes);
 
 
 module.exports = router;
