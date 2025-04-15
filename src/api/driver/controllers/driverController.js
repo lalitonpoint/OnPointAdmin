@@ -140,7 +140,7 @@ const createDriver = async (req, res) => {
                     success: true,
                     message: `Step ${step} completed`,
                     driverId: driver._id,
-                    driver,
+                    data: driver,
                 });
 
             } else {
@@ -155,7 +155,7 @@ const createDriver = async (req, res) => {
                     success: true,
                     message: `Step ${step} completed`,
                     driverId: driver._id,
-                    driver,
+                    data: driver,
                     token
                 });
             }
