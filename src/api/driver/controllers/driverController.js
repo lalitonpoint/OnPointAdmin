@@ -4,15 +4,49 @@ const createProfile = async (req, res) => {
     try {
         const data = req.body;
 
+        // Required field validation
+        const requiredFields = [
+            "name", "email", "dob", "gender", "mobile1",
+            "permanentStreet", "permanentCity", "permanentState", "permanentPin",
+            "aadhaarFront", "aadhaarBack", "panCard", "drivingLicense"
+        ];
+
+        const missingFields = requiredFields.filter(field => !data[field] || data[field].toString().trim() === "");
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: `Missing required fields: ${missingFields.join(", ")}`
+            });
+        }
+
+        // Check if email is already registered
+        const emailExists = await DriverProfile.findOne({ "personalInfo.email": data.email });
+        if (emailExists) {
+            return res.status(409).json({
+                success: false,
+                message: "Email is already registered"
+            });
+        }
+
+        // Check if mobile number is already registered
+        const mobileExists = await DriverProfile.findOne({ "personalInfo.mobile": data.mobile1 });
+        if (mobileExists) {
+            return res.status(409).json({
+                success: false,
+                message: "Mobile number is already registered"
+            });
+        }
+
+        // Create driver document
         const driver = new DriverProfile({
             personalInfo: {
                 name: data.name,
                 email: data.email,
                 dob: data.dob,
                 gender: data.gender,
-                mobile1: data.mobile1,
-                mobile2: data.mobile2,
-                whatsapp: data.whatsapp
+                mobile: data.mobile1,
+                altMobile: data.mobile2,
             },
             addressInfo: {
                 permanent: {
@@ -45,17 +79,18 @@ const createProfile = async (req, res) => {
             additionalInfo: {
                 logisticsExperience: data.logisticsExperience,
                 preferredRegion: data.preferredRegion,
-                languages: data.languages, // should be an array
+                languages: data.languages,
                 nightShift: data.nightShift
             }
         });
 
         await driver.save();
         res.status(201).json({ success: true, message: "Driver profile created successfully", driver });
+
     } catch (err) {
-        console.error(err);
+        console.error("Error in createProfile:", err);
         res.status(500).json({ success: false, message: "Server error" });
     }
-}
+};
 
 module.exports = { createProfile };

@@ -6,9 +6,8 @@ const driverProfileSchema = new mongoose.Schema({
         email: String,
         dob: Date,
         gender: String,
-        mobile1: String,
-        mobile2: String,
-        whatsapp: String
+        mobile: String,
+        altMobile: String,
     },
     addressInfo: {
         permanent: {
