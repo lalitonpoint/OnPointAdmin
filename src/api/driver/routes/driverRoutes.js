@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { createProfile } = require('../controllers/driverController')
+const { createDriver } = require('../controllers/driverController')
 
-router.post('/createProfile', createProfile);
+router.post('/createDriver', createDriver);
 
 module.exports = router;

@@ -74,16 +74,40 @@ const createFirstBackendUser = async (req, res) => {
         }
 
         // If no admin user exists, proceed with creating the first admin
-        const hashedPassword = await bcrypt.hash("admin~!@#$%^&*()_+", 10);
+        const hashedPassword = await bcrypt.hash("1234567890", 10);
         const adminUser = new Admin({
             name: "admin",
             mobile: "9876986698",
             email: 'admin@gmail.com',
-            admin_type: 'admin',
+            admin_type: 'Admin',
             password: hashedPassword,
             country_access: "true",
             city_access: "true",
-            permissions: []
+            permissions: [{
+                module: "dashboard",
+                add: true,
+                edit: true,
+                delete: true,
+                export: true,
+                url: '/dashboard'
+            },
+            {
+                module: "manageRoles",
+                add: true,
+                edit: true,
+                delete: true,
+                export: true,
+                url: '/roles/rolesManagement'
+            },
+            {
+                module: "backendUsers",
+                add: true,
+                edit: true,
+                delete: true,
+                export: true,
+                url: '/roles/backendUserManagement'
+            }
+            ]
         });
 
         // Save the new admin user

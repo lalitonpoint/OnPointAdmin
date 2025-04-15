@@ -24,11 +24,16 @@ const setGlobalPermissions = async (req, res, next) => {
         sidebar[key] = p.add || p.edit || p.delete || p.export;
     });
 
+
     // Dynamically load sidebar.ejs and extract structure
     const menuStructure = extractSidebarStructure('./src/admin/views/partials/sidebar.ejs');
 
     const updatedSidebar = getModuleVisibility(modulePermissions, menuStructure);
     // console.log('Final Sidebar Permissions:', updatedSidebar);
+
+    console.log('permissions', permissions)
+    console.log('modulePermissions', modulePermissions)
+    console.log('updatedSidebar', updatedSidebar)
 
     req.session.modulePermissions = modulePermissions;
     req.session.sidebar = updatedSidebar;
