@@ -48,8 +48,6 @@ const createDriver = async (req, res) => {
                         }
                     }
 
-
-
                     const [email, mobile] = [getField('email'), getField('mobile')];
 
                     if (await DriverProfile.findOne({ 'personalInfo.email': email }))
@@ -71,6 +69,7 @@ const createDriver = async (req, res) => {
                         altMobile: getField('altMobile'),
                         profilePicture
                     };
+                    update.step = 1;
                     break;
                 }
 
@@ -90,6 +89,8 @@ const createDriver = async (req, res) => {
                     }, {});
 
                     update.addressInfo = { permanent, current };
+                    update.step = 2;
+
                     break;
                 }
 
@@ -107,6 +108,8 @@ const createDriver = async (req, res) => {
                     }
 
                     update.documents = documents;
+                    update.step = 3;
+
                     break;
                 }
 

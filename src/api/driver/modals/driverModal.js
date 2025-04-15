@@ -38,7 +38,8 @@ const driverProfileSchema = new mongoose.Schema({
         bankPassbook: { type: String }
     },
 
-    status: { type: Number, enum: [1, 2, 3], default: 1 } // 1 = Active, 2 = Inactive , 3 => Delete
+    status: { type: Number, enum: [1, 2, 3], default: 1 }, // 1 = Active, 2 = Inactive , 3 => Delete
+    step: { type: Number, enum: [1, 2, 3] } // 1 = Screen 1, 2 = Screen 2 , 3 => Screen 3
 
 }, { timestamps: true });
 
