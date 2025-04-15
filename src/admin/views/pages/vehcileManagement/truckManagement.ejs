@@ -94,7 +94,7 @@
     </div>
     <div class="modal fade" id="editVehicleModal" tabindex="-1" aria-labelledby="editVehicleModalTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg custom-modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editVehicleModalTitle">Edit Vehicle</h5>
@@ -246,7 +246,7 @@
             let table = $('#vehicleTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: { url: '/vehcile/vehicleList', type: 'POST' }, // Updated URL for fetching vehicle data
+                ajax: { url: '/vehicle/vehicleList', type: 'post' }, // Updated URL for fetching vehicle data
                 columns: [
                     { data: null, render: (data, type, row, meta) => meta.row + 1 },
                     { data: 'name' }, // Truck Name
@@ -274,7 +274,7 @@
                 e.preventDefault();
                 const formData = new FormData(this); // Use FormData to include files
 
-                const url = '/vehcile/saveVehicle'; // Updated URL for saving vehicle data
+                const url = '/vehicle/saveVehicle'; // Updated URL for saving vehicle data
 
                 $.ajax({
                     url,
@@ -299,7 +299,7 @@
                 const id = $('#editVehicleId').val();
                 const formData = new FormData(this);
 
-                const url = `/vehcile/updateVechile/${id}`;
+                const url = `/vehicle/updateVechile/${id}`;
 
                 $.ajax({
                     url,
@@ -322,7 +322,7 @@
                 const id = $(this).data('id');
                 $('#editVehicleModal').modal('show');
 
-                $.get(`/vehcile/getVehicle/${id}`, function (data) {
+                $.get(`/vehicle/getVehicle/${id}`, function (data) {
                     const vehicle = data.vehicle;
                     $('#editVehicleId').val(vehicle._id);
 
@@ -351,7 +351,7 @@
                 const id = $(this).data('id');
                 if (confirm('Are you sure you want to delete this vehicle?')) {
                     $.ajax({
-                        url: `/vehcile/deleteVehicle/${id}`,
+                        url: `/vehicle/deleteVehicle/${id}`,
                         type: 'DELETE',
                         success: function (response) {
                             alert(response.message);

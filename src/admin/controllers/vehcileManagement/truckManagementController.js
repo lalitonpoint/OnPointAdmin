@@ -46,7 +46,7 @@ const saveVehicle = async (req, res) => {
             }
 
 
-            const vehicle = new PTL(vehicleData);
+            const vehicle = new Vehcile(vehicleData);
 
             await vehicle.save();
 
@@ -90,11 +90,11 @@ const vehicleList = async (req, res) => {
         }
 
         // 4. Fetch total and filtered record counts
-        const totalRecords = await PTL.countDocuments();
-        const filteredRecords = await PTL.countDocuments(filter);
+        const totalRecords = await Vehcile.countDocuments();
+        const filteredRecords = await Vehcile.countDocuments(filter);
 
-        // 5. Fetch the paginated and sorted PTL data
-        const vehicles = await PTL.find(filter)
+        // 5. Fetch the paginated and sorted Vehcile data
+        const vehicles = await Vehcile.find(filter)
             .sort(sort)
             .skip(parseInt(start)) // Ensure start is an integer
             .limit(parseInt(length)); // Ensure length is an integer
@@ -115,7 +115,7 @@ const vehicleList = async (req, res) => {
 
 const singleVehcile = async (req, res) => {
     try {
-        const vehicle = await PTL.findById(req.params.id);
+        const vehicle = await Vehcile.findById(req.params.id);
         if (!vehicle) {
             return res.status(404).json({ success: false, message: 'vehicle not found' });
         }

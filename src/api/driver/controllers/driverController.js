@@ -54,7 +54,7 @@ const createDriver = async (req, res) => {
                     const existingEmailDriver = await DriverProfile.findOne({ 'personalInfo.email': email });
                     if (existingEmailDriver) {
                         return res.status(200).json({
-                            status: false,
+                            success: false,
                             message: 'Email is already registered.',
                             data: existingEmailDriver // return the matched driver details
                         });
@@ -64,7 +64,7 @@ const createDriver = async (req, res) => {
                     const existingMobileDriver = await DriverProfile.findOne({ 'personalInfo.mobile': mobile });
                     if (existingMobileDriver) {
                         return res.status(200).json({
-                            status: false,
+                            success: false,
                             message: 'Mobile number is already registered.',
                             data: existingMobileDriver // return the matched driver details
                         });
