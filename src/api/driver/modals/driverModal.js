@@ -2,48 +2,44 @@ const mongoose = require("mongoose");
 
 const driverProfileSchema = new mongoose.Schema({
     personalInfo: {
-        name: String,
-        email: String,
-        dob: Date,
-        gender: String,
-        mobile: String,
-        altMobile: String,
+        name: { type: String, required: true },
+        email: { type: String },
+        dob: { type: Date },
+        gender: {
+            type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
+            default: 'Prefer not to say'
+        },
+        mobile: { type: String, required: true },
+        altMobile: { type: String },
+        profilePicture: { type: String }
     },
     addressInfo: {
         permanent: {
-            street: String,
-            city: String,
-            state: String,
-            pin: String
+            street: { type: String },
+            city: { type: String },
+            state: { type: String },
+            pin: { type: String }
         },
         current: {
-            street: String,
-            city: String,
-            state: String,
-            pin: String
+            street: { type: String },
+            city: { type: String },
+            state: { type: String },
+            pin: { type: String }
         }
     },
-    emergencyContact: {
-        name: String,
-        relationship: String,
-        contactNumber: String
-    },
+
     documents: {
-        aadhaarFront: String,
-        aadhaarBack: String,
-        panCard: String,
-        drivingLicense: String,
-        vehicleRC: String,
-        insuranceCopy: String,
-        bankPassbook: String
+        aadhaarFront: { type: String },
+        aadhaarBack: { type: String },
+        panCard: { type: String },
+        drivingLicense: { type: String },
+        vehicleRC: { type: String },
+        insuranceCopy: { type: String },
+        bankPassbook: { type: String }
     },
-    additionalInfo: {
-        logisticsExperience: Boolean,
-        preferredRegion: String,
-        languages: [String],
-        nightShift: Boolean
-    },
-    createdAt: { type: Date, default: Date.now }
-});
+
+    status: { type: Number, enum: [1, 2, 3], default: 1 } // 1 = Active, 2 = Inactive , 3 => Delete
+
+}, { timestamps: true });
 
 module.exports = mongoose.model("DriverProfile", driverProfileSchema);
