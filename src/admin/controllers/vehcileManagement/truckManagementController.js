@@ -1,10 +1,10 @@
 
-const PTL = require('../../models/vehcileManagement/partialTruckLoadModel'); // Assuming you have a Vehicle model
+const Vehcile = require('../../models/vehcileManagement/truckManagementModel'); // Assuming you have a Vehicle model
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 
-const ptlPage = (req, res) => {
-    res.render('pages/vehcileManagement/partialTruckLoad');
+const vechiclePage = (req, res) => {
+    res.render('pages/vehcileManagement/truckManagement');
 }
 
 const saveVehicle = async (req, res) => {
@@ -126,5 +126,5 @@ const singleVehcile = async (req, res) => {
 }
 
 module.exports = {
-    ptlPage, saveVehicle, vehicleList, singleVehcile
+    vechiclePage, saveVehicle, vehicleList, singleVehcile
 }

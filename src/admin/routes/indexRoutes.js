@@ -20,7 +20,7 @@ const documentRoutes = require('../routes/driverManagement/documentRoutes'); // 
 const driverRoutes = require('../routes/driverManagement/driverRoutes'); // Ensure correct path
 const checkLoggedIn = require('../middleware/login/checkLoggedIn'); // Ensure correct path
 const logoutRoutes = require('../routes/login/logoutRoutes'); // Ensure correct path
-const ptlRoutes = require('./vehcileManagement/partialTruckLoadRoutes'); // Ensure correct path
+const truckRoutes = require('./vehcileManagement/truckManagementRoutes'); // Ensure correct path
 const serviceRoutes = require('./vehcileManagement/serviceManagementRoutes'); // Ensure correct path
 const faqRoutes = require('./faqManagement/faqRoutes'); // Ensure correct path
 const vendorRoutes = require('./vendorManagement/vendorRoutes'); // Ensure correct path
@@ -54,6 +54,8 @@ router.use('/service', serviceRoutes);
 router.use('/faq', faqRoutes);
 router.use('/vendor', vendorRoutes);
 router.use('/tracking', trackingRoutes);
+
+router.use('/vehicle', truckRoutes);
 
 
 module.exports = router;
