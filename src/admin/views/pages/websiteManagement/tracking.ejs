@@ -101,8 +101,8 @@
                                 placeholder="Enter Tracking ID">
                         </div>
                         <div class="col-md-6">
-                            <label for="fromLocation" class="form-label">Pickup Location</label>
-                            <input type="text" class="form-control" id="fromLocation"
+                            <label for="pickUpLocation" class="form-label">Pickup Location</label>
+                            <input type="text" class="form-control" id="pickUpLocation"
                                 placeholder="Enter Pickup Location" name="pickUpLocation">
                         </div>
                         <div class="col-md-6">
@@ -178,7 +178,7 @@
                 type: 'POST',
                 data: function (d) {
                     d.trackingCode = $('#searchTrackingId').val();
-                    d.fromLocation = $('#fromLocation').val();
+                    d.pickUpLocation = $('#pickUpLocation').val();
                     d.dropLocation = $('#toLocation').val(); // Corrected ID here
                     d.status = $('#searchStatus').val();
                     d.date = $('#searchDate').val();
@@ -261,7 +261,7 @@
 
         // Reset Button
         $('#resetBtn').click(function () {
-            $('#searchTrackingId, #fromLocation, #toLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
+            $('#searchTrackingId, #pickUpLocation, #toLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
             trackingTable.ajax.reload();
         });
 
@@ -275,8 +275,8 @@
                 return;
             }
 
-            const fromLocation = $('#fromLocation').val();
-            if (!fromLocation) {
+            const pickUpLocation = $('#pickUpLocation').val();
+            if (!pickUpLocation) {
                 toastr.error('Please enter pickup location', 'Validation Error');
                 return;
             }
@@ -318,7 +318,7 @@
             const formData = {
                 id: $('#trackingId').val(),
                 trackingCode: $('#trackingCode').val(),
-                pickUpLocation: $('#fromLocation').val(), // Corrected name to match form
+                pickUpLocation: $('#pickUpLocation').val(), // Corrected name to match form
                 dropLocation: $('#dropLocation').val(), // Corrected name to match form
                 transportMode: $('#transportMode').val(),
                 noOfPacking: $('#noOfPacking').val(),
@@ -352,7 +352,7 @@
                 success: function (data) {
                     $('#trackingId').val(data.id);
                     $('#trackingCode').val(data.trackingCode);
-                    $('#fromLocation').val(data.pickUpLocation); // Added pickup location
+                    $('#pickUpLocation').val(data.pickUpLocation); // Added pickup location
                     $('#dropLocation').val(data.dropLocation); // Added drop location
                     $('#transportMode').val(data.transportMode); // Added transport mode
                     $('#noOfPacking').val(data.noOfPacking); // Added no of packing
