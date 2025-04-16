@@ -97,7 +97,7 @@
                         <div class="col-md-6">
                             <label for="trackingCode" class="form-label">Tracking ID <strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="trackingCode" name="trackingCode"
+                            <input type="text" class="form-control" id="trackingCode" name="trackingId"
                                 placeholder="Enter Tracking ID">
                         </div>
                         <div class="col-md-6">
@@ -148,8 +148,8 @@
                                 <option value="5">Cancelled</option>
                             </select>
                         </div>
-                        <div class="col-md-6 d-none">
-                            <label for="pod" class="form-label">POD<strong class="text-danger">*</strong></label>
+                        <div class="col-md-6 pod d-none">
+                            <label for="pod" class="form-label">POD</label>
                             <input type="file" class="form-control" id="pod" name="pod"
                                 placeholder="Enter No of Packing">
                         </div>
@@ -190,7 +190,7 @@
                     orderable: false, // Disable ordering for the index column
                     render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
                 },
-                { data: 'tracking_id' },
+                { data: 'trackingId' },
                 { data: 'pickUpLocation' }, // Corrected data property to 'pickUpLocation'
                 { data: 'dropLocation' },
                 { data: 'transportMode' },
@@ -247,8 +247,8 @@
                     orderable: false,
                     render: function (data, type, row) {
                         return `
-                            <button class="btn btn-sm btn-primary editBtn" data-id="${row.id}">Edit</button>
-                            <button class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}">Delete</button> `;
+                            <button class="btn btn-sm btn-primary editBtn" data-id="${row._id}">Edit</button>
+                            <button class="btn btn-sm btn-danger deleteBtn" data-id="${row._id}">Delete</button> `;
                     }
                 }
             ]
@@ -269,78 +269,90 @@
         $('#trackingForm').submit(function (e) {
             e.preventDefault();
 
+            // Trimmed values
             const trackingCode = $('#trackingCode').val().trim();
+            const pickUpLocation = $('#pickUpLocation').val().trim();
+            const dropLocation = $('#dropLocation').val().trim();
+            const transportMode = $('#transportMode').val().trim();
+            const noOfPacking = $('#noOfPacking').val().trim();
+            const createdAt = $('#createdAt').val().trim();
+            const deliveryTime = $('#deliveryTime').val().trim();
+            const trackingStatus = $('#trackingStatus').val().trim();
+            const id = $('#trackingId').val();
+
+            // Validation
             if (!trackingCode) {
-                toastr.error('Please enter tracking id', 'Validation Error');
+                toastr.error('Please enter tracking ID', 'Validation Error');
                 return;
             }
-
-            const pickUpLocation = $('#pickUpLocation').val();
             if (!pickUpLocation) {
                 toastr.error('Please enter pickup location', 'Validation Error');
                 return;
             }
-
-            const dropLocation = $('#dropLocation').val();
             if (!dropLocation) {
                 toastr.error('Please enter drop location', 'Validation Error');
                 return;
             }
-
-            const transportMode = $('#transportMode').val();
             if (!transportMode) {
                 toastr.error('Please enter transport mode', 'Validation Error');
                 return;
             }
-            const noOfPacking = $('#noOfPacking').val();
             if (!noOfPacking) {
-                toastr.error('Please enter no of packing', 'Validation Error');
+                toastr.error('Please enter number of packings', 'Validation Error');
                 return;
             }
-
-            const createdAt = $('#createdAt').val();
             if (!createdAt) {
-                toastr.error('Please select date.', 'Validation Error');
+                toastr.error('Please select a date.', 'Validation Error');
                 return;
             }
-
-            const deliveryTime = $('#deliveryTime').val();
             if (!deliveryTime) {
-                toastr.error('Please select time.', 'Validation Error');
+                toastr.error('Please select delivery time.', 'Validation Error');
+                return;
+            }
+            if (!trackingStatus) {
+                toastr.error('Please select tracking status.', 'Validation Error');
                 return;
             }
 
-            const trackingStatus = $('#trackingStatus').val();
-            if (!trackingStatus) {
-                toastr.error('Please select status.', 'Validation Error');
-                return;
-            }
+            // Prepare form data
             const formData = {
-                id: $('#trackingId').val(),
-                trackingCode: $('#trackingCode').val(),
-                pickUpLocation: $('#pickUpLocation').val(), // Corrected name to match form
-                dropLocation: $('#dropLocation').val(), // Corrected name to match form
-                transportMode: $('#transportMode').val(),
-                noOfPacking: $('#noOfPacking').val(),
-                status: $('#trackingStatus').val(),
-                createdAt: $('#createdAt').val(), // Corrected ID to match form
-                deliveryTime: $('#deliveryTime').val(),
+                id: id,
+                trackingCode: trackingCode,
+                pickUpLocation: pickUpLocation,
+                dropLocation: dropLocation,
+                transportMode: transportMode,
+                noOfPacking: noOfPacking,
+                status: trackingStatus,
+                createdAt: createdAt,
+                deliveryTime: deliveryTime
             };
 
+            // Include POD if it's edit mode
+            // if (id) {
+            //     formData.pod = $('#pod').val()?.trim();
+            // }
+
+            const actionUrl = id ? `/tracking/editTracking/${id}` : '/tracking/addTracking';
+
+            // Submit via AJAX
             $.ajax({
-                url: '/tracking/addTracking',
+                url: actionUrl,
                 type: 'POST',
                 data: formData,
+                dataType: 'json',
                 success: function (response) {
+                    toastr.success('Tracking information saved successfully!');
                     $('#trackingModal').modal('hide');
                     $('#trackingForm')[0].reset();
                     trackingTable.ajax.reload();
                 },
-                error: function (err) {
-                    alert('Failed to save tracking.');
+                error: function (xhr) {
+                    const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
+                    toastr.error(errorMsg, 'Error');
                 }
             });
         });
+
 
         // Edit Button
         $(document).on('click', '.editBtn', function () {
@@ -350,8 +362,8 @@
                 url: '/tracking/get/' + id,
                 type: 'GET',
                 success: function (data) {
-                    $('#trackingId').val(data.id);
-                    $('#trackingCode').val(data.trackingCode);
+                    $('#trackingId').val(data._id);
+                    $('#trackingCode').val(data.trackingId);
                     $('#pickUpLocation').val(data.pickUpLocation); // Added pickup location
                     $('#dropLocation').val(data.dropLocation); // Added drop location
                     $('#transportMode').val(data.transportMode); // Added transport mode
@@ -363,6 +375,17 @@
                     $('#trackingModal').modal('show');
                 }
             });
+
+            $('#trackingStatus').change(function () {
+                // Code to execute when the element's value changes
+                console.log("The value of the element has changed!");
+                $('.pod').removeClass('d-none');
+            });
+        });
+
+        $('#trackingTable').on('click', '.editBtn', function () {
+            const trackingId = $(this).data('id');
+            $('#trackingModal').modal('show', this); // Pass the button element for context
         });
 
         // Delete Button

@@ -47,6 +47,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    deviceType: {
+        type: Number, enum: [1, 2, 3] // 1 = Android, 2 = Ios , 3 => Website
+    }, deviceToken: {
+        type: String,
+        default: ''
+    }, deviceId: {
+        type: String,
+        default: ''
+    }
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

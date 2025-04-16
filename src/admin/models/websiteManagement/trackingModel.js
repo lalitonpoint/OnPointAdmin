@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const shipmentSchema = new mongoose.Schema({
-    tracking_id: {
+    trackingId: {
         type: String,
         unique: true,
         required: true

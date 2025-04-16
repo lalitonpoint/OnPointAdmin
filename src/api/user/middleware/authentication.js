@@ -19,5 +19,14 @@ const verifyToken = (req, res, next) => {
         return res.status(200).json({ message: 'Invalid token' });
     }
 };
+const headerAuth = (req, res, next) => {
+    const deviceType = req.headers['devicetype']; // headers are lowercase
+    if (!deviceType) {
+        return res.status(400).json({ message: 'DeviceType is missing' });
+    } else {
+        next();
+    }
+};
 
-module.exports = { verifyToken };
+
+module.exports = { verifyToken, headerAuth };

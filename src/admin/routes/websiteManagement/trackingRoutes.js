@@ -14,7 +14,7 @@ router.post('/addTracking', TrackingCtrl.addTracking);
 
 router.get('/get/:id', TrackingCtrl.getTrackingById);
 
-router.post('/update/:id', TrackingCtrl.updateTracking); // Using POST for update
+router.post('/editTracking/:id', TrackingCtrl.updateTracking); // Using POST for update
 
 router.delete('/delete/:id', TrackingCtrl.deleteTracking);
 

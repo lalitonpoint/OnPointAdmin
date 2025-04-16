@@ -3,6 +3,7 @@ const { uploadImage } = require("../../../admin/utils/uploadHelper");
 const multiparty = require('multiparty');
 const fs = require('fs').promises;
 const jwt = require('jsonwebtoken');
+const getHeaderValue = require('../utils/getHeaderValue');
 const secretKey = process.env.JWT_SECRET; // Define your secret key
 
 // Utility function for normalizing and validating gender
@@ -15,6 +16,11 @@ function normalizeGender(gender) {
 const createUser = async (req, res) => {
     const form = new multiparty.Form();
     form.maxFilesSize = 5 * 1024 * 1024;
+
+    const deviceType = getHeaderValue(req, 'devicetype')
+    const deviceToken = getHeaderValue(req, 'devicetoken') ?? ''
+    const deviceId = getHeaderValue(req, 'deviceid') ?? ''
+    // console.log('Devicetype', deviceType);
 
     form.parse(req, async (err, fields, files) => {
         if (err) {
@@ -108,6 +114,9 @@ const createUser = async (req, res) => {
                 gstNumber: gstNumber[0] || '',
                 profilePicture: profilePictureUrl,
                 status: 1,
+                deviceType: deviceType,
+                deviceToken: deviceToken,
+                deviceId: deviceId
             });
 
             const savedUser = await newUser.save();

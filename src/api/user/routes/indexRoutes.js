@@ -8,8 +8,10 @@ const paymentRoutes = require('./paymentRoutes');
 const faqRoutes = require('./faqRoutes');
 const configurationRoutes = require('./configurationRoutes');
 
-const { verifyToken } = require('../middleware/authentication');
+const { verifyToken, headerAuth } = require('../middleware/authentication');
 router.use('/otp', sendOtpRoutes);
+
+router.use(headerAuth);
 router.use('/user', userRoutes);
 
 router.use(verifyToken);

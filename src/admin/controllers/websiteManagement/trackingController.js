@@ -1,5 +1,7 @@
 const Tracking = require('../../models/websiteManagement/trackingModel');
 const moment = require('moment'); // Ensure moment.js is installed: npm install moment
+const multiparty = require('multiparty');
+
 
 const trackingPage = (req, res) => {
     res.render('pages/websiteManagement/tracking');
@@ -126,7 +128,7 @@ const addTracking = async (req, res) => {
 
         // Create a new tracking entry
         const newTracking = new Tracking({
-            tracking_id: trackingCode,
+            trackingId: trackingCode,
             status: statusNumber,
             estimateDate: moment(createdAt).toDate(), // Convert string to Date object using moment for consistency
             pickUpLocation: pickUpLocation || null,
@@ -163,37 +165,73 @@ const getTrackingById = async (req, res) => {
 };
 
 const updateTracking = async (req, res) => {
+
+
     try {
-        const { trackingCode, status, createdAt, pickUpLocation, dropLocation, transportMode, noOfPacking, deliveryTime } = req.body;
-        const { id } = req.params;
+        const form = new multiparty.Form();
 
-        // Validate required fields if needed for update
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                console.error("Error parsing form data:", err);
+                return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
+            }
 
-        const updatedTracking = await Tracking.findByIdAndUpdate(
-            id,
-            {
-                tracking_id: trackingCode,
-                status: parseInt(status),
-                estimateDate: moment(createdAt).toDate(),
-                pickUpLocation,
-                dropLocation,
-                transportMode,
-                noOfPacking: parseInt(noOfPacking),
-                deliveryTime,
-            },
-            { new: true } // Return the updated document
-        );
+            const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
+            const status = fields.status ? parseInt(fields.status[0]) : null;
+            const pickUpLocation = fields.pickUpLocation ? parseInt(fields.pickUpLocation[0]) : 1; // Default to Active
+            const dropLocation = fields.dropLocation ? parseInt(fields.dropLocation[0]) : 1; // Default to Active
+            const transportMode = fields.transportMode ? parseInt(fields.transportMode[0]) : 1; // Default to Active
+            const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
+            const createdAt = fields.createdAt ? parseInt(fields.createdAt[0]) : 1; // Default to Active
+            const deliveryTime = fields.deliveryTime ? parseInt(fields.deliveryTime[0]) : 1; // Default to Active
+            const file = files.pod ? files.pod[0] : null;
 
-        if (!updatedTracking) {
-            return res.status(404).json({ message: 'Tracking not found' });
-        }
+            if (!trackingCode || pickUpLocation === null || status === null || dropLocation === null || transportMode === null || noOfPacking === null) { // Corrected the validation for bannerType and status
+                return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
+            }
 
-        res.json({ message: 'Tracking updated successfully', data: updatedTracking });
+            let podUrl = null;
+            if (file) {
+                const result = await uploadImage(file);
+                if (result.success) {
+                    podUrl = result.url;
+                } else {
+                    console.error("Error uploading image:", result.error || result.message);
+                    return res.status(500).json({ error: "Failed to upload pod image" }); // Return error if image upload fails
+                }
+            } else {
+                podUrl = ''; // Or handle the case where no file is uploaded based on your requirements
+            }
 
+            const { id } = req.params;
+
+            const updatedTracking = await Tracking.findByIdAndUpdate(
+                id,
+                {
+                    trackingId: trackingCode,
+                    status: parseInt(status),
+                    estimateDate: moment(createdAt).toDate(),
+                    pickUpLocation,
+                    dropLocation,
+                    transportMode,
+                    noOfPacking: parseInt(noOfPacking),
+                    deliveryTime,
+                    pod: podUrl
+                },
+                { new: true } // Return the updated document
+            );
+
+            if (!updatedTracking) {
+                return res.status(404).json({ message: 'Tracking not found' });
+            }
+
+            res.json({ message: 'Tracking updated successfully', data: updatedTracking });
+        });
     } catch (error) {
         console.error('Error updating tracking:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
+
 };
 
 const deleteTracking = async (req, res) => {
