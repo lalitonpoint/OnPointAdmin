@@ -73,19 +73,32 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="bodyType" class="form-label">Vehicle Body Type</label>
+                            <select class="form-control" id="bodyType" name="bodyType">
+                                <option value="">Select Body Type</option>
+                                <option value="openBody">Open Body</option>
+                                <option value="closedBody">Closed Body</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-control" id="status" name="status">
                                 <option value="">Select Status</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">In-Active</option>
+                                <option value="1">Active</option>
+                                <option value="2">In-Active</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="vechileImage" class="form-label">Vehicle Image</label>
-                            <input type="file" class="form-control" id="vechileImage" name="profileImage"
+                            <input type="file" class="form-control image_view" id="vechileImage" name="vechileImage"
                                 accept="image/*">
+                            <div id="imagePreviewContainer" class="mt-2" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Blog Image Preview"
+                                    style="max-width: 100px; max-height: 100px;">
+                            </div>
                         </div>
+
                         <button type="submit" class="btn btn-pink w-100">Save Vehicle</button>
                     </form>
                 </div>
@@ -243,6 +256,22 @@
 
     <script>
         $(document).ready(function () {
+
+            $('.image_view').change(function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#imagePreview').attr('src', e.target.result);
+                        $('#imagePreviewContainer').show();
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    $('#imagePreview').attr('src', '#');
+                    $('#imagePreviewContainer').hide();
+                }
+            });
+
             let table = $('#vehicleTable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -250,9 +279,15 @@
                 columns: [
                     { data: null, render: (data, type, row, meta) => meta.row + 1 },
                     { data: 'name' }, // Truck Name
-                    { data: 'status' }, // Status
                     {
-                        data: 'profileImage',
+                        data: 'status',
+                        render: (data, type, row) => {
+                            const statusText = data === 1 ? 'Active' : 'Inactive';
+                            const newStatus = data === 1 ? 2 : 1; // Toggle status
+                            return `<span class="badge ${data === 1 ? 'bg-success' : 'bg-secondary'} changeStatus" data-id='${row._id}' data-status='${newStatus}' style="cursor: pointer;">${statusText}</span>`;
+                        }
+                    }, {
+                        data: 'vechileImage',
                         render: (data) => {
                             if (data) {
                                 return `<img src="${data}" alt="Vehicle Image" style="max-width: 50px; max-height: 50px;">`; // Display image thumbnail

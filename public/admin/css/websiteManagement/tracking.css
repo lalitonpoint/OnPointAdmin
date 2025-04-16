@@ -36,3 +36,11 @@
 #searchTestimonialsCard {
     display: none;
 }
+
+.trackingHeadding {
+    color: #252223;
+}
+
+.btn-close-white {
+    filter: none !important;
+}

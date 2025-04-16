@@ -107,10 +107,10 @@ const createDriver = async (req, res) => {
                     }
 
                     const current = {
-                        street: getField('street'),
-                        city: getField('city'),
-                        state: getField('state'),
-                        pin: getField('pin')
+                        street: getField('currentStreet'),
+                        city: getField('currentCity'),
+                        state: getField('currentState'),
+                        pin: getField('currentPin')
                     };
 
                     update.addressInfo = { permanent, current };

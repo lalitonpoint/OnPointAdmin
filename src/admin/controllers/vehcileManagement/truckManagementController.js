@@ -25,25 +25,25 @@ const saveVehicle = async (req, res) => {
             }
 
             const file = files.vechileImage ? files.vechileImage[0] : null;
-            let imageUrl = '';
-            if (file && file.path && file.originalFilename) {
+
+            let vechileImageUrl = null;
+            if (file) {
                 const result = await uploadImage(file);
-                imageUrl = result.success ? result.url : `http://localhost:${process.env.PORT || 3000}${result.path}`;
+                if (result.success) {
+                    vechileImageUrl = result.url;
+                } else {
+                    console.error("Error uploading image:", result.error || result.message);
+                    return res.status(500).json({ error: "Failed to upload banner image" }); // Return error if image upload fails
+                }
+            } else {
+                vechileImageUrl = ''; // Or handle the case where no file is uploaded based on your requirements
             }
 
             const vehicleData = {
                 name,
-                vechileImage: imageUrl
+                status,
+                vechileImage: vechileImageUrl
             };
-
-            // Handle status
-            if (status && ['active', 'inactive'].includes(status)) {
-                vehicleData.status = status;
-            } else {
-                // You might want to return an error or set a default if status is invalid
-                // For now, we'll rely on the schema default if an invalid value is sent
-                console.warn(`Invalid status value received: ${status}`);
-            }
 
 
             const vehicle = new Vehcile(vehicleData);
@@ -125,6 +125,15 @@ const singleVehcile = async (req, res) => {
     }
 }
 
+const deleteVehicle = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Vehcile.findByIdAndDelete(id);
+        res.json({ success: true, message: 'Vehicle deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 module.exports = {
-    vechiclePage, saveVehicle, vehicleList, singleVehcile
+    vechiclePage, saveVehicle, vehicleList, singleVehcile, deleteVehicle
 }
