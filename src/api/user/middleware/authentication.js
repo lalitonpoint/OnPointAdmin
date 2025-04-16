@@ -16,7 +16,7 @@ const verifyToken = (req, res, next) => {
         req.user = decoded; // contains userId and mobileNumber
         next();
     } catch (err) {
-        return res.status(200).json({ message: 'Invalid token' });
+        return res.status(200).json({ message: 'Invalid Jwt token' });
     }
 };
 const headerAuth = (req, res, next) => {

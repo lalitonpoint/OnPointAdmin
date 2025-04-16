@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { getSettingSection } = require('../controllers/configurationController')
+const { getSettingData } = require('../controllers/configurationController')
 
-router.post('/detail', getSettingSection);
+router.post('/detail', getSettingData);
 
 module.exports = router;
