@@ -3,10 +3,10 @@ const fs = require("fs/promises");
 const jwt = require("jsonwebtoken");
 const DriverProfile = require("../modals/driverModal");
 const { uploadImage } = require("../../../admin/utils/uploadHelper");
-const secretKey = "your_jwt_secret"; // move to .env in production
+const secretKey = process.env.JWT_SECRET || "your_jwt_secret"; // Move to .env in production
 
 const uploadDocument = async (files, docField) => {
-    if (files?.[docField]?.[0]) {
+    if (files?.[docField]?.length > 0) {
         const file = files[docField][0];
         const tempFile = {
             path: file.path,
@@ -16,8 +16,14 @@ const uploadDocument = async (files, docField) => {
         };
 
         const result = await uploadImage(tempFile);
-        // await fs.unlink(file.path);
-        return result.success ? result.url : '';
+        if (result.success) {
+            // Clean up the temporary file after successful upload
+            // await fs.unlink(file.path);
+            return result.url;
+        } else {
+            console.error(`Failed to upload ${docField}:`, result.message);
+            return ''; // Or perhaps throw an error for better handling in the caller
+        }
     }
     return '';
 };
@@ -27,7 +33,10 @@ const createDriver = async (req, res) => {
     form.maxFilesSize = 10 * 1024 * 1024;
 
     form.parse(req, async (err, fields, files) => {
-        if (err) return res.status(200).json({ status: false, message: 'Failed to parse form data.' });
+        if (err) {
+            console.error('Error parsing form:', err);
+            return res.status(400).json({ success: false, message: 'Failed to parse form data.' }); // Changed status code to 400
+        }
 
         const getField = field => fields[field]?.[0] || '';
         const step = parseInt(getField("step"), 10);
@@ -35,7 +44,7 @@ const createDriver = async (req, res) => {
         let update = {};
 
         if (step > 1 && !driverId) {
-            return res.status(200).json({ success: false, message: "driverId is required for step > 1" });
+            return res.status(400).json({ success: false, message: "driverId is required for next step " }); // Changed status code to 400
         }
 
         try {
@@ -44,7 +53,7 @@ const createDriver = async (req, res) => {
                     const requiredFields = ['name', 'email', 'dob', 'gender', 'mobile'];
                     for (const field of requiredFields) {
                         if (!getField(field)) {
-                            return res.status(200).json({ status: false, message: `${field} is required.` });
+                            return res.status(200).json({ success: false, message: `${field} is required.` }); // Changed status code to 400 and using success: false for consistency
                         }
                     }
 
@@ -56,7 +65,7 @@ const createDriver = async (req, res) => {
                         return res.status(200).json({
                             success: false,
                             message: 'Email is already registered.',
-                            data: existingEmailDriver // return the matched driver details
+                            data: existingEmailDriver
                         });
                     }
 
@@ -66,12 +75,12 @@ const createDriver = async (req, res) => {
                         return res.status(200).json({
                             success: false,
                             message: 'Mobile number is already registered.',
-                            data: existingMobileDriver // return the matched driver details
+                            data: existingMobileDriver
                         });
                     }
 
                     const profilePicture = await uploadDocument(files, 'profilePicture');
-                    if (!profilePicture) return res.status(200).json({ status: false, message: "Profile picture is required." });
+                    if (!profilePicture) return res.status(200).json({ success: false, message: "Profile picture is required." }); // Changed status code to 400
 
                     update.personalInfo = {
                         name: getField('name'),
@@ -87,47 +96,50 @@ const createDriver = async (req, res) => {
                 }
 
                 case 2: {
-                    const permanent = ['Street', 'City', 'State', 'Pin'].reduce((acc, field) => {
+                    const permanent = {};
+                    const permanentRequiredFields = ['Street', 'City', 'State', 'Pin'];
+                    for (const field of permanentRequiredFields) {
                         const val = getField(`permanent${field}`);
-                        if (!val) throw new Error(`Permanent ${field} is required.`);
-                        acc[field.toLowerCase()] = val;
-                        return acc;
-                    }, {});
+                        if (!val) {
+                            return res.status(200).json({ success: false, message: `Permanent ${field} is required.` }); // Changed to return JSON response
+                        }
+                        permanent[field.toLowerCase()] = val;
+                    }
 
-                    const current = ['Street', 'City', 'State', 'Pin'].reduce((acc, field) => {
-                        const val = getField(`current${field}`);
-                        if (!val) throw new Error(`Current ${field} is required.`);
-                        acc[field.toLowerCase()] = val;
-                        return acc;
-                    }, {});
+                    const current = {
+                        street: getField('street'),
+                        city: getField('city'),
+                        state: getField('state'),
+                        pin: getField('pin')
+                    };
 
                     update.addressInfo = { permanent, current };
                     update.step = 2;
-
                     break;
                 }
 
                 case 3: {
-                    const fields = [
+                    const fieldsToUpload = [
                         'aadhaarFront', 'aadhaarBack', 'panCard', 'drivingLicense',
                         'vehicleRC', 'insuranceCopy', 'bankPassbook'
                     ];
                     const documents = {};
 
-                    for (const field of fields) {
+                    for (const field of fieldsToUpload) {
                         const uploaded = await uploadDocument(files, field);
-                        if (!uploaded) throw new Error(`${field.replace(/([A-Z])/g, ' $1')} is required.`);
+                        if (!uploaded) {
+                            return res.status(200).json({ success: false, message: `${field.replace(/([A-Z])/g, ' $1')} is required.` }); // Changed to return JSON response and status code
+                        }
                         documents[field] = uploaded;
                     }
 
                     update.documents = documents;
                     update.step = 3;
-
                     break;
                 }
 
                 default:
-                    return res.status(200).json({ status: false, message: "Invalid step value." });
+                    return res.status(400).json({ success: false, message: "Invalid step value." }); // Changed status code to 400 and using success: false
             }
 
             let driver;
@@ -136,7 +148,7 @@ const createDriver = async (req, res) => {
                 update.status = 1;
                 driver = new DriverProfile(update);
                 await driver.save();
-                return res.status(200).json({
+                return res.status(201).json({ // Changed status code to 201 for successful creation
                     success: true,
                     message: `Step ${step} completed`,
                     driverId: driver._id,
@@ -144,12 +156,22 @@ const createDriver = async (req, res) => {
                 });
 
             } else {
+                // Check if the driver exists before updating
+                const existingDriver = await DriverProfile.findById(driverId);
+                if (!existingDriver) {
+                    return res.status(404).json({ success: false, message: 'Driver not found.' }); // Return 404 if driver doesn't exist
+                }
+
                 driver = await DriverProfile.findByIdAndUpdate(driverId, { $set: update }, { new: true });
-                const token = jwt.sign(
-                    { driverId: driver._id, mobileNumber: driver.personalInfo?.mobile },
-                    secretKey,
-                    { expiresIn: '7d' }
-                );
+
+                let token = null;
+
+                if (step == 3)
+                    token = jwt.sign(
+                        { driverId: driver._id, mobileNumber: driver.personalInfo?.mobile },
+                        secretKey,
+                        { expiresIn: '7d' }
+                    );
 
                 return res.status(200).json({
                     success: true,
@@ -160,12 +182,10 @@ const createDriver = async (req, res) => {
                 });
             }
 
-
-
         } catch (error) {
-            console.error('Error in createDriver:', error.message);
+            console.error('Error in createDriver:', error); // Log the full error for debugging
             return res.status(500).json({
-                status: false,
+                success: false, // Using success: false for consistency
                 message: 'Internal server error.',
                 details: error.message
             });

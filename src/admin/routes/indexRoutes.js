@@ -31,7 +31,7 @@ const trackingRoutes = require('./websiteManagement/trackingRoutes'); // Ensure 
 router.use('/login', loginRoutes);
 router.get('/logout', logoutRoutes);
 
-// router.use(checkLoggedIn);
+router.use(checkLoggedIn);
 router.use('/dashboard', dashboardRoutes);
 router.use('/roles', rolesRoutes);
 router.use('/users', usersRoutes);
