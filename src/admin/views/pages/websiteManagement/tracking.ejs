@@ -13,7 +13,6 @@
     }
 </style>
 <div class="container-fluid mt-4">
-    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold">📦 Tracking Management</h3>
         <div>
@@ -26,7 +25,6 @@
         </div>
     </div>
 
-    <!-- Search Card -->
     <div class="card shadow-sm mb-4" id="searchTrackingCard">
         <div class="card-body">
             <h5 class="mb-3">Search Trackings</h5>
@@ -35,15 +33,6 @@
                     <label for="searchTrackingId" class="form-label">Tracking ID</label>
                     <input type="text" class="form-control" id="searchTrackingId" placeholder="Enter Tracking ID">
                 </div>
-                <div class="col-md-3">
-                    <label for="fromLocation" class="form-label">From Location</label>
-                    <input type="text" class="form-control" id="fromLocation" placeholder="Enter Pickup Location">
-                </div>
-                <div class="col-md-3">
-                    <label for="toLocation" class="form-label">Tracking ID</label>
-                    <input type="text" class="form-control" id="toLocation" placeholder="Enter Drop Location">
-                </div>
-
                 <div class="col-md-3">
                     <label for="searchStatus" class="form-label">Status</label>
                     <select id="searchStatus" class="form-select">
@@ -69,7 +58,6 @@
         </div>
     </div>
 
-    <!-- Table -->
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
@@ -78,8 +66,12 @@
                         <tr>
                             <th>#</th>
                             <th>Tracking ID</th>
+                            <th>From Location</th>
+                            <th>Drop Location</th>
+                            <th>Transport Mode</th>
+                            <th>No. of Mode</th>
                             <th>Status</th>
-                            <th>Estimate Date</th>
+                            <th>Delivery Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -90,7 +82,6 @@
     </div>
 </div>
 
-<!-- Modal Form -->
 <div class="modal fade" id="trackingModal" tabindex="-1" aria-labelledby="trackingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg custom-modal">
         <div class="modal-content border-0 rounded-3">
@@ -107,7 +98,7 @@
                             <label for="trackingCode" class="form-label">Tracking ID <strong
                                     class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="trackingCode" name="trackingCode"
-                                placeholder="Enter Tracking ID" required>
+                                placeholder="Enter Tracking ID">
                         </div>
                         <div class="col-md-6">
                             <label for="fromLocation" class="form-label">Pickup Location</label>
@@ -115,8 +106,8 @@
                                 placeholder="Enter Pickup Location" name="pickUpLocation">
                         </div>
                         <div class="col-md-6">
-                            <label for="toLocation" class="form-label">Drop Location</label>
-                            <input type="text" class="form-control" id="toLocation" placeholder="Enter Drop Location"
+                            <label for="dropLocation" class="form-label">Drop Location</label>
+                            <input type="text" class="form-control" id="dropLocation" placeholder="Enter Drop Location"
                                 name="dropLocation">
                         </div>
                         <div class="col-md-6">
@@ -130,25 +121,25 @@
                             <label for="noOfPacking" class="form-label">No. of Packing <strong
                                     class="text-danger">*</strong></label>
                             <input type="number" class="form-control" id="noOfPacking" name="noOfPacking"
-                                placeholder="Enter No of Packing" required>
+                                placeholder="Enter No of Packing">
                         </div>
 
                         <div class="col-md-6">
-                            <label for="searchCreatedAt" class="form-label">Date <strong
+                            <label for="createdAt" class="form-label">Date <strong
                                     class="text-danger">*</strong></label>
-                            <input type="date" class="form-control" id="searchCreatedAt" name="createdAt" required>
+                            <input type="date" class="form-control" id="createdAt" name="createdAt">
                         </div>
 
                         <div class="col-md-6">
                             <label for="deliveryTime" class="form-label">Time <strong
                                     class="text-danger">*</strong></label>
-                            <input type="time" class="form-control" id="deliveryTime" name="deliveryTime" required>
+                            <input type="time" class="form-control" id="deliveryTime" name="deliveryTime">
                         </div>
 
                         <div class="col-md-6">
                             <label for="trackingStatus" class="form-label">Status <strong
                                     class="text-danger">*</strong></label>
-                            <select class="form-select" id="trackingStatus" name="status" required>
+                            <select class="form-select" id="trackingStatus" name="status">
                                 <option value="">Select Status</option>
                                 <option value="1">Pickup</option>
                                 <option value="2">Out for Delivery</option>
@@ -160,7 +151,7 @@
                         <div class="col-md-6 d-none">
                             <label for="pod" class="form-label">POD<strong class="text-danger">*</strong></label>
                             <input type="file" class="form-control" id="pod" name="pod"
-                                placeholder="Enter No of Packing" required>
+                                placeholder="Enter No of Packing">
                         </div>
 
 
@@ -176,6 +167,7 @@
 
 <script>
     let trackingTable;
+    // This ensures the script runs after the DOM is fully loaded
     $(document).ready(function () {
         // Initialize DataTable
         trackingTable = $('#trackingTable').DataTable({
@@ -186,6 +178,8 @@
                 type: 'POST',
                 data: function (d) {
                     d.trackingCode = $('#searchTrackingId').val();
+                    d.fromLocation = $('#fromLocation').val();
+                    d.dropLocation = $('#toLocation').val(); // Corrected ID here
                     d.status = $('#searchStatus').val();
                     d.date = $('#searchDate').val();
                 }
@@ -193,10 +187,15 @@
             columns: [
                 {
                     data: null,
-                    orderable: false, // Disable ordering for the Profile Image column
+                    orderable: false, // Disable ordering for the index column
                     render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
                 },
                 { data: 'tracking_id' },
+                { data: 'pickUpLocation' }, // Corrected data property to 'pickUpLocation'
+                { data: 'dropLocation' },
+                { data: 'transportMode' },
+                { data: 'noOfPacking' },
+
                 {
                     data: 'status',
                     render: function (data) {
@@ -204,7 +203,7 @@
                         let statusColor = '';
                         let statusText = '';
 
-                        switch (data) {
+                        switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
                             case 1:
                                 statusColor = 'badge bg-warning'; // Pickup
                                 statusText = 'Pickup';
@@ -234,9 +233,13 @@
                         return `<span class="${statusColor}">${statusText}</span>`;
                     }
                 },
+
+
+
                 {
-                    data: 'date', render: function (data) {
-                        return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date as needed
+                    data: 'createdAt', // Assuming your server returns the combined date and time in 'createdAt'
+                    render: function (data) {
+                        return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date and time as needed
                     }
                 },
                 {
@@ -244,9 +247,8 @@
                     orderable: false,
                     render: function (data, type, row) {
                         return `
-                        <button class="btn btn-sm btn-primary editBtn" data-id="${row.id}">Edit</button>
-                        <button class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}">Delete</button>
-                    `;
+                            <button class="btn btn-sm btn-primary editBtn" data-id="${row.id}">Edit</button>
+                            <button class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}">Delete</button> `;
                     }
                 }
             ]
@@ -259,18 +261,70 @@
 
         // Reset Button
         $('#resetBtn').click(function () {
-            $('#searchTrackingId, #searchStatus, #searchDate').val('');
+            $('#searchTrackingId, #fromLocation, #toLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
             trackingTable.ajax.reload();
         });
 
         // Submit Add/Edit Form
         $('#trackingForm').submit(function (e) {
             e.preventDefault();
+
+            const trackingCode = $('#trackingCode').val().trim();
+            if (!trackingCode) {
+                toastr.error('Please enter tracking id', 'Validation Error');
+                return;
+            }
+
+            const fromLocation = $('#fromLocation').val();
+            if (!fromLocation) {
+                toastr.error('Please enter pickup location', 'Validation Error');
+                return;
+            }
+
+            const dropLocation = $('#dropLocation').val();
+            if (!dropLocation) {
+                toastr.error('Please enter drop location', 'Validation Error');
+                return;
+            }
+
+            const transportMode = $('#transportMode').val();
+            if (!transportMode) {
+                toastr.error('Please enter transport mode', 'Validation Error');
+                return;
+            }
+            const noOfPacking = $('#noOfPacking').val();
+            if (!noOfPacking) {
+                toastr.error('Please enter no of packing', 'Validation Error');
+                return;
+            }
+
+            const createdAt = $('#createdAt').val();
+            if (!createdAt) {
+                toastr.error('Please select date.', 'Validation Error');
+                return;
+            }
+
+            const deliveryTime = $('#deliveryTime').val();
+            if (!deliveryTime) {
+                toastr.error('Please select time.', 'Validation Error');
+                return;
+            }
+
+            const trackingStatus = $('#trackingStatus').val();
+            if (!trackingStatus) {
+                toastr.error('Please select status.', 'Validation Error');
+                return;
+            }
             const formData = {
                 id: $('#trackingId').val(),
                 trackingCode: $('#trackingCode').val(),
+                pickUpLocation: $('#fromLocation').val(), // Corrected name to match form
+                dropLocation: $('#dropLocation').val(), // Corrected name to match form
+                transportMode: $('#transportMode').val(),
+                noOfPacking: $('#noOfPacking').val(),
                 status: $('#trackingStatus').val(),
-                createdAt: $('#searchCreatedAt').val()
+                createdAt: $('#createdAt').val(), // Corrected ID to match form
+                deliveryTime: $('#deliveryTime').val(),
             };
 
             $.ajax({
@@ -293,13 +347,18 @@
             const id = $(this).data('id');
 
             $.ajax({
-                url: '/admin/tracking/get/' + id,
+                url: '/tracking/get/' + id,
                 type: 'GET',
                 success: function (data) {
                     $('#trackingId').val(data.id);
                     $('#trackingCode').val(data.trackingCode);
+                    $('#fromLocation').val(data.pickUpLocation); // Added pickup location
+                    $('#dropLocation').val(data.dropLocation); // Added drop location
+                    $('#transportMode').val(data.transportMode); // Added transport mode
+                    $('#noOfPacking').val(data.noOfPacking); // Added no of packing
                     $('#trackingStatus').val(data.status);
-                    $('#searchCreatedAt').val(data.createdAt);
+                    $('#createdAt').val(moment(data.createdAt).format('YYYY-MM-DD')); // Corrected ID and format date
+                    $('#deliveryTime').val(data.deliveryTime); // Added delivery time
 
                     $('#trackingModal').modal('show');
                 }
@@ -311,7 +370,7 @@
             const id = $(this).data('id');
             if (confirm("Are you sure you want to delete this tracking?")) {
                 $.ajax({
-                    url: '/admin/tracking/delete/' + id,
+                    url: '/tracking/delete/' + id,
                     type: 'DELETE',
                     success: function () {
                         trackingTable.ajax.reload();

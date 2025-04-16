@@ -1,9 +1,11 @@
 const Tracking = require('../../models/websiteManagement/trackingModel');
+const moment = require('moment'); // Ensure moment.js is installed: npm install moment
+
 const trackingPage = (req, res) => {
     res.render('pages/websiteManagement/tracking');
 }
 
-// Fetch testimonials (for DataTable)
+// Fetch tracking data (for DataTable)
 const trackingList = async (req, res) => {
     try {
         const { start, length, search, columns, order } = req.body;
@@ -11,42 +13,37 @@ const trackingList = async (req, res) => {
         let query = {};
         let sort = {};
 
-        const nameSearch = req.body.name;
-        const designationSearch = req.body.designation;
-        const ratingSearch = req.body.rating;
+        const trackingCodeSearch = req.body.trackingCode;
+        const fromLocationSearch = req.body.fromLocation;
+        const dropLocationSearch = req.body.dropLocation;
         const statusSearch = req.body.status;
-        const createdAtSearch = req.body.createdAt;
+        const dateSearch = req.body.date; // This corresponds to the frontend's searchDate
 
         if (searchValue) {
             query.$or = [
-                { name: new RegExp(searchValue, 'i') },
-                { designation: new RegExp(searchValue, 'i') }
-                // You can add more fields to the global search if needed
+                { tracking_id: new RegExp(searchValue, 'i') },
+                { pickUpLocation: new RegExp(searchValue, 'i') },
+                { dropLocation: new RegExp(searchValue, 'i') },
+                { transportMode: new RegExp(searchValue, 'i') }
+                // Add more fields to the global search if needed
             ];
         } else {
-            if (nameSearch) {
-                query.name = new RegExp(nameSearch, 'i');
+            if (trackingCodeSearch) {
+                query.tracking_id = new RegExp(trackingCodeSearch, 'i');
             }
-            if (designationSearch) {
-                query.designation = new RegExp(designationSearch, 'i');
+            if (fromLocationSearch) {
+                query.pickUpLocation = new RegExp(fromLocationSearch, 'i');
             }
-            if (ratingSearch) {
-                query.rating = ratingSearch ? parseInt(ratingSearch) : undefined;
-                if (query.rating === undefined) {
-                    delete query.rating; // Remove from query if empty
-                }
+            if (dropLocationSearch) {
+                query.dropLocation = new RegExp(dropLocationSearch, 'i');
             }
             if (statusSearch) {
-                // const statusValue = statusSearch === 'Active' ? 1 : (statusSearch === 'Inactive' ? 2 : null);
-                if (statusSearch !== null) {
-                    query.status = statusSearch;
-                }
+                query.status = parseInt(statusSearch);
             }
-            if (createdAtSearch) {
-                // Basic date range search (assuming createdAt is a Date object)
-                const startDate = moment(createdAtSearch).startOf('day');
-                const endDate = moment(createdAtSearch).endOf('day');
-                query.createdAt = {
+            if (dateSearch) {
+                const startDate = moment(dateSearch).startOf('day');
+                const endDate = moment(dateSearch).endOf('day');
+                query.estimateDate = { // Assuming 'estimateDate' in your model represents the delivery date
                     $gte: startDate.toDate(),
                     $lte: endDate.toDate()
                 };
@@ -60,20 +57,26 @@ const trackingList = async (req, res) => {
 
             // Determine the field to sort by based on the column index
             switch (parseInt(columnIndex)) {
-                case 1: // Name column
-                    sort.name = sortDirection;
+                case 1: // Tracking ID column
+                    sort.tracking_id = sortDirection;
                     break;
-                case 2: // Designation column
-                    sort.designation = sortDirection;
+                case 2: // From Location column
+                    sort.pickUpLocation = sortDirection;
                     break;
-                case 4: // Rating column
-                    sort.rating = sortDirection;
+                case 3: // Drop Location column
+                    sort.dropLocation = sortDirection;
                     break;
-                case 5: // Status column
+                case 4: // Transport Mode column
+                    sort.transportMode = sortDirection;
+                    break;
+                case 5: // No. of Mode column
+                    sort.noOfPacking = sortDirection;
+                    break;
+                case 6: // Status column
                     sort.status = sortDirection;
                     break;
-                case 6: // Created At column
-                    sort.createdAt = sortDirection;
+                case 7: // Delivery Date column (assuming this maps to estimateDate)
+                    sort.estimateDate = sortDirection;
                     break;
                 default:
                     // Default sorting if no valid column is specified (e.g., by creation date descending)
@@ -100,40 +103,197 @@ const trackingList = async (req, res) => {
             data: tracking
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error fetching tracking list:', error);
+        res.status(500).json({ error: 'Failed to fetch tracking data' });
     }
 };
 
 
 const addTracking = async (req, res) => {
     try {
-        const { trackingCode, status, createdAt } = req.body;
+        const { trackingCode, status, createdAt, pickUpLocation, dropLocation, transportMode, noOfPacking, deliveryTime } = req.body;
 
-        // Check if all required fields are provided
-        if (!trackingCode || !status || !createdAt) {
-            return res.status(400).json({ message: 'All fields are required' });
+        // Check if required fields are provided
+        if (!trackingCode || !status || !createdAt || !noOfPacking || !deliveryTime) {
+            return res.status(400).json({ message: 'Tracking ID, Status, Date, No. of Packing, and Delivery Time are required' });
+        }
+
+        // Convert status to number
+        const statusNumber = parseInt(status);
+        if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
+            return res.status(400).json({ message: 'Invalid status value' });
         }
 
         // Create a new tracking entry
         const newTracking = new Tracking({
             tracking_id: trackingCode,
-            status: status, // The status should be a number (1-5)
-            date: createdAt,
+            status: statusNumber,
+            estimateDate: moment(createdAt).toDate(), // Convert string to Date object using moment for consistency
+            pickUpLocation: pickUpLocation || null,
+            dropLocation: dropLocation || null,
+            transportMode: transportMode || null,
+            noOfPacking: parseInt(noOfPacking),
+            deliveryTime: deliveryTime,
+            createdAt: new Date() // Add createdAt timestamp on creation
         });
 
         // Save the new tracking entry to the database
         await newTracking.save();
 
-        // Send success response
+        // Send success response with a more standard status code
         res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error adding tracking:', err);
+        res.status(500).json({ message: 'Internal server error', error: err.message });
     }
 };
+
+const getTrackingById = async (req, res) => {
+    try {
+        const tracking = await Tracking.findById(req.params.id);
+        if (!tracking) {
+            return res.status(404).json({ message: 'Tracking not found' });
+        }
+        res.json(tracking);
+    } catch (error) {
+        console.error('Error fetching tracking by ID:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+const updateTracking = async (req, res) => {
+    try {
+        const { trackingCode, status, createdAt, pickUpLocation, dropLocation, transportMode, noOfPacking, deliveryTime } = req.body;
+        const { id } = req.params;
+
+        // Validate required fields if needed for update
+
+        const updatedTracking = await Tracking.findByIdAndUpdate(
+            id,
+            {
+                tracking_id: trackingCode,
+                status: parseInt(status),
+                estimateDate: moment(createdAt).toDate(),
+                pickUpLocation,
+                dropLocation,
+                transportMode,
+                noOfPacking: parseInt(noOfPacking),
+                deliveryTime,
+            },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedTracking) {
+            return res.status(404).json({ message: 'Tracking not found' });
+        }
+
+        res.json({ message: 'Tracking updated successfully', data: updatedTracking });
+
+    } catch (error) {
+        console.error('Error updating tracking:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+const deleteTracking = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedTracking = await Tracking.findByIdAndDelete(id);
+
+        if (!deletedTracking) {
+            return res.status(404).json({ message: 'Tracking not found' });
+        }
+
+        res.json({ message: 'Tracking deleted successfully' });
+
+    } catch (error) {
+        console.error('Error deleting tracking:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+const downloadTrackingCsv = async (req, res) => {
+    try {
+        const { trackingCode, status, date } = req.query;
+        let query = {};
+
+        if (trackingCode) {
+            query.tracking_id = new RegExp(trackingCode, 'i');
+        }
+        if (status) {
+            query.status = parseInt(status);
+        }
+        if (date) {
+            const startDate = moment(date).startOf('day');
+            const endDate = moment(date).endOf('day');
+            query.estimateDate = {
+                $gte: startDate.toDate(),
+                $lte: endDate.toDate()
+            };
+        }
+
+        const trackings = await Tracking.find(query).sort({ createdAt: -1 });
+
+        if (trackings.length === 0) {
+            return res.status(200).send("No tracking data found for the current filters.");
+        }
+
+        const csvHeaders = [
+            "#",
+            "Tracking ID",
+            "Pickup Location",
+            "Drop Location",
+            "Transport Mode",
+            "No. of Packing",
+            "Status",
+            "Delivery Date",
+            "Created At"
+        ];
+
+        const csvData = trackings.map((tracking, index) => [
+            index + 1,
+            tracking.tracking_id,
+            tracking.pickUpLocation || '',
+            tracking.dropLocation || '',
+            tracking.transportMode || '',
+            tracking.noOfPacking,
+            getStatusText(tracking.status), // Assuming you have a function to convert status code to text
+            moment(tracking.estimateDate).format('YYYY-MM-DD HH:mm:ss'),
+            moment(tracking.createdAt).format('YYYY-MM-DD HH:mm:ss')
+        ]);
+
+        // Helper function to convert status code to text
+        function getStatusText(status) {
+            switch (status) {
+                case 1: return 'Pickup';
+                case 2: return 'Out for Delivery';
+                case 3: return 'In Progress';
+                case 4: return 'Delivered';
+                case 5: return 'Cancelled';
+                default: return 'Unknown';
+            }
+        }
+
+        // Format the CSV data
+        const csvRows = [csvHeaders, ...csvData].map(row => row.join(',')).join('\n');
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
+        res.status(200).send(csvRows);
+
+    } catch (error) {
+        console.error('Error downloading tracking CSV:', error);
+        res.status(500).send("Error generating CSV file.");
+    }
+};
+
 module.exports = {
     trackingPage,
     trackingList,
-    addTracking
+    addTracking,
+    getTrackingById,
+    updateTracking,
+    deleteTracking,
+    downloadTrackingCsv
 };
