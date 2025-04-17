@@ -19,6 +19,7 @@ const saveVehicle = async (req, res) => {
 
             const name = fields.name ? fields.name[0] : '';
             const status = fields.status ? fields.status[0] : ''; // Assuming 'gender' in form maps to 'status' in model
+            const bodyType = fields.bodyType ? fields.bodyType[0] : ''; // Assuming 'gender' in form maps to 'status' in model
 
             if (!name) {
                 return res.status(400).json({ error: "Truck Name is required" });
@@ -42,6 +43,7 @@ const saveVehicle = async (req, res) => {
             const vehicleData = {
                 name,
                 status,
+                bodyType,
                 vechileImage: vechileImageUrl
             };
 
@@ -119,7 +121,7 @@ const singleVehcile = async (req, res) => {
         if (!vehicle) {
             return res.status(404).json({ success: false, message: 'vehicle not found' });
         }
-        res.json({ success: true, vehicle });
+        res.json({ success: true, data: vehicle });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -134,6 +136,60 @@ const deleteVehicle = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+
+const updateVehicle = async (req, res) => {
+    try {
+        const form = new multiparty.Form();
+
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                console.error("Error parsing form data:", err);
+                return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400
+            }
+            const name = fields.name ? fields.name[0] : '';
+            const status = fields.status ? fields.status[0] : ''; // Assuming 'gender' in form maps to 'status' in model
+            const bodyType = fields.bodyType ? fields.bodyType[0] : ''; // Assuming 'gender' in form maps to 'status' in model
+
+            if (!name) {
+                return res.status(400).json({ error: "Truck Name is required" });
+            }
+
+            const file = files.vechileImage ? files.vechileImage[0] : null;
+
+            let vechileImageUrl = null;
+            if (file) {
+                const result = await uploadImage(file);
+                if (result.success) {
+                    vechileImageUrl = result.url;
+                } else {
+                    console.error("Error uploading image:", result.error || result.message);
+                    return res.status(500).json({ error: "Failed to upload Vehicle image" }); // Return error if image upload fails
+                }
+            } else {
+                vechileImageUrl = ''; // Or handle the case where no file is uploaded based on your requirements
+            }
+
+            const vehicleData = {
+                name,
+                status,
+                bodyType,
+                vechileImage: vechileImageUrl
+            };
+
+
+            // const vehicle = new Vehcile(vehicleData);
+
+
+            await Vehcile.findByIdAndUpdate(id, vehicleData); // Corrected model name to Banner
+            res.json({ success: true, message: 'Banner updated successfully' });
+        });
+    } catch (error) {
+        console.error('Error updating banner:', error); // Corrected log message
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
 module.exports = {
-    vechiclePage, saveVehicle, vehicleList, singleVehcile, deleteVehicle
+    vechiclePage, saveVehicle, vehicleList, singleVehcile, deleteVehicle, updateVehicle
 }

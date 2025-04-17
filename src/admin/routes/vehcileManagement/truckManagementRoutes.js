@@ -7,9 +7,9 @@ const truckCtrl = require('../../controllers/vehcileManagement/truckManagementCo
 router.get('/vehicleManagement', truckCtrl.vechiclePage);
 router.post('/vehicleList', truckCtrl.vehicleList);
 
-router.post('/saveVehicle', truckCtrl.saveVehicle);
-// router.get('/getVehicle/:id', truckCtrl.singleVehicle);
-// router.post('/updateVehicle/:id', truckCtrl.updateVehicle);
+router.post('/addvehicle', truckCtrl.saveVehicle);
+router.get('/getVehicle/:id', truckCtrl.singleVehcile);
+router.post('/updateVehicle/:id', truckCtrl.updateVehicle);
 router.delete('/deleteVehicle/:id', truckCtrl.deleteVehicle);
 
 module.exports = router;
