@@ -11,7 +11,7 @@ const shipmentSchema = new mongoose.Schema({
         enum: [1, 2, 3, 4, 5], // 1: Pickup, 2: Out for Delivery, 3: In Progress, 4: Delivered, 5: Cancelled
         required: true
     },
-    estimateDate: { // Renamed 'date' to 'estimateDate' to align with the table header
+    deliveryDate: { // Renamed 'date' to 'estimateDate' to align with the table header
         type: Date,
         required: true
     },
@@ -31,6 +31,8 @@ const shipmentSchema = new mongoose.Schema({
     deliveryTime: {
         type: String,
         required: true
+    }, pod: {
+        type: String, default: ''
     }
 }, {
     timestamps: true

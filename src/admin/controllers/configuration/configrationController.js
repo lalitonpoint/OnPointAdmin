@@ -72,7 +72,7 @@ const saveSettings = async (req, res) => {
                 s3BucketKey: req.body.awsS3.s3Bucket
             };
         }
-        console.log(settings);
+        // console.log(settings);
 
         await settings.save();
         res.json({ success: true, message: "Settings saved successfully", data: settings });

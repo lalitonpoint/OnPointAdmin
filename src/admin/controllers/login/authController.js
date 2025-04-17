@@ -49,7 +49,7 @@ const checkLogin = async (req, res) => {
             admin_type: admin.admin_type,
             permissions: admin.permissions || [], // Ensure it's always an array
         };
-        console.log('Session Permission ->', req.session.admin);
+        // console.log('Session Permission ->', req.session.admin);
         console.log(`User ${admin.email} logged in successfully`);
 
         // Instead of redirecting, send a JSON response indicating success

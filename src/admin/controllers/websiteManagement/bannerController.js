@@ -123,7 +123,7 @@ const saveBanner = async (req, res) => {
                 bannerFileUrl = ''; // Or handle the case where no file is uploaded based on your requirements
             }
 
-            console.log('Banner');
+            // console.log('Banner');
             const banner = new Banner({
                 title: bannerTitle,
                 bannerType,

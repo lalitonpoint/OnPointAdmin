@@ -90,7 +90,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
-            <form id="trackingForm">
+            <form id="trackingForm" enctype='multipart/form-data'>
                 <div class="modal-body">
                     <input type="hidden" id="trackingId" name="id">
                     <div class="row g-3">
@@ -125,9 +125,9 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="createdAt" class="form-label">Date <strong
+                            <label for="deliveryDate" class="form-label">Delivery Date <strong
                                     class="text-danger">*</strong></label>
-                            <input type="date" class="form-control" id="createdAt" name="createdAt">
+                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate">
                         </div>
 
                         <div class="col-md-6">
@@ -150,8 +150,12 @@
                         </div>
                         <div class="col-md-6 pod d-none">
                             <label for="pod" class="form-label">POD</label>
-                            <input type="file" class="form-control" id="pod" name="pod"
+                            <input type="file" class="form-control image_view" id="pod" name="pod"
                                 placeholder="Enter No of Packing">
+                            <div id="filePreviewContainer" class="mt-2" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Banner Image Preview"
+                                    style="max-width: 100px; max-height: 100px; display: none;">
+                            </div>
                         </div>
 
 
@@ -169,6 +173,21 @@
     let trackingTable;
     // This ensures the script runs after the DOM is fully loaded
     $(document).ready(function () {
+
+        $('.image_view').change(function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imagePreview').attr('src', e.target.result);
+                    $('#imagePreviewContainer').show();
+                }
+                reader.readAsDataURL(file);
+            } else {
+                $('#imagePreview').attr('src', '#');
+                $('#imagePreviewContainer').hide();
+            }
+        });
         // Initialize DataTable
         trackingTable = $('#trackingTable').DataTable({
             processing: true,
@@ -237,7 +256,7 @@
 
 
                 {
-                    data: 'createdAt', // Assuming your server returns the combined date and time in 'createdAt'
+                    data: 'deliveryDate', // Assuming your server returns the combined date and time in 'deliveryDate'
                     render: function (data) {
                         return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date and time as needed
                     }
@@ -268,6 +287,7 @@
         // Submit Add/Edit Form
         $('#trackingForm').submit(function (e) {
             e.preventDefault();
+            const formElement = document.getElementById('trackingForm'); // Corrected: Used 'trackingForm' instead of 'bannerForm'
 
             // Trimmed values
             const trackingCode = $('#trackingCode').val().trim();
@@ -275,10 +295,10 @@
             const dropLocation = $('#dropLocation').val().trim();
             const transportMode = $('#transportMode').val().trim();
             const noOfPacking = $('#noOfPacking').val().trim();
-            const createdAt = $('#createdAt').val().trim();
+            const deliveryDate = $('#deliveryDate').val().trim();
             const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val().trim();
-            const id = $('#trackingId').val();
+            // const id = $('#trackingId').val();
 
             // Validation
             if (!trackingCode) {
@@ -301,7 +321,7 @@
                 toastr.error('Please enter number of packings', 'Validation Error');
                 return;
             }
-            if (!createdAt) {
+            if (!deliveryDate) {
                 toastr.error('Please select a date.', 'Validation Error');
                 return;
             }
@@ -313,38 +333,47 @@
                 toastr.error('Please select tracking status.', 'Validation Error');
                 return;
             }
+            if (trackingStatus == 4) {
+                const podFile = $('#pod')[0].files[0];
+                if (!podFile) { // Required on add
+                    toastr.error('Please select Pod Image.', 'Validation Error');
+                    return;
+                }
+            }
 
-            // Prepare form data
-            const formData = {
-                id: id,
-                trackingCode: trackingCode,
-                pickUpLocation: pickUpLocation,
-                dropLocation: dropLocation,
-                transportMode: transportMode,
-                noOfPacking: noOfPacking,
-                status: trackingStatus,
-                createdAt: createdAt,
-                deliveryTime: deliveryTime
-            };
+            // Use FormData for file + text upload
+            // const formData = new FormData();
+            // formData.append('trackingCode', trackingCode);
+            // formData.append('pickUpLocation', pickUpLocation);
+            // formData.append('dropLocation', dropLocation);
+            // formData.append('transportMode', transportMode);
+            // formData.append('noOfPacking', noOfPacking);
+            // formData.append('deliveryDate', deliveryDate);
+            // formData.append('deliveryTime', deliveryTime);
+            // formData.append('status', trackingStatus);
+            const id = $('#trackingId').val();
+            const formData = new FormData(formElement);
 
-            // Include POD if it's edit mode
-            // if (id) {
-            //     formData.pod = $('#pod').val()?.trim();
-            // }
+            if (trackingStatus != 4) {
+                formData.delete("pod");
+            }
+
 
             const actionUrl = id ? `/tracking/editTracking/${id}` : '/tracking/addTracking';
 
-            // Submit via AJAX
             $.ajax({
                 url: actionUrl,
                 type: 'POST',
                 data: formData,
+                processData: false,
+                contentType: false,
                 dataType: 'json',
                 success: function (response) {
                     toastr.success('Tracking information saved successfully!');
                     $('#trackingModal').modal('hide');
                     $('#trackingForm')[0].reset();
-                    trackingTable.ajax.reload();
+                    // trackingTable.ajax.reload();
+                    window.location.reload();
                 },
                 error: function (xhr) {
                     const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
@@ -352,7 +381,6 @@
                 }
             });
         });
-
 
         // Edit Button
         $(document).on('click', '.editBtn', function () {
@@ -369,9 +397,18 @@
                     $('#transportMode').val(data.transportMode); // Added transport mode
                     $('#noOfPacking').val(data.noOfPacking); // Added no of packing
                     $('#trackingStatus').val(data.status);
-                    $('#createdAt').val(moment(data.createdAt).format('YYYY-MM-DD')); // Corrected ID and format date
-                    $('#deliveryTime').val(data.deliveryTime); // Added delivery time
+                    $('#deliveryDate').val(moment(data.deliveryDate).format('YYYY-MM-DD')); // Corrected ID and format date
+                    let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
+                    $('#deliveryTime').val(time);
 
+                    if (data.status == 4) {
+                        $('.pod').removeClass('d-none');
+                        $('#pod').attr('src', data.pod);
+                        if (data.pod) {
+                            imagePreview.attr('src', data.pod);
+                            imagePreviewContainer.show();
+                        }
+                    }
                     $('#trackingModal').modal('show');
                 }
             });
@@ -379,12 +416,18 @@
             $('#trackingStatus').change(function () {
                 // Code to execute when the element's value changes
                 console.log("The value of the element has changed!");
-                $('.pod').removeClass('d-none');
+                let trackingVal = $(this).val();
+                if (trackingVal == 4)
+                    $('.pod').removeClass('d-none');
+                else
+                    $('.pod').addClass('d-none');
+
             });
         });
 
         $('#trackingTable').on('click', '.editBtn', function () {
             const trackingId = $(this).data('id');
+            $('#trackingModalLabel').text('Edit Tracking')
             $('#trackingModal').modal('show', this); // Pass the button element for context
         });
 
@@ -403,6 +446,10 @@
         });
 
         // Download CSV
+        $('.btn-close').click(function () {
+            window.location.reload();
+        });
+
         $('#downloadAllTrackingCsv').click(function () {
             const params = new URLSearchParams({
                 trackingCode: $('#searchTrackingId').val(),

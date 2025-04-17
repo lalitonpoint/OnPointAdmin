@@ -13,12 +13,12 @@ router.use('/otp', sendOtpRoutes);
 
 router.use(headerAuth);
 router.use('/user', userRoutes);
+router.use('/setting', configurationRoutes);
 
 router.use(verifyToken);
 router.use('/service', servicesRoutes);
 router.use('/payment', paymentRoutes);
 router.use('/faq', faqRoutes);
-router.use('/setting', configurationRoutes);
 
 
 

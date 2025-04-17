@@ -6,11 +6,11 @@ const checkCrudPermission = (action = "") => {
             console.log('❌ No permissions found in session.');
             return res.redirect('/');
         }
-        console.log('permissionUrl', permissions)
+        // console.log('permissionUrl', permissions)
 
 
         let url = '';
-        console.log('action', action);
+        // console.log('action', action);
 
 
         // Use referer URL for action-based requests (add/edit/delete)
@@ -23,7 +23,7 @@ const checkCrudPermission = (action = "") => {
             url = req.originalUrl.split('?')[0].replace(/\/+$/, '');
         }
 
-        console.log('🔍 Checking permissions for URL:', url);
+        // console.log('🔍 Checking permissions for URL:', url);
 
         let modulePermission = null;
         let moduleName = null;
@@ -33,7 +33,7 @@ const checkCrudPermission = (action = "") => {
         // Match the URL with a permission entry
         for (const [key, value] of Object.entries(permissions)) {
             const permissionUrl = value.url.replace(/\/+$/, '');
-            console.log('permissionUrl', permissionUrl)
+            // console.log('permissionUrl', permissionUrl)
             if (url === permissionUrl) {
                 if (action === "") {
                     return next();

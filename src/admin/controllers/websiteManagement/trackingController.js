@@ -1,6 +1,7 @@
 const Tracking = require('../../models/websiteManagement/trackingModel');
 const moment = require('moment'); // Ensure moment.js is installed: npm install moment
 const multiparty = require('multiparty');
+const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 
 
 const trackingPage = (req, res) => {
@@ -112,39 +113,54 @@ const trackingList = async (req, res) => {
 
 
 const addTracking = async (req, res) => {
+
     try {
-        const { trackingCode, status, createdAt, pickUpLocation, dropLocation, transportMode, noOfPacking, deliveryTime } = req.body;
+        const form = new multiparty.Form();
 
-        // Check if required fields are provided
-        if (!trackingCode || !status || !createdAt || !noOfPacking || !deliveryTime) {
-            return res.status(400).json({ message: 'Tracking ID, Status, Date, No. of Packing, and Delivery Time are required' });
-        }
+        form.parse(req, async (err, fields) => {
+            if (err) {
+                console.error("Error parsing form data:", err);
+                return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
+            }
 
-        // Convert status to number
-        const statusNumber = parseInt(status);
-        if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
-            return res.status(400).json({ message: 'Invalid status value' });
-        }
+            const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
+            const status = fields.status ? parseInt(fields.status[0]) : null;
+            const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : ''; // Default to Active
+            const dropLocation = fields.dropLocation ? fields.dropLocation[0] : ''; // Default to Active
+            const transportMode = fields.transportMode ? fields.transportMode[0] : ''; // Default to Active
+            const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
+            const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : ''; // Default to Active
+            const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : ''; // Default to Active
 
-        // Create a new tracking entry
-        const newTracking = new Tracking({
-            trackingId: trackingCode,
-            status: statusNumber,
-            estimateDate: moment(createdAt).toDate(), // Convert string to Date object using moment for consistency
-            pickUpLocation: pickUpLocation || null,
-            dropLocation: dropLocation || null,
-            transportMode: transportMode || null,
-            noOfPacking: parseInt(noOfPacking),
-            deliveryTime: deliveryTime,
-            createdAt: new Date() // Add createdAt timestamp on creation
+            if (!trackingCode || !status || !deliveryDate || !noOfPacking || !deliveryTime) {
+                return res.status(400).json({ message: 'Tracking ID, Status, Delivery Date, No. of Packing, and Delivery Time are required' });
+            }
+
+            // Convert status to number
+            const statusNumber = parseInt(status);
+            if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
+                return res.status(400).json({ message: 'Invalid status value' });
+            }
+
+            // Create a new tracking entry
+            const newTracking = new Tracking({
+                trackingId: trackingCode,
+                status: statusNumber,
+                deliveryDate: moment(deliveryDate).toDate(), // Convert string to Date object using moment for consistency
+                pickUpLocation: pickUpLocation || null,
+                dropLocation: dropLocation || null,
+                transportMode: transportMode || null,
+                noOfPacking: parseInt(noOfPacking),
+                deliveryTime: deliveryTime,
+                createdAt: new Date(),// Add createdAt timestamp on creation,
+            });
+
+            // Save the new tracking entry to the database
+            await newTracking.save();
+
+            // Send success response with a more standard status code
+            res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
         });
-
-        // Save the new tracking entry to the database
-        await newTracking.save();
-
-        // Send success response with a more standard status code
-        res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
-
     } catch (err) {
         console.error('Error adding tracking:', err);
         res.status(500).json({ message: 'Internal server error', error: err.message });
@@ -176,15 +192,25 @@ const updateTracking = async (req, res) => {
                 return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
             }
 
-            const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
+            const trackingCode = fields.trackingId ? fields.trackingId[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
-            const pickUpLocation = fields.pickUpLocation ? parseInt(fields.pickUpLocation[0]) : 1; // Default to Active
-            const dropLocation = fields.dropLocation ? parseInt(fields.dropLocation[0]) : 1; // Default to Active
-            const transportMode = fields.transportMode ? parseInt(fields.transportMode[0]) : 1; // Default to Active
-            const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
-            const createdAt = fields.createdAt ? parseInt(fields.createdAt[0]) : 1; // Default to Active
-            const deliveryTime = fields.deliveryTime ? parseInt(fields.deliveryTime[0]) : 1; // Default to Active
+            const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : '';
+            const dropLocation = fields.dropLocation ? fields.dropLocation[0] : '';
+            const transportMode = fields.transportMode ? fields.transportMode[0] : '';
+            const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
+            const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
+            const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
             const file = files.pod ? files.pod[0] : null;
+
+
+            console.log('trackingCode', trackingCode);
+            console.log('status', status);
+            console.log('pickUpLocation', pickUpLocation);
+            console.log('dropLocation', dropLocation);
+            console.log('transportMode', transportMode);
+            console.log('noOfPacking', noOfPacking);
+            console.log('deliveryTime', deliveryTime);
+            console.log('deliveryDate', deliveryDate);
 
             if (!trackingCode || pickUpLocation === null || status === null || dropLocation === null || transportMode === null || noOfPacking === null) { // Corrected the validation for bannerType and status
                 return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
@@ -204,13 +230,15 @@ const updateTracking = async (req, res) => {
             }
 
             const { id } = req.params;
+            // console.log('pickUpLocation', pickUpLocation);
+
 
             const updatedTracking = await Tracking.findByIdAndUpdate(
                 id,
                 {
                     trackingId: trackingCode,
                     status: parseInt(status),
-                    estimateDate: moment(createdAt).toDate(),
+                    deliveryDate,
                     pickUpLocation,
                     dropLocation,
                     transportMode,
@@ -225,6 +253,9 @@ const updateTracking = async (req, res) => {
                 return res.status(404).json({ message: 'Tracking not found' });
             }
 
+            await Tracking.findByIdAndUpdate(id, updatedTracking);
+
+
             res.json({ message: 'Tracking updated successfully', data: updatedTracking });
         });
     } catch (error) {
@@ -233,6 +264,7 @@ const updateTracking = async (req, res) => {
     }
 
 };
+
 
 const deleteTracking = async (req, res) => {
     try {
