@@ -44,3 +44,7 @@
 .btn-close-white {
     filter: none !important;
 }
+
+#trackingTable_filter {
+    display: none;
+}

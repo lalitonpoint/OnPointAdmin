@@ -82,7 +82,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="trackingModal" tabindex="-1" aria-labelledby="trackingModalLabel" aria-hidden="true">
+<div class="modal fade" id="trackingModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="trackingModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg custom-modal">
         <div class="modal-content border-0 rounded-3">
             <div class="modal-header bg-pink text-white">
@@ -118,10 +119,10 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="noOfPacking" class="form-label">No. of Packing <strong
+                            <label for="noOfPacking" class="form-label">No. of Package <strong
                                     class="text-danger">*</strong></label>
                             <input type="number" class="form-control" id="noOfPacking" name="noOfPacking"
-                                placeholder="Enter No of Packing">
+                                placeholder="Enter No. of Package">
                         </div>
 
                         <div class="col-md-6">
@@ -150,10 +151,10 @@
                         </div>
                         <div class="col-md-6 pod d-none">
                             <label for="pod" class="form-label">POD</label>
-                            <input type="file" class="form-control image_view" id="pod" name="pod"
-                                placeholder="Enter No of Packing">
+                            <input type="file" class="form-control image_view" id="pod" name="pod" accept="image/*">
+
                             <div id="filePreviewContainer" class="mt-2" style="display: none;">
-                                <img id="imagePreview" src="#" alt="Banner Image Preview"
+                                <img id="imagePreview" src="#" alt="Tracking Image Preview"
                                     style="max-width: 100px; max-height: 100px; display: none;">
                             </div>
                         </div>
@@ -174,20 +175,18 @@
     // This ensures the script runs after the DOM is fully loaded
     $(document).ready(function () {
 
-        $('.image_view').change(function () {
+        $('#pod').on('change', function () {
             const file = this.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    $('#imagePreview').attr('src', e.target.result);
-                    $('#imagePreviewContainer').show();
-                }
+                    $('#imagePreview').attr('src', e.target.result).show();
+                    $('#filePreviewContainer').show();
+                };
                 reader.readAsDataURL(file);
-            } else {
-                $('#imagePreview').attr('src', '#');
-                $('#imagePreviewContainer').hide();
             }
         });
+
         // Initialize DataTable
         trackingTable = $('#trackingTable').DataTable({
             processing: true,
@@ -209,14 +208,32 @@
                     orderable: false, // Disable ordering for the index column
                     render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
                 },
-                { data: 'trackingId' },
-                { data: 'pickUpLocation' }, // Corrected data property to 'pickUpLocation'
-                { data: 'dropLocation' },
-                { data: 'transportMode' },
+                {
+                    data: 'trackingId',
+                    orderable: false,
+
+                },
+                {
+                    data: 'pickUpLocation',
+                    orderable: false,
+
+                }, // Corrected data property to 'pickUpLocation'
+                {
+                    data: 'dropLocation',
+                    orderable: false,
+
+                },
+                {
+                    data: 'transportMode',
+                    orderable: false,
+
+                },
                 { data: 'noOfPacking' },
 
                 {
                     data: 'status',
+                    orderable: false,
+
                     render: function (data) {
                         // Status color mapping
                         let statusColor = '';
@@ -358,6 +375,10 @@
                 formData.delete("pod");
             }
 
+            const form = $('#trackingForm')[0];
+            form.reset(); // Reset the form every time the modal is shown
+            $('#trackingModalLabel').text('Add Tracking')
+
 
             const actionUrl = id ? `/tracking/editTracking/${id}` : '/tracking/addTracking';
 
@@ -369,11 +390,12 @@
                 contentType: false,
                 dataType: 'json',
                 success: function (response) {
-                    toastr.success('Tracking information saved successfully!');
                     $('#trackingModal').modal('hide');
                     $('#trackingForm')[0].reset();
-                    // trackingTable.ajax.reload();
-                    window.location.reload();
+                    trackingTable.ajax.reload();
+                    toastr.success('Tracking Data saved successfully!', 'Success');
+
+                    // window.location.reload();
                 },
                 error: function (xhr) {
                     const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
@@ -385,6 +407,10 @@
         // Edit Button
         $(document).on('click', '.editBtn', function () {
             const id = $(this).data('id');
+            const imagePreview = $('#imagePreview');
+
+            const imagePreviewContainer = $('#imagePreviewContainer');
+
 
             $.ajax({
                 url: '/tracking/get/' + id,
@@ -408,6 +434,9 @@
                             imagePreview.attr('src', data.pod);
                             imagePreviewContainer.show();
                         }
+                    }
+                    else {
+                        $('.pod').addClass('d-none');
                     }
                     $('#trackingModal').modal('show');
                 }
@@ -456,7 +485,7 @@
                 status: $('#searchStatus').val(),
                 date: $('#searchDate').val()
             });
-            window.location.href = '/admin/tracking/download-csv?' + params.toString();
+            window.location.href = '/tracking/downloadCsv?' + params.toString();
         });
     });
 

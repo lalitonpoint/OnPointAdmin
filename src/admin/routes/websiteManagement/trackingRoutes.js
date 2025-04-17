@@ -18,7 +18,7 @@ router.post('/editTracking/:id', TrackingCtrl.updateTracking); // Using POST for
 
 router.delete('/delete/:id', TrackingCtrl.deleteTracking);
 
-router.get('/download-csv', TrackingCtrl.downloadTrackingCsv);
+router.get('/downloadCsv', TrackingCtrl.downloadTrackingCsv);
 
 
 module.exports = router;

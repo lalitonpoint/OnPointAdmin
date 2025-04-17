@@ -17,41 +17,37 @@ const trackingList = async (req, res) => {
         let sort = {};
 
         const trackingCodeSearch = req.body.trackingCode;
-        const fromLocationSearch = req.body.fromLocation;
-        const dropLocationSearch = req.body.dropLocation;
+
         const statusSearch = req.body.status;
         const dateSearch = req.body.date; // This corresponds to the frontend's searchDate
 
         if (searchValue) {
             query.$or = [
-                { tracking_id: new RegExp(searchValue, 'i') },
-                { pickUpLocation: new RegExp(searchValue, 'i') },
-                { dropLocation: new RegExp(searchValue, 'i') },
-                { transportMode: new RegExp(searchValue, 'i') }
+                { trackingId: new RegExp(searchValue, 'i') },
+                { status: new RegExp(searchValue, 'i') }
                 // Add more fields to the global search if needed
             ];
         } else {
             if (trackingCodeSearch) {
-                query.tracking_id = new RegExp(trackingCodeSearch, 'i');
+                query.trackingId = new RegExp(trackingCodeSearch, 'i');
             }
-            if (fromLocationSearch) {
-                query.pickUpLocation = new RegExp(fromLocationSearch, 'i');
-            }
-            if (dropLocationSearch) {
-                query.dropLocation = new RegExp(dropLocationSearch, 'i');
-            }
+
+
             if (statusSearch) {
                 query.status = parseInt(statusSearch);
             }
             if (dateSearch) {
-                const startDate = moment(dateSearch).startOf('day');
-                const endDate = moment(dateSearch).endOf('day');
-                query.estimateDate = { // Assuming 'estimateDate' in your model represents the delivery date
+                const searchMoment = moment(dateSearch);
+                const startDate = searchMoment.clone().startOf('day');
+                const endDate = searchMoment.clone().endOf('day');
+
+                query.deliveryDate = { // Replace 'yourDateField' with the actual name of the date field in your model
                     $gte: startDate.toDate(),
                     $lte: endDate.toDate()
                 };
             }
         }
+
 
         // Add ordering functionality
         if (order && order.length > 0) {
@@ -60,26 +56,11 @@ const trackingList = async (req, res) => {
 
             // Determine the field to sort by based on the column index
             switch (parseInt(columnIndex)) {
-                case 1: // Tracking ID column
-                    sort.tracking_id = sortDirection;
-                    break;
-                case 2: // From Location column
-                    sort.pickUpLocation = sortDirection;
-                    break;
-                case 3: // Drop Location column
-                    sort.dropLocation = sortDirection;
-                    break;
-                case 4: // Transport Mode column
-                    sort.transportMode = sortDirection;
-                    break;
                 case 5: // No. of Mode column
                     sort.noOfPacking = sortDirection;
                     break;
-                case 6: // Status column
-                    sort.status = sortDirection;
-                    break;
                 case 7: // Delivery Date column (assuming this maps to estimateDate)
-                    sort.estimateDate = sortDirection;
+                    sort.deliveryDate = sortDirection;
                     break;
                 default:
                     // Default sorting if no valid column is specified (e.g., by creation date descending)
@@ -123,7 +104,7 @@ const addTracking = async (req, res) => {
                 return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
             }
 
-            const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
+            const trackingCode = fields.trackingId ? fields.trackingId[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : ''; // Default to Active
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : ''; // Default to Active
@@ -132,6 +113,15 @@ const addTracking = async (req, res) => {
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : ''; // Default to Active
             const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : ''; // Default to Active
 
+            console.log('trackingCode', trackingCode);
+            console.log('status', status);
+            console.log('pickUpLocation', pickUpLocation);
+            console.log('dropLocation', dropLocation);
+            console.log('trackingCode', trackingCode);
+            console.log('transportMode', transportMode);
+            console.log('noOfPacking', noOfPacking);
+            console.log('deliveryDate', deliveryDate);
+            console.log('deliveryTime', deliveryTime);
             if (!trackingCode || !status || !deliveryDate || !noOfPacking || !deliveryTime) {
                 return res.status(400).json({ message: 'Tracking ID, Status, Delivery Date, No. of Packing, and Delivery Time are required' });
             }
@@ -289,7 +279,7 @@ const downloadTrackingCsv = async (req, res) => {
         let query = {};
 
         if (trackingCode) {
-            query.tracking_id = new RegExp(trackingCode, 'i');
+            query.trackingId = new RegExp(trackingCode, 'i');
         }
         if (status) {
             query.status = parseInt(status);
@@ -323,13 +313,13 @@ const downloadTrackingCsv = async (req, res) => {
 
         const csvData = trackings.map((tracking, index) => [
             index + 1,
-            tracking.tracking_id,
+            tracking.trackingId,
             tracking.pickUpLocation || '',
             tracking.dropLocation || '',
             tracking.transportMode || '',
             tracking.noOfPacking,
             getStatusText(tracking.status), // Assuming you have a function to convert status code to text
-            moment(tracking.estimateDate).format('YYYY-MM-DD HH:mm:ss'),
+            moment(tracking.deliveryDate).format('YYYY-MM-DD HH:mm:ss'),
             moment(tracking.createdAt).format('YYYY-MM-DD HH:mm:ss')
         ]);
 
