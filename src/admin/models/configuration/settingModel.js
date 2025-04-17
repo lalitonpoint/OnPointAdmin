@@ -7,7 +7,9 @@ const SettingsSchema = new mongoose.Schema({
     termsAndConditions: {
         content: { type: String, default: "" }
     },
-
+    privacyAndPolicy: {
+        content: { type: String, default: "" }
+    },
     firebase: {
         projectId: { type: String, default: "" },
         firebaseEmail: { type: String, default: "" },

@@ -24,6 +24,9 @@ const saveSettings = async (req, res) => {
         if (req.body.aboutUs) {
             settings.aboutUs = { content: req.body.aboutUs.aboutUsText };
         }
+        if (req.body.privacyAndPolicy) {
+            settings.privacyAndPolicy = { content: req.body.privacyAndPolicy.privacyAndPolicyText };
+        }
         if (req.body.termCondition) {
             settings.termsAndConditions = { content: req.body.termCondition.termConditionText };
         }
