@@ -35,7 +35,7 @@ const createDriver = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
         if (err) {
             console.error('Error parsing form:', err);
-            return res.status(400).json({ success: false, message: 'Failed to parse form data.' }); // Changed status code to 400
+            return res.status(500).json({ success: false, message: 'Failed to parse form data.' }); // Changed status code to 400
         }
 
         const getField = field => fields[field]?.[0] || '';
@@ -46,11 +46,11 @@ const createDriver = async (req, res) => {
 
         if (step > 1) {
             if (!driverId) {
-                return res.status(400).json({ success: false, message: "driverId is required for next step " });
+                return res.status(200).json({ success: false, message: "driverId is required for next step " });
             } else {
                 existingDriver = await DriverProfile.findById(driverId);
                 if (!existingDriver) {
-                    return res.status(404).json({ success: false, message: 'Driver not found.' });
+                    return res.status(200).json({ success: false, message: 'Driver not found.' });
                 }
             }
 
@@ -199,7 +199,7 @@ const createDriver = async (req, res) => {
 
 
                 default:
-                    return res.status(400).json({ success: false, message: "Invalid step value." }); // Changed status code to 400 and using success: false
+                    return res.status(200).json({ success: false, message: "Invalid step value." }); // Changed status code to 400 and using success: false
             }
 
             let driver;
