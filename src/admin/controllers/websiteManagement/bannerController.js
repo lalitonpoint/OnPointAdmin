@@ -141,7 +141,10 @@ const saveBanner = async (req, res) => {
 };
 const updatedBanner = async (req, res) => {
     try {
-        const form = new multiparty.Form();
+        // const form = new multiparty.Form();
+        const form = new multiparty.Form({
+            maxFilesSize: 100 * 1024 * 1024, // 50 MB
+        });
 
         form.parse(req, async (err, fields, files) => {
             if (err) {
