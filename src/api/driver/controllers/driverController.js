@@ -100,8 +100,6 @@ const createDriver = async (req, res) => {
                         altMobile: getField('altMobile'),
                         profilePicture
                     };
-                    if (existingDriver.step < 2)
-                        update.step = 1;
                     break;
                 };
 
@@ -207,6 +205,7 @@ const createDriver = async (req, res) => {
 
             if (step === 1) {
                 update.status = 1;
+                update.step = 1;
                 driver = new DriverProfile(update);
                 await driver.save();
                 return res.status(201).json({ // Changed status code to 201 for successful creation
