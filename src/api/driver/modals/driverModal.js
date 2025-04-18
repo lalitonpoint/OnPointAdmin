@@ -4,7 +4,7 @@ const driverProfileSchema = new mongoose.Schema({
     personalInfo: {
         name: { type: String, required: true },
         email: { type: String },
-        dob: { type: Date },
+        dob: { type: String },
         gender: {
             type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
             default: 'Prefer not to say'
