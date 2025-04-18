@@ -45,7 +45,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="searchDate" class="form-label">Date</label>
+                    <label for="searchDate" class="form-label">Estimate Date</label>
                     <input type="date" class="form-control" id="searchDate">
                 </div>
 
@@ -71,7 +71,7 @@
                             <th>Transport Mode</th>
                             <th>No. of Mode</th>
                             <th>Status</th>
-                            <th>Delivery Date</th>
+                            <th>Estimate Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -99,7 +99,7 @@
                             <label for="trackingCode" class="form-label">Tracking ID <strong
                                     class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="trackingCode" name="trackingId"
-                                placeholder="Enter Tracking ID">
+                                autocomplete="off" placeholder="Enter Tracking ID">
                         </div>
                         <div class="col-md-6">
                             <label for="pickUpLocation" class="form-label">Pickup Location</label>
@@ -126,16 +126,16 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="deliveryDate" class="form-label">Delivery Date <strong
+                            <label for="deliveryDate" class="form-label">Estimate Date <strong
                                     class="text-danger">*</strong></label>
                             <input type="date" class="form-control" id="deliveryDate" name="deliveryDate">
                         </div>
 
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="deliveryTime" class="form-label">Time <strong
                                     class="text-danger">*</strong></label>
                             <input type="time" class="form-control" id="deliveryTime" name="deliveryTime">
-                        </div>
+                        </div> -->
 
                         <div class="col-md-6">
                             <label for="trackingStatus" class="form-label">Status <strong
@@ -313,7 +313,7 @@
             const transportMode = $('#transportMode').val().trim();
             const noOfPacking = $('#noOfPacking').val().trim();
             const deliveryDate = $('#deliveryDate').val().trim();
-            const deliveryTime = $('#deliveryTime').val().trim();
+            // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val().trim();
             // const id = $('#trackingId').val();
 
@@ -342,10 +342,10 @@
                 toastr.error('Please select a date.', 'Validation Error');
                 return;
             }
-            if (!deliveryTime) {
-                toastr.error('Please select delivery time.', 'Validation Error');
-                return;
-            }
+            // if (!deliveryTime) {
+            //     toastr.error('Please select delivery time.', 'Validation Error');
+            //     return;
+            // }
             if (!trackingStatus) {
                 toastr.error('Please select tracking status.', 'Validation Error');
                 return;
@@ -419,8 +419,8 @@
                     $('#noOfPacking').val(data.noOfPacking); // Added no of packing
                     $('#trackingStatus').val(data.status);
                     $('#deliveryDate').val(moment(data.deliveryDate).format('YYYY-MM-DD')); // Corrected ID and format date
-                    let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
-                    $('#deliveryTime').val(time);
+                    // let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
+                    // $('#deliveryTime').val(time);
 
                     if (data.status == 4) {
                         $('.pod').removeClass('d-none');

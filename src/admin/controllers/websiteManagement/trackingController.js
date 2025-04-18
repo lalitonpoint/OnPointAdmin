@@ -111,18 +111,18 @@ const addTracking = async (req, res) => {
             const transportMode = fields.transportMode ? fields.transportMode[0] : ''; // Default to Active
             const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : ''; // Default to Active
-            const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : ''; // Default to Active
+            // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : ''; // Default to Active
 
-            console.log('trackingCode', trackingCode);
-            console.log('status', status);
-            console.log('pickUpLocation', pickUpLocation);
-            console.log('dropLocation', dropLocation);
-            console.log('trackingCode', trackingCode);
-            console.log('transportMode', transportMode);
-            console.log('noOfPacking', noOfPacking);
-            console.log('deliveryDate', deliveryDate);
-            console.log('deliveryTime', deliveryTime);
-            if (!trackingCode || !status || !deliveryDate || !noOfPacking || !deliveryTime) {
+            // console.log('trackingCode', trackingCode);
+            // console.log('status', status);
+            // console.log('pickUpLocation', pickUpLocation);
+            // console.log('dropLocation', dropLocation);
+            // console.log('trackingCode', trackingCode);
+            // console.log('transportMode', transportMode);
+            // console.log('noOfPacking', noOfPacking);
+            // console.log('deliveryDate', deliveryDate);
+            // console.log('deliveryTime', deliveryTime);
+            if (!trackingCode || !status || !deliveryDate || !noOfPacking) {
                 return res.status(400).json({ message: 'Tracking ID, Status, Delivery Date, No. of Packing, and Delivery Time are required' });
             }
 
@@ -131,6 +131,16 @@ const addTracking = async (req, res) => {
             if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
                 return res.status(400).json({ message: 'Invalid status value' });
             }
+            const statusMap = {
+                1: { key: 'in_process', status: 0, deliveryDateTime: '' },
+                2: { key: 'pickup', status: 0, deliveryDateTime: '' },
+                3: { key: 'outdelivery', status: 0, deliveryDateTime: '' },
+                4: { key: 'delivered', status: 0, deliveryDateTime: '' },
+                5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
+            };
+            statusMap[status].status = 1;
+            statusMap[status].deliveryDateTime = new Date();
+            // console.log(statusMap[status].status); // Output: 0
 
             // Create a new tracking entry
             const newTracking = new Tracking({
@@ -141,8 +151,9 @@ const addTracking = async (req, res) => {
                 dropLocation: dropLocation || null,
                 transportMode: transportMode || null,
                 noOfPacking: parseInt(noOfPacking),
-                deliveryTime: deliveryTime,
+                // deliveryTime: deliveryTime,
                 createdAt: new Date(),// Add createdAt timestamp on creation,
+                deliveryStatus: statusMap
             });
 
             // Save the new tracking entry to the database
@@ -183,6 +194,8 @@ const updateTracking = async (req, res) => {
             }
             const { id } = req.params;
 
+
+
             const trackingCode = fields.trackingId ? fields.trackingId[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : '';
@@ -190,18 +203,18 @@ const updateTracking = async (req, res) => {
             const transportMode = fields.transportMode ? fields.transportMode[0] : '';
             const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
-            const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
+            // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
             const file = files.pod ? files.pod[0] : null;
 
 
-            console.log('trackingCode', trackingCode);
-            console.log('status', status);
-            console.log('pickUpLocation', pickUpLocation);
-            console.log('dropLocation', dropLocation);
-            console.log('transportMode', transportMode);
-            console.log('noOfPacking', noOfPacking);
-            console.log('deliveryTime', deliveryTime);
-            console.log('deliveryDate', deliveryDate);
+            // console.log('trackingCode', trackingCode);
+            // console.log('status', status);
+            // console.log('pickUpLocation', pickUpLocation);
+            // console.log('dropLocation', dropLocation);
+            // console.log('transportMode', transportMode);
+            // console.log('noOfPacking', noOfPacking);
+            // console.log('deliveryTime', deliveryTime);
+            // console.log('deliveryDate', deliveryDate);
 
             if (!trackingCode || pickUpLocation === null || status === null || dropLocation === null || transportMode === null || noOfPacking === null) { // Corrected the validation for bannerType and status
                 return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
@@ -218,24 +231,38 @@ const updateTracking = async (req, res) => {
             }
 
 
+            const existingTrackk = await Tracking.findById(id);
 
+            if (!existingTrackk) {
+                return res.status(404).json({ success: false, message: 'Track not found' });
+            }
 
+            // Clone current deliveryStatus
+            const updatedDeliveryStatus = { ...existingTrackk.deliveryStatus };
 
-            // console.log('pickUpLocation', pickUpLocation);
+            // Update the current step status
+            if (updatedDeliveryStatus[status]) {
+                updatedDeliveryStatus[status].status = 1; // or whatever value you want
+                updatedDeliveryStatus[status].deliveryDateTime = new Date(); // or whatever value you want
+            }
 
+            // Optionally reset other statuses to 0 if needed
+            // for (const key in updatedDeliveryStatus) {
+            //   if (key != status) updatedDeliveryStatus[key].status = 0;
+            // }
 
             const updatedTracking = await Tracking.findByIdAndUpdate(
                 id,
                 {
                     trackingId: trackingCode,
-                    status: parseInt(status),
+                    status: parseInt(status), //currentstatus
                     deliveryDate,
                     pickUpLocation,
                     dropLocation,
                     transportMode,
                     noOfPacking: parseInt(noOfPacking),
-                    deliveryTime,
-                    pod: imageUrl
+                    pod: imageUrl,
+                    deliveryStatus: updatedDeliveryStatus // ✅ save the updated object
                 },
                 { new: true } // Return the updated document
             );

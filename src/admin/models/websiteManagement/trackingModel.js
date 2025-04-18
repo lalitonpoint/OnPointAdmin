@@ -1,3 +1,4 @@
+const { json } = require('body-parser');
 const mongoose = require('mongoose');
 
 const shipmentSchema = new mongoose.Schema({
@@ -28,11 +29,12 @@ const shipmentSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    deliveryTime: {
-        type: String,
-        required: true
-    }, pod: {
+    pod: {
         type: String, default: ''
+    },
+    deliveryStatus: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
     }
 }, {
     timestamps: true

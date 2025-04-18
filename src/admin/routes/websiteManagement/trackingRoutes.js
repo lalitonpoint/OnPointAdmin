@@ -9,9 +9,6 @@ router.post('/trackingList', TrackingCtrl.trackingList);
 router.get('/trackingPage', TrackingCtrl.trackingPage);
 router.post('/addTracking', TrackingCtrl.addTracking);
 
-
-
-
 router.get('/get/:id', TrackingCtrl.getTrackingById);
 
 router.post('/editTracking/:id', TrackingCtrl.updateTracking); // Using POST for update
