@@ -142,9 +142,9 @@
                                     class="text-danger">*</strong></label>
                             <select class="form-select" id="trackingStatus" name="status">
                                 <option value="">Select Status</option>
-                                <option value="1">Pickup</option>
-                                <option value="2">Out for Delivery</option>
-                                <option value="3">In Progress</option>
+                                <option value="1">In Progress</option>
+                                <option value="2">Pickup</option>
+                                <option value="3">Out for Delivery</option>
                                 <option value="4">Delivered</option>
                                 <option value="5">Cancelled</option>
                             </select>
@@ -242,15 +242,15 @@
                         switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
                             case 1:
                                 statusColor = 'badge bg-warning'; // Pickup
-                                statusText = 'Pickup';
+                                statusText = 'In Progress';
                                 break;
                             case 2:
                                 statusColor = 'badge bg-info'; // Out for Delivery
-                                statusText = 'Out for Delivery';
+                                statusText = 'Pickup';
                                 break;
                             case 3:
                                 statusColor = 'badge bg-primary'; // In Progress
-                                statusText = 'In Progress';
+                                statusText = 'Out for Delivery';
                                 break;
                             case 4:
                                 statusColor = 'badge bg-success'; // Delivered
