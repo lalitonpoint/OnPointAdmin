@@ -59,7 +59,7 @@ const createDriver = async (req, res) => {
         try {
             switch (step) {
                 case 1: {
-                    const requiredFields = ['name', 'email', 'dob', 'gender', 'mobile'];
+                    const requiredFields = ['name', 'email', 'dob', 'gender', 'countryCode', 'mobile'];
                     for (const field of requiredFields) {
                         if (!getField(field)) {
                             return res.status(200).json({ success: false, message: `${field} is required.` }); // Changed status code to 400 and using success: false for consistency
