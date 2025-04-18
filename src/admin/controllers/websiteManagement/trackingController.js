@@ -181,6 +181,7 @@ const updateTracking = async (req, res) => {
                 console.error("Error parsing form data:", err);
                 return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
             }
+            const { id } = req.params;
 
             const trackingCode = fields.trackingId ? fields.trackingId[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
@@ -206,20 +207,20 @@ const updateTracking = async (req, res) => {
                 return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
             }
 
-            let podUrl = null;
+            const existingTrack = await Tracking.findById(id);
+            if (!existingTrack) {
+                return res.status(404).json({ success: false, message: 'Track not found' });
+            }
+            let imageUrl = existingTrack.pod; // Default to existing image
             if (file) {
                 const result = await uploadImage(file);
-                if (result.success) {
-                    podUrl = result.url;
-                } else {
-                    console.error("Error uploading image:", result.error || result.message);
-                    return res.status(500).json({ error: "Failed to upload pod image" }); // Return error if image upload fails
-                }
-            } else {
-                podUrl = ''; // Or handle the case where no file is uploaded based on your requirements
+                imageUrl = result.success ? result.url : imageUrl;
             }
 
-            const { id } = req.params;
+
+
+
+
             // console.log('pickUpLocation', pickUpLocation);
 
 
@@ -234,7 +235,7 @@ const updateTracking = async (req, res) => {
                     transportMode,
                     noOfPacking: parseInt(noOfPacking),
                     deliveryTime,
-                    pod: podUrl
+                    pod: imageUrl
                 },
                 { new: true } // Return the updated document
             );

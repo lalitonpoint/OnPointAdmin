@@ -350,13 +350,7 @@
                 toastr.error('Please select tracking status.', 'Validation Error');
                 return;
             }
-            if (trackingStatus == 4) {
-                const podFile = $('#pod')[0].files[0];
-                if (!podFile) { // Required on add
-                    toastr.error('Please select Pod Image.', 'Validation Error');
-                    return;
-                }
-            }
+
 
             // Use FormData for file + text upload
             // const formData = new FormData();
@@ -373,11 +367,10 @@
 
             if (trackingStatus != 4) {
                 formData.delete("pod");
+
             }
 
-            const form = $('#trackingForm')[0];
-            form.reset(); // Reset the form every time the modal is shown
-            $('#trackingModalLabel').text('Add Tracking')
+
 
 
             const actionUrl = id ? `/tracking/editTracking/${id}` : '/tracking/addTracking';
@@ -394,6 +387,11 @@
                     $('#trackingForm')[0].reset();
                     trackingTable.ajax.reload();
                     toastr.success('Tracking Data saved successfully!', 'Success');
+                    const form = $('#trackingForm')[0];
+                    form.reset(); // Reset the form every time the modal is shown
+                    $('#trackingModalLabel').text('Add Tracking')
+                    $('#filePreviewContainer').addClass('d-none');
+
 
                     // window.location.reload();
                 },
@@ -407,9 +405,6 @@
         // Edit Button
         $(document).on('click', '.editBtn', function () {
             const id = $(this).data('id');
-            const imagePreview = $('#imagePreview');
-
-            const imagePreviewContainer = $('#imagePreviewContainer');
 
 
             $.ajax({
@@ -430,9 +425,21 @@
                     if (data.status == 4) {
                         $('.pod').removeClass('d-none');
                         $('#pod').attr('src', data.pod);
+                        // alert(data.pod);
+
                         if (data.pod) {
+                            // alert(11);
+                            $('#filePreviewContainer').removeClass('d-none');
+
+                            const imagePreview = $('#imagePreview');
+
+                            const imagePreviewContainer = $('#filePreviewContainer');
+
                             imagePreview.attr('src', data.pod);
                             imagePreviewContainer.show();
+                            imagePreview.css("display", "block");
+
+
                         }
                     }
                     else {

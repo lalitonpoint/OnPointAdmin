@@ -24,7 +24,7 @@ const createUser = async (req, res) => {
 
     form.parse(req, async (err, fields, files) => {
         if (err) {
-            return res.status(200).json({ status: false, message: 'Failed to parse form data.' });
+            return res.status(200).json({ success: false, message: 'Failed to parse form data.' });
         }
 
         const {
@@ -44,18 +44,18 @@ const createUser = async (req, res) => {
         const g = rawGender.length > 0 ? rawGender[0] : undefined;
 
         if (!fName || !email || !code || !mobile || !g) {
-            return res.status(200).json({ status: false, message: 'Missing required fields.' });
+            return res.status(200).json({ success: false, message: 'Missing required fields.' });
         }
 
         // Basic email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return res.status(200).json({ status: false, message: 'Invalid email address format.' });
+            return res.status(200).json({ success: false, message: 'Invalid email address format.' });
         }
 
         const gender = normalizeGender(g);
         if (!gender) {
-            return res.status(200).json({ status: false, message: 'Invalid gender value.' });
+            return res.status(200).json({ success: false, message: 'Invalid gender value.' });
         }
 
         try {
@@ -71,7 +71,7 @@ const createUser = async (req, res) => {
 
             if (existingUser) {
                 return res.status(200).json({
-                    status: false,
+                    success: false,
                     message: existingUser.emailAddress === email
                         ? 'Email already exists.'
                         : 'Mobile number already exists.'
@@ -100,7 +100,7 @@ const createUser = async (req, res) => {
                         // Consider logging this error
                     }
                 } else {
-                    return res.status(500).json({ status: false, message: 'Profile picture upload failed.' });
+                    return res.status(500).json({ success: false, message: 'Profile picture upload failed.' });
                 }
             }
 
@@ -120,7 +120,7 @@ const createUser = async (req, res) => {
             });
 
             const savedUser = await newUser.save();
-            // return res.status(200).json({ status: false, savedUser: newUser });
+            // return res.status(200).json({ success: false, savedUser: newUser });
 
 
             const token = jwt.sign(
@@ -129,7 +129,7 @@ const createUser = async (req, res) => {
                 { expiresIn: '7d' });
 
             return res.status(201).json({
-                status: true,
+                success: true,
                 message: 'User created successfully.',
                 user: savedUser,
                 token
@@ -138,7 +138,7 @@ const createUser = async (req, res) => {
         } catch (error) {
             console.error('Error in createUser:', error.message, error.stack);
             return res.status(500).json({
-                status: false,
+                success: false,
                 message: 'Internal server error.',
                 details: error.message,
             });
@@ -152,7 +152,7 @@ const updateUser = async (req, res) => {
 
     form.parse(req, async (err, fields, files) => {
         if (err) {
-            return res.status(200).json({ status: false, message: 'Failed to parse form data.' });
+            return res.status(200).json({ success: false, message: 'Failed to parse form data.' });
         }
 
         const {
@@ -177,14 +177,14 @@ const updateUser = async (req, res) => {
         // Consider which fields should be required for an update
         // For this example, let's say at least one field needs to be updated.
         if (!fName && !email && !code && !mobile && !g && companyName[0] === '' && gstNumber[0] === '' && !files?.profilePicture) {
-            return res.status(200).json({ status: false, message: 'No fields to update provided.' });
+            return res.status(200).json({ success: false, message: 'No fields to update provided.' });
         }
 
         // Basic email format validation if email is being updated
         if (email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                return res.status(200).json({ status: false, message: 'Invalid email address format.' });
+                return res.status(200).json({ success: false, message: 'Invalid email address format.' });
             }
         }
 
@@ -192,7 +192,7 @@ const updateUser = async (req, res) => {
         if (g) {
             gender = normalizeGender(g);
             if (!gender) {
-                return res.status(200).json({ status: false, message: 'Invalid gender value.' });
+                return res.status(200).json({ success: false, message: 'Invalid gender value.' });
             }
         }
 
@@ -201,7 +201,7 @@ const updateUser = async (req, res) => {
 
             const existingUser = await User.findById(userIdd);
             if (!existingUser) {
-                return res.status(200).json({ status: false, message: 'User not found.' });
+                return res.status(200).json({ success: false, message: 'User not found.' });
             }
 
             let profilePictureUrl = existingUser.profilePicture || ''; // Keep existing if not updated
@@ -225,7 +225,7 @@ const updateUser = async (req, res) => {
                         // Consider logging this error
                     }
                 } else {
-                    return res.status(500).json({ status: false, message: 'Profile picture upload failed.' });
+                    return res.status(500).json({ success: false, message: 'Profile picture upload failed.' });
                 }
             }
 
@@ -243,11 +243,11 @@ const updateUser = async (req, res) => {
             const updatedUser = await User.findByIdAndUpdate(userIdd, updateData, { new: true });
 
             if (!updatedUser) {
-                return res.status(500).json({ status: false, message: 'Failed to update user profile.' });
+                return res.status(500).json({ success: false, message: 'Failed to update user profile.' });
             }
 
             return res.status(200).json({
-                status: true,
+                success: true,
                 message: 'User profile updated successfully.',
                 user: updatedUser,
             });
@@ -255,7 +255,7 @@ const updateUser = async (req, res) => {
         } catch (error) {
             console.error('Error in updateUserProfile:', error.message, error.stack);
             return res.status(500).json({
-                status: false,
+                success: false,
                 message: 'Internal server error.',
                 details: error.message,
             });
@@ -272,7 +272,7 @@ const deleteUser = async (req, res) => {
         const existingUser = await User.findById(userId);
 
         if (!existingUser) {
-            return res.status(200).json({ status: false, message: 'User not found.' });
+            return res.status(200).json({ success: false, message: 'User not found.' });
         }
 
         // Update the user's status to 3 (Delete)
@@ -283,18 +283,18 @@ const deleteUser = async (req, res) => {
         );
 
         if (!updatedUser) {
-            return res.status(200).json({ status: false, message: 'Failed to update user status.' });
+            return res.status(200).json({ success: false, message: 'Failed to update user status.' });
         }
 
         return res.status(200).json({
-            status: true,
+            success: true,
             message: 'User deleted successfully.',
         });
 
     } catch (error) {
         console.error('Error in deleteUser:', error.message, error.stack);
         return res.status(500).json({
-            status: false,
+            success: false,
             message: 'Internal server error.',
             details: error.message,
         });
