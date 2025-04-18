@@ -9,7 +9,7 @@ const getTrackingData = async (req, res) => {
         }
 
         // Use findById if you're using MongoDB's default _id field
-        const trackingDetails = await TrackingModel.find({ tracking_id: trackingId }).lean();
+        const trackingDetails = await TrackingModel.find({ trackingId: trackingId }).lean();
 
         if (trackingDetails) {
             res.status(200).json({ success: true, message: 'Tracking Data Found', data: trackingDetails });

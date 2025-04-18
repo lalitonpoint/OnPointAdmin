@@ -120,7 +120,7 @@ const createDriver = async (req, res) => {
 
                 case 3: {
                     const fieldsToUpload = [
-                        'aadhaarFront', 'aadhaarBack', 'panCard', 'drivingLicense',
+                        've', 'aadhaarBack', 'panCard', 'drivingLicense',
                         'vehicleRC', 'insuranceCopy', 'bankPassbook'
                     ];
                     const documents = {};
@@ -137,6 +137,50 @@ const createDriver = async (req, res) => {
                     update.step = 3;
                     break;
                 }
+                case 4: {
+                    const vehicleDetail = {};
+                    const vehicleRequiredFields = [
+                        'vehicleName', 'vehicleModel', 'yearOfManufacture',
+                        'plateNumber', 'vin', 'capacity',
+                        'fuelType', 'odometerReading', 'vehicleType', 'vehicleId'
+                    ];
+
+                    for (const field of vehicleRequiredFields) {
+                        const val = getField(field); // Fixed dynamic field access
+                        if (!val) {
+                            return res.status(200).json({ success: false, message: `${field} is required.` });
+                        }
+                        vehicleDetail[field] = val; // Keeping original casing to match DB fields
+                    }
+
+                    update.vehicleDetail = vehicleDetail;
+                    update.step = 4;
+                    break;
+                }
+
+                case 5: {
+                    const fieldsToUpload = [
+                        'registrationCertificate',
+                        'insuranceCertificate',
+                        'pollutionCertificate',
+                    ];
+
+                    const vehicleDocuments = {};
+
+                    for (const field of fieldsToUpload) {
+                        const uploaded = await uploadDocument(files, field);
+                        if (!uploaded) {
+                            const fieldName = field.replace(/([A-Z])/g, ' $1'); // Adds space before capital letters
+                            return res.status(200).json({ success: false, message: `${fieldName} is required.` });
+                        }
+                        vehicleDocuments[field] = uploaded;
+                    }
+
+                    update.vehicleDocuments = vehicleDocuments;
+                    update.step = 5;
+                    break;
+                }
+
 
                 default:
                     return res.status(400).json({ success: false, message: "Invalid step value." }); // Changed status code to 400 and using success: false
