@@ -2,7 +2,7 @@ const twilio = require('twilio');
 const jwt = require('jsonwebtoken');
 const { generateOTP } = require('../utils/generateOtp');
 const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
-const Driver = require('../../../admin/models/driverManagement/driverModel');
+const Driver = require('../../driver/modals/driverModal');
 
 const accountSid = process.env.SMS_ACCOUNT_ID;
 const authToken = process.env.SMS_AUTH_TOKEN;
@@ -101,11 +101,11 @@ const verifyOtp = async (req, res) => {
 
         // Now look for the Driver
         const driver = await Driver.findOne({
-            countryCode, // assuming in DB it's saved like "91"
-            mobileNumber,
+            'personalInfo.countryCode': countryCode, // e.g. "91"
+            'personalInfo.mobile': mobileNumber,
             status: { $ne: 3 }
-
         });
+
 
         if (driver) {
             const token = jwt.sign(

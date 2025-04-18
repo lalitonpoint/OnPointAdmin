@@ -98,6 +98,7 @@ const createDriver = async (req, res) => {
                         gender: getField('gender'),
                         mobile: getField('mobile'),
                         altMobile: getField('altMobile'),
+                        countryCode: getField('countryCode'),
                         profilePicture
                     };
                     break;
@@ -222,7 +223,7 @@ const createDriver = async (req, res) => {
 
                 let token = null;
 
-                if (step == 5 || existingDriver.step == 5)
+                if (step == 5)
                     token = jwt.sign(
                         { driverId: driver._id, mobileNumber: driver.personalInfo?.mobile },
                         secretKey,
