@@ -3,24 +3,22 @@ const mongoose = require("mongoose");
 const driverProfileSchema = new mongoose.Schema({
     personalInfo: {
         name: { type: String, required: true },
-        email: { type: String, required: true },
-        dob: { type: Date, required: true },
+        email: { type: String },
+        dob: { type: Date },
         gender: {
-            type: String,
-            enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
+            type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
             default: 'Prefer not to say'
         },
         mobile: { type: String, required: true },
         altMobile: { type: String },
-        profilePicture: { type: String, required: true }
+        profilePicture: { type: String }
     },
-
     addressInfo: {
         permanent: {
-            street: { type: String, required: true },
-            city: { type: String, required: true },
-            state: { type: String, required: true },
-            pin: { type: String, required: true }
+            street: { type: String },
+            city: { type: String },
+            state: { type: String },
+            pin: { type: String }
         },
         current: {
             street: { type: String },
@@ -31,45 +29,33 @@ const driverProfileSchema = new mongoose.Schema({
     },
 
     documents: {
-        ve: { type: String }, // assuming "ve" is for voter ID or similar doc
-        aadhaarBack: { type: String, required: true },
-        panCard: { type: String, required: true },
-        drivingLicense: { type: String, required: true },
-        vehicleRC: { type: String, required: true },
-        insuranceCopy: { type: String, required: true },
-        bankPassbook: { type: String, required: true }
+        aadhaarFront: { type: String },
+        aadhaarBack: { type: String },
+        panCard: { type: String },
+        drivingLicense: { type: String },
+        vehicleRC: { type: String },
+        insuranceCopy: { type: String },
+        bankPassbook: { type: String }
     },
-
     vehicleDetail: {
-        vehicleName: { type: String, required: true },
-        vehicleModel: { type: String, required: true },
-        yearOfManufacture: { type: String, required: true },
-        plateNumber: { type: String, required: true },
-        vin: { type: String, required: true },
-        capacity: { type: String, required: true },
-        fuelType: { type: String, required: true },
-        odometerReading: { type: String, required: true },
-        vehicleType: { type: String, required: true },
-        vehicleId: { type: String, required: true }
+        vehicleName: { type: String },
+        vehicleModel: { type: String },
+        yearOfManufacture: { type: String },
+        plateNumber: { type: String },
+        vin: { type: String },
+        capacity: { type: String },
+        fuelType: { type: String },
+        odometerReading: { type: String },
+        serviceType: { type: String },
+        vehicleId: { type: String }
     },
-
     vehicleDocuments: {
-        registrationCertificate: { type: String, required: true },
-        insuranceCertificate: { type: String, required: true },
-        pollutionCertificate: { type: String, required: true }
+        registrationCertificate: { type: String },
+        insuranceCertificate: { type: String },
+        pollutionCertificate: { type: String },
     },
-
-    status: {
-        type: Number,
-        enum: [1, 2, 3], // 1 = Active, 2 = Inactive, 3 = Deleted
-        default: 1
-    },
-
-    step: {
-        type: Number,
-        enum: [1, 2, 3, 4, 5],
-        default: 1
-    }
+    status: { type: Number, enum: [1, 2, 3], default: 1 }, // 1 = Active, 2 = Inactive , 3 => Delete
+    step: { type: Number, enum: [1, 2, 3, 4, 5] } // 1 = Screen 1, 2 = Screen 2 , 3 => Screen 3
 
 }, { timestamps: true });
 

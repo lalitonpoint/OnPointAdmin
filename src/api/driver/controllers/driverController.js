@@ -42,9 +42,18 @@ const createDriver = async (req, res) => {
         const step = parseInt(getField("step"), 10);
         const driverId = getField("driverId");
         let update = {};
+        let existingDriver = null;
 
-        if (step > 1 && !driverId) {
-            return res.status(400).json({ success: false, message: "driverId is required for next step " }); // Changed status code to 400
+        if (step > 1) {
+            if (!driverId) {
+                return res.status(400).json({ success: false, message: "driverId is required for next step " });
+            } else {
+                existingDriver = await DriverProfile.findById(driverId);
+                if (!existingDriver) {
+                    return res.status(404).json({ success: false, message: 'Driver not found.' });
+                }
+            }
+
         }
 
         try {
@@ -91,11 +100,15 @@ const createDriver = async (req, res) => {
                         altMobile: getField('altMobile'),
                         profilePicture
                     };
-                    update.step = 1;
+                    if (existingDriver.step < 2)
+                        update.step = 1;
                     break;
-                }
+                };
 
                 case 2: {
+
+                    console.log('existingDriver');
+                    console.log('existingDriver', existingDriver);
                     const permanent = {};
                     const permanentRequiredFields = ['Street', 'City', 'State', 'Pin'];
                     for (const field of permanentRequiredFields) {
@@ -114,13 +127,13 @@ const createDriver = async (req, res) => {
                     };
 
                     update.addressInfo = { permanent, current };
-                    update.step = 2;
+                    if (existingDriver.step < 2)
+                        update.step = 2;
                     break;
-                }
-
+                };
                 case 3: {
                     const fieldsToUpload = [
-                        've', 'aadhaarBack', 'panCard', 'drivingLicense',
+                        'aadhaarFront', 'aadhaarBack', 'panCard', 'drivingLicense',
                         'vehicleRC', 'insuranceCopy', 'bankPassbook'
                     ];
                     const documents = {};
@@ -134,7 +147,8 @@ const createDriver = async (req, res) => {
                     }
 
                     update.documents = documents;
-                    update.step = 3;
+                    if (existingDriver.step < 3)
+                        update.step = 3;
                     break;
                 }
                 case 4: {
@@ -142,7 +156,7 @@ const createDriver = async (req, res) => {
                     const vehicleRequiredFields = [
                         'vehicleName', 'vehicleModel', 'yearOfManufacture',
                         'plateNumber', 'vin', 'capacity',
-                        'fuelType', 'odometerReading', 'vehicleType', 'vehicleId'
+                        'fuelType', 'odometerReading', 'serviceType', 'vehicleId'
                     ];
 
                     for (const field of vehicleRequiredFields) {
@@ -154,11 +168,13 @@ const createDriver = async (req, res) => {
                     }
 
                     update.vehicleDetail = vehicleDetail;
-                    update.step = 4;
+                    if (existingDriver.step < 4)
+                        update.step = 4;
                     break;
-                }
-
+                };
                 case 5: {
+                    console.log(34567890);
+
                     const fieldsToUpload = [
                         'registrationCertificate',
                         'insuranceCertificate',
@@ -177,7 +193,8 @@ const createDriver = async (req, res) => {
                     }
 
                     update.vehicleDocuments = vehicleDocuments;
-                    update.step = 5;
+                    if (existingDriver.step < 5)
+                        update.step = 5;
                     break;
                 }
 
@@ -201,20 +218,16 @@ const createDriver = async (req, res) => {
 
             } else {
                 // Check if the driver exists before updating
-                const existingDriver = await DriverProfile.findById(driverId);
-                if (!existingDriver) {
-                    return res.status(404).json({ success: false, message: 'Driver not found.' }); // Return 404 if driver doesn't exist
-                }
 
                 driver = await DriverProfile.findByIdAndUpdate(driverId, { $set: update }, { new: true });
 
                 let token = null;
 
-                if (step == 3)
+                if (step == 5 || existingDriver.step == 5)
                     token = jwt.sign(
                         { driverId: driver._id, mobileNumber: driver.personalInfo?.mobile },
                         secretKey,
-                        { expiresIn: '7d' }
+                        { expiresIn: '30d' }
                     );
 
                 return res.status(200).json({
