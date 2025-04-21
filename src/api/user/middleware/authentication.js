@@ -7,9 +7,21 @@ const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
 
+    const userId = req.headers['userid'];
+
+    const serviceId = req.headers['serviceid'];
+    console.log(userId);
+
     if (!token) {
         return res.status(200).json({ message: 'Token is missing' });
     }
+    if (!userId) {
+        return res.status(200).json({ message: 'User Id is missing' });
+    }
+    if (!serviceId) {
+        return res.status(200).json({ message: 'Service ID is missing' });
+    }
+
 
     try {
         const decoded = jwt.verify(token, secretKey);
