@@ -126,9 +126,9 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="deliveryDate" class="form-label">Estimate Date <strong
+                            <label for="estimateDate" class="form-label">Estimate Date <strong
                                     class="text-danger">*</strong></label>
-                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate">
+                            <input type="datetime-local" class="form-control" id="estimateDate" name="estimateDate">
                         </div>
 
                         <!-- <div class="col-md-6">
@@ -149,6 +149,15 @@
                                 <option value="5">Cancelled</option>
                             </select>
                         </div>
+
+                        <div class="col-md-6 delDiv d-none ">
+                            <label for="deliveryDate" class="form-label deliveryDate ">Delivery Date</label>
+                            <input type="datetime-local" class="form-control" id="deliveryDate" name="deliveryDate">
+                        </div>
+
+
+
+
                         <div class="col-md-6 pod d-none">
                             <label for="pod" class="form-label">POD</label>
                             <input type="file" class="form-control image_view" id="pod" name="pod" accept="image/*">
@@ -273,7 +282,7 @@
 
 
                 {
-                    data: 'deliveryDate', // Assuming your server returns the combined date and time in 'deliveryDate'
+                    data: 'estimateDate', // Assuming your server returns the combined date and time in 'Estimate Date'
                     render: function (data) {
                         return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date and time as needed
                     }
@@ -313,6 +322,7 @@
             const transportMode = $('#transportMode').val().trim();
             const noOfPacking = $('#noOfPacking').val().trim();
             const deliveryDate = $('#deliveryDate').val().trim();
+            const estimateDate = $('#estimateDate').val().trim();
             // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val().trim();
             // const id = $('#trackingId').val();
@@ -338,8 +348,8 @@
                 toastr.error('Please enter number of packings', 'Validation Error');
                 return;
             }
-            if (!deliveryDate) {
-                toastr.error('Please select a date.', 'Validation Error');
+            if (!estimateDate) {
+                toastr.error('Please select a Estimate date.', 'Validation Error');
                 return;
             }
             // if (!deliveryTime) {
@@ -401,6 +411,27 @@
                 }
             });
         });
+        $('#trackingStatus').change(function () {
+            let trackingVal = $(this).val();
+            let trackingText = $(this).find('option:selected').text() + ' Date';
+            // $('.delDiv').removeClass('d-none');
+            // alert(trackingText);
+            if (trackingVal != '') {
+                $('.deliveryDate').text(trackingText)
+                $('.delDiv').removeClass('d-none');
+            }
+            else {
+                $('.deliveryDate').text('Delivery Date')
+                $('.delDiv').addClass('d-none');
+            }
+            const trackingModalLabel = $('#trackingModalLabel').text();
+            if ((trackingModalLabel.includes('Edit')) && trackingVal == 4)
+                $('.pod').removeClass('d-none');
+            else
+                $('.pod').addClass('d-none');
+            $('#deliveryDate').val('')
+
+        });
 
         // Edit Button
         $(document).on('click', '.editBtn', function () {
@@ -418,7 +449,18 @@
                     $('#transportMode').val(data.transportMode); // Added transport mode
                     $('#noOfPacking').val(data.noOfPacking); // Added no of packing
                     $('#trackingStatus').val(data.status);
-                    $('#deliveryDate').val(moment(data.deliveryDate).format('YYYY-MM-DD')); // Corrected ID and format date
+                    // Ensure seconds are added if missing
+                    let formattedDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                    $('#estimateDate').val(formattedDate);
+
+                    let rawDateTime = data.deliveryStatus[data.status].deliveryDateTime;
+                    let formattedDateTime = moment(rawDateTime, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                    console.log(formattedDateTime); // Outputs: 2025-04-23T16:28:00
+
+                    $('.delDiv').removeClass('d-none');
+
+                    $('#deliveryDate').val(formattedDateTime);
+
                     // let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
                     // $('#deliveryTime').val(time);
 
@@ -449,16 +491,8 @@
                 }
             });
 
-            $('#trackingStatus').change(function () {
-                // Code to execute when the element's value changes
-                console.log("The value of the element has changed!");
-                let trackingVal = $(this).val();
-                if (trackingVal == 4)
-                    $('.pod').removeClass('d-none');
-                else
-                    $('.pod').addClass('d-none');
 
-            });
+
         });
 
         $('#trackingTable').on('click', '.editBtn', function () {
