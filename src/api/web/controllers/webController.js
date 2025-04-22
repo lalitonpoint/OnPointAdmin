@@ -8,7 +8,7 @@ const getWebsiteData = async (req, res) => {
         const [testimonials, blogs, banners] = await Promise.all([
             Testimonial.find().sort({ createdAt: -1 }),
             Blog.find().sort({ createdAt: -1 }),
-            Banner.find().sort({ createdAt: -1 }) // ✅ Fixed missing comma
+            Banner.find({ plateformType: 2 }).sort({ createdAt: -1 }) // ✅ Fixed missing comma
         ]);
 
         res.status(200).json({
