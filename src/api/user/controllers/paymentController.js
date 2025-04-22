@@ -36,12 +36,12 @@ const addPaymentDetail = async (req, res) => {
 
         for (const [key, value] of Object.entries(requiredStrings)) {
             if (!value || typeof value !== 'string') {
-                return res.status(400).json({ success: false, message: `${key} is required and must be a string.` });
+                return res.status(200).json({ success: false, message: `${key} is required and must be a string.` });
             }
         }
 
         if (!Array.isArray(packages) || packages.length === 0) {
-            return res.status(400).json({ success: false, message: "At least one package is required." });
+            return res.status(200).json({ success: false, message: "At least one package is required." });
         }
 
         for (let i = 0; i < packages.length; i++) {
@@ -52,18 +52,18 @@ const addPaymentDetail = async (req, res) => {
                 !packageName || typeof packageName !== 'string' ||
                 !packageType || typeof packageType !== 'string'
             ) {
-                return res.status(400).json({ success: false, message: `packageName and packageType must be strings (Package ${i + 1}).` });
+                return res.status(200).json({ success: false, message: `packageName and packageType must be strings (Package ${i + 1}).` });
             }
 
             if (
                 typeof numberOfPackages !== 'number' || numberOfPackages <= 0 ||
                 typeof totalWeight !== 'number' || totalWeight <= 0
             ) {
-                return res.status(400).json({ success: false, message: `numberOfPackages and totalWeight must be positive numbers (Package ${i + 1}).` });
+                return res.status(200).json({ success: false, message: `numberOfPackages and totalWeight must be positive numbers (Package ${i + 1}).` });
             }
 
             if (!Array.isArray(dimensions) || dimensions.length === 0) {
-                return res.status(400).json({ success: false, message: `At least one dimension is required (Package ${i + 1}).` });
+                return res.status(200).json({ success: false, message: `At least one dimension is required (Package ${i + 1}).` });
             }
 
             for (let j = 0; j < dimensions.length; j++) {
@@ -73,7 +73,7 @@ const addPaymentDetail = async (req, res) => {
                     typeof width !== 'number' || width <= 0 ||
                     typeof height !== 'number' || height <= 0
                 ) {
-                    return res.status(400).json({
+                    return res.status(200).json({
                         success: false,
                         message: `All dimension values must be positive numbers (Package ${i + 1}, Dimension ${j + 1}).`
                     });

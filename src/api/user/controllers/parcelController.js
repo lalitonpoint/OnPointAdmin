@@ -7,7 +7,7 @@ const pickupDropLocation = async (req, res) => {
     const userId = req.headers['userid'];
 
     if (!pickupPincode || !dropPincode || !userId) {
-        return res.status(400).json({ error: 'Pickup, drop pin codes and userId are required.' });
+        return res.status(200).json({ message: 'Pickup, drop pin codes and userId are required.' });
     }
 
     try {
@@ -22,7 +22,7 @@ const pickupDropLocation = async (req, res) => {
         const data = response.data;
 
         if (data.status !== 'OK') {
-            return res.status(400).json({ error: 'Google Maps API error. Please try again.' });
+            return res.status(400).json({ message: 'Google Maps API error. Please try again.' });
         }
 
         const element = data.rows?.[0]?.elements?.[0];
