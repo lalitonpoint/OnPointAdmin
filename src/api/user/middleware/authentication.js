@@ -13,13 +13,13 @@ const verifyToken = (req, res, next) => {
     console.log(userId);
 
     if (!token) {
-        return res.status(200).json({ message: 'Token is missing' });
+        return res.status(200).json({ success: false, message: 'Token is missing' });
     }
     if (!userId) {
-        return res.status(200).json({ message: 'User Id is missing' });
+        return res.status(200).json({ success: false, message: 'User Id is missing' });
     }
     if (!serviceId) {
-        return res.status(200).json({ message: 'Service ID is missing' });
+        return res.status(200).json({ success: false, message: 'Service ID is missing' });
     }
 
 
@@ -28,13 +28,13 @@ const verifyToken = (req, res, next) => {
         req.user = decoded; // contains userId and mobileNumber
         next();
     } catch (err) {
-        return res.status(200).json({ message: 'Invalid Jwt token' });
+        return res.status(200).json({ success: false, message: 'Invalid Jwt token' });
     }
 };
 const headerAuth = (req, res, next) => {
     const deviceType = req.headers['devicetype']; // headers are lowercase
     if (!deviceType) {
-        return res.status(200).json({ message: 'DeviceType is missing' });
+        return res.status(200).json({ success: false, message: 'DeviceType is missing' });
     } else {
         next();
     }

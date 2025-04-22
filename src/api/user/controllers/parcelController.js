@@ -7,7 +7,7 @@ const pickupDropLocation = async (req, res) => {
     const userId = req.headers['userid'];
 
     if (!pickupPincode || !dropPincode || !userId) {
-        return res.status(200).json({ message: 'Pickup, drop pin codes and userId are required.' });
+        return res.status(200).json({ success: false, message: 'Pickup, drop pin codes and userId are required.' });
     }
 
     try {
@@ -22,7 +22,7 @@ const pickupDropLocation = async (req, res) => {
         const data = response.data;
 
         if (data.status !== 'OK') {
-            return res.status(200).json({ message: 'Google Maps API error. Please try again.' });
+            return res.status(200).json({ success: false, message: 'Google Maps API error. Please try again.' });
         }
 
         const element = data.rows?.[0]?.elements?.[0];
@@ -36,7 +36,7 @@ const pickupDropLocation = async (req, res) => {
                 errorMessage = 'No route could be found between the given pincodes.';
             }
 
-            return res.status(200).json({ error: errorMessage });
+            return res.status(200).json({ success: false, error: errorMessage });
         }
 
         const distanceInKm = element.distance?.text;
@@ -58,13 +58,14 @@ const pickupDropLocation = async (req, res) => {
         await parcelDetail.save();
 
         res.status(200).json({
+            success: true,
             message: 'Delivery details saved successfully.',
             data: parcelDetail
         });
 
     } catch (err) {
         console.error('Distance Matrix Error:', err.message);
-        res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+        res.status(500).json({ success: false, error: 'Something went wrong. Please try again later.' });
     }
 };
 
