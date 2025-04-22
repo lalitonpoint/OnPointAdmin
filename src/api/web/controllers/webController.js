@@ -5,6 +5,7 @@ const Banner = require('../../../admin/models/websiteManagement/bannerModel');
 // Fetch Testimonials, Blogs & Contact Us Data
 const getWebsiteData = async (req, res) => {
     try {
+
         const [testimonials, blogs, banners] = await Promise.all([
             Testimonial.find().sort({ createdAt: -1 }),
             Blog.find().sort({ createdAt: -1 }),
