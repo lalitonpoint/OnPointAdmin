@@ -217,7 +217,7 @@ const updateTracking = async (req, res) => {
             // console.log('transportMode', transportMode);
             // console.log('noOfPacking', noOfPacking);
             // console.log('deliveryTime', deliveryTime);
-            console.log('deliveryDate', deliveryDate);
+            // console.log('deliveryDate', deliveryDate);
 
             if (!trackingCode || pickUpLocation === null || status === null || dropLocation === null || transportMode === null || noOfPacking === null) { // Corrected the validation for bannerType and status
                 return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
@@ -249,15 +249,18 @@ const updateTracking = async (req, res) => {
 
                 if (key <= status) {
                     updatedDeliveryStatus[key].status = 1;
-                    if (updatedDeliveryStatus[key].deliveryDateTime === '' || deliveryDate) {
+                    if (updatedDeliveryStatus[key].deliveryDateTime === '') {
                         updatedDeliveryStatus[key].deliveryDateTime = deliveryDate;
+                    }
+                    if (deliveryDate) {
+                        updatedDeliveryStatus[status].deliveryDateTime = deliveryDate;
                     }
                 } else {
                     updatedDeliveryStatus[key].status = 0;
                     updatedDeliveryStatus[key].deliveryDateTime = '';
                 }
             }
-            console.log('updatedDeliveryStatus', updatedDeliveryStatus);
+            // console.log('updatedDeliveryStatus', updatedDeliveryStatus);
             // Also update the `status` step if it's explicitly passed
             // if (updatedDeliveryStatus[status]) {
             //     updatedDeliveryStatus[status].status = 1;
