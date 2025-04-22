@@ -22,7 +22,7 @@ const pickupDropLocation = async (req, res) => {
         const data = response.data;
 
         if (data.status !== 'OK') {
-            return res.status(400).json({ message: 'Google Maps API error. Please try again.' });
+            return res.status(200).json({ message: 'Google Maps API error. Please try again.' });
         }
 
         const element = data.rows?.[0]?.elements?.[0];
