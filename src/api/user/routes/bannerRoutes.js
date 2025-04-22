@@ -4,6 +4,6 @@ const router = express.Router();
 
 const { getBannerData } = require('../controllers/bannerController')
 
-router.post('/detail', getBannerData);
+router.get('/detail', getBannerData);
 
 module.exports = router;
