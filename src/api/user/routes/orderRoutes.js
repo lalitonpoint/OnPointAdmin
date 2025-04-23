@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 
-const { getOrderData } = require('../controllers/orderController')
+const { getOrderList } = require('../controllers/orderController')
 
-router.post('/orderData', getOrderData);
+router.post('/orderData', getOrderList);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const Order = require('../../../api/user/models/paymentModal');
 
-const getOrderData = async (req, res) => {
+const getOrderList = async (req, res) => {
     const { orderType } = req.body;
 
     try {
@@ -22,4 +22,4 @@ const getOrderData = async (req, res) => {
     }
 };
 
-module.exports = { getOrderData };
+module.exports = { getOrderList };
