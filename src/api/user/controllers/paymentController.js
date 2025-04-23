@@ -2,6 +2,12 @@ const InitiatePayment = require('../models/paymentModal');
 const { packageCalculation } = require('../controllers/packageController');
 const generateOrderId = require('../utils/generateOrderId');
 
+const razorpay = require('../utils/rajorpay');
+const crypto = require('crypto');
+require('dotenv').config(); // at the top of your file
+
+
+
 const addPaymentDetail = async (req, res) => {
     try {
         const {
@@ -149,4 +155,61 @@ const completePayment = async (req, res) => {
     }
 };
 
-module.exports = { addPaymentDetail, completePayment };
+// routes/payment.js
+const initiatePaymentMethod = async (req, res) => {
+    try {
+        const { amount, receipt } = req.body;
+
+        if (!amount || isNaN(amount)) {
+            return res.status(200).json({ success: false, error: 'Invalid amount' });
+        }
+
+        const options = {
+            amount: amount * 100,
+            currency: 'INR',
+            receipt: receipt || `receipt_${Date.now()}`,
+            notes: {
+                packageType: 'Fragile'
+            }
+        };
+
+        const order = await razorpay.orders.create(options);
+        res.status(200).json({ success: true, order: order });
+    } catch (err) {
+        console.error('Razorpay Order Error:', err);
+        res.status(500).json({ success: false, error: 'Unable to create order', details: err.message });
+    }
+};
+
+const verifyPayment = (req, res) => {
+    const { razorPayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+
+    if (!razorPayOrderId) {
+        return res.status(400).json({ success: false, message: 'Missing razorPayOrderId' });
+    }
+
+    if (!razorpayPaymentId) {
+        return res.status(400).json({ success: false, message: 'Missing razorpayPaymentId' });
+    }
+
+    if (!razorpaySignature) {
+        return res.status(400).json({ success: false, message: 'Missing razorpaySignature' });
+    }
+
+    const generatedSignature = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .update(razorPayOrderId + '|' + razorpayPaymentId)
+        .digest('hex');
+
+    if (generatedSignature === razorpaySignature) {
+        res.status(200).json({ success: true, message: 'Payment Verified' });
+    } else {
+        res.status(400).json({ success: false, message: 'Invalid Signature' });
+    }
+};
+
+
+
+
+
+module.exports = { addPaymentDetail, completePayment, initiatePaymentMethod, verifyPayment };
