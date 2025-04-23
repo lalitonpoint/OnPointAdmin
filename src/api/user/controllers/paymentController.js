@@ -133,6 +133,12 @@ const completePayment = async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing required payment completion details." });
         }
 
+        const existingTransaction = await InitiatePayment.findOne({ postTransactionId: transactionId });
+        if (existingTransaction) {
+            return res.status(409).json({ success: false, message: "Transaction already recorded." });
+        }
+
+
         const paymentRecord = await InitiatePayment.findOne({ preTransactionId: transactionId });
 
         if (!paymentRecord) {
@@ -144,6 +150,11 @@ const completePayment = async (req, res) => {
         paymentRecord.paymentId = paymentId;
         paymentRecord.totalPayment = totalPayment;
         paymentRecord.transactionDate = new Date(transactionDate);
+
+        const existing = await InitiatePayment.findOne({ postTransactionId: transactionId });
+        if (existing) {
+            return res.status(409).json({ success: false, message: "Transaction already recorded." });
+        }
 
         await paymentRecord.save();
 
