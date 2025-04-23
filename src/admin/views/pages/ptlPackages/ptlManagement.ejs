@@ -68,11 +68,11 @@
                             <!-- <th>Tracking ID</th> -->
                             <th>From Location</th>
                             <th>Drop Location</th>
-                            <th>Package Name </th>
-                            <th>No. of Packages</th>
-                            <th>Package Type</th>
+                            <th>orderId</th>
+                            <th>User Id</th>
+                            <th>User Name</th>
                             <th>Total Payment</th>
-                            <th>Total Weight</th>
+                            <!-- <th>Total Weight</th> -->
                             <th>Status</th>
                             <th>Estimate Date</th>
                             <th>Action</th>
@@ -114,19 +114,19 @@
                             <input type="text" class="form-control" id="dropLocation" placeholder="Enter Drop Location"
                                 name="dropLocation" readonly>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="transportMode" class="form-label">packageName  <strong
                                     class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="transportMode" name="transportMode"
                                 placeholder="Enter Transport Mode" readonly>
-                        </div>
+                        </div> -->
 
-                        <div class="col-md-4">
+                        <!-- <div class="col-md-4">
                             <label for="noOfPacking" class="form-label">No. of Package <strong
                                     class="text-danger">*</strong></label>
                             <input type="number" class="form-control" id="noOfPacking" name="noOfPacking"
                                 placeholder="Enter No. of Package" readonly>
-                        </div>
+                        </div> -->
 
                         <div class="col-md-4">
                             <label for="total_amount" class="form-label">Total Amount<strong
@@ -165,15 +165,15 @@
                             <label for="total_amount" class="form-label">Payment Method<strong
                                     class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="payment_method" name="payment_method"
-                                placeholder="Enter Payment Method" readonly>
+                                placeholder="Enter Payment Method" value="UPI" readonly>
                         </div>
 
-                        <div class="col-md-4">
+                        <!-- <div class="col-md-4">
                             <label for="total_amount" class="form-label">Total Weight<strong
                                     class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="total_weight" name="total_weight"
                                 placeholder="Enter Total Weight" readonly>
-                        </div>
+                        </div> -->
 
                         <!-- <div class="col-md-4">
                             <label for="deliveryDate" class="form-label">Estimate Date <strong
@@ -273,24 +273,24 @@
                 },
                 
                 {
-                    data: 'pickupLocation',
+                    data: 'pickupAddress',
                     orderable: false,
 
                 }, // Corrected data property to 'pickUpLocation'
                 {
-                    data: 'dropLocation',
+                    data: 'dropAddress',
                     orderable: false,
 
                 },
                 {
-                    data: 'packageName',
+                    data: 'orderId',
                     orderable: false,
 
                 },
-                { data: 'numberOfPackages' },
-                { data: 'packageType' },
+                { data: 'userId._id' },
+                 { data: 'userId.fullName' },
                 { data: 'totalPayment' },
-                { data : 'totalWeight'},
+                // { data : 'totalWeight'},
 
                 {
                     data: 'status',
@@ -475,8 +475,8 @@
                 success: function (data) {
                     $('#trackingId').val(data._id);
                     $('#trackingCode').val(data.trackingId);
-                    $('#pickUpLocation').val(data.tracking.pickupLocation); // Added pickup location
-                    $('#dropLocation').val(data.tracking.dropLocation); // Added drop location
+                    $('#pickUpLocation').val(data.tracking.pickupAddress); // Added pickup location
+                    $('#dropLocation').val(data.tracking.dropAddress); // Added drop location
                     $('#transportMode').val(data.tracking.packageName); // Added transport mode
                     $('#noOfPacking').val(data.tracking.numberOfPackages); // Added no of packing
                     $('#trackingStatus').val(data.tracking.status);
@@ -484,8 +484,8 @@
                     $('#total_gst').val(data.tracking.gst);
                     $('#shippingCost').val(data.tracking.shippingCost);
                     $('#specialHandling').val(data.tracking.specialHandling);
-                    $('#subtotal').val(data.tracking.subtotal);
-                    $('#payment_method').val(data.tracking.paymentMethod);
+                    $('#subtotal').val(data.tracking.subTotal);
+                    // $('#payment_method').val(data.tracking.paymentMethod);
                     $('#total_weight').val(data.tracking.totalWeight);
                     $('#packageid').val(data.tracking._id);
                     const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
