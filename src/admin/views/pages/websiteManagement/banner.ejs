@@ -29,14 +29,6 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="searchPlateformType" class="form-label">Banner Type</label>
-                    <select id="searchPlateformType" class="form-select">
-                        <option value="">All</option>
-                        <option value="1">App</option>
-                        <option value="2">Web</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
                     <label for="searchStatus" class="form-label">Status</label>
                     <select id="searchStatus" class="form-select">
                         <option value="">All</option>
@@ -68,7 +60,6 @@
                             <th>Banner Title</th>
                             <th>Banner Image/Video</th>
                             <th>Banner Type</th>
-                            <th>Plateform Type</th>
                             <th>Status</th>
                             <th>Created At</th>
                             <th>Action</th>
@@ -112,15 +103,6 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="plateformType" class="form-label">Plateform Type <strong
-                                    class="text-danger">*</strong></label>
-                            <select class="form-select" name="plateformType" id="plateformType">
-                                <option value="">Select Plateform Type</option>
-                                <option value="1">App</option>
-                                <option value="2">Web</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
                             <label for="status" class="form-label">Status <strong class="text-danger">*</strong></label>
                             <select class="form-select" name="status" id="status">
                                 <option value="">Select Status</option>
@@ -128,10 +110,6 @@
                                 <option value="2">Inactive</option>
                             </select>
                         </div>
-
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label" id="bannerFileLabel">Banner File <strong
                                     class="text-danger">*</strong></label>
@@ -229,7 +207,6 @@
                 data: function (d) {
                     d.bannerTitle = $('#searchBannerTitle').val();
                     d.bannerType = $('#searchBannerType').val();
-                    d.plateformType = $('#searchPlateformType').val();
                     d.status = $('#searchStatus').val();
                     d.createdAt = $('#searchCreatedAt').val();
                 }
@@ -261,14 +238,6 @@
 
                 render: function (data) {
                     return data === 1 ? 'Image' : (data === 2 ? 'Video' : '-');
-                }
-            },
-            {
-                data: 'plateformType',
-                orderable: false,
-
-                render: function (data) {
-                    return data === 1 ? 'App' : (data === 2 ? 'Web' : '-');
                 }
             },
             {
@@ -313,11 +282,6 @@
                 const bannerType = $('#bannerType').val();
                 if (!bannerType) {
                     toastr.error('Banner Type is required.', 'Validation Error');
-                    return;
-                }
-                const plateformType = $('#plateformType').val();
-                if (!plateformType) {
-                    toastr.error('Plateform Type is required.', 'Validation Error');
                     return;
                 }
 
@@ -403,7 +367,6 @@
                     success: function (data) {
                         $('#bannerTitle').val(data.title);
                         $('#bannerType').val(data.bannerType);
-                        $('#plateformType').val(data.plateformType);
                         $('#status').val(data.status);
                         if (data.bannerType === 1 && data.bannerFile) {
                             filePreviewContainer.show();
