@@ -1,3 +1,10 @@
+const warehouse = require('../../models/warehouseManagemnet/warehouseModal');
+const moment = require('moment'); // Ensure moment.js is installed: npm install moment
+const multiparty = require('multiparty');
+const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
+
+
+
 const warehousePage = (req, res) => {
     res.render('pages/warehouseManagement/warehouse');
 }
