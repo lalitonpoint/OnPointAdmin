@@ -75,13 +75,6 @@ const saveSettings = async (req, res) => {
                 s3BucketKey: req.body.awsS3.s3Bucket
             };
         }
-        if (req.body.payment) {
-            settings.paymentDetails = {
-                shippingCost: req.body.payment.shippingCost,
-                specialHandling: req.body.payment.specialHandling,
-                gst: req.body.payment.gst
-            };
-        }
         // console.log(settings);
 
         await settings.save();

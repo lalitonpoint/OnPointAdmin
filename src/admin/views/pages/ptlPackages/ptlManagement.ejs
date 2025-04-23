@@ -14,14 +14,14 @@
 </style>
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">📦 Warehouse Management</h3>
+        <h3 class="fw-bold">📦 Ptl Package Management</h3>
         <div>
             <button class="btn btn-success me-2" id="downloadAllTrackingCsv">
                 <i class="fas fa-download me-2"></i> Download CSV
             </button>
-            <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#trackingModal">
-                <i class="fas fa-plus me-2"></i> Add Warehouse
-            </button>
+            <!-- <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#trackingModal">
+                <i class="fas fa-plus me-2"></i> Add Tracking
+            </button> -->
         </div>
     </div>
 
@@ -29,10 +29,10 @@
         <div class="card-body">
             <h5 class="mb-3">Search Trackings</h5>
             <div class="row g-3">
-                <div class="col-md-3">
+                <!-- <div class="col-md-3">
                     <label for="searchTrackingId" class="form-label">Tracking ID</label>
                     <input type="text" class="form-control" id="searchTrackingId" placeholder="Enter Tracking ID">
-                </div>
+                </div> -->
                 <div class="col-md-3">
                     <label for="searchStatus" class="form-label">Status</label>
                     <select id="searchStatus" class="form-select">
@@ -65,12 +65,14 @@
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
-                            <th> ID</th>
-                            <th>Warehouse Name</th>
-                            <th>Phone Number</th>
-                            <th>Warehouse Address</th>
-                            <th>Warehouse Location</th>
-                            <th>Pincode</th>
+                            <!-- <th>Tracking ID</th> -->
+                            <th>From Location</th>
+                            <th>Drop Location</th>
+                            <th>Package Name </th>
+                            <th>No. of Packages</th>
+                            <th>Package Type</th>
+                            <th>Total Payment</th>
+                            <th>Total Weight</th>
                             <th>Status</th>
                             <th>Estimate Date</th>
                             <th>Action</th>
@@ -87,8 +89,8 @@
     aria-hidden="true">
     <div class="modal-dialog modal-lg custom-modal">
         <div class="modal-content border-0 rounded-3">
-            <div class="modal-header bg-pink text-white">
-                <h5 class="modal-title trackingHeadding" id="trackingModalLabel">Add Warehouse</h5>
+            <div class="modal-header bg-pink text-white ">
+                <h5 class="modal-title trackingHeadding" id="trackingModalLabel">Add Tracking</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -96,46 +98,126 @@
                 <div class="modal-body">
                     <input type="hidden" id="trackingId" name="id">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="trackingCode" class="form-label">Warehouse Name<strong
+                        <div class="col-md-6 ">
+                            <label for="trackingCode" class="form-label">Package ID <strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="Warehousename" name="Warehousename"
-                                autocomplete="off" placeholder="Enter Warehouse Name">
+                            <input type="text" class="form-control" id="packageid" name="packageid"
+                                autocomplete="off" placeholder="Enter Tracking ID">
                         </div>
                         <div class="col-md-6">
-                            <label for="pickUpLocation" class="form-label">Warehouse Location / City</label>
-                            <input type="text" class="form-control" id="warehouseLocation"
-                                placeholder="Enter Warehouse Location" name="warehouseLocation">
+                            <label for="pickUpLocation" class="form-label">Pickup Location</label>
+                            <input type="text" class="form-control " id="pickUpLocation"
+                                placeholder="Enter Pickup Location" name="pickUpLocation" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label for="warehouseAddress" class="form-label">Warehouse Address</label>
-                            <input type="text" class="form-control" id="warehouseAddress" placeholder="Enter Warehouse Address"
-                                name="warehouseAddress">
+                            <label for="dropLocation" class="form-label">Drop Location</label>
+                            <input type="text" class="form-control" id="dropLocation" placeholder="Enter Drop Location"
+                                name="dropLocation" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label for="pincode" class="form-label">Warehouse Pincode <strong
+                            <label for="transportMode" class="form-label">packageName  <strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="pincode" name="pincode"
-                                placeholder="Enter Pincode ">
+                            <input type="text" class="form-control" id="transportMode" name="transportMode"
+                                placeholder="Enter Transport Mode" readonly>
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="phone" class="form-label">Warehouse Phone<strong
+                        <div class="col-md-4">
+                            <label for="noOfPacking" class="form-label">No. of Package <strong
                                     class="text-danger">*</strong></label>
-                            <input type="number" class="form-control" id="phone" name="phone"
-                                placeholder="Enter No. of Warehouse Phone">
+                            <input type="number" class="form-control" id="noOfPacking" name="noOfPacking"
+                                placeholder="Enter No. of Package" readonly>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Total Amount<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="total_amount" name="total_amount"
+                                placeholder="Enter Total Amount" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Total GST<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="total_gst" name="total_gst"
+                                placeholder="Enter Total gst" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Total shippingCost<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="shippingCost" name="shippingCost"
+                                placeholder="Enter shipping Cost" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Total specialHandling<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="specialHandling" name="specialHandling"
+                                placeholder="Enter special Handling" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Total subtotal<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="subtotal" name="subtotal"
+                                placeholder="Enter subtotal" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Payment Method<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="payment_method" name="payment_method"
+                                placeholder="Enter Payment Method" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Total Weight<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="total_weight" name="total_weight"
+                                placeholder="Enter Total Weight" readonly>
+                        </div>
+
+                        <!-- <div class="col-md-4">
+                            <label for="deliveryDate" class="form-label">Estimate Date <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate">
+                        </div> -->
+
+                        <!-- <div class="col-md-4">
+                            <label for="deliveryTime" class="form-label">Time <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="time" class="form-control" id="deliveryTime" name="deliveryTime">
+                        </div> -->
+
+                        <div class="col-md-4">
                             <label for="trackingStatus" class="form-label">Status <strong
                                     class="text-danger">*</strong></label>
                             <select class="form-select" id="trackingStatus" name="status">
                                 <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="2">In-Active</option>
-                               
+                                <option value="1">In Progress</option>
+                                <option value="2">Pickup</option>
+                                <option value="3">Out for Delivery</option>
+                                <option value="4">Delivered</option>
+                                <option value="5">Cancelled</option>
                             </select>
                         </div>
+
+
+                        <div class="col-md-4">
+                            <label for="deleivery_boy" class="form-label">Deleiver person <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" id="deleivery_boy" name="deleivery_boy">
+                                <option value="">Select Status</option>
+                              
+                            </select>
+                        </div>
+                        <!-- <div class="col-md-4 pod d-none">
+                            <label for="pod" class="form-label">POD</label>
+                            <input type="file" class="form-control image_view" id="pod" name="pod" accept="image/*">
+
+                            <div id="filePreviewContainer" class="mt-2" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Tracking Image Preview"
+                                    style="max-width: 100px; max-height: 100px; display: none;">
+                            </div>
+                        </div> -->
 
 
                     </div>
@@ -170,14 +252,17 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '/warehouse/warehouseList/',
+                url: '/ptlPackages/trackingList/',
                 type: 'POST',
                 data: function (d) {
+                  
                     d.trackingCode = $('#searchTrackingId').val();
                     d.pickUpLocation = $('#pickUpLocation').val();
                     d.dropLocation = $('#toLocation').val(); // Corrected ID here
                     d.status = $('#searchStatus').val();
                     d.date = $('#searchDate').val();
+                    // console.log("Final request data:", d.pickUpLocation); // Debug log
+                    // console.log("Final request data:", d.dropLocation); // Debug log
                 }
             },
             columns: [
@@ -186,28 +271,26 @@
                     orderable: false, // Disable ordering for the index column
                     render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
                 },
+                
                 {
-                    data: '_id',
-                    orderable: false,
-
-                },
-                {
-                    data: 'Warehousename',
+                    data: 'pickupLocation',
                     orderable: false,
 
                 }, // Corrected data property to 'pickUpLocation'
                 {
-                    data: 'phone',
+                    data: 'dropLocation',
                     orderable: false,
 
                 },
                 {
-                    data: 'warehouseAddress',
+                    data: 'packageName',
                     orderable: false,
 
                 },
-                { data: 'warehouseLocation' },
-                { data: 'pincode' },
+                { data: 'numberOfPackages' },
+                { data: 'packageType' },
+                { data: 'totalPayment' },
+                { data : 'totalWeight'},
 
                 {
                     data: 'status',
@@ -221,11 +304,11 @@
                         switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
                             case 1:
                                 statusColor = 'badge bg-warning'; // Pickup
-                                statusText = 'Active';
+                                statusText = 'In Progress';
                                 break;
                             case 2:
                                 statusColor = 'badge bg-info'; // Out for Delivery
-                                statusText = 'Inactive';
+                                statusText = 'Pickup';
                                 break;
                             case 3:
                                 statusColor = 'badge bg-primary'; // In Progress
@@ -262,8 +345,7 @@
                     orderable: false,
                     render: function (data, type, row) {
                         return `
-                            <button class="btn btn-sm btn-primary editBtn" data-id="${row._id}">Edit</button>
-                            <button class="btn btn-sm btn-danger deleteBtn" data-id="${row._id}">Delete</button> `;
+                            <button class="btn btn-sm btn-primary editBtn" data-id="${row._id}">Edit</button> `;
                     }
                 }
             ]
@@ -287,11 +369,11 @@
 
             // Trimmed values
             const trackingCode = $('#trackingCode').val();
-            const Warehousename = $('#Warehousename').val();
-            const warehouseLocation = $('#warehouseLocation').val();
-            const warehouseAddress = $('#warehouseAddress').val();
-            const pincode = $('#pincode').val();
-            const phone = $('#phone').val();
+            const pickUpLocation = $('#pickUpLocation').val();
+            const dropLocation = $('#dropLocation').val();
+            const transportMode = $('#transportMode').val();
+            const noOfPacking = $('#noOfPacking').val();
+            const deliveryDate = $('#deliveryDate').val();
             // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val();
             // const id = $('#trackingId').val();
@@ -301,37 +383,47 @@
             //     toastr.error('Please enter tracking ID', 'Validation Error');
             //     return;
             // }
-            if (!Warehousename) {
-                toastr.error('Please enter pickup location', 'Validation Error');
-                return;
-            }
-            if (!warehouseLocation) {
-                toastr.error('Please enter drop location', 'Validation Error');
-                return;
-            }
-            if (!warehouseAddress) {
-                toastr.error('Please enter transport mode', 'Validation Error');
-                return;
-            }
-            if (!pincode) {
-                toastr.error('Please enter number of packings', 'Validation Error');
-                return;
-            }
-            if (!phone) {
-                toastr.error('Please select a date.', 'Validation Error');
-                return;
-            }
-            // if (!deliveryTime) {
-            //     toastr.error('Please select delivery time.', 'Validation Error');
+            // if (!pickUpLocation) {
+            //     toastr.error('Please enter pickup location', 'Validation Error');
             //     return;
             // }
-            if (!trackingStatus) {
-                toastr.error('Please select tracking status.', 'Validation Error');
-                return;
-            }
+            // if (!dropLocation) {
+            //     toastr.error('Please enter drop location', 'Validation Error');
+            //     return;
+            // }
+            // if (!transportMode) {
+            //     toastr.error('Please enter transport mode', 'Validation Error');
+            //     return;
+            // }
+            // if (!noOfPacking) {
+            //     toastr.error('Please enter number of packings', 'Validation Error');
+            //     return;
+            // }
+            // if (!deliveryDate) {
+            //     toastr.error('Please select a date.', 'Validation Error');
+            //     return;
+            // }
+            // // if (!deliveryTime) {
+             //     toastr.error('Please select delivery time.', 'Validation Error');
+             //     return;
+             // }
+            // if (!trackingStatus) {
+            //     toastr.error('Please select tracking status.', 'Validation Error');
+            //     return;
+            // }
 
 
-            const id = $('#trackingId').val();
+            // Use FormData for file + text upload
+            // const formData = new FormData();
+            // formData.append('trackingCode', trackingCode);
+            // formData.append('pickUpLocation', pickUpLocation);
+            // formData.append('dropLocation', dropLocation);
+            // formData.append('transportMode', transportMode);
+            // formData.append('noOfPacking', noOfPacking);
+            // formData.append('deliveryDate', deliveryDate);
+            // formData.append('deliveryTime', deliveryTime);
+            // formData.append('status', trackingStatus);
+            const id = $('#packageid').val();
             const formData = new FormData(formElement);
 
             if (trackingStatus != 4) {
@@ -342,7 +434,8 @@
 
 
 
-            const actionUrl = id ? `/warehouse/editWarehouse/${id}` : '/warehouse/addWarehouse';
+            const actionUrl = `/ptlPackages/editTracking/${id}` ;
+            alert(id)
 
             $.ajax({
                 url: actionUrl,
@@ -377,16 +470,36 @@
 
 
             $.ajax({
-                url: '/warehouse/get/' + id,
+                url: '/ptlPackages/get/' + id,
                 type: 'GET',
                 success: function (data) {
                     $('#trackingId').val(data._id);
-                    $('#Warehousename').val(data.Warehousename);
-                    $('#warehouseLocation').val(data.warehouseLocation); // Added pickup location
-                    $('#warehouseAddress').val(data.warehouseAddress); // Added drop location
-                    $('#pincode').val(data.pincode); // Added transport mode
-                    $('#phone').val(data.phone); // Added no of packing
-                    $('#trackingStatus').val(data.status);
+                    $('#trackingCode').val(data.trackingId);
+                    $('#pickUpLocation').val(data.tracking.pickupLocation); // Added pickup location
+                    $('#dropLocation').val(data.tracking.dropLocation); // Added drop location
+                    $('#transportMode').val(data.tracking.packageName); // Added transport mode
+                    $('#noOfPacking').val(data.tracking.numberOfPackages); // Added no of packing
+                    $('#trackingStatus').val(data.tracking.status);
+                    $('#total_amount').val(data.tracking.totalPayment);
+                    $('#total_gst').val(data.tracking.gst);
+                    $('#shippingCost').val(data.tracking.shippingCost);
+                    $('#specialHandling').val(data.tracking.specialHandling);
+                    $('#subtotal').val(data.tracking.subtotal);
+                    $('#payment_method').val(data.tracking.paymentMethod);
+                    $('#total_weight').val(data.tracking.totalWeight);
+                    $('#packageid').val(data.tracking._id);
+                    const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
+
+                    const dropdown = $('#deleivery_boy');
+                    dropdown.empty(); // Clear existing options
+                    dropdown.append('<option value="">Select Delivery Boy</option>');
+
+                    drivers.forEach(driver => {
+                        const name = driver.personalInfo?.name || 'No Name';
+                        const id = driver._id;
+                        dropdown.append(`<option value="${id}">${name}</option>`);
+                    });
+                    
                     // $('#deliveryDate').val(moment(data.deliveryDate).format('YYYY-MM-DD')); // Corrected ID and format date
                     // let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
                     // $('#deliveryTime').val(time);
@@ -430,9 +543,11 @@
             });
         });
 
+
+
         $('#trackingTable').on('click', '.editBtn', function () {
             const trackingId = $(this).data('id');
-            $('#trackingModalLabel').text('Edit Tracking')
+            $('#trackingModalLabel').text('Edit Ptl package')
             $('#trackingModal').modal('show', this); // Pass the button element for context
         });
 
