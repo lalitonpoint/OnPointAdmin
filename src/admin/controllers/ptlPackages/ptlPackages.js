@@ -1,4 +1,4 @@
-const Tracking = require('../../models/ptlPackages/ptlPackagesModel');
+const Tracking = require('../../../api/user/models/paymentModal');
 const Driver = require('../../../api/driver/modals/driverModal');
 const driverPackageAssign = require('../../models/ptlPackages/driverPackageAssignModel');
 
@@ -79,7 +79,10 @@ const trackingList = async (req, res) => {
         const tracking = await Tracking.find(query)
             .skip(Number(start))
             .limit(Number(length))
-            .sort(sort); // Apply the sort order
+            .sort(sort) // Apply the sort order
+            .populate({ path: 'userId', select: 'fullName' }); // 👈 join userName from User model
+            
+
 
         const totalRecords = await Tracking.countDocuments();
         const filteredRecords = await Tracking.countDocuments(query);
@@ -306,7 +309,7 @@ const updateTracking = async (req, res) => {
             const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1;
     
             // Validation check before proceeding
-            if (!packageid || !status || !noOfPacking) {
+            if (!packageid || !status) {
                 return res.status(400).json({ message: 'Tracking ID, Status, and No. of Packing are required' });
             }
     

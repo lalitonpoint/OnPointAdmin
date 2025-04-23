@@ -19,7 +19,6 @@ const InitiatePaymentSchema = new mongoose.Schema({
     specialHandling: { type: Number, required: true },
     gst: { type: Number, required: true },
     totalPayment: { type: Number, required: true },
-<<<<<<< HEAD
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     orderId: { type: String },
     transactionDate: { type: Date },
@@ -27,12 +26,6 @@ const InitiatePaymentSchema = new mongoose.Schema({
 
     paymentMethod: { type: String },
     paymentGateway: { type: String },
-=======
-    paymentMethod: { type: String, required: true },
-    paymentGateway: { type: String, required: true },
-
-    // Optional/auto-filled fields
->>>>>>> e5123714ae405c24aab8fcbb5112ad287da49eee
     transactionStatus: { type: String, default: 'Initiated' },
     preTransactionId: { type: String },
     postTransactionId: { type: String },

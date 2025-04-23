@@ -10,6 +10,7 @@ router.get('/warehouseManagement', WarehouseCtrl.warehousePage);
 router.get('/get/:id', WarehouseCtrl.getwareHousebyId);
 router.post('/editWarehouse/:id', WarehouseCtrl.updateWarehouse); // Using POST for update
 router.post('/addWarehouse', WarehouseCtrl.addWarehouse);
+router.delete('/delete/:id', WarehouseCtrl.deleteWarehouse);
 
 
 

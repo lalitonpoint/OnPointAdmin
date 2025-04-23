@@ -262,13 +262,13 @@ const updateWarehouse = async (req, res) => {
 };
 
 
-const deleteTracking = async (req, res) => {
+const deleteWarehouse = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedTracking = await Tracking.findByIdAndDelete(id);
+        const deletedTracking = await warehouse.findByIdAndDelete(id);
 
         if (!deletedTracking) {
-            return res.status(404).json({ message: 'Tracking not found' });
+            return res.status(404).json({ message: 'warehouse not found' });
         }
 
         res.json({ message: 'Tracking deleted successfully' });
@@ -360,6 +360,6 @@ module.exports = {
     addWarehouse,
     getwareHousebyId,
     updateWarehouse,
-    deleteTracking,
+    deleteWarehouse,
     downloadTrackingCsv
 };
