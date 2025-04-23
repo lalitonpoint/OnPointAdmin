@@ -21,20 +21,24 @@ const trackingList = async (req, res) => {
         let query = {};
         let sort = {};
 
-        const trackingCodeSearch = req.body.trackingCode;
-
+        const pickUpLocationSearch = req.body.pickUpLocation;
+        const dropLocationSearch = req.body.dropAddress;
         const statusSearch = req.body.status;
         const dateSearch = req.body.date; // This corresponds to the frontend's searchDate
 
         if (searchValue) {
             query.$or = [
-                { trackingId: new RegExp(searchValue, 'i') },
+                { pickupAddress: new RegExp(searchValue, 'i') },
+                { dropAddress: new RegExp(searchValue, 'i') },
                 { status: new RegExp(searchValue, 'i') }
                 // Add more fields to the global search if needed
             ];
         } else {
-            if (trackingCodeSearch) {
-                query.trackingId = new RegExp(trackingCodeSearch, 'i');
+            if (pickUpLocationSearch) {
+                query.pickupAddress = new RegExp(pickUpLocationSearch, 'i');
+            }
+            if (dropLocationSearch) {
+                query.dropAddress = new RegExp(dropLocationSearch, 'i');
             }
 
 

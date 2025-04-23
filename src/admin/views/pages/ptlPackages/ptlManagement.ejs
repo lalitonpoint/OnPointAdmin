@@ -25,14 +25,20 @@
         </div>
     </div>
 
-    <div class="card shadow-sm mb-4 d-none" id="searchTrackingCard">
+    <div class="card shadow-sm mb-4 " id="searchTrackingCard">
         <div class="card-body">
-            <h5 class="mb-3">Search Trackings</h5>
+            <h5 class="mb-3">Search Ptl Management</h5>
             <div class="row g-3">
-                <!-- <div class="col-md-3">
-                    <label for="searchTrackingId" class="form-label">Tracking ID</label>
-                    <input type="text" class="form-control" id="searchTrackingId" placeholder="Enter Tracking ID">
-                </div> -->
+                <div class="col-md-3">
+                    <label for="pickUpLocation" class="form-label">Pickup Location</label>
+                    <input type="text" class="form-control" id="pickUpLocation" placeholder="Enter pickUpLocation ">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="dropUpLocation" class="form-label">Drop Location</label>
+                    <input type="text" class="form-control" id="dropUpLocation" placeholder="Enter dropUpLocation ">
+                </div>
+
                 <div class="col-md-3">
                     <label for="searchStatus" class="form-label">Status</label>
                     <select id="searchStatus" class="form-select">
@@ -44,10 +50,10 @@
                         <option value="5">Cancelled</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <!-- <div class="col-md-3">
                     <label for="searchDate" class="form-label">Estimate Date</label>
                     <input type="date" class="form-control" id="searchDate">
-                </div>
+                </div> -->
 
 
                 <div class="col-md-3 d-flex gap-2 align-items-end">
@@ -254,7 +260,7 @@
                   
                     d.trackingCode = $('#searchTrackingId').val();
                     d.pickUpLocation = $('#pickUpLocation').val();
-                    d.dropLocation = $('#toLocation').val(); // Corrected ID here
+                    d.dropAddress = $('#dropUpLocation').val(); // Corrected ID here
                     d.status = $('#searchStatus').val();
                     d.date = $('#searchDate').val();
                     // console.log("Final request data:", d.pickUpLocation); // Debug log
