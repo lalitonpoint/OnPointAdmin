@@ -114,26 +114,39 @@
                             <input type="text" class="form-control" id="dropLocation" placeholder="Enter Drop Location"
                                 name="dropLocation" readonly>
                         </div>
-                        <!-- <div class="col-md-6">
-                            <label for="transportMode" class="form-label">packageName  <strong
+                        <div class="col-md-6">
+                            <label for="deleivery_boy" class="form-label">Deleiver person <strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="transportMode" name="transportMode"
-                                placeholder="Enter Transport Mode" readonly>
-                        </div> -->
-
-                        <!-- <div class="col-md-4">
-                            <label for="noOfPacking" class="form-label">No. of Package <strong
-                                    class="text-danger">*</strong></label>
-                            <input type="number" class="form-control" id="noOfPacking" name="noOfPacking"
-                                placeholder="Enter No. of Package" readonly>
-                        </div> -->
-
-                        <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Total Amount<strong
-                                    class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="total_amount" name="total_amount"
-                                placeholder="Enter Total Amount" readonly>
+                            <select class="form-select" id="deleivery_boy" name="deleivery_boy">
+                                <option value="">Select person</option>
+                              
+                            </select>
                         </div>
+
+
+                        <div class="input-group mt-2">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#packageDetailsCollapse" aria-expanded="false" aria-controls="packageDetailsCollapse">
+                                View Package
+                            </button>
+                        </div>
+                        
+                        <div class="collapse mt-2" id="packageDetailsCollapse">
+                            <table class="table table-bordered table-sm mt-2">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Package Name</th>
+                                        <th>Package Type</th>
+                                        <th>Package Weight</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="packageDetailsTableBody">
+                                    <!-- Rows will be injected here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        
+
                         <div class="col-md-4">
                             <label for="total_amount" class="form-label">Total GST<strong
                                     class="text-danger">*</strong></label>
@@ -161,6 +174,17 @@
                             <input type="text" class="form-control" id="subtotal" name="subtotal"
                                 placeholder="Enter subtotal" readonly>
                         </div>
+                         
+
+                        <div class="col-md-4">
+                            <label for="total_amount" class="form-label">Total Amount<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="total_amount" name="total_amount"
+                                placeholder="Enter Total Amount" readonly>
+                        </div>
+
+
+
                         <div class="col-md-4">
                             <label for="total_amount" class="form-label">Payment Method<strong
                                     class="text-danger">*</strong></label>
@@ -168,24 +192,6 @@
                                 placeholder="Enter Payment Method" value="UPI" readonly>
                         </div>
 
-                        <!-- <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Total Weight<strong
-                                    class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="total_weight" name="total_weight"
-                                placeholder="Enter Total Weight" readonly>
-                        </div> -->
-
-                        <!-- <div class="col-md-4">
-                            <label for="deliveryDate" class="form-label">Estimate Date <strong
-                                    class="text-danger">*</strong></label>
-                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate">
-                        </div> -->
-
-                        <!-- <div class="col-md-4">
-                            <label for="deliveryTime" class="form-label">Time <strong
-                                    class="text-danger">*</strong></label>
-                            <input type="time" class="form-control" id="deliveryTime" name="deliveryTime">
-                        </div> -->
 
                         <div class="col-md-4">
                             <label for="trackingStatus" class="form-label">Status <strong
@@ -200,24 +206,14 @@
                             </select>
                         </div>
 
-
-                        <div class="col-md-4">
-                            <label for="deleivery_boy" class="form-label">Deleiver person <strong
+                        <div class="col-md-6">
+                            <label for="deleivery_boy" class="form-label">Ware House <strong
                                     class="text-danger">*</strong></label>
-                            <select class="form-select" id="deleivery_boy" name="deleivery_boy">
-                                <option value="">Select Status</option>
+                            <select class="form-select" id="warehouse" name="warehouse">
+                                <option value="">Select Warehouse</option>
                               
                             </select>
                         </div>
-                        <!-- <div class="col-md-4 pod d-none">
-                            <label for="pod" class="form-label">POD</label>
-                            <input type="file" class="form-control image_view" id="pod" name="pod" accept="image/*">
-
-                            <div id="filePreviewContainer" class="mt-2" style="display: none;">
-                                <img id="imagePreview" src="#" alt="Tracking Image Preview"
-                                    style="max-width: 100px; max-height: 100px; display: none;">
-                            </div>
-                        </div> -->
 
 
                     </div>
@@ -435,7 +431,7 @@
 
 
             const actionUrl = `/ptlPackages/editTracking/${id}` ;
-            alert(id)
+            // alert(id)
 
             $.ajax({
                 url: actionUrl,
@@ -489,7 +485,6 @@
                     $('#total_weight').val(data.tracking.totalWeight);
                     $('#packageid').val(data.tracking._id);
                     const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
-
                     const dropdown = $('#deleivery_boy');
                     dropdown.empty(); // Clear existing options
                     dropdown.append('<option value="">Select Delivery Boy</option>');
@@ -499,11 +494,37 @@
                         const id = driver._id;
                         dropdown.append(`<option value="${id}">${name}</option>`);
                     });
-                    
-                    // $('#deliveryDate').val(moment(data.deliveryDate).format('YYYY-MM-DD')); // Corrected ID and format date
-                    // let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
-                    // $('#deliveryTime').val(time);
 
+                    const warehouse = data.warehouse || [];
+                    const Warehouse_drop = $('#warehouse');
+
+                    Warehouse_drop.empty(); // Clear existing options
+                    Warehouse_drop.append('<option value="">Select Warehouse</option>');
+
+                    warehouse.forEach(warehouseData => {
+                        const name = warehouseData.Warehousename || 'No Name';
+                        const id = warehouseData._id;
+                        Warehouse_drop.append(`<option value="${id}">${name}</option>`);
+                    });
+
+
+                    const packages = data.tracking.packages || [];
+                    const tbody = $('#packageDetailsTableBody');
+                    tbody.empty(); // Clear old rows
+                    if (packages.length > 0) {
+                    packages.forEach((pkg, index) => {
+                        tbody.append(`
+                    <tr>
+                        
+                        <td>${pkg.packageName}</td>
+                        <td>${pkg.packageType}</td>
+                       
+                        <td>${pkg.totalWeight} Kg</td>
+                    </tr>
+                `);
+            });
+        }
+                
                     if (data.status == 4) {
                         $('.pod').removeClass('d-none');
                         $('#pod').attr('src', data.pod);
@@ -578,6 +599,18 @@
             });
             window.location.href = '/tracking/downloadCsv?' + params.toString();
         });
+
     });
+    $(document).on('click', '#viewPackageBtn', function () {
+    const packageId = $('#packageid').val().trim();
+    if (packageId) {
+        loadPackageDetails(packageId);
+    } else {
+        $('#packageDetailsTableBody').html('<tr><td colspan="3" class="text-warning text-center">Please enter a valid Package ID</td></tr>');
+    }
+});
+
+   
+
 
 </script>
