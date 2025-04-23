@@ -8,6 +8,7 @@ const paymentRoutes = require('./paymentRoutes');
 const faqRoutes = require('./faqRoutes');
 const configurationRoutes = require('./configurationRoutes');
 const bannerRoutes = require('./bannerRoutes');
+const ratingRoutes = require('./ratingRoutes');
 
 const { verifyToken, headerAuth } = require('../middleware/authentication');
 router.use('/otp', sendOtpRoutes);
@@ -22,6 +23,7 @@ router.use('/payment', paymentRoutes);
 // router.use('/faq', faqRoutes);
 // router.use('/parcel', parcelRoutes);
 router.use('/banner', bannerRoutes);
+router.use('/rating', ratingRoutes);
 
 
 
