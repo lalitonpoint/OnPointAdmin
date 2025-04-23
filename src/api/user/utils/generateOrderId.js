@@ -9,7 +9,7 @@ async function generateIncrementalOrderId() {
     );
 
     const paddedSeq = counter.seq.toString().padStart(6, '0'); // 000001, 000002
-    return `ORD${paddedSeq}`;
+    return `OPL${paddedSeq}`;
 }
 
 module.exports = generateIncrementalOrderId;
