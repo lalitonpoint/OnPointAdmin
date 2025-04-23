@@ -146,5 +146,9 @@
             <a href="/vendor/vendorManagement" class="nav-link"><i class="bi bi-shop me-2"></i>Vendor Management</a>
         </li>
 
+        <li class="nav-item mb-2 <%= session?.sidebar?.ptlManagement ? '' : 'd-none' %>">
+            <a href="/ptlPackages/ptlPackages" class="nav-link"><i class="bi bi-shop me-2"></i>PTL Management</a>
+        </li>
+
     </ul>
 </div>
