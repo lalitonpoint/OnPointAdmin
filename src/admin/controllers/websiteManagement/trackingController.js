@@ -111,6 +111,7 @@ const addTracking = async (req, res) => {
             const transportMode = fields.transportMode ? fields.transportMode[0] : ''; // Default to Active
             const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : ''; // Default to Active
+            const estimateDate = fields.estimateDate ? fields.estimateDate[0] : ''; // Default to Active
             // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : ''; // Default to Active
 
             // console.log('trackingCode', trackingCode);
@@ -120,10 +121,10 @@ const addTracking = async (req, res) => {
             // console.log('trackingCode', trackingCode);
             // console.log('transportMode', transportMode);
             // console.log('noOfPacking', noOfPacking);
-            // console.log('deliveryDate', deliveryDate);
+            console.log('deliveryDate', deliveryDate);
             // console.log('deliveryTime', deliveryTime);
-            if (!trackingCode || !status || !deliveryDate || !noOfPacking) {
-                return res.status(400).json({ message: 'Tracking ID, Status, Delivery Date, No. of Packing, and Delivery Time are required' });
+            if (!trackingCode || !status || !estimateDate || !noOfPacking) {
+                return res.status(400).json({ message: 'Tracking ID, Status, Estimate Date, No. of Packing, and Delivery Time are required' });
             }
 
             // Convert status to number
@@ -132,21 +133,22 @@ const addTracking = async (req, res) => {
                 return res.status(400).json({ message: 'Invalid status value' });
             }
             const statusMap = {
-                1: { key: 'in_process', status: 0, deliveryDateTime: '' },
+                1: { key: 'inprocess', status: 0, deliveryDateTime: '' },
                 2: { key: 'pickup', status: 0, deliveryDateTime: '' },
                 3: { key: 'outdelivery', status: 0, deliveryDateTime: '' },
                 4: { key: 'delivered', status: 0, deliveryDateTime: '' },
                 5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
             };
+
             statusMap[status].status = 1;
-            statusMap[status].deliveryDateTime = new Date();
+            statusMap[status].deliveryDateTime = deliveryDate;
             // console.log(statusMap[status].status); // Output: 0
 
             // Create a new tracking entry
             const newTracking = new Tracking({
                 trackingId: trackingCode,
                 status: statusNumber,
-                deliveryDate: moment(deliveryDate).toDate(), // Convert string to Date object using moment for consistency
+                estimateDate: moment(estimateDate).toDate(), // Convert string to Date object using moment for consistency
                 pickUpLocation: pickUpLocation || null,
                 dropLocation: dropLocation || null,
                 transportMode: transportMode || null,
@@ -203,6 +205,7 @@ const updateTracking = async (req, res) => {
             const transportMode = fields.transportMode ? fields.transportMode[0] : '';
             const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
+            const estimateDate = fields.estimateDate ? fields.estimateDate[0] : '';
             // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
             const file = files.pod ? files.pod[0] : null;
 
@@ -240,11 +243,29 @@ const updateTracking = async (req, res) => {
             // Clone current deliveryStatus
             const updatedDeliveryStatus = { ...existingTrackk.deliveryStatus };
 
-            // Update the current step status
-            if (updatedDeliveryStatus[status]) {
-                updatedDeliveryStatus[status].status = 1; // or whatever value you want
-                updatedDeliveryStatus[status].deliveryDateTime = new Date(); // or whatever value you want
+            // Loop through the keys (as strings)
+            for (let i = 1; i <= 5; i++) {
+                const key = i;
+
+                if (key <= status) {
+                    updatedDeliveryStatus[key].status = 1;
+                    if (updatedDeliveryStatus[key].deliveryDateTime === '') {
+                        updatedDeliveryStatus[key].deliveryDateTime = deliveryDate;
+                    }
+                    if (deliveryDate) {
+                        updatedDeliveryStatus[status].deliveryDateTime = deliveryDate;
+                    }
+                } else {
+                    updatedDeliveryStatus[key].status = 0;
+                    updatedDeliveryStatus[key].deliveryDateTime = '';
+                }
             }
+            // console.log('updatedDeliveryStatus', updatedDeliveryStatus);
+            // Also update the `status` step if it's explicitly passed
+            // if (updatedDeliveryStatus[status]) {
+            //     updatedDeliveryStatus[status].status = 1;
+            //     updatedDeliveryStatus[status].deliveryDateTime = deliveryDate;
+            // }
 
             // Optionally reset other statuses to 0 if needed
             // for (const key in updatedDeliveryStatus) {
@@ -256,7 +277,7 @@ const updateTracking = async (req, res) => {
                 {
                     trackingId: trackingCode,
                     status: parseInt(status), //currentstatus
-                    deliveryDate,
+                    estimateDate,
                     pickUpLocation,
                     dropLocation,
                     transportMode,

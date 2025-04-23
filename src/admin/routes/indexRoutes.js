@@ -25,8 +25,6 @@ const serviceRoutes = require('./vehcileManagement/serviceManagementRoutes'); //
 const faqRoutes = require('./faqManagement/faqRoutes'); // Ensure correct path
 const vendorRoutes = require('./vendorManagement/vendorRoutes'); // Ensure correct path
 const trackingRoutes = require('./websiteManagement/trackingRoutes'); // Ensure correct path
-const ptlPackagesRoutes = require('./ptlPackages/ptlPackagesRoutes'); // Ensure correct path
-
 
 // Use a base path for login routes
 
@@ -56,7 +54,6 @@ router.use('/service', serviceRoutes);
 router.use('/faq', faqRoutes);
 router.use('/vendor', vendorRoutes);
 router.use('/tracking', trackingRoutes);
-router.use('/ptlPackages', ptlPackagesRoutes);
 
 router.use('/vehicle', truckRoutes);
 

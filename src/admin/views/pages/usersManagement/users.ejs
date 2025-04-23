@@ -1,192 +1,477 @@
-<!-- Bootstrap + FontAwesome + DataTable CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
-
-<style>
-    .btn-pink {
-        background-color: #e91e63;
-        color: white;
-    }
-
-    .btn-pink:hover {
-        background-color: #c2185b;
-    }
-
-    .table th,
-    .table td {
-        vertical-align: middle;
-        text-align: center;
-    }
-
-    .modal-title {
-        font-weight: bold;
-    }
-</style>
-
-<div class="container mt-5">
+<link rel="stylesheet" href="/admin/css/websiteManagement/blogs.css">
+<div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">👥 User Management</h3>
-        <button class="btn btn-pink" id="addUserBtn">
-            <i class="fas fa-plus"></i> Add User
-        </button>
+        <h3 class="fw-bold">✨ User Management</h3>
+        <div>
+            <button class="btn btn-success me-2" id="downloadAllCsv">
+                <i class="fas fa-download me-2"></i> Download CSV
+            </button>
+            <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#userModal">
+                <i class="fas fa-plus me-2"></i> Add User
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4" id="searchBlogsCard">
+        <div class="card-body">
+            <h5 class="mb-3">Search User</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="searchname" class="form-label">Blog Title</label>
+                    <input type="text" class="form-control" id="searchname" placeholder="Enter Blog Title">
+                </div>
+                <div class="col-md-4">
+                    <label for="searchBlogStatus" class="form-label">Blog Status</label>
+                    <select id="searchBlogStatus" class="form-select">
+                        <option value="">All</option>
+                        <option value="1">Active</option>
+                        <option value="2">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="searchCreatedAt" class="form-label">Created At</label>
+                    <input type="date" class="form-control" id="searchCreatedAt">
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex gap-2 align-items-end">
+                        <button class="btn btn-primary" id="searchBtn">Search</button>
+                        <button class="btn btn-secondary" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <table id="artistTable" class="table table-bordered table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>User Name</th>
-                        <th>Email</th>
-                        <th>Mobile</th>
-                        <th>Gender</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="blogTable" class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                            <th>Profile Picture</th>
+                            <th>Device Type</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Add/Edit User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal">
         <div class="modal-content">
-            <form id="userForm" method="POST">
-                <input type="hidden" name="user_id" id="user_id" value="">
-                <div class="modal-header bg-pink text-white">
-                    <h5 class="modal-title">Add User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Blog</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="blogForm">
+                    <input type="hidden" id="blogId">
 
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">User Name</label>
-                        <input type="text" class="form-control" name="name" id="name" required>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Name <strong class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="name" name="fullName"
+                                placeholder="Enter User Name">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email <strong class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="email" name="emailAddress"
+                                placeholder="Enter Email Id">
+                        </div>
+
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" required>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="countryCode" class="form-label">Country Code</label>
+                            <input type="text" class="form-control" id="countryCode" name="countryCode"
+                                placeholder="Enter Blog Tags (comma separated)">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="mobileNumber" class="form-label">Mobile <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="mobileNumber" name="mobileNumber"
+                                placeholder="Enter Mobile Number">
+                        </div>
+
+
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mobile</label>
-                        <input type="text" class="form-control" name="mobile" id="mobile" required>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="gender" class="form-label">Gender <strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="gender" id="gender">
+                                <option value="">Select Status</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                                <option value="Prefer not to say">Prefer not to say</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="companyName" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="companyName" name="companyName"
+                                placeholder="Enter Company Name">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Gender</label>
-                        <select class="form-select" name="gender" id="gender" required>
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
+
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="gstNumber" class="form-label">Gst Number</label>
+                            <input type="text" class="form-control" id="gstNumber" name="gstNumber"
+                                placeholder="Enter GST Number">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status <strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="status" id="status">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="2">Inactive</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" name="status" id="status" required>
-                            <option value="">Select Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Profile Picture <strong class="text-danger">*</strong></label>
+                            <input type="file" class="form-control image_view" name="profilePicture" id="profilePicture"
+                                accept="image/*">
+                            <div id="imagePreviewContainer" class="mt-2" style="display: none;">
+                                <img id="imagePreview" src="#" alt="Profile Image Preview"
+                                    style="max-width: 100px; max-height: 100px;">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="deviceType" class="form-label">Device Type <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="deviceType" id="deviceType">
+                                <option value="">Select Device Type</option>
+                                <option value="1">App</option>
+                                <option value="2">Web</option>
+                            </select>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-pink w-100" id="submitBtn">Add User</button>
-                </div>
-            </form>
+
+
+                    <button type="submit" class="btn btn-pink w-100">Save</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-<!-- Add/Edit User Modal -->
-
-
-<!-- JS dependencies -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
 <script>
-
     $(document).ready(function () {
-        const userModal = new bootstrap.Modal(document.getElementById('addUserModal'));
-        let table = $('#artistTable').DataTable({
+        // Initially hide the search blog card using jQuery
+        const searchBlogsCard = $('#searchBlogsCard');
+        searchBlogsCard.hide();
+
+        // Slide down the search blog card when the page loads
+        $(window).on('load', function () {
+            searchBlogsCard.slideDown(1000); // Adjust the duration (in milliseconds) as needed
+        });
+
+        let ckEditor; // Declare editor outside the create function
+
+        ClassicEditor.create(document.querySelector('#blogDescription'))
+            .then(editor => {
+                ckEditor = editor;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+
+        // Image Preview Functionality
+        $('.image_view').change(function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imagePreview').attr('src', e.target.result);
+                    $('#imagePreviewContainer').show();
+                }
+                reader.readAsDataURL(file);
+            } else {
+                $('#imagePreview').attr('src', '#');
+                $('#imagePreviewContainer').hide();
+            }
+        });
+
+        let table = $('#blogTable').DataTable({ // Initialize DataTable first
             processing: true,
             serverSide: true,
-            ajax: { url: '/users/usersList', type: 'POST' },
-            columns: [
-                { data: null, render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1 },
-                { data: 'name' },
-                { data: 'email' },
-                { data: 'mobile' },
-                { data: 'gender' },
-                { data: 'status' },
-                {
-                    data: null,
-                    render: (data, type, row) => `
-                        <button class="btn btn-sm btn-primary me-2 editUserBtn" data-user='${JSON.stringify(row)}'>
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-sm btn-danger delUserBtn" data-id='${row._id}'>
-                            <i class="fas fa-trash"></i> Delete
-                        </button>`
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            scrollY: "400px",
+            scrollCollapse: true,
+            searching: false, // This line disables the default DataTables search
+            ajax: {
+                url: '/blogs/blogsList', // Replace with your actual route
+                type: 'POST',
+                data: function (d) {
+                    d.title = $('#searchname').val(); // Corrected key to 'title'
+                    d.status = $('#searchBlogStatus').val(); // Corrected key to 'status'
+                    d.createdAt = $('#searchCreatedAt').val();
                 }
+            },
+            columns: [{
+                data: null,
+                orderable: false, // Disable ordering for the # column
+                render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+            },
+            {
+                data: 'title' // Blog Title
+            },
+            {
+                data: 'image',
+                orderable: false, // Disable ordering for the Blog Image column
+                render: (data) => data ? `<img src="${data}" class="rounded" width="50" height="50">` : ''
+            },
+            {
+                data: 'tags',
+                orderable: false // Keep tags non-orderable as per previous state
+            },
+            {
+                data: 'status', // Status
+                render: (data, type, row) => {
+                    const statusText = data === 1 ? 'Active' : 'Inactive';
+                    const newStatus = data === 1 ? 2 : 1; // Toggle status
+                    return `<span class="badge ${data === 1 ? 'bg-success' : 'bg-secondary'} changeStatus" data-id='${row._id}' data-status='${newStatus}' style="cursor: pointer;">${statusText}</span>`;
+                }
+            },
+            {
+                data: 'createdAt', // Created At
+                render: function (data) {
+                    return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date as needed
+                }
+            },
+            {
+                data: null,
+                orderable: false, // Keep action non-orderable
+                render: (data, type, row) => `
+                                        <button class="btn btn-sm btn-warning editBlogBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
+                                        <button class="btn btn-sm btn-danger delBlogBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>
+                                     `
+            }
             ]
         });
 
-        // Add User Button Click
-        $('#addUserBtn').click(() => {
-            resetForm();
-            $('#addUserModal .modal-title').text('Add User');
-            $('#submitBtn').text('Add User');
-            $('#userForm').attr('action', '/users/saveUserdata');
-            userModal.show();
-        });
 
-        // Edit User Button Click
-        $('#artistTable').on('click', '.editUserBtn', function () {
-            let user = $(this).data('user');
-            $('#user_id').val(user._id);
-            $('#name').val(user.name);
-            $('#email').val(user.email);
-            $('#mobile').val(user.mobile);
-            $('#gender').val(user.gender);
-            $('#status').val(user.status);
-            $('#addUserModal .modal-title').text('Edit User');
-            $('#submitBtn').text('Update User');
-            $('#userForm').attr('action', '/users/updateUser');
-            userModal.show();
-        });
+        $('#userModal').on('submit', function (e) {
+            e.preventDefault();
+            const formElement = document.getElementById('blogForm');
+            if (formElement) {
+                let isValid = true;
 
-        // Delete User
-        $('#artistTable').on('click', '.delUserBtn', function () {
-            const userId = $(this).data('id');
-            if (confirm(`Are you sure you want to delete this user?`)) {
+                const name = $('#name').val().trim();
+                if (!name) {
+                    toastr.error('User Name is required.', 'Validation Error');
+                    return;
+                }
+
+                const email = $('#email').val();
+                if (!email) {
+                    toastr.error('Email  is required.', 'Validation Error');
+                    return;
+                }
+                const countryCode = $('#countryCode')[0].files[0];
+                if (!countryCode) { // Required on add
+                    toastr.error('Country Code is required.', 'Validation Error');
+                    return;
+                } const blogImage = $('#blogImage')[0].files[0];
+                if (!blogImage && !$('#blogId').val()) { // Required on add
+                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
+                    return;
+                } const blogImage = $('#blogImage')[0].files[0];
+                if (!blogImage && !$('#blogId').val()) { // Required on add
+                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
+                    return;
+                } const blogImage = $('#blogImage')[0].files[0];
+                if (!blogImage && !$('#blogId').val()) { // Required on add
+                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
+                    return;
+                }
+                const blogImage = $('#blogImage')[0].files[0];
+                if (!blogImage && !$('#blogId').val()) { // Required on add
+                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
+                    return;
+                }
+
+                const blogDescription = ckEditor ? ckEditor.getData().trim() : $('#blogDescription').val().trim();
+                if (!blogDescription) {
+                    toastr.error('Blog Description is required.', 'Validation Error');
+                    return;
+                }
+
+                const formData = new FormData(formElement);
+                const id = $('#blogId').val();
+                const actionUrl = id ? '/blogs/editBlog/' + id : '/blogs/addBlog'; // Replace with your actual routes
+
+                // Update description in FormData with CKEditor content
+                if (ckEditor) {
+                    formData.set('description', ckEditor.getData());
+                }
+
                 $.ajax({
-                    url: `/users/delete-user/${userId}`,
-                    type: 'DELETE',
-                    success: function (response) {
-                        alert(response.message);
+                    url: actionUrl,
+                    type: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function () {
+                        $('.btn-close').click();
                         table.ajax.reload();
+                        $('#blogForm')[0].reset();
+                        if (ckEditor) {
+                            ckEditor.setData('');
+                        }
+                        $('#blogId').val('');
+                        $('#modalTitle').text('Add Blog');
+                        toastr.success('Blog saved successfully!', 'Success');
                     },
-                    error: function () {
-                        alert('Failed to delete user');
+                    error: function (xhr, status, error) {
+                        console.error("AJAX request failed:", status, error, xhr);
+                        toastr.error('An error occurred while saving the blog.', 'Error'); // Use toastr for AJAX error
+                    }
+                });
+            } else {
+                console.error("Error: The form element with ID 'blogForm' was not found.");
+            }
+        });
+
+        $('#userModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget); // Button that triggered the modal
+            const id = button.data('id'); // Extract info from data-* attributes
+            const modalTitle = $('#modalTitle');
+            const blogId = $('#blogId');
+            const form = $('#blogForm')[0];
+            const imagePreview = $('#imagePreview');
+            const imagePreviewContainer = $('#imagePreviewContainer');
+
+            form.reset(); // Reset the form every time the modal is shown
+            if (ckEditor) {
+                ckEditor.setData('');
+            }
+            blogId.val('');
+            imagePreview.attr('src', '#');
+            imagePreviewContainer.hide();
+            modalTitle.text('Add Blog');
+
+            if (id) {
+                modalTitle.text('Edit Blog');
+                blogId.val(id);
+                // Fetch blog data and populate the form for editing
+                $.ajax({
+                    url: '/blogs/getBlog/' + id, // Replace with your actual route
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#name').val(data.title);
+                        $('#blogStatus').val(data.status);
+                        $('#blogTags').val(data.tags);
+                        if (ckEditor) {
+                            ckEditor.setData(data.description);
+                        }
+                        if (data.image) {
+                            imagePreview.attr('src', data.image);
+                            imagePreviewContainer.show();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching blog:", status, error, xhr);
+                        toastr.error('Error fetching blog data for editing.', 'Error');
                     }
                 });
             }
         });
 
-        // Reset form on modal hide
-        $('#addUserModal').on('hidden.bs.modal', function () {
-            resetForm();
+        // Event delegation for Edit button
+        $('#blogTable').on('click', '.editBlogBtn', function () {
+            const blogId = $(this).data('id');
+            $('#userModal').modal('show', this); // Pass the button element for context
         });
 
-        function resetForm() {
-            $('#userForm')[0].reset();
-            $('#user_id').val('');
-            $('#addUserModal .modal-title').text('Add User');
-            $('#submitBtn').text('Add User');
-            $('#userForm').attr('action', '/saveUserdata');
-        }
+        // Event delegation for Delete button
+        $('#blogTable').on('click', '.delBlogBtn', function () {
+            const blogId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this blog?')) {
+                $.ajax({
+                    url: '/blogs/deleteBlog/' + blogId, // Replace with your actual delete route
+                    type: 'delete',
+                    dataType: 'json',
+                    success: function () {
+                        table.ajax.reload();
+                        toastr.success('Blog deleted successfully!', 'Success');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting blog:", status, error, xhr);
+                        toastr.error('Error deleting blog.', 'Error');
+                    }
+                });
+            }
+        });
+        $('#blogTable').on('click', '.changeStatus', function () {
+            const blogId = $(this).data('id');
+            const newStatus = $(this).data('status'); // Get the new status from the data attribute
+            const statusText = parseInt(newStatus) === 1 ? 'Active' : 'Inactive'; // For confirmation message
+
+            if (confirm(`Are you sure you want to set the status to ${statusText}?`)) {
+                $.ajax({
+                    url: '/blogs/changeStatus/' + blogId, // Replace with your actual route
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json', // Important for sending JSON data in the body
+                    data: JSON.stringify({ status: newStatus }), // Send the new status in the request body
+                    success: function (response) {
+                        if (response.success) {
+                            table.ajax.reload();
+                            toastr.success(response.message, 'Success');
+                        } else {
+                            toastr.error(response.message || 'Failed to change status.', 'Error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error changing status:", status, error, xhr);
+                        toastr.error('Error changing status.', 'Error');
+                    }
+                });
+            }
+        });
+        // Prevent modal from staying open on form submission error (if any)
+        $('#userModal').on('hidden.bs.modal', function () {
+            $(this).find('.is-invalid').removeClass('is-invalid');
+            $(this).find('.invalid-feedback').remove();
+        });
+
+        // --- Custom Search Functionality ---
+        $('#searchBtn').on('click', function () {
+            table.ajax.reload(); // Reload the DataTable, the search parameters are sent in the ajax.data function
+        });
+
+        $('#resetBtn').on('click', function () {
+            $('#searchname').val('');
+            $('#searchBlogStatus').val('');
+            $('#searchCreatedAt').val('');
+            table.ajax.reload(); // Reload to clear all filters
+        });
+
+        // --- Custom Download All CSV Functionality ---
+        $('#downloadAllCsv').on('click', function () {
+            window.location.href = '/blogs/downloadAllCsv'; // Replace with your actual route
+        });
     });
 </script>

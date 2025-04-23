@@ -103,11 +103,12 @@ const saveBanner = async (req, res) => {
 
             const bannerTitle = fields.bannerTitle ? fields.bannerTitle[0] : '';
             const bannerType = fields.bannerType ? parseInt(fields.bannerType[0]) : null;
+            const plateformType = fields.plateformType ? parseInt(fields.plateformType[0]) : null;
             const status = fields.status ? parseInt(fields.status[0]) : 1; // Default to Active
             const file = files.bannerFile ? files.bannerFile[0] : null;
 
-            if (!bannerTitle || bannerType === null || status === null) { // Corrected the validation for bannerType and status
-                return res.status(400).json({ error: "Title, status & banner type are required" });
+            if (!bannerTitle || bannerType === null || status === null || plateformType == null) { // Corrected the validation for bannerType and status
+                return res.status(400).json({ error: "Title, status , Plateform Type & Banner type are required" });
             }
 
             let bannerFileUrl = null;
@@ -127,6 +128,7 @@ const saveBanner = async (req, res) => {
             const banner = new Banner({
                 title: bannerTitle,
                 bannerType,
+                plateformType,
                 bannerFile: bannerFileUrl,
                 status
             });
@@ -153,6 +155,7 @@ const updatedBanner = async (req, res) => {
             }
             const bannerTitle = fields.bannerTitle ? fields.bannerTitle[0] : '';
             const bannerType = fields.bannerType ? parseInt(fields.bannerType[0]) : null;
+            const plateformType = fields.plateformType ? parseInt(fields.plateformType[0]) : null;
             const status = fields.status ? parseInt(fields.status[0]) : 1; // Default to Active
 
             const { id } = req.params;
@@ -162,8 +165,8 @@ const updatedBanner = async (req, res) => {
                 return res.status(404).json({ success: false, message: 'Banner not found' }); // Corrected message
             }
 
-            if (!bannerTitle || bannerType === null || status === null) { // Added input validation
-                return res.status(400).json({ error: "Title, status & banner type are required" });
+            if (!bannerTitle || bannerType === null || status === null || plateformType == null) { // Added input validation
+                return res.status(400).json({ error: "Title, status , plateform & banner type are required" });
             }
 
             let bannerFileUrl = existingBanner.bannerFile; // Default to existing bannerFile
@@ -179,6 +182,7 @@ const updatedBanner = async (req, res) => {
             const updateData = {
                 title: bannerTitle,
                 bannerType,
+                plateformType,
                 bannerFile: imageUrl,
                 status,
                 updatedAt: new Date(),
