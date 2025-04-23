@@ -22,4 +22,35 @@ const getOrderList = async (req, res) => {
     }
 };
 
-module.exports = { getOrderList };
+const singleOrderDetail = async (req, res) => {
+    const { orderId } = req.body;
+
+    if (!orderId) {
+        return res.status(200).json({
+            success: false,
+            message: 'orderId is required'
+        });
+    }
+
+    try {
+        const order = await Order.findOne({ orderId }).sort({ createdAt: -1 });
+
+        if (!order) {
+            return res.status(200).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: { order }
+        });
+    } catch (err) {
+        console.error('Error fetching Order Detail:', err);
+        res.status(500).json({ success: false, message: 'Server Error', error: err.message });
+    }
+};
+
+
+module.exports = { getOrderList, singleOrderDetail };
