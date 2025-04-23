@@ -12,7 +12,7 @@ const packageSchema = new mongoose.Schema({
     packageType: { type: String, required: true },
     numberOfPackages: { type: Number, required: true },
     totalWeight: { type: Number, required: true },
-    dimensions: { type: dimensionSchema, required: true }
+    dimensions: { type: [dimensionSchema], required: true }
 }, { _id: false });
 
 const InitiatePaymentSchema = new mongoose.Schema({
