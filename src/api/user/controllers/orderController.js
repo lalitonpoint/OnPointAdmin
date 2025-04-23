@@ -1,13 +1,13 @@
 const Order = require('../../../api/user/models/paymentModal');
 
 const getOrderList = async (req, res) => {
-    const { orderType } = req.body;
+    const { status } = req.body;
 
     try {
         let orderDetail;
 
-        if (orderType) {
-            orderDetail = await Order.find({ transactionStatus: orderType }).sort({ createdAt: -1 });
+        if (status) {
+            orderDetail = await Order.find({ transactionStatus: status }).sort({ createdAt: -1 });
         } else {
             orderDetail = await Order.find().sort({ createdAt: -1 });
         }
