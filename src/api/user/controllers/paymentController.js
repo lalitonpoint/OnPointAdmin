@@ -115,7 +115,7 @@ const addPaymentDetail = async (req, res) => {
 
     } catch (error) {
         console.error("Error in addPaymentDetail:", error);
-        return res.status(500).json({ success: false, message: "Internal server error." });
+        return res.status(500).json({ success: false, message: "Internal server error.", error: error.message });
     }
 };
 
