@@ -31,19 +31,20 @@ const InitiatePaymentSchema = new mongoose.Schema({
     specialHandling: { type: Number, required: true },
     gst: { type: Number, required: true },
     totalPayment: { type: Number, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    orderId: { type: String },
+    transactionDate: { type: Date },
+
+
     paymentMethod: { type: String },
     paymentGateway: { type: String },
-
     transactionStatus: { type: String, default: 'Initiated' },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     preTransactionId: { type: String },
     postTransactionId: { type: String },
     invoiceNo: { type: String },
     invoiceUrl: { type: String },
-    orderId: { type: String },
     paymentId: { type: String },
-    paymentResponse: { type: mongoose.Schema.Types.Mixed },
-    transactionDate: { type: Date }
+    paymentResponse: { type: mongoose.Schema.Types.Mixed }
 }, { timestamps: true });
 
 module.exports = mongoose.model('PaymentDetails', InitiatePaymentSchema);
