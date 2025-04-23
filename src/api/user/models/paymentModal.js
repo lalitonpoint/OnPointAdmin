@@ -6,12 +6,13 @@ const dimensionSchema = new mongoose.Schema({
     height: { type: Number, required: true }
 }, { _id: false });
 
+
 const packageSchema = new mongoose.Schema({
     packageName: { type: String, required: true },
     packageType: { type: String, required: true },
     numberOfPackages: { type: Number, required: true },
     totalWeight: { type: Number, required: true },
-    dimensions: { type: [dimensionSchema], required: true }
+    dimensions: { type: dimensionSchema, required: true }
 }, { _id: false });
 
 const InitiatePaymentSchema = new mongoose.Schema({
@@ -25,13 +26,13 @@ const InitiatePaymentSchema = new mongoose.Schema({
     dropLongitude: { type: String },
     pickupNote: { type: String },
     packages: { type: [packageSchema], required: true },
-    subtotal: { type: Number, required: true },
+    subTotal: { type: Number, required: true },
     shippingCost: { type: Number, required: true },
     specialHandling: { type: Number, required: true },
     gst: { type: Number, required: true },
     totalPayment: { type: Number, required: true },
-    paymentMethod: { type: String, required: true },
-    paymentGateway: { type: String, required: true },
+    paymentMethod: { type: String },
+    paymentGateway: { type: String },
 
     transactionStatus: { type: String, default: 'Initiated' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

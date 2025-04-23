@@ -42,6 +42,10 @@ const SettingsSchema = new mongoose.Schema({
         s3AccessKey: { type: String, default: "" },
         s3SecretKey: { type: String, default: "" },
         s3BucketKey: { type: String, default: "" },
+    }, paymentDetails: {
+        shippingCost: { type: String, default: "" },
+        specialHandling: { type: String, default: "" },
+        gst: { type: String, default: "" },
     }
 }, { timestamps: true });
 

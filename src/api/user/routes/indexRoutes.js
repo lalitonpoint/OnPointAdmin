@@ -7,7 +7,6 @@ const servicesRoutes = require('./serviceRoutes');
 const paymentRoutes = require('./paymentRoutes');
 const faqRoutes = require('./faqRoutes');
 const configurationRoutes = require('./configurationRoutes');
-const parcelRoutes = require('./parcelRoutes');
 const bannerRoutes = require('./bannerRoutes');
 
 const { verifyToken, headerAuth } = require('../middleware/authentication');
@@ -21,7 +20,7 @@ router.use(verifyToken);
 router.use('/service', servicesRoutes);
 router.use('/payment', paymentRoutes);
 // router.use('/faq', faqRoutes);
-router.use('/parcel', parcelRoutes);
+// router.use('/parcel', parcelRoutes);
 router.use('/banner', bannerRoutes);
 
 
