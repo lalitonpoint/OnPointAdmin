@@ -1,5 +1,6 @@
 const Tracking = require('../../../api/user/models/paymentModal');
 const Driver = require('../../../api/driver/modals/driverModal');
+const Warehouse = require('../../models/warehouseManagemnet/warehouseModal');
 const driverPackageAssign = require('../../models/ptlPackages/driverPackageAssignModel');
 
 // const Driver = require('../models/Driver');
@@ -20,20 +21,24 @@ const trackingList = async (req, res) => {
         let query = {};
         let sort = {};
 
-        const trackingCodeSearch = req.body.trackingCode;
-
+        const pickUpLocationSearch = req.body.pickUpLocation;
+        const dropLocationSearch = req.body.dropAddress;
         const statusSearch = req.body.status;
         const dateSearch = req.body.date; // This corresponds to the frontend's searchDate
 
         if (searchValue) {
             query.$or = [
-                { trackingId: new RegExp(searchValue, 'i') },
+                { pickupAddress: new RegExp(searchValue, 'i') },
+                { dropAddress: new RegExp(searchValue, 'i') },
                 { status: new RegExp(searchValue, 'i') }
                 // Add more fields to the global search if needed
             ];
         } else {
-            if (trackingCodeSearch) {
-                query.trackingId = new RegExp(trackingCodeSearch, 'i');
+            if (pickUpLocationSearch) {
+                query.pickupAddress = new RegExp(pickUpLocationSearch, 'i');
+            }
+            if (dropLocationSearch) {
+                query.dropAddress = new RegExp(dropLocationSearch, 'i');
             }
 
 
@@ -184,11 +189,13 @@ const getTrackingById = async (req, res) => {
         }
          // Get all drivers
          const drivers = await Driver.find(); // If you want to filter, add a query here
+         const warehouse = await Warehouse.find(); // If you want to filter, add a query here
 
          // Send both tracking and drivers
          res.json({
              tracking,
-             drivers
+             drivers,
+             warehouse
          });
  
     } catch (error) {
@@ -307,6 +314,7 @@ const updateTracking = async (req, res) => {
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const delivery_boy = fields.deleivery_boy ? fields.deleivery_boy[0] : '';
             const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1;
+            const warehouse = fields.warehouse ? fields.packageid[0] : '';
     
             // Validation check before proceeding
             if (!packageid || !status) {
@@ -330,11 +338,13 @@ const updateTracking = async (req, res) => {
             statusMap[statusNumber].deliveryDateTime = new Date();
     
             // First, check if a record with this packageid exists
-            const existingTracking = await driverPackageAssign.findOne({ packageid: packageid });
+            const existingTracking = await driverPackageAssign.findOne({   packageid: packageid,
+                driverId: delivery_boy });
     
             if (existingTracking) {
                 // Update existing entry
                 existingTracking.driverId = delivery_boy || null;
+                existingTracking.warehouseId = warehouse || null;
                 existingTracking.status = statusNumber;
                 existingTracking.deliveryStatus = statusMap;
                 existingTracking.createdAt = new Date();
@@ -347,6 +357,7 @@ const updateTracking = async (req, res) => {
                 const newTracking = new driverPackageAssign({
                     packageid: packageid,
                     driverId: delivery_boy || null,
+                    warehouseId : warehouse || null,
                     status: statusNumber,
                     createdAt: new Date(),
                     deliveryStatus: statusMap

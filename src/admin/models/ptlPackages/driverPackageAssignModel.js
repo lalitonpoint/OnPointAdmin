@@ -10,6 +10,10 @@ const shipmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    warehouseId :{
+        type: String,
+        required: true
+    },
     status: {
         type: Number,
          enum: [1, 2, 3, 4, 5], // 1: Pickup, 2: Out for Delivery, 3: In Progress, 4: Delivered, 5: Cancelled
