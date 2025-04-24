@@ -17,7 +17,9 @@ const vendorList = async (req, res) => {
         let query = {};
         let sort = {};
 
-        const trackingCodeSearch = req.body.trackingCode;
+        const trackingCodeSearch = req.body.searchname;
+        const vendornumnber = req.body.mobile;
+        const vendoremail = req.body.email;
 
         const statusSearch = req.body.status;
         const dateSearch = req.body.date; // This corresponds to the frontend's searchDate
@@ -30,7 +32,13 @@ const vendorList = async (req, res) => {
             ];
         } else {
             if (trackingCodeSearch) {
-                query.trackingId = new RegExp(trackingCodeSearch, 'i');
+                query.name = new RegExp(trackingCodeSearch, 'i');
+            }
+            if(vendornumnber){
+                query.mobile = new RegExp(vendornumnber, 'i');
+            }
+            if(vendoremail){
+                query.email = new RegExp(vendoremail, 'i');
             }
 
 
@@ -42,7 +50,7 @@ const vendorList = async (req, res) => {
                 const startDate = searchMoment.clone().startOf('day');
                 const endDate = searchMoment.clone().endOf('day');
 
-                query.deliveryDate = { // Replace 'yourDateField' with the actual name of the date field in your model
+                query.createdAt = { // Replace 'yourDateField' with the actual name of the date field in your model
                     $gte: startDate.toDate(),
                     $lte: endDate.toDate()
                 };
@@ -288,76 +296,38 @@ const deletevendor = async (req, res) => {
 
 const downloadTrackingCsv = async (req, res) => {
     try {
-        const { trackingCode, status, date } = req.query;
-        let query = {};
+        const vendors = await vendor.find().sort({ createdAt: -1 });
 
-        if (trackingCode) {
-            query.trackingId = new RegExp(trackingCode, 'i');
-        }
-        if (status) {
-            query.status = parseInt(status);
-        }
-        if (date) {
-            const startDate = moment(date).startOf('day');
-            const endDate = moment(date).endOf('day');
-            query.estimateDate = {
-                $gte: startDate.toDate(),
-                $lte: endDate.toDate()
-            };
+        if (vendors.length === 0) {
+            return res.status(200).send("No vendors to download.");
         }
 
-        const trackings = await Tracking.find(query).sort({ createdAt: -1 });
-
-        if (trackings.length === 0) {
-            return res.status(200).send("No tracking data found for the current filters.");
-        }
-
-        const csvHeaders = [
-            "#",
-            "Tracking ID",
-            "Pickup Location",
-            "Drop Location",
-            "Transport Mode",
-            "No. of Packing",
+        const headers = [
+            "Name",
             "Status",
-            "Delivery Date",
+            "Email",
+            "Mobile",
+            "Business Name",
+            "business_category",
             "Created At"
         ];
 
-        const csvData = trackings.map((tracking, index) => [
-            index + 1,
-            tracking.trackingId,
-            tracking.pickUpLocation || '',
-            tracking.dropLocation || '',
-            tracking.transportMode || '',
-            tracking.noOfPacking,
-            getStatusText(tracking.status), // Assuming you have a function to convert status code to text
-            moment(tracking.deliveryDate).format('YYYY-MM-DD HH:mm:ss'),
-            moment(tracking.createdAt).format('YYYY-MM-DD HH:mm:ss')
-        ]);
+        const csvRows = vendors.map(vendor => [
+            `"${vendor.name.replace(/"/g, '""')}"`,
+            vendor.status == '1' ? 'Active' : 'In-Active',vendor.email,vendor.mobile,vendor.business_name,vendor.business_category,
+            moment(vendor.createdAt).format('YYYY-MM-DD HH:mm:ss')
+        ].join(","));
 
-        // Helper function to convert status code to text
-        function getStatusText(status) {
-            switch (status) {
-                case 1: return 'Pickup';
-                case 2: return 'Out for Delivery';
-                case 3: return 'In Progress';
-                case 4: return 'Delivered';
-                case 5: return 'Cancelled';
-                default: return 'Unknown';
-            }
-        }
-
-        // Format the CSV data
-        const csvRows = [csvHeaders, ...csvData].map(row => row.join(',')).join('\n');
+        const csvData = [headers.join(","), ...csvRows].join("\n");
 
         res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
-        res.status(200).send(csvRows);
+        res.setHeader('Content-Disposition', 'attachment; filename="vendor.csv"');
+
+        res.status(200).send(csvData);
 
     } catch (error) {
-        console.error('Error downloading tracking CSV:', error);
-        res.status(500).send("Error generating CSV file.");
+        console.error("Error downloading all blogs as CSV:", error);
+        res.status(500).send("Error downloading CSV file.");
     }
 };
 

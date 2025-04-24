@@ -12,5 +12,7 @@ router.get('/get/:id', vendorCtrl.getvendorbyId);
  router.post('/editVendor/:id', vendorCtrl.editVendor); // Using POST for update
 router.post('/addVendor', vendorCtrl.addVendor);
  router.delete('/delete/:id', vendorCtrl.deletevendor);
+ router.get('/downloadCsv', vendorCtrl.downloadTrackingCsv);
+ 
 
 module.exports = router;

@@ -29,23 +29,32 @@
         </div>
     </div>
 
-    <div class="card shadow-sm mb-4 d-none" id="searchTrackingCard">
+    <div class="card shadow-sm mb-4 " id="searchTrackingCard">
         <div class="card-body">
             <h5 class="mb-3">Search Trackings</h5>
             <div class="row g-3">
                 <div class="col-md-3">
-                    <label for="searchTrackingId" class="form-label">Tracking ID</label>
-                    <input type="text" class="form-control" id="searchTrackingId" placeholder="Enter Tracking ID">
+                    <label for="searchTrackingId" class="form-label">Vendor Name</label>
+                    <input type="text" class="form-control" id="searchname" placeholder="Enter Name">
                 </div>
+
+                <div class="col-md-3">
+                    <label for="mobile" class="form-label">Vendor mobile</label>
+                    <input type="text" class="form-control" id="mobile" placeholder="Enter mobile">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="email" class="form-label">Vendor Email</label>
+                    <input type="text" class="form-control" id="email" placeholder="Enter email">
+                </div>
+
                 <div class="col-md-3">
                     <label for="searchStatus" class="form-label">Status</label>
-                    <select id="searchStatus" class="form-select">
-                        <option value="">All</option>
-                        <option value="1">In Progress</option>
-                        <option value="2">Pickup</option>
-                        <option value="3">Out for Delivery</option>
-                        <option value="4">Delivered</option>
-                        <option value="5">Cancelled</option>
+                    <select class="form-select" id="trackingStatus" name="status">
+                        <option value="">Select Status</option>
+                        <option value="1">Active</option>
+                        <option value="2">In-Active</option>
+
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -148,7 +157,7 @@
                         <div class="col-md-6">
                             <label for="trackingStatus" class="form-label">Status <strong
                                     class="text-danger">*</strong></label>
-                            <select class="form-select" id="trackingStatus" name="status">
+                            <select class="form-select" id="trackingStatus1" name="status">
                                 <option value="">Select Status</option>
                                 <option value="1">Active</option>
                                 <option value="2">In-Active</option>
@@ -192,10 +201,10 @@
                 url: '/vendor/vendorList/',
                 type: 'POST',
                 data: function (d) {
-                    d.trackingCode = $('#searchTrackingId').val();
-                    d.pickUpLocation = $('#pickUpLocation').val();
-                    d.dropLocation = $('#toLocation').val(); // Corrected ID here
-                    d.status = $('#searchStatus').val();
+                    d.searchname = $('#searchname').val();
+                    d.mobile = $('#mobile').val();
+                    d.email = $('#email').val(); // Corrected ID here
+                    d.status = $('#trackingStatus').val();
                     d.date = $('#searchDate').val();
                 }
             },
@@ -296,7 +305,7 @@
 
         // Reset Button
         $('#resetBtn').click(function () {
-            $('#searchTrackingId, #pickUpLocation, #toLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
+            $('#searchname, #mobile, #email, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
             trackingTable.ajax.reload();
         });
 
@@ -407,8 +416,8 @@
                     $('#password').val(data.password); // Added transport mode
                     $('#business_name').val(data.business_name); // Added no of packing
                     $('#business_category').val(data.business_category);
-                    $("#address").val(data.address);
-                    $('#trackingStatus').val(data.status);
+                    $('#address').val(data.address);
+                    $('#trackingStatus1').val(data.status);
                     // $('#deliveryDate').val(moment(data.deliveryDate).format('YYYY-MM-DD')); // Corrected ID and format date
                     // let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
                     // $('#deliveryTime').val(time);
@@ -479,11 +488,15 @@
 
         $('#downloadAllTrackingCsv').click(function () {
             const params = new URLSearchParams({
-                trackingCode: $('#searchTrackingId').val(),
+                trackingCode: $('#searchname').val(),
                 status: $('#searchStatus').val(),
+                mobile : $('#mobile'),
+                email : $('#emial'),
+                business_name : $('#business_name'),
+                business_category : $('#business_category'),
                 date: $('#searchDate').val()
             });
-            window.location.href = '/tracking/downloadCsv?' + params.toString();
+            window.location.href = '/vendor/downloadCsv?' + params.toString();
         });
     });
 
