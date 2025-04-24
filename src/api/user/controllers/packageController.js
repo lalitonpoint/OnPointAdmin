@@ -51,7 +51,7 @@ const packageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude,
         const gstAmount = parseFloat(((subTotal * gst) / 100).toFixed(2));
         const totalPayment = parseFloat((subTotal + shippingCost + specialHandling + gstAmount).toFixed(2));
 
-        console.log('subTotal12345678', shippingCost);
+        // console.log('subTotal12345678', shippingCost);
         return {
             subTotal,
             shippingCost,

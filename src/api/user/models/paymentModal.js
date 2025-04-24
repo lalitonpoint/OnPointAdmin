@@ -1,18 +1,13 @@
 const mongoose = require('mongoose');
 
-const dimensionSchema = new mongoose.Schema({
-    length: { type: Number, required: true },
-    width: { type: Number, required: true },
-    height: { type: Number, required: true }
-}, { _id: false });
-
-
 const packageSchema = new mongoose.Schema({
     packageName: { type: String, required: true },
     packageType: { type: String, required: true },
     numberOfPackages: { type: Number, required: true },
     totalWeight: { type: Number, required: true },
-    dimensions: { type: [dimensionSchema], required: true }
+    length: { type: Number, required: true },
+    width: { type: Number, required: true },
+    height: { type: Number, required: true }
 }, { _id: false });
 
 const InitiatePaymentSchema = new mongoose.Schema({

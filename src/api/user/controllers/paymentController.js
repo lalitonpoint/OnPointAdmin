@@ -46,7 +46,7 @@ const addPaymentDetail = async (req, res) => {
 
         for (let i = 0; i < packages.length; i++) {
             const pkg = packages[i];
-            const { packageName, packageType, numberOfPackages, totalWeight, dimensions } = pkg;
+            const { packageName, packageType, numberOfPackages, totalWeight, length, width, height } = pkg;
 
             if (
                 typeof packageName !== 'string' || !packageName ||
@@ -57,28 +57,14 @@ const addPaymentDetail = async (req, res) => {
 
             if (
                 typeof numberOfPackages !== 'number' || numberOfPackages <= 0 ||
-                typeof totalWeight !== 'number' || totalWeight <= 0
+                typeof totalWeight !== 'number' || totalWeight <= 0 ||
+                typeof length !== 'number' || length <= 0 ||
+                typeof width !== 'number' || width <= 0 ||
+                typeof height !== 'number' || height <= 0
             ) {
-                return res.status(400).json({ success: false, message: `numberOfPackages and totalWeight must be positive numbers (Package ${i + 1}).` });
+                return res.status(400).json({ success: false, message: `numberOfPackages , totalWeight , height ,width & width must be positive numbers (Package ${i + 1}).` });
             }
 
-            if (!Array.isArray(dimensions) || dimensions.length === 0) {
-                return res.status(400).json({ success: false, message: `At least one dimension is required (Package ${i + 1}).` });
-            }
-
-            for (let j = 0; j < dimensions.length; j++) {
-                const { length, width, height } = dimensions[j];
-                if (
-                    typeof length !== 'number' || length <= 0 ||
-                    typeof width !== 'number' || width <= 0 ||
-                    typeof height !== 'number' || height <= 0
-                ) {
-                    return res.status(400).json({
-                        success: false,
-                        message: `All dimension values must be positive numbers (Package ${i + 1}, Dimension ${j + 1}).`
-                    });
-                }
-            }
         }
 
         const orderId = await generateOrderId();
