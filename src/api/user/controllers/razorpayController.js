@@ -1,7 +1,7 @@
 
 const razorpayWebhook = async (req, res) => {
     try {
-        res.status(200).json({ success: true, message: 'Webhook' });
+        res.status(201).json({ success: true, message: 'Webhook', response: res });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
