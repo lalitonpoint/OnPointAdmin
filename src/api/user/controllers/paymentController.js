@@ -74,7 +74,7 @@ const addPaymentDetail = async (req, res) => {
             return res.status(400).json({ success: false, message: costResult.message || 'Failed to calculate delivery charges.' });
         }
 
-        const { subTotal, shippingCost, specialHandling, gstAmount, totalPayment } = costResult;
+        const { subTotal, shippingCost, specialHandling, gstAmount, totalPayment, distance, duration } = costResult;
 
         const initiatePayment = new InitiatePayment({
             pickupLatitude,
@@ -87,6 +87,8 @@ const addPaymentDetail = async (req, res) => {
             dropAddress,
             pickupNote,
             packages,
+            distance,
+            duration,
             subTotal,
             shippingCost,
             specialHandling,

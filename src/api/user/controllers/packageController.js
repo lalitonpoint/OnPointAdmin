@@ -58,7 +58,7 @@ const packageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude,
             specialHandling,
             gstAmount,
             totalPayment,
-            distanceInKm: distanceInKm.toFixed(2),
+            distance: distanceInKm.toFixed(2),
             duration
         };
     } catch (err) {

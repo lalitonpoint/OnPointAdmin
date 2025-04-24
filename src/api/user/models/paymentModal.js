@@ -28,8 +28,10 @@ const InitiatePaymentSchema = new mongoose.Schema({
     totalPayment: { type: Number, required: true },
     paymentMethod: { type: String },
     paymentGateway: { type: String },
+    distance: { type: Number },
+    duration: { type: String },
+    transactionStatus: { type: Number, enum: [0, 1, 2, 3, 4, 5], default: 0 }, // 0 => Initiate, 1 => Complete , 2 => Pending , 3 => Failed , 4 => Refunded , 5 => Partial Payment
 
-    transactionStatus: { type: String, default: 'Initiated' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     preTransactionId: { type: String },
     postTransactionId: { type: String },
