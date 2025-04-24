@@ -10,9 +10,12 @@ const configurationRoutes = require('./configurationRoutes');
 const bannerRoutes = require('./bannerRoutes');
 const ratingRoutes = require('./ratingRoutes');
 const orderRoutes = require('./orderRoutes');
+const razorpayRoutes = require('./razorpayRoutes');
 
 const { verifyToken, headerAuth } = require('../middleware/authentication');
+const razorpayInstance = require('../utils/rajorpay');
 router.use('/otp', sendOtpRoutes);
+router.use('/razorpay', razorpayRoutes);
 
 router.use(headerAuth);
 router.use('/user', userRoutes);
@@ -26,6 +29,5 @@ router.use('/payment', paymentRoutes);
 router.use('/banner', bannerRoutes);
 router.use('/rating', ratingRoutes);
 router.use('/order', orderRoutes);
-
 
 module.exports = router;
