@@ -4,7 +4,7 @@ const generateOrderId = require('../utils/generateOrderId');
 
 const razorpay = require('../utils/rajorpay');
 const crypto = require('crypto');
-require('dotenv').config(); // at the top of your file
+require('dotenv').config();
 
 
 
