@@ -76,6 +76,13 @@ const addPaymentDetail = async (req, res) => {
 
         const { subTotal, shippingCost, specialHandling, gstAmount, totalPayment, distance, duration } = costResult;
 
+        let razorpayOrderIdResponse = await initiateRazorpayOrderId(totalPayment);
+
+        let razorpayOrderId = 0;
+        if (razorpayOrderIdResponse && razorpayOrderIdResponse.success === true) {
+            razorpayOrderId = razorpayOrderIdResponse.orderId;
+        }
+
         const initiatePayment = new InitiatePayment({
             pickupLatitude,
             pickupLongitude,
@@ -96,6 +103,7 @@ const addPaymentDetail = async (req, res) => {
             totalPayment,
             userId,
             orderId,
+            preTransactionId: razorpayOrderId,
             transactionDate: new Date()
         });
 
@@ -155,30 +163,34 @@ const completePayment = async (req, res) => {
 };
 
 // routes/payment.js
-const initiatePaymentMethod = async (req, res) => {
+const initiateRazorpayOrderId = async (amount) => {
     try {
-        const { amount, receipt } = req.body;
-
         if (!amount || isNaN(amount)) {
-            return res.status(200).json({ success: false, error: 'Invalid amount' });
+            return { success: false, error: 'Invalid amount' };
         }
 
         const options = {
-            amount: amount * 100,
+            amount: amount * 100, // Amount in paise
             currency: 'INR',
-            receipt: receipt || `receipt_${Date.now()}`,
+            receipt: `receipt_${Date.now()}`,
             notes: {
                 packageType: 'Fragile'
             }
         };
 
         const order = await razorpay.orders.create(options);
-        res.status(200).json({ success: true, order: order });
-    } catch (err) {
-        console.error('Razorpay Order Error:', err);
-        res.status(500).json({ success: false, error: 'Unable to create order', details: err.message });
+
+        if (order && order.id) {
+            return { success: true, orderId: order.id, order };
+        } else {
+            return { success: false, error: 'Order creation failed' };
+        }
+
+    } catch (error) {
+        return { success: false, error: error.message || 'Something went wrong' };
     }
 };
+
 
 const verifyPayment = (req, res) => {
     const { razorPayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
@@ -211,4 +223,4 @@ const verifyPayment = (req, res) => {
 
 
 
-module.exports = { addPaymentDetail, completePayment, initiatePaymentMethod, verifyPayment };
+module.exports = { addPaymentDetail, completePayment, verifyPayment };
