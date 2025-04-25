@@ -172,7 +172,8 @@ const verifyPayment = async (req, res) => {
 
     try {
         const payment = await razorpay.payments.fetch(razorpayPaymentId);
-        return res.status(200).json({ success: true, message: 'Is', payment: payment });
+        // return res.status(200).json({ success: true, message: 'Is', payment: payment });
+
 
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
@@ -184,7 +185,7 @@ const verifyPayment = async (req, res) => {
             }
 
             paymentRecord.transactionStatus = 1;
-            paymentRecord.postTransactionId = payment.id;
+            paymentRecord.postTransactionId = payment.order_id;
             paymentRecord.paymentId = payment.id;
 
             await paymentRecord.save();
