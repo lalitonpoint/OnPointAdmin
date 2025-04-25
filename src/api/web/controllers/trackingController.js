@@ -1,5 +1,5 @@
 const TrackingModel = require('../../../admin/models/websiteManagement/trackingModel');
-
+const Warehouse = require('../../../admin/models/warehouseManagemnet/warehouseModal');
 const getTrackingData = async (req, res) => {
     try {
         const { trackingId } = req.body;
