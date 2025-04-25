@@ -33,7 +33,7 @@ const razorpayWebhook = async (req, res) => {
 
 
             paymentRecord.transactionStatus = paymentData.status;
-            paymentRecord.postTransactionId = paymentData.id;
+            paymentRecord.postTransactionId = paymentData.order_id;
             paymentRecord.paymentId = paymentData.id;
 
             await paymentRecord.save();
