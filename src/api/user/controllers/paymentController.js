@@ -182,8 +182,8 @@ const verifyPayment = async (req, res) => {
             }
 
             paymentRecord.transactionStatus = 1;
-            paymentRecord.postTransactionId = paymentData.id;
-            paymentRecord.paymentId = paymentData.id;
+            paymentRecord.postTransactionId = payment.id;
+            paymentRecord.paymentId = payment.id;
 
             await paymentRecord.save();
 
