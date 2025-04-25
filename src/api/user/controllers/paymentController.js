@@ -153,6 +153,7 @@ const initiateRazorpayOrderId = async (amount) => {
 
 
 
+
 const verifyPayment = async (req, res) => {
     const { razorPayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
 
@@ -173,38 +174,27 @@ const verifyPayment = async (req, res) => {
         const payment = await razorpay.payments.fetch(razorpayPaymentId);
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
+
             const paymentRecord = await InitiatePayment.findOne({ preTransactionId: razorPayOrderId, transactionStatus: 0 });
 
             if (!paymentRecord) {
-                return res.status(404).json({ success: false, message: 'Payment order not found' });
+                return res.status(200).json({ success: false, message: 'Payment order not found' });
             }
 
-            paymentRecord.transactionStatus = payment.status; // <-- Correct variable
-            paymentRecord.postTransactionId = payment.id;
-            paymentRecord.paymentId = payment.id;
+            paymentRecord.transactionStatus = 1;
+            paymentRecord.postTransactionId = paymentData.id;
+            paymentRecord.paymentId = paymentData.id;
 
             await paymentRecord.save();
 
-            return res.status(200).json({
-                success: true,
-                message: 'Payment Done Successfully',
-                payment,
-            });
+            return res.status(200).json({ success: true, message: 'Payment Done Successfully', payment });
         } else {
-            return res.status(200).json({
-                success: false,
-                message: 'Payment not captured or mismatched order ID',
-            });
+            return res.status(200).json({ success: false, message: 'Payment not captured or mismatched order ID' });
         }
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'Error verifying payment',
-            error: error.message,
-        });
+        return res.status(500).json({ success: false, message: 'Error verifying payment', error: error.message });
     }
 };
-
 
 
 
