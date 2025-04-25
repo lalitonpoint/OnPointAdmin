@@ -2,7 +2,7 @@ const InitiatePayment = require('../models/paymentModal');
 const { packageCalculation } = require('../controllers/packageController');
 const generateOrderId = require('../utils/generateOrderId');
 
-const razorpay = require('../utils/rajorpay');
+const razorpay = require('../utils/razorpay');
 const crypto = require('crypto');
 require('dotenv').config();
 
@@ -121,46 +121,6 @@ const addPaymentDetail = async (req, res) => {
     }
 };
 
-const completePayment = async (req, res) => {
-    try {
-        const { paymentId, transactionStatus, transactionId, totalPayment, transactionDate } = req.body;
-
-        if (!paymentId || !transactionStatus || !transactionId || !totalPayment || !transactionDate) {
-            return res.status(200).json({ success: false, message: "Missing required payment completion details." });
-        }
-
-        const existingTransaction = await InitiatePayment.findOne({ postTransactionId: transactionId });
-        if (existingTransaction) {
-            return res.status(409).json({ success: false, message: "Transaction already recorded." });
-        }
-
-
-        const paymentRecord = await InitiatePayment.findOne({ preTransactionId: transactionId });
-
-        if (!paymentRecord) {
-            return res.status(404).json({ success: false, message: "Payment record not found." });
-        }
-
-        paymentRecord.transactionStatus = transactionStatus;
-        paymentRecord.postTransactionId = transactionId;
-        paymentRecord.paymentId = paymentId;
-        paymentRecord.totalPayment = totalPayment;
-        paymentRecord.transactionDate = new Date(transactionDate);
-
-        const existing = await InitiatePayment.findOne({ postTransactionId: transactionId });
-        if (existing) {
-            return res.status(409).json({ success: false, message: "Transaction already recorded." });
-        }
-
-        await paymentRecord.save();
-
-        return res.status(200).json({ success: true, message: "Payment completed successfully.", data: paymentRecord });
-
-    } catch (error) {
-        console.error("Error in completePayment:", error);
-        return res.status(500).json({ success: false, message: "Internal server error." });
-    }
-};
 
 // routes/payment.js
 const initiateRazorpayOrderId = async (amount) => {
@@ -214,7 +174,20 @@ const verifyPayment = async (req, res) => {
         const payment = await razorpay.payments.fetch(razorpayPaymentId);
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
-            return res.status(200).json({ success: true, message: 'Payment Verified', payment });
+
+            const paymentRecord = await InitiatePayment.findOne({ preTransactionId: razorPayOrderId, transactionStatus: 0 });
+
+            if (!paymentRecord) {
+                return res.status(200).json({ success: false, message: 'Payment order not found' });
+            }
+
+            paymentRecord.transactionStatus = paymentData.status;
+            paymentRecord.postTransactionId = paymentData.id;
+            paymentRecord.paymentId = paymentData.id;
+
+            await paymentRecord.save();
+
+            return res.status(200).json({ success: true, message: 'Payment Done Successfully', payment });
         } else {
             return res.status(200).json({ success: false, message: 'Payment not captured or mismatched order ID' });
         }
@@ -225,6 +198,4 @@ const verifyPayment = async (req, res) => {
 
 
 
-
-
-module.exports = { addPaymentDetail, completePayment, verifyPayment };
+module.exports = { addPaymentDetail, verifyPayment };
