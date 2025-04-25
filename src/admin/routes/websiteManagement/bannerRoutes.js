@@ -5,7 +5,7 @@ const BannerCtrl = require('../../controllers/websiteManagement/bannerController
 const { checkCrudPermission } = require('../../middleware/permission/checkCrudPermission');
 
 
-router.get('/bannerManagement', checkCrudPermission('isShow'), BannerCtrl.bannerPage);
+router.get('/bannerManagement', checkCrudPermission(), BannerCtrl.bannerPage);
 
 router.post("/saveBanner", checkCrudPermission('add'), BannerCtrl.saveBanner); // Assuming saveBanner handles both add and edit
 router.post("/editBanner/:id", checkCrudPermission('edit'), BannerCtrl.updatedBanner); // Assuming saveBanner handles both add and edit

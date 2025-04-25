@@ -455,7 +455,7 @@
                     },
                     error: function (xhr, status, error) {
                         console.error("Error deleting banner:", status, error, xhr);
-                        toastr.error('Error deleting banner.', 'Error');
+                        // toastr.error(error.message, 'Error');
                     }
                 });
             }

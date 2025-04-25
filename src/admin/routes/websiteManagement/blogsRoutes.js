@@ -1,29 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const BlogsCtrl = require('../../controllers/websiteManagement/blogsController');
+const { checkCrudPermission } = require('../../middleware/permission/checkCrudPermission');
 
-// Route to render the blogs management page
-router.get('/blogsManagement', BlogsCtrl.blogsPage);
+router.get('/blogsManagement', checkCrudPermission(), BlogsCtrl.blogsPage);
 
-// Route to fetch the list of blogs for the datatable
-router.post("/blogsList", BlogsCtrl.blogsList);
+router.post("/blogsList", checkCrudPermission('isShow'), BlogsCtrl.blogsList);
 
-// Route to save a new blog
-router.post('/addBlog', BlogsCtrl.createBlog); // Changed '/saveBlog' to '/addBlog' to align with the HTML
+router.post('/addBlog', checkCrudPermission('add'), BlogsCtrl.createBlog); // Changed '/saveBlog' to '/addBlog' to align with the HTML
 
-// Route to get a specific blog for editing
-router.get('/getBlog/:id', BlogsCtrl.getBlog); // Added route to fetch a single blog
+router.get('/getBlog/:id', checkCrudPermission('edit'), BlogsCtrl.getBlog); // Added route to fetch a single blog
 
-// Route to update an existing blog
-router.post('/editBlog/:id', BlogsCtrl.updateBlog); // Changed '/updateBlog' to '/editBlog' to align with the HTML
+router.post('/editBlog/:id', checkCrudPermission('edit'), BlogsCtrl.updateBlog); // Changed '/updateBlog' to '/editBlog' to align with the HTML
 
-// Route to delete a blog
-router.delete('/deleteBlog/:id', BlogsCtrl.deleteBlog);
+router.delete('/deleteBlog/:id', checkCrudPermission('delete'), BlogsCtrl.deleteBlog);
 
-// Route to change the status of a blog
-router.post('/changeStatus/:id', BlogsCtrl.changeStatus); // Added route to change blog status
+router.post('/changeStatus/:id', checkCrudPermission('edit'), BlogsCtrl.changeStatus); // Added route to change blog status
 
-// Route to download all blogs as CSV
-router.get('/downloadAllCsv', BlogsCtrl.downloadAllCsv); // Added route for CSV download
+router.get('/downloadAllCsv', checkCrudPermission('export'), BlogsCtrl.downloadAllCsv); // Added route for CSV download
 
 module.exports = router;
