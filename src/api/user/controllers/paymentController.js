@@ -178,10 +178,14 @@ const verifyPayment = async (req, res) => {
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
 
-            const paymentRecord = await InitiatePayment.findOne({ preTransactionId: razorPayOrderId, transactionStatus: 0 });
+            const paymentRecord = await InitiatePayment.findOne({ preTransactionId: razorPayOrderId });
 
             if (!paymentRecord) {
                 return res.status(200).json({ success: false, message: 'Payment order not found' });
+            }
+
+            if (paymentRecord.transactionStatus === 1) {
+                return res.status(200).json({ success: false, message: 'Payment is Already Verified' });
             }
 
             paymentRecord.transactionStatus = 1;
