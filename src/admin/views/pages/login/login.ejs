@@ -15,7 +15,7 @@
         }
 
         .login-container {
-            margin-top: 10%;
+
             padding: 2rem;
             background: white;
             border-radius: 10px;
@@ -28,27 +28,48 @@
             top: 42px;
             cursor: pointer;
         }
+
+        .body_login {
+            background-image: url("https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/fae354f1-bb08-41e2-89d0-bfe910efbc9b_truck.webp");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        #togglePassword {
+            position: absolute;
+            top: 44%;
+            right: 7px;
+            transform: translateY(50%);
+        }
     </style>
 </head>
 
 <body>
-    <div class="container d-flex justify-content-center align-items-center vh-100">
-        <div class="col-md-4 login-container">
-            <h3 class="text-center mb-4">Login</h3>
-            <form id="loginForm" method="POST" action="/login/checkLogin">
-                <div class="form-group position-relative">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required
-                        placeholder="Enter email id">
+    <div class="body_login">
+        <div class="container d-flex align-items-center vh-100">
+            <div class="row w-100">
+                <div class="col-md-10">
+                    <div class="row w-100">
+                        <div class="col-lg-6 col-md-7 col-sm-12 login-container">
+                            <h3 class="text-center mb-4">Login</h3>
+                            <form id="loginForm" method="POST" action="/login/checkLogin">
+                                <div class="form-group position-relative">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required
+                                        placeholder="Enter email id">
+                                </div>
+                                <div class="form-group position-relative mt-3">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required
+                                        placeholder="Enter password">
+                                    <i class="fas fa-eye" id="togglePassword"></i>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block mt-4">Login</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group position-relative mt-3">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required
-                        placeholder="Enter password">
-                    <i class="fas fa-eye" id="togglePassword"></i>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block mt-4">Login</button>
-            </form>
+            </div>
         </div>
     </div>
     <script>
