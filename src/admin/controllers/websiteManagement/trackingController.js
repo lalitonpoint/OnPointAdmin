@@ -114,7 +114,7 @@ const addTracking = async (req, res) => {
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : ''; // Default to Active
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
 
-            const checkExistingTrackingCode = await Tracking.findById(trackingCode);
+            const checkExistingTrackingCode = await Tracking.find({ 'trackingCode': trackingCode });
 
             if (!checkExistingTrackingCode) {
                 return res.status(200).json({ success: false, message: 'Track Id Already Registered' });
@@ -154,7 +154,7 @@ const addTracking = async (req, res) => {
 
 
             if (status == 1 && Array.isArray(transitTracking) && transitTracking.length > 0)
-                statusMap[1].transitData = parsedTransitTracking;
+                statusMap[1].transitData = parsedTransitTracking[0];
 
             const newTracking = new Tracking({
                 trackingId: trackingCode,
@@ -274,7 +274,7 @@ const updateTracking = async (req, res) => {
             }
 
             if (status == 1 && Array.isArray(transitTracking) && transitTracking.length > 0)
-                updatedDeliveryStatus[1].transitData = parsedTransitTracking;
+                updatedDeliveryStatus[1].transitData = parsedTransitTracking[0];
 
             const updatedTracking = await Tracking.findByIdAndUpdate(
                 id,

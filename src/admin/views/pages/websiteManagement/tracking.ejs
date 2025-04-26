@@ -516,7 +516,7 @@
                             $('.transit-delivery-group').remove();
 
                             // Loop through each item in transitData
-                            data.deliveryStatus[1].transitData[0].forEach(item => {
+                            data.deliveryStatus[1].transitData.forEach(item => {
                                 console.log('xxx', item);
 
                                 // Convert date to the required format for datetime-local input (YYYY-MM-DDTHH:mm)
