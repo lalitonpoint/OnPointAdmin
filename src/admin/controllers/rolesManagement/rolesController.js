@@ -88,29 +88,67 @@ const backendUser = (req, res) => {
     res.render('pages/rolesManagement/backendUser');
 }
 
-
 const getList = async (req, res) => {
-
     try {
-        let search = req.body.search?.value || '';
-        let start = parseInt(req.body.start) || 0;
-        let length = parseInt(req.body.length) || 10;
-
+        const { start, length, search, order, columns } = req.body;
+        const searchValue = search?.value;
         let query = {};
+        let sort = {};
 
-        if (search) {
-            query = {
-                $or: [
-                    { name: { $regex: search, $options: 'i' } },
-                    { email: { $regex: search, $options: 'i' } },
-                    { mobile: { $regex: search, $options: 'i' } }
-                ]
-            };
+        // Custom search parameters sent from the frontend
+        const nameSearch = req.body.name;
+        const emailSearch = req.body.email;
+        const adminTypeSearch = req.body.admin_type;
+
+        if (searchValue) {
+            query.$or = [
+                { name: new RegExp(searchValue, 'i') },
+                { email: new RegExp(searchValue, 'i') },
+                { admin_type: searchValue }
+            ];
+        } else {
+            if (nameSearch) {
+                query.name = new RegExp(nameSearch, 'i');
+            }
+            if (emailSearch) {
+                query.email = new RegExp(emailSearch, 'i');
+            }
+            if (adminTypeSearch) {
+                query.admin_type = adminTypeSearch; // Direct match for admin_type
+
+            }
         }
 
-        let totalRecords = await AdminUser.countDocuments();
-        let filteredRecords = await AdminUser.countDocuments(query);
-        let users = await AdminUser.find(query).skip(start).limit(length);
+        // Add ordering functionality
+        if (order && order.length > 0) {
+            const columnIndex = order[0].column;
+            const sortDirection = order[0].dir === 'asc' ? 1 : -1;
+
+            switch (parseInt(columnIndex)) {
+                case 1: // Name column
+                    sort.name = sortDirection;
+                    break;
+                case 2: // Email column
+                    sort.email = sortDirection;
+                    break;
+                default:
+                    sort.name = -1; // Default sort by name ascending
+                    break;
+            }
+        } else {
+            sort.name = -1; // Default sort by name ascending
+        }
+        console.log(sort);
+
+
+        const users = await AdminUser.find(query)
+            .skip(Number(start))
+            .limit(Number(length))
+            .sort(sort);
+
+
+        const totalRecords = await AdminUser.countDocuments();
+        const filteredRecords = await AdminUser.countDocuments(query);
 
         res.json({
             draw: req.body.draw,
@@ -118,7 +156,6 @@ const getList = async (req, res) => {
             recordsFiltered: filteredRecords,
             data: users // must be array of objects matching columns
         });
-
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Something went wrong' });

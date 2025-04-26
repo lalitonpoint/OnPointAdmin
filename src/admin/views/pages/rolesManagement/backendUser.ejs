@@ -28,7 +28,36 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold">👥 Backend User Management</h3>
     </div>
+    <div class="card shadow-sm mb-4" id="searchBackend UsersCard">
+        <div class="card-body">
+            <h5 class="mb-3">Search Backend User</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="searchName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="searchName" placeholder="Enter Name">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchEmail" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="searchEmail" placeholder="Enter Email">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchUserType" class="form-label">User Type</label>
+                    <select id="searchUserType" class="form-select">
+                        <option value="">All</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Sub Admin">Sub Admin</option>
+                    </select>
+                </div>
 
+                <div class="col-md-3">
+                    <div class="d-flex gap-2 align-items-end">
+                        <button class="btn btn-primary" id="searchBtn">Search</button>
+                        <button class="btn btn-secondary" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="card shadow-sm">
         <div class="card-body">
             <table id="artistTable" class="table table-bordered table-hover">
@@ -38,6 +67,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Admin Type</th>
+                        <th>Created At</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -324,14 +354,46 @@
         let table = $('#artistTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: { url: '/roles/getList', type: 'POST' },
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            scrollY: "400px",
+            scrollCollapse: true,
+            searching: false,
+            ajax: {
+                url: '/roles/getList',
+                type: 'POST',
+                data: function (d) {
+                    d.name = $('#searchName').val();
+                    d.email = $('#searchEmail').val();
+                    d.admin_type = $('#searchUserType').val();
+                },
+            },
             columns: [
-                { data: null, render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1 },
-                { data: 'name' },
-                { data: 'email' },
-                { data: 'mobile' },
                 {
                     data: null,
+                    orderable: false, // Disable ordering for the serial number column
+                    render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                },
+                {
+                    data: 'name',
+                },
+                {
+                    data: 'email',
+                },
+                {
+                    data: 'admin_type',
+                    orderable: false, // Disable ordering for the serial number column
+
+                },
+                {
+                    data: 'createdAt',
+                    orderable: false, // Disable ordering for the serial number column
+                    render: (data) => new Date(data).toLocaleString()
+
+                },
+                {
+                    data: null,
+                    orderable: false, // Disable ordering for the serial number column
                     render: (data, type, row) => `
                         <button class="btn btn-sm btn-primary me-2 editUserBtn"  data-id='${row._id}'>
                             <i class="fas fa-edit"></i> Edit
@@ -340,6 +402,9 @@
                             <i class="fas fa-trash"></i> Delete
                         </button>`
                 }
+            ],
+            columnDefs: [
+                { orderable: true, targets: [1, 2] }
             ]
         });
         $('#artistTable').on('click', '.editUserBtn', function () {
@@ -450,7 +515,9 @@
 
             // Post request (Adjust URL accordingly)
             $.post("/roles/updateRoles", formData, function (response) {
-                alert("Admin saved successfully!");
+                // alert("Admin saved successfully!");
+                toastr.success('Admin saved successfully.', 'Success');
+
                 $("#adminForm")[0].reset();
                 $('.btn-close').click();
 
@@ -481,6 +548,15 @@
             }
         });
 
+        $('#searchBtn').on('click', function () {
+            table.ajax.reload(); // Reload the DataTable, the search parameters are sent in the ajax.data function
+        });
 
+        $('#resetBtn').on('click', function () {
+            $('#searchName').val('');
+            $('#searchEmail').val('');
+            $('#searchUserType').val('');
+            table.ajax.reload(); // Reload to clear all filters
+        });
     });
 </script>
