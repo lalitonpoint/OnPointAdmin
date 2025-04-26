@@ -114,6 +114,12 @@ const addTracking = async (req, res) => {
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : ''; // Default to Active
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
 
+            const checkExistingTrackingCode = await Tracking.findById(trackingCode);
+
+            if (!checkExistingTrackingCode) {
+                return res.status(200).json({ success: false, message: 'Track Id Already Registered' });
+            }
+
             let parsedTransitTracking = [];
             if (transitTracking.length > 0) {
                 parsedTransitTracking = transitTracking.map(item => {
@@ -127,13 +133,13 @@ const addTracking = async (req, res) => {
             }
 
             if (!trackingCode || !status || !estimateDate || !noOfPacking) {
-                return res.status(400).json({ message: 'Tracking ID, Status,  No. of Packing & Estimate Date are required' });
+                return res.status(200).json({ success: false, message: 'Tracking ID, Status,  No. of Packing & Estimate Date are required' });
             }
 
             // Convert status to number
             const statusNumber = parseInt(status);
             if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
-                return res.status(400).json({ message: 'Invalid status value' });
+                return res.status(200).json({ success: false, message: 'Invalid status value' });
             }
             const statusMap = {
                 1: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [] },
@@ -163,7 +169,7 @@ const addTracking = async (req, res) => {
             });
 
             await newTracking.save();
-            res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
+            res.status(201).json({ success: true, message: 'Tracking added successfully', data: newTracking });
         });
     } catch (err) {
         console.error('Error adding tracking:', err);
@@ -199,7 +205,7 @@ const updateTracking = async (req, res) => {
 
 
 
-            const trackingCode = fields.trackingId ? fields.trackingId[0] : '';
+            const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : '';
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : '';
@@ -207,18 +213,23 @@ const updateTracking = async (req, res) => {
             const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : '';
-            // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
+            const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
+
+
+
+            let parsedTransitTracking = [];
+            if (transitTracking.length > 0) {
+                parsedTransitTracking = transitTracking.map(item => {
+                    try {
+                        return JSON.parse(item); // Parse each item into an object
+                    } catch (e) {
+                        console.error('Error parsing transit item:', item);
+                        return null; // Return null if parsing fails
+                    }
+                }).filter(item => item !== null); // Remove invalid items (null)
+            }
+
             const file = files.pod ? files.pod[0] : null;
-
-
-            // console.log('trackingCode', trackingCode);
-            // console.log('status', status);
-            // console.log('pickUpLocation', pickUpLocation);
-            // console.log('dropLocation', dropLocation);
-            // console.log('transportMode', transportMode);
-            // console.log('noOfPacking', noOfPacking);
-            // console.log('deliveryTime', deliveryTime);
-            // console.log('deliveryDate', deliveryDate);
 
             if (!trackingCode || pickUpLocation === null || status === null || dropLocation === null || transportMode === null || noOfPacking === null) { // Corrected the validation for bannerType and status
                 return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
@@ -261,17 +272,9 @@ const updateTracking = async (req, res) => {
                     updatedDeliveryStatus[key].deliveryDateTime = '';
                 }
             }
-            // console.log('updatedDeliveryStatus', updatedDeliveryStatus);
-            // Also update the `status` step if it's explicitly passed
-            // if (updatedDeliveryStatus[status]) {
-            //     updatedDeliveryStatus[status].status = 1;
-            //     updatedDeliveryStatus[status].deliveryDateTime = deliveryDate;
-            // }
 
-            // Optionally reset other statuses to 0 if needed
-            // for (const key in updatedDeliveryStatus) {
-            //   if (key != status) updatedDeliveryStatus[key].status = 0;
-            // }
+            if (status == 1 && Array.isArray(transitTracking) && transitTracking.length > 0)
+                updatedDeliveryStatus[1].transitData = parsedTransitTracking;
 
             const updatedTracking = await Tracking.findByIdAndUpdate(
                 id,
