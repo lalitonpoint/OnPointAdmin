@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
             return res.redirect('/login'); // Redirect root to login if not logged in (optional, depending on your setup)
         }
         else {
-            return res.redirect('/login'); // Redirect to login page for any other unauthorized route
+            return res.redirect('/login');
         }
     }
 };

@@ -77,6 +77,12 @@
                 toastr.error('Access Denied: You are not authorized to perform this action.', 'Forbidden');
             }
         });
+        $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
+            if (jqxhr.status === 302) {
+                toastr.error('Session Expired', 'Session');
+                window.location.reload()
+            }
+        });
     </script>
 
 </body>
