@@ -9,8 +9,10 @@ const WalletSchema = new mongoose.Schema({
             type: { type: String, enum: ['credit', 'debit'], required: true },
             amount: { type: Number, required: true },
             method: { type: String },
-            order_id: { type: String },
-            created_at: { type: Date, default: Date.now }
+            orderId: { type: String },
+            createdAt: { type: Date, default: Date.now },
+            transactionStatus: { type: Number, enum: [0, 1], default: 0, required: true }, // 0 => Not verified, 1 => Verified 
+
         }
     ]
 });

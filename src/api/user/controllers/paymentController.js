@@ -6,8 +6,6 @@ const razorpay = require('../utils/razorpay');
 const crypto = require('crypto');
 require('dotenv').config();
 
-
-
 const addPaymentDetail = async (req, res) => {
     try {
         const {
@@ -76,7 +74,7 @@ const addPaymentDetail = async (req, res) => {
 
         const { subTotal, shippingCost, specialHandling, gstAmount, totalPayment, distance, duration } = costResult;
 
-        let razorpayOrderIdResponse = await initiateRazorpayOrderId(totalPayment);
+        let razorpayOrderIdResponse = await initiateRazorpayOrderId(req, totalPayment);
 
         let razorpayOrderId = 0;
         if (razorpayOrderIdResponse && razorpayOrderIdResponse.success === true) {
@@ -123,7 +121,8 @@ const addPaymentDetail = async (req, res) => {
 
 
 // routes/payment.js
-const initiateRazorpayOrderId = async (amount) => {
+const initiateRazorpayOrderId = async (req, amount) => {
+    const userId = req.headers['userid'];
     try {
         if (!amount || isNaN(amount)) {
             return { success: false, error: 'Invalid amount' };
@@ -134,7 +133,8 @@ const initiateRazorpayOrderId = async (amount) => {
             currency: 'INR',
             receipt: `receipt_${Date.now()}`,
             notes: {
-                packageType: 'Fragile'
+                userId: userId,
+                isWalletPay: 0
             }
         };
 
@@ -184,9 +184,9 @@ const verifyPayment = async (req, res) => {
                 return res.status(200).json({ success: false, message: 'Payment order not found' });
             }
 
-            if (paymentRecord.transactionStatus === 1) {
-                return res.status(200).json({ success: true, message: 'Payment is Already Verified' });
-            }
+            // if (paymentRecord.transactionStatus === 1) {
+            //     return res.status(200).json({ success: true, message: 'Payment is Already Verified' });
+            // }
 
             paymentRecord.transactionStatus = 1;
             paymentRecord.postTransactionId = payment.order_id;

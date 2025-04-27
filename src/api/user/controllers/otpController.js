@@ -32,7 +32,8 @@ const formatMobile = (countryCode, mobileNumber) => {
 
 const sendOtp = async (req, res) => {
     try {
-        const { countryCode, mobileNumber } = req.body;
+        const { countryCode, mobileNumber, isEmailLogin } = req.body;
+
 
         if (!countryCode || !mobileNumber) {
             return res.status(200).json({ success: false, message: 'Country code and mobile number are required.' });
@@ -44,13 +45,13 @@ const sendOtp = async (req, res) => {
             return res.status(200).json({ success: false, message: 'Invalid mobile number format.' });
         }
 
-        const otp = "123456";
-        // const otp = generateOTP();
+        // const otp = "123456";
+        const otp = generateOTP();
         otpStorage[parsed.formatted] = otp;
 
         console.log(`Generated OTP for ${parsed.formatted}: ${otp}`);
-        res.status(200).json({ success: true, message: 'OTP sent successfully on ' + parsed.formatted, otp: otp });
-        return;
+        // res.status(200).json({ success: true, message: 'OTP sent successfully on ' + parsed.formatted, otp: otp });
+        // return;
 
         try {
             const message = await client.messages.create({
