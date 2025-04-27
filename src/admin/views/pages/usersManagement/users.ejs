@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/admin/css/websiteManagement/blogs.css">
+
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold">✨ User Management</h3>
@@ -12,23 +13,40 @@
         </div>
     </div>
 
-    <div class="card shadow-sm mb-4" id="searchBlogsCard">
+    <div class="card shadow-sm mb-4" id="searchUsersCard">
         <div class="card-body">
             <h5 class="mb-3">Search User</h5>
             <div class="row g-3">
-                <div class="col-md-4">
-                    <label for="searchname" class="form-label">Blog Title</label>
-                    <input type="text" class="form-control" id="searchname" placeholder="Enter Blog Title">
+                <div class="col-md-3">
+                    <label for="searchName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="searchName" placeholder="Search Name">
                 </div>
                 <div class="col-md-4">
-                    <label for="searchBlogStatus" class="form-label">Blog Status</label>
-                    <select id="searchBlogStatus" class="form-select">
+                    <label for="searchEmail" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="searchEmail" placeholder="Search Email">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchMobile" class="form-label">Mobile</label>
+                    <input type="text" class="form-control" id="searchMobile" placeholder="Search Mobile">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchStatus" class="form-label">Status</label>
+                    <select id="searchStatus" class="form-select">
                         <option value="">All</option>
                         <option value="1">Active</option>
                         <option value="2">Inactive</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label for="SearchDeviceType" class="form-label">Device Type</label>
+                    <select class="form-select" id="SearchDeviceType">
+                        <option value="">Select Device Type</option>
+                        <option value="1">Android</option>
+                        <option value="2">IOS</option>
+                        <option value="3">Web</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label for="searchCreatedAt" class="form-label">Created At</label>
                     <input type="date" class="form-control" id="searchCreatedAt">
                 </div>
@@ -45,7 +63,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="blogTable" class="table table-bordered table-hover">
+                <table id="userTable" class="table table-bordered table-hover">
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
@@ -66,17 +84,17 @@
     </div>
 </div>
 
+<!-- Modal -->
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg custom-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Add Blog</h5>
+                <h5 class="modal-title" id="modalTitle">Add User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="blogForm">
-                    <input type="hidden" id="blogId">
-
+                <form id="userForm">
+                    <input type="hidden" id="userId">
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="name" class="form-label">Name <strong class="text-danger">*</strong></label>
@@ -85,40 +103,42 @@
                         </div>
                         <div class="col-md-6">
                             <label for="email" class="form-label">Email <strong class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="email" name="emailAddress"
+                            <input type="email" class="form-control" id="email" name="emailAddress"
                                 placeholder="Enter Email Id">
                         </div>
-
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="countryCode" class="form-label">Country Code</label>
-                            <input type="text" class="form-control" id="countryCode" name="countryCode"
-                                placeholder="Enter Blog Tags (comma separated)">
+                            <label for="country" class="form-label">Country <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" id="country" name="country">
+                                <option value="">Select Country</option>
+                                <option value="+91">India (+91)</option>
+                                <option value="+1">United States (+1)</option>
+                                <option value="+44">United Kingdom (+44)</option>
+                                <option value="+61">Australia (+61)</option>
+                            </select>
                         </div>
-
                         <div class="col-md-6">
                             <label for="mobileNumber" class="form-label">Mobile <strong
                                     class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="mobileNumber" name="mobileNumber"
                                 placeholder="Enter Mobile Number">
                         </div>
-
-
                     </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="gender" class="form-label">Gender <strong class="text-danger">*</strong></label>
                             <select class="form-select" name="gender" id="gender">
-                                <option value="">Select Status</option>
+                                <option value="">Select Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
                                 <option value="Prefer not to say">Prefer not to say</option>
                             </select>
                         </div>
-
                         <div class="col-md-6">
                             <label for="companyName" class="form-label">Company Name</label>
                             <input type="text" class="form-control" id="companyName" name="companyName"
@@ -126,10 +146,9 @@
                         </div>
                     </div>
 
-
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="gstNumber" class="form-label">Gst Number</label>
+                            <label for="gstNumber" class="form-label">GST Number</label>
                             <input type="text" class="form-control" id="gstNumber" name="gstNumber"
                                 placeholder="Enter GST Number">
                         </div>
@@ -158,12 +177,12 @@
                                     class="text-danger">*</strong></label>
                             <select class="form-select" name="deviceType" id="deviceType">
                                 <option value="">Select Device Type</option>
-                                <option value="1">App</option>
-                                <option value="2">Web</option>
+                                <option value="1">Android</option>
+                                <option value="2">IOS</option>
+                                <option value="3">Web</option>
                             </select>
                         </div>
                     </div>
-
 
                     <button type="submit" class="btn btn-pink w-100">Save</button>
                 </form>
@@ -174,27 +193,15 @@
 
 <script>
     $(document).ready(function () {
-        // Initially hide the search blog card using jQuery
-        const searchBlogsCard = $('#searchBlogsCard');
-        searchBlogsCard.hide();
+        // Initially hide search card
+        // const searchUsersCard = $('#searchUsersCard');
+        // searchUsersCard.hide();
 
-        // Slide down the search blog card when the page loads
-        $(window).on('load', function () {
-            searchBlogsCard.slideDown(1000); // Adjust the duration (in milliseconds) as needed
-        });
+        // $(window).on('load', function () {
+        //     searchUsersCard.slideDown(1000);
+        // });
 
-        let ckEditor; // Declare editor outside the create function
-
-        ClassicEditor.create(document.querySelector('#blogDescription'))
-            .then(editor => {
-                ckEditor = editor;
-            })
-            .catch(error => {
-                console.error(error);
-            });
-
-
-        // Image Preview Functionality
+        // Image Preview
         $('.image_view').change(function () {
             const file = this.files[0];
             if (file) {
@@ -210,120 +217,152 @@
             }
         });
 
-        let table = $('#blogTable').DataTable({ // Initialize DataTable first
+        // DataTable Setup
+        let table = $('#userTable').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
             scrollY: "400px",
             scrollCollapse: true,
-            searching: false, // This line disables the default DataTables search
+            searching: false,
             ajax: {
-                url: '/blogs/blogsList', // Replace with your actual route
+                url: '/users/usersList', // YOUR actual server route
                 type: 'POST',
                 data: function (d) {
-                    d.title = $('#searchname').val(); // Corrected key to 'title'
-                    d.status = $('#searchBlogStatus').val(); // Corrected key to 'status'
+                    d.fullName = $('#searchName').val();
+                    d.emailAddress = $('#searchEmail').val();
+                    d.mobileNumber = $('#searchMobile').val();
+                    d.status = $('#searchStatus').val();
+                    d.deviceType = $('#SearchDeviceType').val();
                     d.createdAt = $('#searchCreatedAt').val();
                 }
             },
-            columns: [{
-                data: null,
-                orderable: false, // Disable ordering for the # column
-                render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
-            },
-            {
-                data: 'title' // Blog Title
-            },
-            {
-                data: 'image',
-                orderable: false, // Disable ordering for the Blog Image column
-                render: (data) => data ? `<img src="${data}" class="rounded" width="50" height="50">` : ''
-            },
-            {
-                data: 'tags',
-                orderable: false // Keep tags non-orderable as per previous state
-            },
-            {
-                data: 'status', // Status
-                render: (data, type, row) => {
-                    const statusText = data === 1 ? 'Active' : 'Inactive';
-                    const newStatus = data === 1 ? 2 : 1; // Toggle status
-                    return `<span class="badge ${data === 1 ? 'bg-success' : 'bg-secondary'} changeStatus" data-id='${row._id}' data-status='${newStatus}' style="cursor: pointer;">${statusText}</span>`;
+            columns: [
+                {
+                    data: null,
+                    orderable: false,
+                    render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                },
+                { data: 'fullName' },
+                { data: 'emailAddress' },
+                { data: 'mobileNumber' },
+                {
+                    data: 'profilePicture',
+                    orderable: false,
+                    render: (data) => data ? `<img src="${data}" class="rounded" width="50" height="50">` : ''
+                },
+                {
+                    data: 'deviceType',
+                    orderable: false,
+                    render: (data) => {
+                        switch (parseInt(data)) {
+                            case 1:
+                                return 'Android';
+                            case 2:
+                                return 'IOS';
+                            case 3:
+                                return 'Web';
+                            default:
+                                return 'Unknown';
+                        }
+                    }
+                },
+                {
+                    data: 'status',
+                    orderable: false,
+                    render: (data, type, row) => {
+                        const statusText = data == 1 ? 'Active' : 'Inactive';
+                        const newStatus = data == 1 ? 2 : 1;
+                        return `<span class="badge ${data == 1 ? 'bg-success' : 'bg-secondary'} changeStatus" data-id='${row._id}' data-status='${newStatus}' style="cursor: pointer;">${statusText}</span>`;
+                    }
+                },
+                {
+                    data: 'createdAt', // Created At
+                    render: function (data) {
+                        return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date as needed
+                    }
+                }, {
+                    data: null,
+                    orderable: false,
+                    render: (data, type, row) => `
+                        <button class="btn btn-sm btn-primary editUser" data-id="${row._id}">Edit</button>
+                        <button class="btn btn-sm btn-danger deleteUser" data-id="${row._id}">Delete</button>
+                    `
                 }
-            },
-            {
-                data: 'createdAt', // Created At
-                render: function (data) {
-                    return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date as needed
-                }
-            },
-            {
-                data: null,
-                orderable: false, // Keep action non-orderable
-                render: (data, type, row) => `
-                                        <button class="btn btn-sm btn-warning editBlogBtn" data-id='${row._id}'><i class="fas fa-edit"></i> Edit</button>
-                                        <button class="btn btn-sm btn-danger delBlogBtn" data-id='${row._id}'><i class="fas fa-trash"></i> Delete</button>
-                                     `
-            }
             ]
         });
 
-
-        $('#userModal').on('submit', function (e) {
+        $('#userForm').on('submit', function (e) {
             e.preventDefault();
-            const formElement = document.getElementById('blogForm');
+            const formElement = document.getElementById('userForm');
+            const id = $('#userId').val();
+
+
             if (formElement) {
                 let isValid = true;
 
-                const name = $('#name').val().trim();
-                if (!name) {
-                    toastr.error('User Name is required.', 'Validation Error');
+                const country = $('#country').val();
+                const fullName = $('#name').val().trim();
+                const mobileNumber = $('#mobileNumber').val().trim();
+                const email = $('#email').val().trim();
+                const gender = $('#gender').val();
+                const status = $('#status').val();
+                let profilePicture = $('#profilePicture').val();
+                const deviceType = $('#deviceType').val();
+                if (id && $('#imagePreview').attr('src') != '#')
+                    profilePicture = $('#imagePreview').attr('src');
+                // alert(profilePicture)
+
+                // Validation
+                if (!fullName) {
+                    toastr.error('Full Name is required.', 'Validation Error');
+                    isValid = false;
                     return;
                 }
 
-                const email = $('#email').val();
                 if (!email) {
-                    toastr.error('Email  is required.', 'Validation Error');
+                    toastr.error('Email is required.', 'Validation Error');
                     return;
-                }
-                const countryCode = $('#countryCode')[0].files[0];
-                if (!countryCode) { // Required on add
-                    toastr.error('Country Code is required.', 'Validation Error');
-                    return;
-                } const blogImage = $('#blogImage')[0].files[0];
-                if (!blogImage && !$('#blogId').val()) { // Required on add
-                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
-                    return;
-                } const blogImage = $('#blogImage')[0].files[0];
-                if (!blogImage && !$('#blogId').val()) { // Required on add
-                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
-                    return;
-                } const blogImage = $('#blogImage')[0].files[0];
-                if (!blogImage && !$('#blogId').val()) { // Required on add
-                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
-                    return;
-                }
-                const blogImage = $('#blogImage')[0].files[0];
-                if (!blogImage && !$('#blogId').val()) { // Required on add
-                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { // Simple email regex
+                    toastr.error('Enter a valid Email address.', 'Validation Error');
                     return;
                 }
 
-                const blogDescription = ckEditor ? ckEditor.getData().trim() : $('#blogDescription').val().trim();
-                if (!blogDescription) {
-                    toastr.error('Blog Description is required.', 'Validation Error');
+                if (!country) {
+                    toastr.error('Country selection is required.', 'Validation Error');
                     return;
                 }
+
+                if (!mobileNumber) {
+                    toastr.error('Mobile Number is required.', 'Validation Error');
+                    return;
+                } else if (!/^\d{7,15}$/.test(mobileNumber)) { // Example: Mobile should be 7-15 digits
+                    toastr.error('Enter a valid Mobile Number.', 'Validation Error');
+                    return;
+                }
+
+                if (!gender) {
+                    toastr.error('Gender selection is required.', 'Validation Error');
+                    return;
+                }
+                if (!status) {
+                    toastr.error('Status selection is required.', 'Validation Error');
+                    return;
+                }
+                if (!profilePicture) {
+                    toastr.error('Profile selection is required.', 'Validation Error');
+                    return;
+                }
+                if (!deviceType) {
+                    toastr.error('Device selection is required.', 'Validation Error');
+                    return;
+                }
+
 
                 const formData = new FormData(formElement);
-                const id = $('#blogId').val();
-                const actionUrl = id ? '/blogs/editBlog/' + id : '/blogs/addBlog'; // Replace with your actual routes
+                const actionUrl = id ? '/users/updateUser/' + id : '/users/saveUserdata'; // Replace with your actual routes
 
-                // Update description in FormData with CKEditor content
-                if (ckEditor) {
-                    formData.set('description', ckEditor.getData());
-                }
 
                 $.ajax({
                     url: actionUrl,
@@ -332,62 +371,59 @@
                     processData: false,
                     contentType: false,
                     dataType: 'json',
-                    success: function () {
+                    success: function (response) {
+                        toastr.success(response.message, 'Success');
+                        $('#userForm')[0].reset();
                         $('.btn-close').click();
                         table.ajax.reload();
-                        $('#blogForm')[0].reset();
-                        if (ckEditor) {
-                            ckEditor.setData('');
-                        }
-                        $('#blogId').val('');
-                        $('#modalTitle').text('Add Blog');
-                        toastr.success('Blog saved successfully!', 'Success');
                     },
                     error: function (xhr, status, error) {
                         console.error("AJAX request failed:", status, error, xhr);
-                        toastr.error('An error occurred while saving the blog.', 'Error'); // Use toastr for AJAX error
+                        toastr.error('An error occurred while submitting the form.', 'Error');
                     }
                 });
             } else {
-                console.error("Error: The form element with ID 'blogForm' was not found.");
+                console.error("Error: The form element with ID 'userForm' was not found.");
             }
         });
+
 
         $('#userModal').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget); // Button that triggered the modal
             const id = button.data('id'); // Extract info from data-* attributes
             const modalTitle = $('#modalTitle');
-            const blogId = $('#blogId');
-            const form = $('#blogForm')[0];
+            const userId = $('#userId');
+            const form = $('#userForm')[0];
             const imagePreview = $('#imagePreview');
             const imagePreviewContainer = $('#imagePreviewContainer');
 
             form.reset(); // Reset the form every time the modal is shown
-            if (ckEditor) {
-                ckEditor.setData('');
-            }
-            blogId.val('');
+            userId.val('');
             imagePreview.attr('src', '#');
             imagePreviewContainer.hide();
-            modalTitle.text('Add Blog');
+            modalTitle.text('Add User');
 
             if (id) {
-                modalTitle.text('Edit Blog');
-                blogId.val(id);
+                modalTitle.text('Edit User');
+                userId.val(id);
                 // Fetch blog data and populate the form for editing
                 $.ajax({
-                    url: '/blogs/getBlog/' + id, // Replace with your actual route
+                    url: '/users/getUser/' + id, // Replace with your actual route
                     type: 'GET',
                     dataType: 'json',
                     success: function (data) {
-                        $('#name').val(data.title);
-                        $('#blogStatus').val(data.status);
-                        $('#blogTags').val(data.tags);
-                        if (ckEditor) {
-                            ckEditor.setData(data.description);
-                        }
-                        if (data.image) {
-                            imagePreview.attr('src', data.image);
+                        $('#name').val(data.fullName);
+                        $('#email').val(data.emailAddress);
+                        $('#country').val(data.countryCode);
+                        $('#mobileNumber').val(data.mobileNumber);
+                        $('#gender').val(data.gender);
+                        $('#companyName').val(data.companyName);
+                        $('#gstNumber').val(data.gstNumber);
+                        $('#status').val(data.status);
+                        $('#deviceType').val(data.deviceType);
+
+                        if (data.profilePicture) {
+                            imagePreview.attr('src', data.profilePicture);
                             imagePreviewContainer.show();
                         }
                     },
@@ -400,38 +436,55 @@
         });
 
         // Event delegation for Edit button
-        $('#blogTable').on('click', '.editBlogBtn', function () {
+        $('#userTable').on('click', '.editUser', function () {
             const blogId = $(this).data('id');
             $('#userModal').modal('show', this); // Pass the button element for context
         });
 
-        // Event delegation for Delete button
-        $('#blogTable').on('click', '.delBlogBtn', function () {
-            const blogId = $(this).data('id');
+        // Search button
+        $('#searchBtn').click(function () {
+            table.ajax.reload();
+        });
+        // $('.btn-close').click(function () {
+        //     window.location.reload();
+        // });
+
+
+        // Reset button
+        $('#resetBtn').click(function () {
+            $('#searchName, #searchStatus, #searchCreatedAt').val('');
+            table.ajax.reload();
+        });
+        $('#downloadAllCsv').on('click', function () {
+            window.location.href = '/users/downloadAllCsv'; // Replace with your actual route
+        });
+
+        $('#userTable').on('click', '.deleteUser', function () {
+            const userId = $(this).data('id');
             if (confirm('Are you sure you want to delete this blog?')) {
                 $.ajax({
-                    url: '/blogs/deleteBlog/' + blogId, // Replace with your actual delete route
-                    type: 'delete',
+                    url: '/users/deleteUser/' + userId, // Replace with your actual delete route
+                    type: 'post',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
-                        toastr.success('Blog deleted successfully!', 'Success');
+                        toastr.success('User deleted successfully!', 'Success');
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error deleting blog:", status, error, xhr);
-                        toastr.error('Error deleting blog.', 'Error');
+                        console.error("Error deleting User:", status, error, xhr);
+                        toastr.error('Error deleting User.', 'Error');
                     }
                 });
             }
         });
-        $('#blogTable').on('click', '.changeStatus', function () {
-            const blogId = $(this).data('id');
+        $('#userTable').on('click', '.changeStatus', function () {
+            const userId = $(this).data('id');
             const newStatus = $(this).data('status'); // Get the new status from the data attribute
             const statusText = parseInt(newStatus) === 1 ? 'Active' : 'Inactive'; // For confirmation message
 
             if (confirm(`Are you sure you want to set the status to ${statusText}?`)) {
                 $.ajax({
-                    url: '/blogs/changeStatus/' + blogId, // Replace with your actual route
+                    url: '/users/changeStatus/' + userId, // Replace with your actual route
                     type: 'post',
                     dataType: 'json',
                     contentType: 'application/json', // Important for sending JSON data in the body
@@ -450,28 +503,6 @@
                     }
                 });
             }
-        });
-        // Prevent modal from staying open on form submission error (if any)
-        $('#userModal').on('hidden.bs.modal', function () {
-            $(this).find('.is-invalid').removeClass('is-invalid');
-            $(this).find('.invalid-feedback').remove();
-        });
-
-        // --- Custom Search Functionality ---
-        $('#searchBtn').on('click', function () {
-            table.ajax.reload(); // Reload the DataTable, the search parameters are sent in the ajax.data function
-        });
-
-        $('#resetBtn').on('click', function () {
-            $('#searchname').val('');
-            $('#searchBlogStatus').val('');
-            $('#searchCreatedAt').val('');
-            table.ajax.reload(); // Reload to clear all filters
-        });
-
-        // --- Custom Download All CSV Functionality ---
-        $('#downloadAllCsv').on('click', function () {
-            window.location.href = '/blogs/downloadAllCsv'; // Replace with your actual route
         });
     });
 </script>
