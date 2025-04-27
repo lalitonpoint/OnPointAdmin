@@ -3,6 +3,7 @@ const moment = require('moment'); // Ensure moment.js is installed: npm install 
 const multiparty = require('multiparty');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 
+const { generateLogs } = require('../../utils/logsHelper');
 
 
 const warehousePage = (req, res) => {
@@ -148,6 +149,7 @@ const addWarehouse = async (req, res) => {
 
             // Save the new tracking entry to the database
             await newwarehouse.save();
+            await generateLogs(req, 'Add', newwarehouse);
 
             // Send success response with a more standard status code
             res.status(201).json({ message: 'newwarehouse added successfully', data: newwarehouse });
@@ -251,6 +253,8 @@ const updateWarehouse = async (req, res) => {
             }
 
             await warehouse.findByIdAndUpdate(id, updatedTracking);
+            await generateLogs(req, 'Edit', updatedTracking);
+
 
 
             res.json({ message: 'Tracking updated successfully', data: updatedTracking });
@@ -271,6 +275,7 @@ const deleteWarehouse = async (req, res) => {
         if (!deletedTracking) {
             return res.status(404).json({ message: 'warehouse not found' });
         }
+        await generateLogs(req, 'Delete', deletedTracking);
 
         res.json({ message: 'Tracking deleted successfully' });
 

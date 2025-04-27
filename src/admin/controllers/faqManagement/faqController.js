@@ -1,5 +1,6 @@
 const Faq = require('../../models/faqManagement/faqModel');
 const moment = require('moment');
+const { generateLogs } = require('../../utils/logsHelper');
 
 // Render the Faq management page
 const faqPage = (req, res) => {
@@ -74,6 +75,8 @@ const faqCreate = async (req, res) => {
 
         const saveFaq = new Faq({ title, description, status });
         await saveFaq.save();
+        await generateLogs(req, 'Add', saveFaq);
+
         res.json({ success: true, message: 'Faq saved successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -103,6 +106,8 @@ const updateFaq = async (req, res) => {
 
         const updateData = { title, description, status, updatedAt: new Date() };
         await Faq.findByIdAndUpdate(id, updateData);
+        await generateLogs(req, 'Edit', updateData);
+
         res.json({ success: true, message: 'Faq updated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -114,6 +119,8 @@ const deleteFaq = async (req, res) => {
     try {
         const { id } = req.params;
         await Faq.findByIdAndDelete(id);
+        await generateLogs(req, 'Delete', { id: id });
+
         res.json({ success: true, message: 'Faq deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });

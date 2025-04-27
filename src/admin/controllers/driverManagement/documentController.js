@@ -5,6 +5,7 @@ const documentPage = (req, res) => {
 
 const Document = require('../../models/driverManagement/documentModel'); // Ensure this path is correct
 
+const { generateLogs } = require('../../utils/logsHelper');
 
 const saveDocument = async (req, res) => {
     try {
@@ -17,6 +18,8 @@ const saveDocument = async (req, res) => {
 
         const newDocument = new Document({ name, isMandatory, isUnique, uniqueType });
         await newDocument.save();
+        await generateLogs(req, 'Add', newDocument);
+
         res.json({ success: true, message: 'Document added successfully' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -29,6 +32,9 @@ const updateDocument = async (req, res) => {
         const { name, isMandatory, isUnique, uniqueType } = req.body;
         const updatedDocument = await Document.findByIdAndUpdate(req.params.id, { name, isMandatory, isUnique, uniqueType }, { new: true });
         if (!updatedDocument) return res.status(404).json({ success: false, message: 'Document not found' });
+
+        await generateLogs(req, 'Edit', updatedDocument);
+
         res.json({ success: true, message: 'Document updated successfully' });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Error updating document' });
@@ -60,6 +66,8 @@ const documentList = async (req, res) => {
 const deleteDocument = async (req, res) => {
     try {
         await Document.findByIdAndDelete(req.params.id);
+        await generateLogs(req, 'delete', { id: req.params.id });
+
         res.json({ success: true, message: 'Document deleted successfully' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error deleting document' });

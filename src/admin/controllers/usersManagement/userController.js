@@ -2,6 +2,7 @@ const User = require('../../../api/user/models/userModal');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 const moment = require('moment'); // For date manipulation
+const { generateLogs } = require('../../utils/logsHelper');
 
 
 
@@ -153,6 +154,8 @@ const saveUserData = async (req, res) => {
             });
 
             await UserData.save();
+            await generateLogs(req, 'Add', UserData);
+
             res.json({ success: true, message: 'User saved successfully' });
         });
     } catch (error) {
@@ -220,6 +223,8 @@ const updateUser = async (req, res) => {
             };
 
             await User.findByIdAndUpdate(id, updatedData, { new: true });
+            await generateLogs(req, 'Edit', updatedData);
+
             res.json({ success: true, message: 'User updated successfully' });
         });
     } catch (error) {
@@ -238,6 +243,8 @@ const deleteUser = async (req, res) => {
         }
 
         await User.findByIdAndUpdate(userId, { status: 3 });
+        await generateLogs(req, 'Delete', user);
+
         return res.json({ message: 'User deleted successfully' });
 
     } catch (err) {

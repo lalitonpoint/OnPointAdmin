@@ -49,6 +49,7 @@ const updateRolesPermissions = async (req, res) => {
         if (!updatedUser) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
+        await generateLogs(req, 'Edit', updatedUser);
 
         res.json({ success: true, message: 'User updated successfully!', updatedUser });
     } catch (error) {
@@ -76,6 +77,7 @@ const editRole = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
+        await generateLogs(req, 'Edit', user);
 
         res.json({ success: true, data: user }); // Return user data
     } catch (error) {

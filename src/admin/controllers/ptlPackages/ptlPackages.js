@@ -2,6 +2,7 @@ const Tracking = require('../../../api/user/models/paymentModal');
 const Driver = require('../../../api/driver/modals/driverModal');
 const Warehouse = require('../../models/warehouseManagemnet/warehouseModal');
 const driverPackageAssign = require('../../models/ptlPackages/driverPackageAssignModel');
+const { generateLogs } = require('../../utils/logsHelper');
 
 // const Driver = require('../models/Driver');
 const moment = require('moment'); // Ensure moment.js is installed: npm install moment
@@ -14,7 +15,7 @@ const trackingPage = (req, res) => {
 }
 
 // Fetch tracking data (for DataTable)
-const trackingList = async (req, res) => {  
+const trackingList = async (req, res) => {
     try {
         const { start, length, search, columns, order } = req.body;
         const searchValue = search?.value;
@@ -86,7 +87,7 @@ const trackingList = async (req, res) => {
             .limit(Number(length))
             .sort(sort) // Apply the sort order
             .populate({ path: 'userId', select: 'fullName' }); // 👈 join userName from User model
-            
+
 
 
         const totalRecords = await Tracking.countDocuments();
@@ -170,6 +171,7 @@ const addTracking = async (req, res) => {
 
             // Save the new tracking entry to the database
             await newTracking.save();
+            await generateLogs(req, 'Add', newTracking);
 
             // Send success response with a more standard status code
             res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
@@ -180,24 +182,24 @@ const addTracking = async (req, res) => {
     }
 };
 
-const getTrackingById = async (req, res) => {  
+const getTrackingById = async (req, res) => {
     try {
         const tracking = await Tracking.findById(req.params.id);
         console.log(tracking);
         if (!tracking) {
             return res.status(404).json({ message: 'Tracking not found' });
         }
-         // Get all drivers
-         const drivers = await Driver.find(); // If you want to filter, add a query here
-         const warehouse = await Warehouse.find(); // If you want to filter, add a query here
+        // Get all drivers
+        const drivers = await Driver.find(); // If you want to filter, add a query here
+        const warehouse = await Warehouse.find(); // If you want to filter, add a query here
 
-         // Send both tracking and drivers
-         res.json({
-             tracking,
-             drivers,
-             warehouse
-         });
- 
+        // Send both tracking and drivers
+        res.json({
+            tracking,
+            drivers,
+            warehouse
+        });
+
     } catch (error) {
         console.error('Error fetching tracking by ID:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message });
@@ -288,7 +290,7 @@ const updateTracking = async (req, res) => {
     //         if (!updatedTracking) {
     //             return res.status(404).json({ message: 'Tracking not found' });
     //         }
-            
+
 
 
     //         await Tracking.findByIdAndUpdate(id, updatedTracking);
@@ -303,29 +305,29 @@ const updateTracking = async (req, res) => {
 
     try {
         const form = new multiparty.Form();
-    
+
         form.parse(req, async (err, fields) => {
             if (err) {
                 console.error("Error parsing form data:", err);
                 return res.status(400).json({ error: "Failed to parse form data" });
             }
-    
+
             const packageid = fields.packageid ? fields.packageid[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const delivery_boy = fields.deleivery_boy ? fields.deleivery_boy[0] : '';
             const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1;
             const warehouse = fields.warehouse ? fields.packageid[0] : '';
-    
+
             // Validation check before proceeding
             if (!packageid || !status) {
                 return res.status(400).json({ message: 'Tracking ID, Status, and No. of Packing are required' });
             }
-    
+
             const statusNumber = parseInt(status);
             if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
                 return res.status(400).json({ message: 'Invalid status value' });
             }
-    
+
             const statusMap = {
                 1: { key: 'in_process', status: 0, deliveryDateTime: '' },
                 2: { key: 'pickup', status: 0, deliveryDateTime: '' },
@@ -333,14 +335,16 @@ const updateTracking = async (req, res) => {
                 4: { key: 'delivered', status: 0, deliveryDateTime: '' },
                 5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
             };
-    
+
             statusMap[statusNumber].status = 1;
             statusMap[statusNumber].deliveryDateTime = new Date();
-    
+
             // First, check if a record with this packageid exists
-            const existingTracking = await driverPackageAssign.findOne({   packageid: packageid,
-                driverId: delivery_boy });
-    
+            const existingTracking = await driverPackageAssign.findOne({
+                packageid: packageid,
+                driverId: delivery_boy
+            });
+
             if (existingTracking) {
                 // Update existing entry
                 existingTracking.driverId = delivery_boy || null;
@@ -348,23 +352,27 @@ const updateTracking = async (req, res) => {
                 existingTracking.status = statusNumber;
                 existingTracking.deliveryStatus = statusMap;
                 existingTracking.createdAt = new Date();
-    
+
                 await existingTracking.save();
-    
+                await generateLogs(req, 'Edit', newTracking);
+
+
                 return res.status(200).json({ message: 'Tracking updated successfully', data: existingTracking });
             } else {
                 // Insert new entry
                 const newTracking = new driverPackageAssign({
                     packageid: packageid,
                     driverId: delivery_boy || null,
-                    warehouseId : warehouse || null,
+                    warehouseId: warehouse || null,
                     status: statusNumber,
                     createdAt: new Date(),
                     deliveryStatus: statusMap
                 });
-    
+
                 await newTracking.save();
-    
+                await generateLogs(req, 'Add', newTracking);
+
+
                 return res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
             }
         });
@@ -372,9 +380,9 @@ const updateTracking = async (req, res) => {
         console.error("Server error:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-    
-    
-    
+
+
+
     // catch (err) {
     //     console.error('Error adding tracking:', err);
     //     res.status(500).json({ message: 'Internal server error', error: err.message });
@@ -391,6 +399,8 @@ const deleteTracking = async (req, res) => {
         if (!deletedTracking) {
             return res.status(404).json({ message: 'Tracking not found' });
         }
+
+        await generateLogs(req, 'Delete', deletedTracking);
 
         res.json({ message: 'Tracking deleted successfully' });
 

@@ -3,21 +3,17 @@ const express = require('express');
 const router = express.Router();
 
 const TrackingCtrl = require('../../controllers/ptlPackages/ptlPackages');
+const { checkCrudPermission } = require('../../middleware/permission/checkCrudPermission');
 
 
- router.post('/trackingList', TrackingCtrl.trackingList);
-// router.get('/trackingPage', TrackingCtrl.trackingPage);
-// router.post('/addTracking', TrackingCtrl.addTracking);
+router.post('/trackingList', checkCrudPermission('isShow'), TrackingCtrl.trackingList);
 
- router.get('/get/:id', TrackingCtrl.getTrackingById);
+router.get('/get/:id', checkCrudPermission('edit'), TrackingCtrl.getTrackingById);
 
- router.post('/editTracking/:id', TrackingCtrl.updateTracking); // Using POST for update
+router.post('/editTracking/:id', checkCrudPermission('edit'), TrackingCtrl.updateTracking); // Using POST for update
 
-// router.delete('/delete/:id', TrackingCtrl.deleteTracking);
 
-// router.get('/downloadCsv', TrackingCtrl.downloadTrackingCsv);
-
-router.get('/ptlPackages', TrackingCtrl.trackingPage);
+router.get('/ptlPackages', checkCrudPermission(), TrackingCtrl.trackingPage);
 
 
 

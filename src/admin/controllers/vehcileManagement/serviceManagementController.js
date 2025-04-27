@@ -2,6 +2,8 @@ const Service = require('../../models/vehcileManagement/serviceManagementModel')
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 const moment = require('moment'); // For date manipulation
+const { generateLogs } = require('../../utils/logsHelper');
+
 
 const servicePage = (req, res) => {
     res.render('pages/vehcileManagement/serviceManagement');
@@ -156,6 +158,7 @@ const saveService = async (req, res) => {
 
                 // Save the service to the database
                 await service.save();
+                await generateLogs(req, 'Add', service);
 
                 // Return success response
                 res.json({ success: true, message: 'Service saved successfully' });
@@ -207,6 +210,8 @@ const editService = async (req, res) => {
             };
 
             await Service.findByIdAndUpdate(id, updateData);
+            await generateLogs(req, 'Edit', updateData);
+
             res.json({ success: true, message: 'Service updated successfully' });
         });
     } catch (error) {
@@ -220,6 +225,8 @@ const deleteService = async (req, res) => {
     try {
         const { id } = req.params;
         await Service.findByIdAndDelete(id);
+        await generateLogs(req, 'Delete', { id: id });
+
         res.json({ success: true, message: 'Service deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });

@@ -2,6 +2,8 @@ const Banner = require('../../models/websiteManagement/bannerModel'); // Import 
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 const moment = require('moment'); // For date manipulation
+const { generateLogs } = require('../../utils/logsHelper');
+
 
 // Banner page render (GET request for banner page)
 const bannerPage = (req, res) => {
@@ -133,6 +135,8 @@ const saveBanner = async (req, res) => {
                 status
             });
             await banner.save();
+            await generateLogs(req, 'Add', banner);
+
 
             res.status(201).json({ success: true, message: 'Banner saved successfully' }); // Changed status code to 201 for successful creation
         });
@@ -189,6 +193,8 @@ const updatedBanner = async (req, res) => {
             };
 
             await Banner.findByIdAndUpdate(id, updateData); // Corrected model name to Banner
+            await generateLogs(req, 'Edit', updateData);
+
             res.json({ success: true, message: 'Banner updated successfully' });
         });
     } catch (error) {
@@ -215,6 +221,8 @@ const deleteBanner = async (req, res) => {
     try {
         const { id } = req.params;
         await Banner.findByIdAndDelete(id);
+        await generateLogs(req, 'Delete', { id: id });
+
         res.json({ success: true, message: 'Banner deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
