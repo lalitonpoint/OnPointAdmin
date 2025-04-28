@@ -212,10 +212,23 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
+
+                        <div class="col-md-4" id="whereDiv" style="display:none;">
+                            <label for="Where" class="form-label">Where<strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select"   id="Where" name="Where" >
+                                <option value="">Select Where</option>
+                                <option value="1">warehouse</option>
+                                <option value="2">At Drop Location</option>
+                               
+                            </select>
+                        </div>
+
+
+                        <div class="col-md-6" id="warehouseDiv" style="display:none;">
                             <label for="deleivery_boy" class="form-label">Ware House <strong
                                     class="text-danger">*</strong></label>
-                            <select class="form-select" id="warehouse" name="warehouse">
+                            <select class="form-select" id="warehouse" name="warehouse" >
                                 <option value="">Select Warehouse</option>
                               
                             </select>
@@ -616,7 +629,29 @@
     }
 });
 
-   
+
+
+$('#trackingStatus').change(function() {
+    if ($(this).val() == '4') { // Delivered
+        $('#whereDiv').show();
+        $('#Where').prop('disabled', false);
+    } else {
+        $('#whereDiv').hide();
+        $('#Where').prop('disabled', true).val('');
+        $('#warehouseDiv').hide();
+        $('#warehouse').prop('disabled', true).val('');
+    }
+});
+
+$('#Where').change(function() {
+    if ($(this).val() == '1') {
+        $('#warehouseDiv').show();
+        $('#warehouse').prop('disabled', false);
+    } else {
+        $('#warehouseDiv').hide();
+        $('#warehouse').prop('disabled', true).val('');
+    }
+});
 
 
 </script>

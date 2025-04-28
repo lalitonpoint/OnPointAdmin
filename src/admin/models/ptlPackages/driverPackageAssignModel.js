@@ -7,12 +7,11 @@ const shipmentSchema = new mongoose.Schema({
         required: true
     },
     driverId: {
-        type: String,
-        required: true
+        type: String
+        
     },
     warehouseId :{
-        type: String,
-        required: true
+        type: String
     },
     status: {
         type: Number,
