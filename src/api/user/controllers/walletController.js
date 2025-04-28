@@ -110,6 +110,16 @@ const walletVerify = async (req, res) => {
                 });
                 await wallet.save();
             } else {
+
+                const existingTransaction = wallet.transactions.find(txn =>
+                    txn.orderId === razorPayOrderId && txn.transactionStatus === 1
+                );
+
+                if (existingTransaction) {
+                    // Transaction already added
+                    return res.status(200).json({ success: false, message: 'Amount already added to wallet' });
+                }
+
                 wallet.balance += amount;
                 wallet.transactions.push(transaction);
                 await wallet.save();
@@ -188,9 +198,9 @@ const walletTransaction = async (req, res) => {
         const wallet = await Wallet.findOne({ userId: userId });
 
         if (wallet) {
-            res.status(200).json({ success: true, transactions: wallet.transactions.reverse() });
+            res.status(200).json({ success: true, balance: wallet.balance, data: wallet.transactions.reverse() });
         } else {
-            res.status(404).json({ success: false, message: 'Wallet not found' });
+            res.status(200).json({ success: false, message: 'Wallet not found' });
         }
     } catch (error) {
         console.error('Wallet Transaction Error:', error);
