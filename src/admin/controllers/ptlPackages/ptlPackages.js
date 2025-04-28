@@ -1,4 +1,5 @@
 const Tracking = require('../../../api/user/models/paymentModal');
+const PTL = require('../../../api/user/models/paymentModal');
 const Driver = require('../../../api/driver/modals/driverModal');
 const Warehouse = require('../../models/warehouseManagemnet/warehouseModal');
 const driverPackageAssign = require('../../models/ptlPackages/driverPackageAssignModel');
@@ -182,12 +183,12 @@ const addTracking = async (req, res) => {
     }
 };
 
-const getTrackingById = async (req, res) => {
+const getPackageDetail = async (req, res) => {
     try {
-        const tracking = await Tracking.findById(req.params.id);
-        console.log(tracking);
-        if (!tracking) {
-            return res.status(404).json({ message: 'Tracking not found' });
+        const packageDetail = await PTL.findById(req.params.id);
+        console.log(packageDetail);
+        if (!packageDetail) {
+            return res.status(404).json({ message: 'PTL Order not found' });
         }
         // Get all drivers
         const drivers = await Driver.find(); // If you want to filter, add a query here
@@ -195,7 +196,7 @@ const getTrackingById = async (req, res) => {
 
         // Send both tracking and drivers
         res.json({
-            tracking,
+            packageDetail,
             drivers,
             warehouse
         });
@@ -489,7 +490,7 @@ module.exports = {
     trackingPage,
     trackingList,
     addTracking,
-    getTrackingById,
+    getPackageDetail,
     updateTracking,
     deleteTracking,
     downloadTrackingCsv

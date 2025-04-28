@@ -5,7 +5,6 @@ require('dotenv').config();
 
 
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET;
-require('dotenv').config();
 
 const walletBalance = async (req, res) => {
     const userId = req.headers['userid'];
@@ -72,12 +71,18 @@ const walletVerify = async (req, res) => {
     if (!razorpaySignature) missingFields.push('razorpaySignature');
     if (!amount) missingFields.push('amount');
 
+    if (typeof amount === 'string') {
+        return res.status(200).json({ success: false, message: 'Amount Must Be Number' });
+    }
+
+
     if (missingFields.length > 0) {
         return res.status(200).json({
             success: false,
             message: `${missingFields.join(', ')} ${missingFields.length > 1 ? 'are' : 'is'} required`
         });
     }
+
 
     const generatedSignature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -119,8 +124,9 @@ const walletVerify = async (req, res) => {
                     // Transaction already added
                     return res.status(200).json({ success: false, message: 'Amount already added to wallet' });
                 }
+                existBalance = parseFloat(wallet.balance, 2)
 
-                wallet.balance += amount;
+                wallet.balance = existBalance + amount;
                 wallet.transactions.push(transaction);
                 await wallet.save();
             }
@@ -137,6 +143,11 @@ const walletVerify = async (req, res) => {
 // Use Wallet
 const walletUse = async (req, res) => {
     const { order_id, amount } = req.body;
+
+    if (typeof amount === 'string') {
+        return res.status(200).json({ success: false, message: 'Amount Must Be Number' });
+    }
+
     const userId = req.headers['userid'];
 
     try {
@@ -167,6 +178,11 @@ const walletUse = async (req, res) => {
 
 const walletRefund = async (req, res) => {
     const { order_id, amount } = req.body;
+
+    if (typeof amount === 'string') {
+        return res.status(200).json({ success: false, message: 'Amount Must Be Number' });
+    }
+
     const userId = req.headers['userid'];
 
     try {

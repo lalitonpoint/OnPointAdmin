@@ -8,7 +8,7 @@ const { checkCrudPermission } = require('../../middleware/permission/checkCrudPe
 
 router.post('/trackingList', checkCrudPermission('isShow'), TrackingCtrl.trackingList);
 
-router.get('/get/:id', checkCrudPermission('edit'), TrackingCtrl.getTrackingById);
+router.get('/get/:id', checkCrudPermission('edit'), TrackingCtrl.getPackageDetail);
 
 router.post('/editTracking/:id', checkCrudPermission('edit'), TrackingCtrl.updateTracking); // Using POST for update
 
