@@ -113,6 +113,7 @@ const walletVerify = async (req, res) => {
                     balance: amount,
                     transactions: [transaction]
                 });
+
                 await wallet.save();
             } else {
 
