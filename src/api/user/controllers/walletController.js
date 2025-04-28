@@ -61,11 +61,22 @@ const addMoney = async (req, res) => {
 };
 
 const walletVerify = async (req, res) => {
+
     const { razorPayOrderId, razorpayPaymentId, razorpaySignature, amount } = req.body;
     const userId = req.headers['userid'];
 
-    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature || !amount) {
-        return res.status(400).json({ success: false, message: 'razorPayOrderId, razorpayPaymentId, razorpaySignature & amount are required' });
+    const missingFields = [];
+
+    if (!razorPayOrderId) missingFields.push('razorPayOrderId');
+    if (!razorpayPaymentId) missingFields.push('razorpayPaymentId');
+    if (!razorpaySignature) missingFields.push('razorpaySignature');
+    if (!amount) missingFields.push('amount');
+
+    if (missingFields.length > 0) {
+        return res.status(200).json({
+            success: false,
+            message: `${missingFields.join(', ')} ${missingFields.length > 1 ? 'are' : 'is'} required`
+        });
     }
 
     const generatedSignature = crypto
@@ -74,7 +85,7 @@ const walletVerify = async (req, res) => {
         .digest('hex');
 
     if (generatedSignature !== razorpaySignature) {
-        return res.status(400).json({ success: false, message: 'Invalid Signature' });
+        return res.status(200).json({ success: false, message: 'Invalid Signature' });
     }
 
     try {
@@ -105,7 +116,7 @@ const walletVerify = async (req, res) => {
             }
             return res.status(200).json({ success: true, message: 'Amount Successfully Added To Wallet' });
         } else {
-            return res.status(400).json({ success: false, message: 'Payment not captured or mismatched order ID' });
+            return res.status(200).json({ success: false, message: 'Payment not captured or mismatched order ID' });
         }
     } catch (error) {
         console.error('Wallet Verify Error:', error);
