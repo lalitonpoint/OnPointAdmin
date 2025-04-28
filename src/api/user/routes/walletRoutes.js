@@ -11,6 +11,6 @@ router.get('/transactions', walletAuthentication, WalletCtrl.walletTransaction);
 router.post('/verify', walletAuthentication, WalletCtrl.walletVerify);
 router.post('/use', walletAuthentication, WalletCtrl.walletUse);
 router.post('/refund', walletAuthentication, WalletCtrl.walletRefund);
-router.post('/webhookHandler', express.json({ type: '*/*' }), WalletCtrl.webhookHandler);
+// router.post('/webhookHandler', express.json({ type: '*/*' }), WalletCtrl.webhookHandler);
 
 module.exports = router;
