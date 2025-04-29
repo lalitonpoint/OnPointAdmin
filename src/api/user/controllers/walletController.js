@@ -146,27 +146,27 @@ const walletUse = async (req, res) => {
     const { packageId, amount } = req.body;
 
     if (typeof amount !== 'number') {
-        return res.status(400).json({ success: false, message: 'Amount must be a number' });
+        return res.status(200).json({ success: false, message: 'Amount must be a number' });
     }
 
     const userId = req.headers['userid'];
     if (!userId) {
-        return res.status(400).json({ success: false, message: 'User ID missing in headers' });
+        return res.status(200).json({ success: false, message: 'User ID missing in headers' });
     }
 
     try {
-        const packageDetail = await Payment.findOne({ id: packageId });
+        const packageDetail = await Payment.findById(packageId);
         if (!packageDetail) {
-            return res.status(404).json({ success: false, message: 'Package not found' });
+            return res.status(200).json({ success: false, message: 'Package not found' });
         }
 
         const wallet = await Wallet.findOne({ userId: userId });
         if (!wallet) {
-            return res.status(404).json({ success: false, message: 'Wallet not found' });
+            return res.status(200).json({ success: false, message: 'Wallet not found' });
         }
 
         if (wallet.balance < amount) {
-            return res.status(400).json({ success: false, message: 'Insufficient wallet balance' });
+            return res.status(200).json({ success: false, message: 'Insufficient wallet balance' });
         }
 
         const order_id = generateWalletOrderId();
