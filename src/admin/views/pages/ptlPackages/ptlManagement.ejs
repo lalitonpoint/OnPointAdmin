@@ -100,111 +100,172 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
-            <form id="trackingForm" enctype='multipart/form-data'>
-                <div class="modal-body">
-                    <input type="hidden" id="trackingId" name="id">
-                    <div class="row g-3">
-                        <div class="col-md-6 ">
-                            <label for="trackingCode" class="form-label">Package ID <strong
+            <div class="modal-body">
+
+                <table border="1" cellpadding="10" cellspacing="0"
+                    style="width: 100%; border-collapse: collapse; text-align: left; border-radius: 8px; font-family: 'Arial', sans-serif; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                    <thead
+                        style="background-color: #f1f1f1; color: #333; text-transform: uppercase; font-size: 14px; font-weight: bold;">
+                        <tr>
+                            <th
+                                style="padding: 12px; border: 1px solid #ddd; text-align: center; background-color: #f8d7da; font-weight: bold; font-size: 16px;">
+                                Field Name</th>
+                            <th
+                                style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; font-size: 16px;">
+                                Value</th>
+                            <th
+                                style="padding: 12px; border: 1px solid #ddd; text-align: center; background-color: #f8d7da; font-weight: bold; font-size: 16px;">
+                                Field Name</th>
+                            <th
+                                style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; font-size: 16px;">
+                                Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #fafafa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Pickup Pincode</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="pickupPincode">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Drop Pincode</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="dropPincode">-</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Pickup Address</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="pickupAddress">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Drop Address</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="dropAddress">-</td>
+                        </tr>
+                        <tr style="background-color: #fafafa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Pickup Latitude</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="pickupLatitude">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Pickup Longitude</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="pickupLongitude">-</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Drop Latitude</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="dropLatitude">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Drop Longitude</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="dropLongitude">-</td>
+                        </tr>
+                        <tr style="background-color: #fafafa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Pickup Note</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="pickupNote">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Distance (km)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="distance">-</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Duration</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="duration">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">SubTotal (₹)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="subTotal">-</td>
+                        </tr>
+                        <tr style="background-color: #fafafa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Shipping Cost (₹)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="shippingCost">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Special Handling (₹)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="specialHandling">-</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">GST (₹)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="gst">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Total Payment (₹)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="totalPayment">-</td>
+                        </tr>
+                        <tr style="background-color: #fafafa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Transaction Status</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="transactionStatus">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">User ID</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="userId">-</td>
+                        </tr>
+                        <tr style="background-color: #ffffff;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Pre Transaction ID</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="preTransactionId">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Order ID</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="orderId">-</td>
+                        </tr>
+                        <tr style="background-color: #fafafa;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Payment Date</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="transactionDate">-</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Total No. of Package</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;" class="totalPackage"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 style="margin-top: 50px;">Package Details</h2>
+
+                <table border="1" cellpadding="10" cellspacing="0"
+                    style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead style="background-color: #f2f2f2;">
+                        <tr>
+                            <th style="font-weight: bold;">Package Field</th>
+                            <th style="font-weight: bold;">Value</th>
+                            <th style="font-weight: bold;">Package Field</th>
+                            <th style="font-weight: bold;">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="packageTable">
+
+
+                    </tbody>
+                </table>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Assign Driver</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignForm">
+                    <input type="hidden" id="packageId">
+                    <input type="hidden" id="userId">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="driver" class="form-label">Driver<strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="driver" id="driverlist">
+                                <option value="">Select Driver</option>
+                                <option value="1">Driver 1</option>
+                                <option value="2">Driver 2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="assignType" class="form-label">Assign Type<strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="packageid" name="packageid"
-                                autocomplete="off" placeholder="Enter Tracking ID">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="pickUpLocation" class="form-label">Pickup Location</label>
-                            <input type="text" class="form-control " id="pickUpLocation"
-                                placeholder="Enter Pickup Location" name="pickUpLocation" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="dropLocation" class="form-label">Drop Location</label>
-                            <input type="text" class="form-control" id="dropLocation" placeholder="Enter Drop Location"
-                                name="dropLocation" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="deleivery_boy" class="form-label">Deleiver person <strong
-                                    class="text-danger">*</strong></label>
-                            <select class="form-select" id="deleivery_boy" name="deleivery_boy">
-                                <option value="">Select person</option>
-                              
+                            <select class="form-select" name="assignType" id="assignType">
+                                <option value="">Select Assign Type</option>
+                                <option value="1">Warehouse</option>
+                                <option value="2">User Location</option>
                             </select>
                         </div>
 
+                    </div>
 
-                        <div class="input-group mt-2">
-                            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#packageDetailsCollapse" aria-expanded="false" aria-controls="packageDetailsCollapse">
-                                View Package
-                            </button>
-                        </div>
-                        
-                        <div class="collapse mt-2" id="packageDetailsCollapse">
-                            <table class="table table-bordered table-sm mt-2">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Package Name</th>
-                                        <th>Package Type</th>
-                                        <th>Package Weight</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="packageDetailsTableBody">
-                                    <!-- Rows will be injected here by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        
-
-                        <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Total GST<strong
+                    <div class="row mb-3 ">
+                        <div class="col-md-6 warehouseDiv d-none">
+                            <label for="warehouse" class="form-label">Warehouse <strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="total_gst" name="total_gst"
-                                placeholder="Enter Total gst" readonly>
+                            <select class="form-select" name="warehouse" id="warehouselist">
+                                <option value="">Select Warehouse</option>
+                                <option value="1">Warehouse 1</option>
+                                <option value="2">Warehouse 2</option>
+                            </select>
                         </div>
 
-                        <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Total shippingCost<strong
-                                    class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="shippingCost" name="shippingCost"
-                                placeholder="Enter shipping Cost" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Total specialHandling<strong
-                                    class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="specialHandling" name="specialHandling"
-                                placeholder="Enter special Handling" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Total subtotal<strong
-                                    class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="subtotal" name="subtotal"
-                                placeholder="Enter subtotal" readonly>
-                        </div>
-                         
-
-                        <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Total Amount<strong
-                                    class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="total_amount" name="total_amount"
-                                placeholder="Enter Total Amount" readonly>
-                        </div>
-
-
-
-                        <div class="col-md-4">
-                            <label for="total_amount" class="form-label">Payment Method<strong
-                                    class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="payment_method" name="payment_method"
-                                placeholder="Enter Payment Method" value="UPI" readonly>
-                        </div>
-
-
-                        <div class="col-md-4">
-                            <label for="trackingStatus" class="form-label">Status <strong
-                                    class="text-danger">*</strong></label>
-                            <select class="form-select" id="trackingStatus" name="status">
-                                <option value="">Select Status</option>
-                                <option value="1">In Progress</option>
+                        <div class="col-md-6">
+                            <label for="deliveryStatus" class="form-label">Status</label>
+                            <select id="deliveryStatus" class="form-select" name="deliveryStatus">
+                                <option value="">All</option>
+                                <option value="1">In Transit</option>
                                 <option value="2">Pickup</option>
                                 <option value="3">Out for Delivery</option>
                                 <option value="4">Delivered</option>
@@ -212,55 +273,22 @@
                             </select>
                         </div>
 
-
-                        <div class="col-md-4" id="whereDiv" style="display:none;">
-                            <label for="Where" class="form-label">Where<strong
-                                    class="text-danger">*</strong></label>
-                            <select class="form-select"   id="Where" name="Where" >
-                                <option value="">Select Where</option>
-                                <option value="1">warehouse</option>
-                                <option value="2">At Drop Location</option>
-                               
-                            </select>
-                        </div>
-
-
-                        <div class="col-md-6" id="warehouseDiv" style="display:none;">
-                            <label for="deleivery_boy" class="form-label">Ware House <strong
-                                    class="text-danger">*</strong></label>
-                            <select class="form-select" id="warehouse" name="warehouse" >
-                                <option value="">Select Warehouse</option>
-                              
-                            </select>
-                        </div>
-
-
                     </div>
-                </div>
-                <div class="modal-footer">
+
+
+
+
                     <button type="submit" class="btn btn-pink w-100">Save</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
 <script>
     let trackingTable;
     // This ensures the script runs after the DOM is fully loaded
     $(document).ready(function () {
 
-        $('#pod').on('change', function () {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    $('#imagePreview').attr('src', e.target.result).show();
-                    $('#filePreviewContainer').show();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
 
         // Initialize DataTable
         trackingTable = $('#trackingTable').DataTable({
@@ -270,7 +298,7 @@
                 url: '/ptlPackages/trackingList/',
                 type: 'POST',
                 data: function (d) {
-                  
+
                     d.trackingCode = $('#searchTrackingId').val();
                     d.pickUpLocation = $('#pickUpLocation').val();
                     d.dropAddress = $('#dropUpLocation').val(); // Corrected ID here
@@ -286,16 +314,22 @@
                     orderable: false, // Disable ordering for the index column
                     render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
                 },
-                
+
                 {
                     data: 'pickupAddress',
                     orderable: false,
-
+                    render: function (data, type, row) {
+                        if (!data) return '-'; // handle if pickupAddress is null
+                        return data.length > 30 ? data.substring(0, 30) + '...' : data;
+                    }
                 }, // Corrected data property to 'pickUpLocation'
                 {
                     data: 'dropAddress',
                     orderable: false,
-
+                    render: function (data, type, row) {
+                        if (!data) return '-'; // handle if pickupAddress is null
+                        return data.length > 30 ? data.substring(0, 30) + '...' : data;
+                    }
                 },
                 {
                     data: 'orderId',
@@ -303,7 +337,7 @@
 
                 },
                 { data: 'userId._id' },
-                 { data: 'userId.fullName' },
+                { data: 'userId.fullName' },
                 { data: 'totalPayment' },
                 // { data : 'totalWeight'},
 
@@ -360,7 +394,8 @@
                     orderable: false,
                     render: function (data, type, row) {
                         return `
-                            <button class="btn btn-sm btn-primary editBtn" data-id="${row._id}">Edit</button> `;
+                            <button class="btn btn-sm btn-primary editBtn" data-id="${row._id}">    <i class="fas fa-eye"></i>&nbsp;View</button>
+                            <button class="btn btn-sm btn-warning assignBtn" data-id="${row._id}" data-userid="${row.userId._id}">    <i class="fas fa-edit"></i>&nbsp;Assign</button> `;
                     }
                 }
             ]
@@ -369,6 +404,18 @@
         // Search Button
         $('#searchBtn').click(function () {
             trackingTable.ajax.reload();
+        });
+
+        $('#assignType').click(function () {
+            const assignType = $(this).val();
+
+            if (assignType == 1) {
+                $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
+            } else {
+                $('.warehouseDiv').slideUp(300, function () {
+                    $(this).addClass('d-none');
+                });
+            }
         });
 
         // Reset Button
@@ -391,53 +438,7 @@
             const deliveryDate = $('#deliveryDate').val();
             // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val();
-            // const id = $('#trackingId').val();
 
-            // Validation
-            // if (!trackingCode) {
-            //     toastr.error('Please enter tracking ID', 'Validation Error');
-            //     return;
-            // }
-            // if (!pickUpLocation) {
-            //     toastr.error('Please enter pickup location', 'Validation Error');
-            //     return;
-            // }
-            // if (!dropLocation) {
-            //     toastr.error('Please enter drop location', 'Validation Error');
-            //     return;
-            // }
-            // if (!transportMode) {
-            //     toastr.error('Please enter transport mode', 'Validation Error');
-            //     return;
-            // }
-            // if (!noOfPacking) {
-            //     toastr.error('Please enter number of packings', 'Validation Error');
-            //     return;
-            // }
-            // if (!deliveryDate) {
-            //     toastr.error('Please select a date.', 'Validation Error');
-            //     return;
-            // }
-            // // if (!deliveryTime) {
-             //     toastr.error('Please select delivery time.', 'Validation Error');
-             //     return;
-             // }
-            // if (!trackingStatus) {
-            //     toastr.error('Please select tracking status.', 'Validation Error');
-            //     return;
-            // }
-
-
-            // Use FormData for file + text upload
-            // const formData = new FormData();
-            // formData.append('trackingCode', trackingCode);
-            // formData.append('pickUpLocation', pickUpLocation);
-            // formData.append('dropLocation', dropLocation);
-            // formData.append('transportMode', transportMode);
-            // formData.append('noOfPacking', noOfPacking);
-            // formData.append('deliveryDate', deliveryDate);
-            // formData.append('deliveryTime', deliveryTime);
-            // formData.append('status', trackingStatus);
             const id = $('#packageid').val();
             const formData = new FormData(formElement);
 
@@ -449,7 +450,7 @@
 
 
 
-            const actionUrl = `/ptlPackages/editTracking/${id}` ;
+            const actionUrl = `/ptlPackages/editTracking/${id}`;
             // alert(id)
 
             $.ajax({
@@ -482,91 +483,86 @@
         // Edit Button
         $(document).on('click', '.editBtn', function () {
             const id = $(this).data('id');
+            const statusLabels = {
+                0: "Initiate",
+                1: "Complete",
+                2: "Pending",
+                3: "Failed",
+                4: "Refunded",
+                5: "Partial Payment"
+            };
 
 
             $.ajax({
                 url: '/ptlPackages/get/' + id,
                 type: 'GET',
                 success: function (data) {
-                    $('#trackingId').val(data._id);
-                    $('#trackingCode').val(data.trackingId);
-                    $('#pickUpLocation').val(data.tracking.pickupAddress); // Added pickup location
-                    $('#dropLocation').val(data.tracking.dropAddress); // Added drop location
-                    $('#transportMode').val(data.tracking.packageName); // Added transport mode
-                    $('#noOfPacking').val(data.tracking.numberOfPackages); // Added no of packing
-                    $('#trackingStatus').val(data.tracking.status);
-                    $('#total_amount').val(data.tracking.totalPayment);
-                    $('#total_gst').val(data.tracking.gst);
-                    $('#shippingCost').val(data.tracking.shippingCost);
-                    $('#specialHandling').val(data.tracking.specialHandling);
-                    $('#subtotal').val(data.tracking.subTotal);
-                    // $('#payment_method').val(data.tracking.paymentMethod);
-                    $('#total_weight').val(data.tracking.totalWeight);
-                    $('#packageid').val(data.tracking._id);
-                    const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
-                    const dropdown = $('#deleivery_boy');
-                    dropdown.empty(); // Clear existing options
-                    dropdown.append('<option value="">Select Delivery Boy</option>');
+                    // $('#trackingId').val(data._id);
+                    $('.pickupPincode').text(data.packageDetail.pickupPincode || '-');
+                    $('.dropPincode').text(data.packageDetail.dropPincode); // Added pickup location
+                    $('.pickupAddress').text(data.packageDetail.pickupAddress); // Added drop location
+                    $('.dropAddress').text(data.packageDetail.dropAddress); // Added transport mode
+                    $('.pickupLatitude').text(data.packageDetail.pickupLatitude); // Added no of packing
+                    $('.pickupLongitude').text(data.packageDetail.pickupLongitude);
+                    $('.dropLatitude').text(data.packageDetail.dropLatitude);
+                    $('.dropLongitude').text(data.packageDetail.dropLongitude);
+                    $('.pickupNote').text(data.packageDetail.pickupNote);
+                    $('.subTotal').text(data.packageDetail.subTotal);
+                    $('.shippingCost').text(data.packageDetail.shippingCost);
+                    $('.specialHandling').text(data.packageDetail.specialHandling);
+                    $('.gst').text(data.packageDetail.gst);
+                    $('.totalPayment').text(data.packageDetail.totalPayment);
+                    $('.distance').text(data.packageDetail.distance);
+                    $('.duration').text(data.packageDetail.duration);
+                    $('.transactionStatus').text(statusLabels[data.packageDetail.transactionStatus]);
+                    $('.userId').text(data.packageDetail.userId);
+                    $('.preTransactionId').text(data.packageDetail.preTransactionId);
+                    $('.orderId').text(data.packageDetail.orderId);
+                    $('.transactionDate').text(new Date(data.packageDetail.transactionDate).toLocaleString());
+                    $('.totalPackage').text(data.packageDetail.packages ? data.packageDetail.packages.length : 0);
 
-                    drivers.forEach(driver => {
-                        const name = driver.personalInfo?.name || 'No Name';
-                        const id = driver._id;
-                        dropdown.append(`<option value="${id}">${name}</option>`);
-                    });
+                    const packages = data.packageDetail.packages || [];
+                    console.log('ppp', packages)
+                    const tbody = $('#packageTable');
 
-                    const warehouse = data.warehouse || [];
-                    const Warehouse_drop = $('#warehouse');
-
-                    Warehouse_drop.empty(); // Clear existing options
-                    Warehouse_drop.append('<option value="">Select Warehouse</option>');
-
-                    warehouse.forEach(warehouseData => {
-                        const name = warehouseData.Warehousename || 'No Name';
-                        const id = warehouseData._id;
-                        Warehouse_drop.append(`<option value="${id}">${name}</option>`);
-                    });
-
-
-                    const packages = data.tracking.packages || [];
-                    const tbody = $('#packageDetailsTableBody');
-                    tbody.empty(); // Clear old rows
                     if (packages.length > 0) {
-                    packages.forEach((pkg, index) => {
+                        packages.forEach((pkg, index) => {
+                            console.log('dddd', pkg)
+
+                            // Add header row for the package with a bold and centered title
+                            tbody.append(`
+            <tr style="background-color: #e0f7fa;">
+                <td colspan="4" style="font-weight: bold; text-align: center;">${pkg.packageName}</td>
+            </tr>
+        `);
+
+                            // Add rows for package details
+                            tbody.append(`
+            <tr>
+                <td style="font-weight: bold;">Package Type</td>
+                <td>${pkg.packageType}</td>
+                <td style="font-weight: bold;">Number of Packages</td>
+                <td>${pkg.numberOfPackages}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Total Weight (kg)</td>
+                <td>${pkg.totalWeight}</td>
+                <td style="font-weight: bold;">Dimensions (L x W x H)</td>
+                <td>${pkg.length} x ${pkg.width} x ${pkg.height}</td>
+            </tr>
+        `);
+                        });
+                    } else {
+                        // In case there are no packages, add a row with a message
                         tbody.append(`
-                    <tr>
-                        
-                        <td>${pkg.packageName}</td>
-                        <td>${pkg.packageType}</td>
-                       
-                        <td>${pkg.totalWeight} Kg</td>
-                    </tr>
-                `);
-            });
-        }
-                
-                    if (data.status == 4) {
-                        $('.pod').removeClass('d-none');
-                        $('#pod').attr('src', data.pod);
-                        // alert(data.pod);
-
-                        if (data.pod) {
-                            // alert(11);
-                            $('#filePreviewContainer').removeClass('d-none');
-
-                            const imagePreview = $('#imagePreview');
-
-                            const imagePreviewContainer = $('#filePreviewContainer');
-
-                            imagePreview.attr('src', data.pod);
-                            imagePreviewContainer.show();
-                            imagePreview.css("display", "block");
-
-
-                        }
+        <tr>
+            <td colspan="4" style="text-align: center; font-weight: bold; color: red;">No packages available</td>
+        </tr>
+    `);
                     }
-                    else {
-                        $('.pod').addClass('d-none');
-                    }
+
+
+
                     $('#trackingModal').modal('show');
                 }
             });
@@ -584,6 +580,79 @@
         });
 
 
+        $(document).on('click', '.assignBtn', function () {
+            const id = $(this).data('id');
+            const userId = $(this).data('userid');
+            $('#userId').val(userId);
+            // alert(id)
+            $('#packageId').val(id);
+
+
+            $.ajax({
+                url: '/ptlPackages/getData/' + id,
+                type: 'GET',
+                dataType: 'json',
+                success: async function (data) {
+
+                    const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
+                    const dropdown = $('#driverlist');
+                    dropdown.empty(); // Clear existing options
+                    dropdown.append('<option value="">Select Driver</option>');
+
+                    await drivers.forEach(driver => {
+                        const name = driver.personalInfo?.name || 'No Name';
+                        const id = driver._id;
+                        dropdown.append(`<option value="${id}">${name}</option>`);
+                    });
+
+                    const warehouse = data.warehouse || [];
+                    console.log(data.warehouse)
+
+                    const Warehouse_drop = $('#warehouselist');
+
+                    Warehouse_drop.empty(); // Clear existing options
+                    Warehouse_drop.append('<option value="">Select Warehouse</option>');
+
+                    await warehouse.forEach(warehouseData => {
+                        const name = warehouseData.Warehousename || 'No Name';
+                        const id = warehouseData._id;
+                        Warehouse_drop.append(`<option value="${id}">${name}</option>`);
+                    });
+
+                    let driverId = data.latestAssignOrderDetail.driverId || 0;
+                    let warehouseId = data.latestAssignOrderDetail.warehouseId || 0;
+                    let status = data.latestAssignOrderDetail.status || 0;
+                    let assignType = data.latestAssignOrderDetail.assignType || 0;
+
+                    $('#driverlist').val(driverId);
+                    $('#warehouselist').val(warehouseId);
+                    $('#deliveryStatus').val(status);
+                    $('#assignType').val(assignType);
+
+                    if (assignType == 1) {
+                        $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
+                    } else {
+                        $('.warehouseDiv').slideUp(300, function () {
+                            $(this).addClass('d-none');
+                        });
+                    }
+
+
+
+
+                },
+                error: function (xhr) {
+                    const errorMsg = xhr.responseJSON?.message;
+                    toastr.error(errorMsg, 'Error');
+                }
+            });
+
+            $('#assignModal').modal('show');
+
+
+
+
+        });
 
         $('#trackingTable').on('click', '.editBtn', function () {
             const trackingId = $(this).data('id');
@@ -621,37 +690,56 @@
 
     });
     $(document).on('click', '#viewPackageBtn', function () {
-    const packageId = $('#packageid').val().trim();
-    if (packageId) {
-        loadPackageDetails(packageId);
-    } else {
-        $('#packageDetailsTableBody').html('<tr><td colspan="3" class="text-warning text-center">Please enter a valid Package ID</td></tr>');
-    }
-});
+        const packageId = $('#packageid').val().trim();
+        if (packageId) {
+            loadPackageDetails(packageId);
+        } else {
+            $('#packageDetailsTableBody').html('<tr><td colspan="3" class="text-warning text-center">Please enter a valid Package ID</td></tr>');
+        }
+    });
 
 
+    $('#assignForm').submit(function (e) {
+        e.preventDefault();
+        const formElement = document.getElementById('assignForm'); // Corrected: Used 'trackingForm' instead of 'bannerForm'
 
-$('#trackingStatus').change(function() {
-    if ($(this).val() == '4') { // Delivered
-        $('#whereDiv').show();
-        $('#Where').prop('disabled', false);
-    } else {
-        $('#whereDiv').hide();
-        $('#Where').prop('disabled', true).val('');
-        $('#warehouseDiv').hide();
-        $('#warehouse').prop('disabled', true).val('');
-    }
-});
+        // Trimmed values
 
-$('#Where').change(function() {
-    if ($(this).val() == '1') {
-        $('#warehouseDiv').show();
-        $('#warehouse').prop('disabled', false);
-    } else {
-        $('#warehouseDiv').hide();
-        $('#warehouse').prop('disabled', true).val('');
-    }
-});
+
+        const driver = $('#driverId').val();
+        const assignType = $('#assignType').val();
+        const warehouseid = $('#warehouselist').val();
+        const status = $('#deliveryStatus').val();
+        const packageId = $('#packageId').val();
+        const userId = $('#userId').val();
+
+        const formData = new FormData(formElement);
+        formData.append('packageId', packageId)
+        formData.append('userId', userId)
+
+
+        const actionUrl = `/ptlPackages/assignDriver`;
+        // alert(id)
+
+        $.ajax({
+            url: actionUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function (response) {
+                $('#assignModal').modal('hide');
+                $('#assignForm')[0].reset();
+                trackingTable.ajax.reload();
+                toastr.success('Order Data saved successfully!', 'Success');
+            },
+            error: function (xhr) {
+                const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
+                toastr.error(errorMsg, 'Error');
+            }
+        });
+    });
 
 
 </script>

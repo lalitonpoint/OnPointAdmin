@@ -12,6 +12,7 @@
 .sidebar a {
     color: #adb5bd;
     text-decoration: none;
+    font-size: 15px;
 }
 
 .sidebar a:hover,

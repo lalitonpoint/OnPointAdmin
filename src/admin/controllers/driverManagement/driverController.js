@@ -3,6 +3,7 @@
 const Driver = require('../../models/driverManagement/driverModel');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
+const { generateLogs } = require('../../utils/logsHelper');
 
 const saveDrivers = async (req, res) => {
     try {
@@ -45,6 +46,7 @@ const saveDrivers = async (req, res) => {
             });
 
             await driver.save();
+            await generateLogs(req, 'Add', driver);
 
             res.status(201).json({ success: true, message: 'Driver added successfully' });
         });

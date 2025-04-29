@@ -2,6 +2,7 @@ const vendor = require('../../models/vendorManagement/vendorModel');
 const moment = require('moment'); // Ensure moment.js is installed: npm install moment
 const multiparty = require('multiparty');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
+const { generateLogs } = require('../../utils/logsHelper');
 
 
 
@@ -34,10 +35,10 @@ const vendorList = async (req, res) => {
             if (trackingCodeSearch) {
                 query.name = new RegExp(trackingCodeSearch, 'i');
             }
-            if(vendornumnber){
+            if (vendornumnber) {
                 query.mobile = new RegExp(vendornumnber, 'i');
             }
-            if(vendoremail){
+            if (vendoremail) {
                 query.email = new RegExp(vendoremail, 'i');
             }
 
@@ -118,9 +119,9 @@ const addVendor = async (req, res) => {
             const mobile = fields.mobile ? fields.mobile[0] : ''; // Default to Active
             const email = fields.email ? fields.email[0] : ''; // Default to Active
             const business_name = fields.business_name ? fields.business_name[0] : ''; // Default to Active
-             const password = fields.password ? fields.password[0] : ''; // Default to Active
+            const password = fields.password ? fields.password[0] : ''; // Default to Active
             const business_category = fields.business_category ? fields.business_category[0] : ''; // Default to Active
-             const Address = fields.Address ? fields.Address[0] : ''; // Default to Active
+            const Address = fields.Address ? fields.Address[0] : ''; // Default to Active
 
 
             if (!name || !status || !mobile || !email) {
@@ -148,8 +149,8 @@ const addVendor = async (req, res) => {
                 email: email || null,
                 password: password || null,
                 business_name: business_name || null,
-                business_category : business_category || null,
-                address : Address ,
+                business_category: business_category || null,
+                address: Address,
                 status: statusNumber,
                 // deliveryTime: deliveryTime,
                 createdAt: new Date()
@@ -157,6 +158,7 @@ const addVendor = async (req, res) => {
 
             // Save the new tracking entry to the database
             await newvendor.save();
+            await generateLogs(req, 'Add', newvendor);
 
             // Send success response with a more standard status code
             res.status(201).json({ message: 'vendor added successfully', data: newvendor });
@@ -200,9 +202,9 @@ const editVendor = async (req, res) => {
             const mobile = fields.mobile ? fields.mobile[0] : ''; // Default to Active
             const email = fields.email ? fields.email[0] : ''; // Default to Active
             const business_name = fields.business_name ? fields.business_name[0] : ''; // Default to Active
-             const password = fields.password ? fields.password[0] : ''; // Default to Active
+            const password = fields.password ? fields.password[0] : ''; // Default to Active
             const business_category = fields.business_category ? fields.business_category[0] : ''; // Default to Active
-             const Address = fields.Address ? fields.Address[0] : ''; // Default to Active
+            const Address = fields.Address ? fields.Address[0] : ''; // Default to Active
 
             // const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
             // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
@@ -248,7 +250,7 @@ const editVendor = async (req, res) => {
                 id,
                 {
                     name: name,
-                    mobile : mobile,
+                    mobile: mobile,
                     email,
                     password,
                     business_name,
@@ -265,6 +267,8 @@ const editVendor = async (req, res) => {
             }
 
             await vendor.findByIdAndUpdate(id, updatedTracking);
+            await generateLogs(req, 'Edit', updatedTracking);
+
 
 
             res.json({ message: 'Vendor updated successfully', data: updatedTracking });
@@ -285,6 +289,7 @@ const deletevendor = async (req, res) => {
         if (!deletedTracking) {
             return res.status(404).json({ message: 'vendor not found' });
         }
+        await generateLogs(req, 'Delete', deletedTracking);
 
         res.json({ message: 'vendor deleted successfully' });
 
@@ -314,7 +319,7 @@ const downloadTrackingCsv = async (req, res) => {
 
         const csvRows = vendors.map(vendor => [
             `"${vendor.name.replace(/"/g, '""')}"`,
-            vendor.status == '1' ? 'Active' : 'In-Active',vendor.email,vendor.mobile,vendor.business_name,vendor.business_category,
+            vendor.status == '1' ? 'Active' : 'In-Active', vendor.email, vendor.mobile, vendor.business_name, vendor.business_category,
             moment(vendor.createdAt).format('YYYY-MM-DD HH:mm:ss')
         ].join(","));
 

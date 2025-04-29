@@ -1,4 +1,5 @@
 const Settings = require("../../models/configuration/settingModel");
+const { generateLogs } = require('../../utils/logsHelper');
 
 // Render Settings Page
 const appSetting = async (req, res) => {
@@ -85,6 +86,8 @@ const saveSettings = async (req, res) => {
         // console.log(settings);
 
         await settings.save();
+        await generateLogs(req, 'Edit', settings);
+
         res.json({ success: true, message: "Settings saved successfully", data: settings });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

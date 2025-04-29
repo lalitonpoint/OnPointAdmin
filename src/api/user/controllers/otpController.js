@@ -32,7 +32,8 @@ const formatMobile = (countryCode, mobileNumber) => {
 
 const sendOtp = async (req, res) => {
     try {
-        const { countryCode, mobileNumber } = req.body;
+        const { countryCode, mobileNumber, isEmailLogin } = req.body;
+
 
         if (!countryCode || !mobileNumber) {
             return res.status(200).json({ success: false, message: 'Country code and mobile number are required.' });

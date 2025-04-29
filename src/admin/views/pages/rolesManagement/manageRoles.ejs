@@ -309,7 +309,8 @@
             }
 
             $.post("/roles/saveRoles", formData, function (response) {
-                alert("Admin saved successfully!");
+                toastr.success('Admin saved successfully.', 'Success');
+
                 $("#adminForm")[0].reset();
                 $("#adminType").trigger("change");
             }).fail(function () {

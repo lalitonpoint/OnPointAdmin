@@ -2,6 +2,7 @@
 const Vehcile = require('../../models/vehcileManagement/truckManagementModel'); // Assuming you have a Vehicle model
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
+const { generateLogs } = require('../../utils/logsHelper');
 
 const vechiclePage = (req, res) => {
     res.render('pages/vehcileManagement/truckManagement');
@@ -51,6 +52,7 @@ const saveVehicle = async (req, res) => {
             const vehicle = new Vehcile(vehicleData);
 
             await vehicle.save();
+            await generateLogs(req, 'Add', vehicle);
 
             res.status(201).json({ success: true, message: 'Vehicle added successfully' });
         });
@@ -183,6 +185,8 @@ const updateVehicle = async (req, res) => {
 
 
             await Vehcile.findByIdAndUpdate(id, vehicleData); // Corrected model name to Banner
+            await generateLogs(req, 'Edit', vehicleData);
+
             res.json({ success: true, message: 'Banner updated successfully' });
         });
     } catch (error) {

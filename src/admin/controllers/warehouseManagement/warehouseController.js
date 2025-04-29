@@ -3,6 +3,7 @@ const moment = require('moment'); // Ensure moment.js is installed: npm install 
 const multiparty = require('multiparty');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 
+const { generateLogs } = require('../../utils/logsHelper');
 
 
 const warehousePage = (req, res) => {
@@ -110,6 +111,8 @@ const addWarehouse = async (req, res) => {
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const warehouseLocation = fields.warehouseLocation ? fields.warehouseLocation[0] : ''; // Default to Active
             const warehouseAddress = fields.warehouseAddress ? fields.warehouseAddress[0] : ''; // Default to Active
+            const warehouseLatitude = fields.warehouseLatitude ? fields.warehouseLatitude[0] : ''; // Default to Active
+            const warehouseLongitude = fields.warehouseLongitude ? fields.warehouseLongitude[0] : ''; // Default to Active
             const pincode = fields.pincode ? fields.pincode[0] : ''; // Default to Active
             // const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
             const phone = fields.phone ? fields.phone[0] : ''; // Default to Active
@@ -137,9 +140,10 @@ const addWarehouse = async (req, res) => {
             const newwarehouse = new warehouse({
                 Warehousename: Warehousename,
                 status: statusNumber,
-                // deliveryDate: moment(deliveryDate).toDate(), // Convert string to Date object using moment for consistency
                 warehouseLocation: warehouseLocation || null,
                 warehouseAddress: warehouseAddress || null,
+                warehouseLatitude: warehouseLatitude || null,
+                warehouseLongitude: warehouseLongitude || null,
                 pincode: pincode || null,
                 phone: phone || null,
                 // deliveryTime: deliveryTime,
@@ -148,6 +152,7 @@ const addWarehouse = async (req, res) => {
 
             // Save the new tracking entry to the database
             await newwarehouse.save();
+            await generateLogs(req, 'Add', newwarehouse);
 
             // Send success response with a more standard status code
             res.status(201).json({ message: 'newwarehouse added successfully', data: newwarehouse });
@@ -251,6 +256,8 @@ const updateWarehouse = async (req, res) => {
             }
 
             await warehouse.findByIdAndUpdate(id, updatedTracking);
+            await generateLogs(req, 'Edit', updatedTracking);
+
 
 
             res.json({ message: 'Tracking updated successfully', data: updatedTracking });
@@ -271,6 +278,7 @@ const deleteWarehouse = async (req, res) => {
         if (!deletedTracking) {
             return res.status(404).json({ message: 'warehouse not found' });
         }
+        await generateLogs(req, 'Delete', deletedTracking);
 
         res.json({ message: 'Tracking deleted successfully' });
 

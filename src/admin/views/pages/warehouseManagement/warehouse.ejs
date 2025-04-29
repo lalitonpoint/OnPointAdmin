@@ -108,6 +108,16 @@
                                 placeholder="Enter Warehouse Location" name="warehouseLocation">
                         </div>
                         <div class="col-md-6">
+                            <label for="warehouselatitude" class="form-label">Warehouse Latitude</label>
+                            <input type="text" class="form-control" id="warehouselatitude"
+                                placeholder="Enter Warehouse Latitude" name="warehouseLatitude">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="warehouselongitude" class="form-label">Warehouse Longitude</label>
+                            <input type="text" class="form-control" id="warehouselongitude"
+                                placeholder="Enter Warehouse Longitude" name="warehouseLongitude">
+                        </div>
+                        <div class="col-md-6">
                             <label for="warehouseAddress" class="form-label">Warehouse Address</label>
                             <input type="text" class="form-control" id="warehouseAddress"
                                 placeholder="Enter Warehouse Address" name="warehouseAddress">
@@ -290,6 +300,8 @@
             const Warehousename = $('#Warehousename').val();
             const warehouseLocation = $('#warehouseLocation').val();
             const warehouseAddress = $('#warehouseAddress').val();
+            const warehouseLatitude = $('#warehouselatitude').val();
+            const warehouseLongitude = $('#warehouselongitude').val();
             const pincode = $('#pincode').val();
             const phone = $('#phone').val();
             // const deliveryTime = $('#deliveryTime').val().trim();
@@ -311,6 +323,14 @@
             }
             if (!warehouseAddress) {
                 toastr.error('Please enter transport mode', 'Validation Error');
+                return;
+            }
+            if (!warehouseLatitude) {
+                toastr.error('Please enter Warehouse Latitude', 'Validation Error');
+                return;
+            }
+            if (!warehouseLongitude) {
+                toastr.error('Please enter Warehouse Longtitude', 'Validation Error');
                 return;
             }
             if (!pincode) {

@@ -3,7 +3,7 @@ const checkCrudPermission = (action = "") => {
         const permissions = req.session.modulePermissions;
 
         if (!permissions || typeof permissions !== 'object') {
-            console.log('❌ No permissions found in session.');
+            // console.log('❌ No permissions found in session.');
             return res.redirect('/');
         }
         // console.log('permissionUrl', permissions)
@@ -46,10 +46,10 @@ const checkCrudPermission = (action = "") => {
 
             }
         }
-        console.log('modulePermission', modulePermission);
+        // console.log('modulePermission', modulePermission);
 
         if (!modulePermission) {
-            console.log(`❌ Not Authorized: No permission for URL: ${url}`);
+            // console.log(`❌ Not Authorized: No permission for URL: ${url}`);
             return res.redirect('/not-authorized');
         }
 
@@ -58,7 +58,7 @@ const checkCrudPermission = (action = "") => {
         if (modulePermission[action] === true) {
             return next();
         } else {
-            console.log(`❌ Permission denied: Action "${action}" on module "${moduleName}"`);
+            // console.log(`❌ Permission denied: Action "${action}" on module "${moduleName}"`);
             return res.status(403).json({ message: 'Permission Denied' });
         }
     };

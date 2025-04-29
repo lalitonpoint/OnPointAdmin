@@ -1,18 +1,13 @@
 const mongoose = require('mongoose');
 
-const dimensionSchema = new mongoose.Schema({
-    length: { type: Number, required: true },
-    width: { type: Number, required: true },
-    height: { type: Number, required: true }
-}, { _id: false });
-
-
 const packageSchema = new mongoose.Schema({
     packageName: { type: String, required: true },
     packageType: { type: String, required: true },
     numberOfPackages: { type: Number, required: true },
     totalWeight: { type: Number, required: true },
-    dimensions: { type: [dimensionSchema], required: true }
+    length: { type: Number, required: true },
+    width: { type: Number, required: true },
+    height: { type: Number, required: true }
 }, { _id: false });
 
 const InitiatePaymentSchema = new mongoose.Schema({
@@ -33,8 +28,11 @@ const InitiatePaymentSchema = new mongoose.Schema({
     totalPayment: { type: Number, required: true },
     paymentMethod: { type: String },
     paymentGateway: { type: String },
+    distance: { type: Number },
+    duration: { type: String },
+    transactionStatus: { type: Number, enum: [0, 1, 2, 3, 4, 5], default: 0 }, // 0 => Initiate, 1 => Complete , 2 => Pending , 3 => Failed , 4 => Refunded , 5 => Partial Payment
+    isWalletPay: { type: Number, enum: [0, 1], default: 0 }, // 0 => Online Payment, 1 => Wallet Pay
 
-    transactionStatus: { type: String, default: 'Initiated' },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     preTransactionId: { type: String },
     postTransactionId: { type: String },
