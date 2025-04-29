@@ -111,6 +111,8 @@ const addWarehouse = async (req, res) => {
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const warehouseLocation = fields.warehouseLocation ? fields.warehouseLocation[0] : ''; // Default to Active
             const warehouseAddress = fields.warehouseAddress ? fields.warehouseAddress[0] : ''; // Default to Active
+            const warehouseLatitude = fields.warehouseLatitude ? fields.warehouseLatitude[0] : ''; // Default to Active
+            const warehouseLongitude = fields.warehouseLongitude ? fields.warehouseLongitude[0] : ''; // Default to Active
             const pincode = fields.pincode ? fields.pincode[0] : ''; // Default to Active
             // const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
             const phone = fields.phone ? fields.phone[0] : ''; // Default to Active
@@ -138,9 +140,10 @@ const addWarehouse = async (req, res) => {
             const newwarehouse = new warehouse({
                 Warehousename: Warehousename,
                 status: statusNumber,
-                // deliveryDate: moment(deliveryDate).toDate(), // Convert string to Date object using moment for consistency
                 warehouseLocation: warehouseLocation || null,
                 warehouseAddress: warehouseAddress || null,
+                warehouseLatitude: warehouseLatitude || null,
+                warehouseLongitude: warehouseLongitude || null,
                 pincode: pincode || null,
                 phone: phone || null,
                 // deliveryTime: deliveryTime,

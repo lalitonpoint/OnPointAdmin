@@ -23,7 +23,15 @@ const shipmentSchema = new mongoose.Schema({
     },
     phone: {
         type: Number
-    }
+    },
+    warehouseLatitude: { // Renamed 'date' to 'estimateDate' to align with the table header
+        type: String,
+        required: true
+    },
+    warehouseLongitude: { // Renamed 'date' to 'estimateDate' to align with the table header
+        type: String,
+        required: true
+    },
 }, {
     timestamps: true
 });

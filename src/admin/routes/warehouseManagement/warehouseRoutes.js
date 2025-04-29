@@ -12,7 +12,4 @@ router.post('/editWarehouse/:id', checkCrudPermission('edit'), WarehouseCtrl.upd
 router.post('/addWarehouse', checkCrudPermission('add'), WarehouseCtrl.addWarehouse);
 router.delete('/delete/:id', checkCrudPermission('delete'), WarehouseCtrl.deleteWarehouse);
 
-
-
-
 module.exports = router;
