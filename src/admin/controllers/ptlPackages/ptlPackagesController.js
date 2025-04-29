@@ -190,15 +190,10 @@ const getPackageDetail = async (req, res) => {
         if (!packageDetail) {
             return res.status(404).json({ message: 'PTL Order not found' });
         }
-        // Get all drivers
-        const drivers = await Driver.find(); // If you want to filter, add a query here
-        const warehouse = await Warehouse.find(); // If you want to filter, add a query here
 
         // Send both tracking and drivers
         res.json({
             packageDetail,
-            drivers,
-            warehouse
         });
 
     } catch (error) {
@@ -207,103 +202,7 @@ const getPackageDetail = async (req, res) => {
     }
 };
 
-const updateTracking = async (req, res) => {
-
-
-    // try {
-    //     const form = new multiparty.Form();
-
-    //     form.parse(req, async (err, fields, files) => {
-    //         if (err) {
-    //             console.error("Error parsing form data:", err);
-    //             return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
-    //         }
-    //         const { id } = req.params;
-
-
-
-    //         const packageid = fields.packageid ? fields.packageid[0] : '';
-    //         const status = fields.status ? parseInt(fields.status[0]) : null;
-    //         const deleivery_boy = fields.deleivery_boy ? fields.deleivery_boy[0] : '';
-    //         const dropLocation = fields.dropLocation ? fields.dropLocation[0] : '';
-    //         const transportMode = fields.transportMode ? fields.transportMode[0] : '';
-    //         const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
-    //         const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
-    //         // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
-    //         const file = files.pod ? files.pod[0] : null;
-
-
-    //         // console.log('trackingCode', trackingCode);
-    //         // console.log('status', status);
-    //         // console.log('pickUpLocation', pickUpLocation);
-    //         // console.log('dropLocation', dropLocation);
-    //         // console.log('transportMode', transportMode);
-    //         // console.log('noOfPacking', noOfPacking);
-    //         // console.log('deliveryTime', deliveryTime);
-    //         // console.log('deliveryDate', deliveryDate);
-
-    //         if (!packageid || deleivery_boy === null || status === null || dropLocation === null || transportMode === null || noOfPacking === null) { // Corrected the validation for bannerType and status
-    //             return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
-    //         }
-
-    //         const existingTrack = await Tracking.findById(id);
-    //         if (!existingTrack) {
-    //             return res.status(404).json({ success: false, message: 'Track not found' });
-    //         }
-    //         let imageUrl = existingTrack.pod; // Default to existing image
-    //         if (file) {
-    //             const result = await uploadImage(file);
-    //             imageUrl = result.success ? result.url : imageUrl;
-    //         }
-
-
-    //         const existingTrackk = await Tracking.findById(id);
-
-    //         if (!existingTrackk) {
-    //             return res.status(404).json({ success: false, message: 'Track not found' });
-    //         }
-
-    //         // Clone current deliveryStatus
-    //         const updatedDeliveryStatus = { ...existingTrackk.deliveryStatus };
-
-    //         // Update the current step status
-    //         if (updatedDeliveryStatus[status]) {
-    //             updatedDeliveryStatus[status].status = 1; // or whatever value you want
-    //             updatedDeliveryStatus[status].deliveryDateTime = new Date(); // or whatever value you want
-    //         }
-
-    //         // Optionally reset other statuses to 0 if needed
-    //         // for (const key in updatedDeliveryStatus) {
-    //         //   if (key != status) updatedDeliveryStatus[key].status = 0;
-    //         // }
-
-    //         const updatedTracking = await driverPackageAssign.findByIdAndUpdate(
-    //             id,
-    //             {
-    //                 trackingId: packageid,
-    //                 status: parseInt(status), //currentstatus
-    //                 deleivery_boy,
-    //                 deliveryStatus: updatedDeliveryStatus // ✅ save the updated object
-    //             },
-    //             { new: true } // Return the updated document
-    //         );
-
-    //         if (!updatedTracking) {
-    //             return res.status(404).json({ message: 'Tracking not found' });
-    //         }
-
-
-
-    //         await Tracking.findByIdAndUpdate(id, updatedTracking);
-
-
-    //         res.json({ message: 'Tracking updated successfully', data: updatedTracking });
-    //     });
-    // } catch (error) {
-    //     console.error('Error updating tracking:', error);
-    //     res.status(500).json({ message: 'Internal server error', error: error.message });
-    // }
-
+const assignDriver = async (req, res) => {
     try {
         const form = new multiparty.Form();
 
@@ -313,66 +212,104 @@ const updateTracking = async (req, res) => {
                 return res.status(400).json({ error: "Failed to parse form data" });
             }
 
-            const packageid = fields.packageid ? fields.packageid[0] : '';
-            const status = fields.status ? parseInt(fields.status[0]) : null;
-            const delivery_boy = fields.deleivery_boy ? fields.deleivery_boy[0] : '';
-            const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1;
-            const warehouse = fields.warehouse ? fields.packageid[0] : '';
+            const driverId = fields.driver ? fields.driver[0] : '';
+            const assignType = fields.assignType ? parseInt(fields.assignType[0]) : null;
+            const warehouseId = fields.warehouse ? fields.warehouse[0] : '';
+            const status = fields.deliveryStatus ? parseInt(fields.deliveryStatus[0]) : 1;
+            const packageId = fields.packageId ? fields.packageId[0] : '';
+            const userId = fields.userId ? fields.userId[0] : '';
 
-            // Validation check before proceeding
-            if (!packageid || !status) {
-                return res.status(400).json({ message: 'Tracking ID, Status, and No. of Packing are required' });
+            // Validation
+            if (!driverId || !assignType || !warehouseId || !status || !packageId || !userId) {
+                return res.status(400).json({ message: 'DriverId, AssignType, WarehouseId, Status , PackageId & UserId are required' });
             }
 
-            const statusNumber = parseInt(status);
-            if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
+            if (isNaN(status) || status < 1 || status > 5) {
                 return res.status(400).json({ message: 'Invalid status value' });
             }
 
             const statusMap = {
-                1: { key: 'in_process', status: 0, deliveryDateTime: '' },
-                2: { key: 'pickup', status: 0, deliveryDateTime: '' },
-                3: { key: 'outdelivery', status: 0, deliveryDateTime: '' },
-                4: { key: 'delivered', status: 0, deliveryDateTime: '' },
-                5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
+                1: { key: 'inProcess', status: 1, deliveryDateTime: new Date() },
+                2: { key: 'pickup', status: 1, deliveryDateTime: new Date() },
+                3: { key: 'outdelivery', status: 1, deliveryDateTime: new Date() },
+                4: { key: 'delivered', status: 1, deliveryDateTime: new Date() },
+                5: { key: 'cancelled', status: 1, deliveryDateTime: new Date() }
             };
 
-            statusMap[statusNumber].status = 1;
-            statusMap[statusNumber].deliveryDateTime = new Date();
-
-            // First, check if a record with this packageid exists
-            const existingTracking = await driverPackageAssign.findOne({
-                packageid: packageid,
-                driverId: delivery_boy
-            });
+            // Check if package already assigned to driver
+            const existingTracking = await driverPackageAssign.findOne({ packageId, driverId });
 
             if (existingTracking) {
-                // Update existing entry
-                existingTracking.driverId = delivery_boy || null;
-                existingTracking.warehouseId = warehouse || null;
-                existingTracking.status = statusNumber;
+                // Update existing
+                existingTracking.status = status;
                 existingTracking.deliveryStatus = statusMap;
-                existingTracking.createdAt = new Date();
 
                 await existingTracking.save();
-                await generateLogs(req, 'Edit', newTracking);
-
+                await generateLogs(req, 'Edit', existingTracking);
 
                 return res.status(200).json({ message: 'Tracking updated successfully', data: existingTracking });
             } else {
-                // Insert new entry
+                // Fetch pickup details
+                let pickupPincode = '';
+                let pickupAddress = '';
+                let pickupLatitude = '';
+                let pickupLongitude = '';
+
+                const latestAssignOrderDetail = await driverPackageAssign.findOne({ packageId }).sort({ createdAt: -1 });
+                if (latestAssignOrderDetail) {
+                    pickupPincode = latestAssignOrderDetail.dropPincode || '';
+                    pickupAddress = latestAssignOrderDetail.dropAddress || '';
+                    pickupLatitude = latestAssignOrderDetail.dropLatitude || '';
+                    pickupLongitude = latestAssignOrderDetail.dropLongitude || '';
+                } else {
+                    const initiateOrderDetail = await PTL.findOne({ packageId, userId });
+                    if (initiateOrderDetail) {
+                        pickupPincode = initiateOrderDetail.pickupPincode || '';
+                        pickupAddress = initiateOrderDetail.pickupAddress || '';
+                        pickupLatitude = initiateOrderDetail.pickupLatitude || '';
+                        pickupLongitude = initiateOrderDetail.pickupLongitude || '';
+                    }
+                }
+
+                // Fetch drop details
+                let dropPincode = '';
+                let dropAddress = '';
+                let dropLatitude = '';
+                let dropLongitude = '';
+
+                if (assignType == 1) {
+                    const warehouseDetail = await Warehouse.findById(warehouseId);
+
+                    if (warehouseDetail) {
+                        dropPincode = warehouseDetail.dropPincode || '';
+                        dropAddress = warehouseDetail.dropAddress || '';
+                        dropLatitude = warehouseDetail.dropLatitude || '';
+                        dropLongitude = warehouseDetail.dropLongitude || '';
+                    }
+                }
+
                 const newTracking = new driverPackageAssign({
-                    packageid: packageid,
-                    driverId: delivery_boy || null,
-                    warehouseId: warehouse || null,
-                    status: statusNumber,
-                    createdAt: new Date(),
-                    deliveryStatus: statusMap
+                    packageId,
+                    driverId,
+                    warehouseId,
+                    status,
+                    userId,
+                    assignType,
+                    deliveryStatus: statusMap,
+
+                    pickupPincode,
+                    pickupAddress,
+                    pickupLatitude,
+                    pickupLongitude,
+
+                    dropPincode,
+                    dropAddress,
+                    dropLatitude,
+                    dropLongitude
                 });
 
                 await newTracking.save();
                 await generateLogs(req, 'Add', newTracking);
-
 
                 return res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
             }
@@ -381,16 +318,7 @@ const updateTracking = async (req, res) => {
         console.error("Server error:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-
-
-
-    // catch (err) {
-    //     console.error('Error adding tracking:', err);
-    //     res.status(500).json({ message: 'Internal server error', error: err.message });
-    // }
-
 };
-
 
 const deleteTracking = async (req, res) => {
     try {
@@ -486,12 +414,40 @@ const downloadTrackingCsv = async (req, res) => {
     }
 };
 
+
+
+const getDriverWarehouseData = async (req, res) => {
+    try {
+        const latestAssignOrderDetail = await driverPackageAssign.findOne().sort({ createdAt: -1 });
+        if (!latestAssignOrderDetail) {
+            return res.status(404).json({ message: 'PTL Order not found' });
+        }
+
+        // Send both tracking and drivers
+
+        const drivers = await Driver.find(); // If you want to filter, add a query here
+        const warehouse = await Warehouse.find(); // If you want to filter, add a query here
+
+        res.json({
+            latestAssignOrderDetail,
+            drivers,
+            warehouse
+        });
+
+    } catch (error) {
+        console.error('Error fetching tracking by ID:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+
 module.exports = {
     trackingPage,
     trackingList,
     addTracking,
     getPackageDetail,
-    updateTracking,
+    assignDriver,
     deleteTracking,
-    downloadTrackingCsv
+    downloadTrackingCsv,
+    getDriverWarehouseData
 };

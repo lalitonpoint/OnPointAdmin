@@ -217,23 +217,78 @@
     </div>
 </div>
 </div>
+<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Assign Driver</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignForm">
+                    <input type="hidden" id="packageId">
+                    <input type="hidden" id="userId">
 
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="driver" class="form-label">Driver<strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="driver" id="driverlist">
+                                <option value="">Select Driver</option>
+                                <option value="1">Driver 1</option>
+                                <option value="2">Driver 2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="assignType" class="form-label">Assign Type<strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="assignType" id="assignType">
+                                <option value="">Select Assign Type</option>
+                                <option value="1">Warehouse</option>
+                                <option value="2">User Location</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-3 ">
+                        <div class="col-md-6 warehouseDiv d-none">
+                            <label for="warehouse" class="form-label">Warehouse <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="warehouse" id="warehouselist">
+                                <option value="">Select Warehouse</option>
+                                <option value="1">Warehouse 1</option>
+                                <option value="2">Warehouse 2</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="deliveryStatus" class="form-label">Status</label>
+                            <select id="deliveryStatus" class="form-select" name="deliveryStatus">
+                                <option value="">All</option>
+                                <option value="1">In Transit</option>
+                                <option value="2">Pickup</option>
+                                <option value="3">Out for Delivery</option>
+                                <option value="4">Delivered</option>
+                                <option value="5">Cancelled</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+
+
+
+                    <button type="submit" class="btn btn-pink w-100">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     let trackingTable;
     // This ensures the script runs after the DOM is fully loaded
     $(document).ready(function () {
 
-        $('#pod').on('change', function () {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    $('#imagePreview').attr('src', e.target.result).show();
-                    $('#filePreviewContainer').show();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
 
         // Initialize DataTable
         trackingTable = $('#trackingTable').DataTable({
@@ -340,7 +395,7 @@
                     render: function (data, type, row) {
                         return `
                             <button class="btn btn-sm btn-primary editBtn" data-id="${row._id}">    <i class="fas fa-eye"></i>&nbsp;View</button>
-                            <button class="btn btn-sm btn-warning assignBtn" data-id="${row._id}">    <i class="fas fa-edit"></i>&nbsp;Assign</button> `;
+                            <button class="btn btn-sm btn-warning assignBtn" data-id="${row._id}" data-userid="${row.userId._id}">    <i class="fas fa-edit"></i>&nbsp;Assign</button> `;
                     }
                 }
             ]
@@ -349,6 +404,18 @@
         // Search Button
         $('#searchBtn').click(function () {
             trackingTable.ajax.reload();
+        });
+
+        $('#assignType').click(function () {
+            const assignType = $(this).val();
+
+            if (assignType == 1) {
+                $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
+            } else {
+                $('.warehouseDiv').slideUp(300, function () {
+                    $(this).addClass('d-none');
+                });
+            }
         });
 
         // Reset Button
@@ -371,53 +438,7 @@
             const deliveryDate = $('#deliveryDate').val();
             // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val();
-            // const id = $('#trackingId').val();
 
-            // Validation
-            // if (!trackingCode) {
-            //     toastr.error('Please enter tracking ID', 'Validation Error');
-            //     return;
-            // }
-            // if (!pickUpLocation) {
-            //     toastr.error('Please enter pickup location', 'Validation Error');
-            //     return;
-            // }
-            // if (!dropLocation) {
-            //     toastr.error('Please enter drop location', 'Validation Error');
-            //     return;
-            // }
-            // if (!transportMode) {
-            //     toastr.error('Please enter transport mode', 'Validation Error');
-            //     return;
-            // }
-            // if (!noOfPacking) {
-            //     toastr.error('Please enter number of packings', 'Validation Error');
-            //     return;
-            // }
-            // if (!deliveryDate) {
-            //     toastr.error('Please select a date.', 'Validation Error');
-            //     return;
-            // }
-            // // if (!deliveryTime) {
-            //     toastr.error('Please select delivery time.', 'Validation Error');
-            //     return;
-            // }
-            // if (!trackingStatus) {
-            //     toastr.error('Please select tracking status.', 'Validation Error');
-            //     return;
-            // }
-
-
-            // Use FormData for file + text upload
-            // const formData = new FormData();
-            // formData.append('trackingCode', trackingCode);
-            // formData.append('pickUpLocation', pickUpLocation);
-            // formData.append('dropLocation', dropLocation);
-            // formData.append('transportMode', transportMode);
-            // formData.append('noOfPacking', noOfPacking);
-            // formData.append('deliveryDate', deliveryDate);
-            // formData.append('deliveryTime', deliveryTime);
-            // formData.append('status', trackingStatus);
             const id = $('#packageid').val();
             const formData = new FormData(formElement);
 
@@ -477,7 +498,7 @@
                 type: 'GET',
                 success: function (data) {
                     // $('#trackingId').val(data._id);
-                    $('.pickupPincode').text(data.packageDetail.pickupPincode);
+                    $('.pickupPincode').text(data.packageDetail.pickupPincode || '-');
                     $('.dropPincode').text(data.packageDetail.dropPincode); // Added pickup location
                     $('.pickupAddress').text(data.packageDetail.pickupAddress); // Added drop location
                     $('.dropAddress').text(data.packageDetail.dropAddress); // Added transport mode
@@ -559,6 +580,78 @@
         });
 
 
+        $(document).on('click', '.assignBtn', function () {
+            const id = $(this).data('id');
+            const userId = $(this).data('userid');
+            $('#userId').val(userId);
+            // alert(id)
+            $('#packageId').val(id);
+
+            $.ajax({
+                url: '/ptlPackages/getData/' + id,
+                type: 'GET',
+                dataType: 'json',
+                success: async function (data) {
+
+                    const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
+                    const dropdown = $('#driverlist');
+                    dropdown.empty(); // Clear existing options
+                    dropdown.append('<option value="">Select Driver</option>');
+
+                    await drivers.forEach(driver => {
+                        const name = driver.personalInfo?.name || 'No Name';
+                        const id = driver._id;
+                        dropdown.append(`<option value="${id}">${name}</option>`);
+                    });
+
+                    const warehouse = data.warehouse || [];
+                    console.log(data.warehouse)
+
+                    const Warehouse_drop = $('#warehouselist');
+
+                    Warehouse_drop.empty(); // Clear existing options
+                    Warehouse_drop.append('<option value="">Select Warehouse</option>');
+
+                    await warehouse.forEach(warehouseData => {
+                        const name = warehouseData.Warehousename || 'No Name';
+                        const id = warehouseData._id;
+                        Warehouse_drop.append(`<option value="${id}">${name}</option>`);
+                    });
+
+                    let driverId = data.latestAssignOrderDetail.driverId || 0;
+                    let warehouseId = data.latestAssignOrderDetail.warehouseId || 0;
+                    let status = data.latestAssignOrderDetail.status || 0;
+                    let assignType = data.latestAssignOrderDetail.assignType || 0;
+
+                    $('#driverlist').val(driverId);
+                    $('#warehouselist').val(warehouseId);
+                    $('#deliveryStatus').val(status);
+                    $('#assignType').val(assignType);
+
+                    if (assignType == 1) {
+                        $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
+                    } else {
+                        $('.warehouseDiv').slideUp(300, function () {
+                            $(this).addClass('d-none');
+                        });
+                    }
+
+
+
+
+                },
+                error: function (xhr) {
+                    const errorMsg = xhr.responseJSON?.message;
+                    toastr.error(errorMsg, 'Error');
+                }
+            });
+
+            $('#assignModal').modal('show');
+
+
+
+
+        });
 
         $('#trackingTable').on('click', '.editBtn', function () {
             const trackingId = $(this).data('id');
@@ -605,6 +698,47 @@
     });
 
 
+    $('#assignForm').submit(function (e) {
+        e.preventDefault();
+        const formElement = document.getElementById('assignForm'); // Corrected: Used 'trackingForm' instead of 'bannerForm'
+
+        // Trimmed values
+
+
+        const driver = $('#driverId').val();
+        const assignType = $('#assignType').val();
+        const warehouseid = $('#warehouselist').val();
+        const status = $('#deliveryStatus').val();
+        const packageId = $('#packageId').val();
+        const userId = $('#userId').val();
+
+        const formData = new FormData(formElement);
+        formData.append('packageId', packageId)
+        formData.append('userId', userId)
+
+
+        const actionUrl = `/ptlPackages/assignDriver`;
+        // alert(id)
+
+        $.ajax({
+            url: actionUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function (response) {
+                $('#assignModal').modal('hide');
+                $('#assignForm')[0].reset();
+                trackingTable.ajax.reload();
+                toastr.success('Order Data saved successfully!', 'Success');
+            },
+            error: function (xhr) {
+                const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
+                toastr.error(errorMsg, 'Error');
+            }
+        });
+    });
 
 
 </script>

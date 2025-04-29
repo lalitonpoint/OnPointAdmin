@@ -166,7 +166,7 @@ const walletUse = async (req, res) => {
 
             return res.json({ success: true, message: 'Wallet amount applied', remaining_balance: wallet.balance });
         } else {
-            return res.status(422).json({ success: false, message: 'Insufficient wallet balance' });
+            return res.status(200).json({ success: false, message: 'Insufficient wallet balance' });
         }
 
     } catch (err) {

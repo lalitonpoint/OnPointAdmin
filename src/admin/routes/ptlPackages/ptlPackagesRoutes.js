@@ -2,18 +2,19 @@
 const express = require('express');
 const router = express.Router();
 
-const TrackingCtrl = require('../../controllers/ptlPackages/ptlPackages');
+const PtlCtrl = require('../../controllers/ptlPackages/ptlPackagesController');
 const { checkCrudPermission } = require('../../middleware/permission/checkCrudPermission');
 
 
-router.post('/trackingList', checkCrudPermission('isShow'), TrackingCtrl.trackingList);
+router.post('/trackingList', checkCrudPermission('isShow'), PtlCtrl.trackingList);
 
-router.get('/get/:id', checkCrudPermission('edit'), TrackingCtrl.getPackageDetail);
+router.get('/get/:id', checkCrudPermission('edit'), PtlCtrl.getPackageDetail);
+router.get('/getData/:id', checkCrudPermission('edit'), PtlCtrl.getDriverWarehouseData);
 
-router.post('/editTracking/:id', checkCrudPermission('edit'), TrackingCtrl.updateTracking); // Using POST for update
+router.post('/assignDriver', checkCrudPermission('edit'), PtlCtrl.assignDriver); // Using POST for update
 
 
-router.get('/ptlPackages', checkCrudPermission(), TrackingCtrl.trackingPage);
+router.get('/ptlPackages', checkCrudPermission(), PtlCtrl.trackingPage);
 
 
 

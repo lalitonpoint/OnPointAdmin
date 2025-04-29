@@ -1,8 +1,7 @@
-const { json } = require('body-parser');
 const mongoose = require('mongoose');
 
 const shipmentSchema = new mongoose.Schema({
-    packageid: {
+    packageId: {
         type: String,
         required: true
     },
@@ -10,41 +9,36 @@ const shipmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    warehouseId :{
+    userId: {
         type: String,
         required: true
     },
+    warehouseId: {
+        type: String,
+    },
     status: {
         type: Number,
-         enum: [1, 2, 3, 4, 5], // 1: Pickup, 2: Out for Delivery, 3: In Progress, 4: Delivered, 5: Cancelled
+        enum: [1, 2, 3, 4, 5], // 1: Pickup, 2: Out for Delivery, 3: In Progress, 4: Delivered, 5: Cancelled
         required: true
-    }
-    // deliveryDate: { // Renamed 'date' to 'estimateDate' to align with the table header
-    //     type: Date,
-    //     required: true
-    // },
-    // pickUpLocation: {
-    //     type: String
-    // },
-    // dropLocation: {
-    //     type: String
-    // },
-    // transportMode: {
-    //     type: String
-    // },
-    // noOfPacking: {
-    //     type: Number,
-    //     required: true
-    // },
-    // pod: {
-    //     type: String, default: ''
-    // },
-    // deliveryStatus: {
-    //     type: mongoose.Schema.Types.Mixed,
-    //     default: {}
-    // }
+    },
+    assignType: {
+        type: String,
+        required: true
+    },
+    deliveryStatus: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
+    pickupPincode: { type: String },
+    dropPincode: { type: String },
+    pickupAddress: { type: String },
+    dropAddress: { type: String },
+    pickupLatitude: { type: String },
+    pickupLongitude: { type: String },
+    dropLatitude: { type: String },
+    dropLongitude: { type: String },
 }, {
     timestamps: true
 });
 
-module.exports = mongoose.model('ptldriverrelation', shipmentSchema);
+module.exports = mongoose.model('PtlDriverRelation', shipmentSchema);
