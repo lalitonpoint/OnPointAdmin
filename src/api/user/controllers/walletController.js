@@ -176,7 +176,8 @@ const walletUse = async (req, res) => {
         wallet.transactions.push({
             type: 'debit',
             amount,
-            method: 'Wallet_Pay',
+            method: 'Wallet Pay',
+            transactionStatus: 1,
             order_id,
             date: new Date()
         });
