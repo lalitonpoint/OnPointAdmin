@@ -41,6 +41,7 @@ const driverProfileSchema = new mongoose.Schema({
     vehicleDetail: {
         vehicleName: { type: String },
         vehicleModel: { type: String },
+        vehicleNumber: { type: String },
         yearOfManufacture: { type: String },
         plateNumber: { type: String },
         vin: { type: String },
