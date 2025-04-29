@@ -28,8 +28,7 @@ const addPaymentDetail = async (req, res) => {
             pickupLatitude, pickupLongitude,
             dropLatitude, dropLongitude,
             pickupPincode, dropPincode,
-            pickupAddress, dropAddress,
-            pickupNote
+            pickupAddress, dropAddress
         };
 
         for (const [key, value] of Object.entries(requiredFields)) {

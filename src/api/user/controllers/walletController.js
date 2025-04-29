@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const razorpay = require('../utils/razorpay');
 const Wallet = require('../models/walletModal');
+const Payment = require('../models/paymentModal');
 require('dotenv').config();
 
 
@@ -141,37 +142,64 @@ const walletVerify = async (req, res) => {
     }
 };
 
-// Use Wallet
 const walletUse = async (req, res) => {
-    const { order_id, amount } = req.body;
+    const { packageId, amount } = req.body;
 
-    if (typeof amount === 'string') {
-        return res.status(200).json({ success: false, message: 'Amount Must Be Number' });
+    if (typeof amount !== 'number') {
+        return res.status(400).json({ success: false, message: 'Amount must be a number' });
     }
 
     const userId = req.headers['userid'];
+    if (!userId) {
+        return res.status(400).json({ success: false, message: 'User ID missing in headers' });
+    }
 
     try {
-        let wallet = await Wallet.findOne({ userId: userId });
+        const packageDetail = await Payment.findOne({ id: packageId });
+        if (!packageDetail) {
+            return res.status(404).json({ success: false, message: 'Package not found' });
+        }
 
+        const wallet = await Wallet.findOne({ userId: userId });
         if (!wallet) {
             return res.status(404).json({ success: false, message: 'Wallet not found' });
         }
 
-        if (wallet.balance >= amount) {
-            wallet.balance -= amount;
-            wallet.transactions.push({ type: 'debit', amount, method: 'order', order_id });
-
-            await wallet.save();
-
-            return res.json({ success: true, message: 'Wallet amount applied', remaining_balance: wallet.balance });
-        } else {
-            return res.status(200).json({ success: false, message: 'Insufficient wallet balance' });
+        if (wallet.balance < amount) {
+            return res.status(400).json({ success: false, message: 'Insufficient wallet balance' });
         }
+
+        const order_id = generateWalletOrderId();
+
+        // Deduct balance and record transaction
+        wallet.balance -= amount;
+        wallet.transactions.push({
+            type: 'debit',
+            amount,
+            method: 'Wallet_Pay',
+            order_id,
+            date: new Date()
+        });
+        await wallet.save();
+
+        // Update package/payment details
+        packageDetail.transactionStatus = 1;
+        packageDetail.preTransactionId = order_id;
+        packageDetail.postTransactionId = order_id;
+        packageDetail.paymentId = order_id;
+        packageDetail.isWalletPay = 1;
+        await packageDetail.save();
+
+        return res.json({
+            success: true,
+            message: 'Wallet amount applied successfully',
+            remaining_balance: wallet.balance,
+            order_id
+        });
 
     } catch (err) {
         console.error('Error processing wallet transaction:', err);
-        return res.status(500).json({ success: false, message: 'An error occurred while processing the wallet transaction' });
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
 
@@ -264,5 +292,13 @@ const webhookHandler = async (req, res) => {
         res.status(200).json({ success: false, message: 'Invalid webhook signature' });
     }
 }
+
+
+const generateWalletOrderId = () => {
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 14); // e.g., 20250429142530
+    const randomPart = Math.random().toString(36).substr(2, 5).toUpperCase();  // e.g., 5CHAR
+    return `WALLET-${timestamp}-${randomPart}`;
+};
 
 module.exports = { walletBalance, addMoney, walletTransaction, webhookHandler, walletRefund, walletVerify, walletUse };

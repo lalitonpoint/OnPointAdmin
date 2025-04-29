@@ -31,6 +31,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     distance: { type: Number },
     duration: { type: String },
     transactionStatus: { type: Number, enum: [0, 1, 2, 3, 4, 5], default: 0 }, // 0 => Initiate, 1 => Complete , 2 => Pending , 3 => Failed , 4 => Refunded , 5 => Partial Payment
+    isWalletPay: { type: Number, enum: [0, 1], default: 0 }, // 0 => Online Payment, 1 => Wallet Pay
 
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     preTransactionId: { type: String },
