@@ -105,6 +105,7 @@ const addTracking = async (req, res) => {
             }
 
             const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
+            const clientName = fields.clientName ? fields.clientName[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : ''; // Default to Active
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : ''; // Default to Active
@@ -142,8 +143,8 @@ const addTracking = async (req, res) => {
                 return res.status(200).json({ success: false, message: 'Invalid status value' });
             }
             const statusMap = {
-                1: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [] },
-                2: { key: 'pickup', status: 0, deliveryDateTime: '' },
+                1: { key: 'pickup', status: 0, deliveryDateTime: '' },
+                2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [] },
                 3: { key: 'outdelivery', status: 0, deliveryDateTime: '' },
                 4: { key: 'delivered', status: 0, deliveryDateTime: '' },
                 5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
@@ -153,11 +154,12 @@ const addTracking = async (req, res) => {
             statusMap[status].deliveryDateTime = deliveryDate;
 
 
-            if (status == 1 && Array.isArray(transitTracking) && transitTracking.length > 0)
-                statusMap[1].transitData = parsedTransitTracking[0];
+            if (status == 2 && Array.isArray(transitTracking) && transitTracking.length > 0)
+                statusMap[2].transitData = parsedTransitTracking[0];
 
             const newTracking = new Tracking({
                 trackingId: trackingCode,
+                clientName,
                 status: statusNumber,
                 estimateDate: moment(estimateDate).toDate(), // Convert string to Date object using moment for consistency
                 pickUpLocation: pickUpLocation || null,
@@ -206,6 +208,7 @@ const updateTracking = async (req, res) => {
 
 
             const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
+            const clientName = fields.clientName ? fields.clientName[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : '';
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : '';
@@ -273,13 +276,14 @@ const updateTracking = async (req, res) => {
                 }
             }
 
-            if (status == 1 && Array.isArray(transitTracking) && transitTracking.length > 0)
-                updatedDeliveryStatus[1].transitData = parsedTransitTracking[0];
+            if (status == 2 && Array.isArray(transitTracking) && transitTracking.length > 0)
+                updatedDeliveryStatus[2].transitData = parsedTransitTracking[0];
 
             const updatedTracking = await Tracking.findByIdAndUpdate(
                 id,
                 {
                     trackingId: trackingCode,
+                    clientName,
                     status: parseInt(status), //currentstatus
                     estimateDate,
                     pickUpLocation,

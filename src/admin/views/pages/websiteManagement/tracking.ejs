@@ -37,8 +37,8 @@
                     <label for="searchStatus" class="form-label">Status</label>
                     <select id="searchStatus" class="form-select">
                         <option value="">All</option>
-                        <option value="1">In Transit</option>
-                        <option value="2">Pickup</option>
+                        <option value="1">Pickup</option>
+                        <option value="2">In Transit</option>
                         <option value="3">Out for Delivery</option>
                         <option value="4">Delivered</option>
                         <option value="5">Cancelled</option>
@@ -101,6 +101,7 @@
                             <input type="text" class="form-control" id="trackingCode" name="trackingId"
                                 autocomplete="off" placeholder="Enter Tracking ID">
                         </div>
+
                         <div class="col-md-6">
                             <label for="pickUpLocation" class="form-label">Pickup Location</label>
                             <input type="text" class="form-control" id="pickUpLocation"
@@ -137,8 +138,8 @@
                                     class="text-danger">*</strong></label>
                             <select class="form-select" id="trackingStatus" name="status">
                                 <option value="">Select Status</option>
-                                <option value="1">In Transit</option>
-                                <option value="2">Pickup</option>
+                                <option value="1">Pickup</option>
+                                <option value="2">In Transit</option>
                                 <option value="3">Out for Delivery</option>
                                 <option value="4">Delivered</option>
                                 <option value="5">Cancelled</option>
@@ -165,7 +166,12 @@
                             <input type="datetime-local" class="form-control" id="deliveryDate" name="deliveryDate">
                         </div>
 
-
+                        <div class="col-md-6">
+                            <label for="clientName" class="form-label">Client Name <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="clientName" name="clientName" autocomplete="off"
+                                placeholder="Enter Client Name">
+                        </div>
 
                         <div class="col-md-6">
                             <label for="estimateDate" class="form-label">Estimate Delivery Date <strong
@@ -264,11 +270,11 @@
                         let statusText = '';
 
                         switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
-                            case 1:
+                            case 2:
                                 statusColor = 'badge bg-warning'; // Pickup
                                 statusText = 'In Transit';
                                 break;
-                            case 2:
+                            case 1:
                                 statusColor = 'badge bg-info'; // Out for Delivery
                                 statusText = 'Pickup';
                                 break;
@@ -338,6 +344,7 @@
             const noOfPacking = $('#noOfPacking').val().trim();
             const deliveryDate = $('#deliveryDate').val().trim();
             const estimateDate = $('#estimateDate').val().trim();
+            const clientName = $('#clientName').val().trim();
             // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val().trim();
             const pod = $('#pod')[0].files[0];
@@ -360,6 +367,7 @@
                 toastr.error('Please enter tracking ID', 'Validation Error');
                 return;
             }
+
             if (!pickUpLocation) {
                 toastr.error('Please enter pickup location', 'Validation Error');
                 return;
@@ -385,6 +393,10 @@
                 toastr.error('Please select tracking status.', 'Validation Error');
                 return;
             }
+            if (!clientName) {
+                toastr.error('Please enter Client Name', 'Validation Error');
+                return;
+            }
             if (!estimateDate) {
                 toastr.error('Please select a Estimate date.', 'Validation Error');
                 return;
@@ -399,6 +411,7 @@
             formData.append('noOfPacking', noOfPacking);
             formData.append('deliveryDate', deliveryDate);
             formData.append('estimateDate', estimateDate);
+            formData.append('clientName', clientName);
             formData.append('status', trackingStatus);
             formData.append('pod', pod);
             const id = $('#trackingId').val();
@@ -412,7 +425,7 @@
                 formData.delete("pod");
             }
 
-            if (trackingStatus == 1) {
+            if (trackingStatus == 2) {
                 formData.append('transitData', JSON.stringify(transitData));
 
             }
@@ -437,6 +450,28 @@
                     form.reset(); // Reset the form every time the modal is shown
                     $('#trackingModalLabel').text('Add Tracking')
                     $('#filePreviewContainer').addClass('d-none');
+                    $('#transitDeliveryContainer').addClass('d-none');
+
+                    // Corrected this line
+                    $('.transit-delivery-group').remove();
+
+                    const newFields = `
+    <div class="row transit-delivery-group mt-2">
+        <div class="col-md-6">
+            <label class="form-label">Transit City</label>
+            <input type="text" class="form-control" id="transitTracking" name="transitTracking[]" placeholder="Enter Tracking City">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Transit Date</label>
+            <input type="datetime-local" class="form-control" name="transitDate[]">
+        </div>
+    </div>
+`;
+
+                    // Append the new fields
+                    $(newFields).appendTo('#transitDeliveryContainer');
+
+
 
 
                     // window.location.reload();
@@ -456,7 +491,7 @@
             $('.deliveryDate').text(trackingText);
 
             if (trackingVal != '') {
-                if (trackingVal == 1) {
+                if (trackingVal == 2) {
                     $('#transitDeliveryContainer').removeClass('d-none');
                     $('.delDiv').addClass('d-none');
 
@@ -499,6 +534,7 @@
                     $('#transportMode').val(data.transportMode); // Added transport mode
                     $('#noOfPacking').val(data.noOfPacking); // Added no of packing
                     $('#trackingStatus').val(data.status);
+                    $('#clientName').val(data.clientName);
                     // Ensure seconds are added if missing
                     let formattedDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
                     $('#estimateDate').val(formattedDate);
@@ -507,16 +543,16 @@
                     let formattedDateTime = moment(rawDateTime, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
                     console.log(formattedDateTime); // Outputs: 2025-04-23T16:28:00
 
-                    if (data.status == 1) {
+                    if (data.status == 2) {
                         // Check if transitData exists and is an array
-                        if (Array.isArray(data.deliveryStatus[1].transitData)) {
-                            console.log('oooooo', data.deliveryStatus[1].transitData);
+                        if (Array.isArray(data.deliveryStatus[2].transitData)) {
+                            console.log('oooooo', data.deliveryStatus[2].transitData);
 
                             // Clear the container before appending new elements
                             $('.transit-delivery-group').remove();
 
                             // Loop through each item in transitData
-                            data.deliveryStatus[1].transitData.forEach(item => {
+                            data.deliveryStatus[2].transitData.forEach(item => {
                                 console.log('xxx', item);
 
                                 // Convert date to the required format for datetime-local input (YYYY-MM-DDTHH:mm)
