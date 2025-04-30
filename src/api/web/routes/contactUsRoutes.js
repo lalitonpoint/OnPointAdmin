@@ -6,4 +6,4 @@ const { createContact } = require('./../controllers/contactUsController')
 
 router.post('/createContact', createContact);
 
-module.exports = router;
+module.exports = router; 
