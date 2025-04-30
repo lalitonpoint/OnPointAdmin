@@ -1,5 +1,7 @@
 const Tracking = require('../../models/websiteManagement/trackingModel');
+const fs = require('fs');
 const moment = require('moment'); // Ensure moment.js is installed: npm install moment
+const csv = require('csv-parser');
 const multiparty = require('multiparty');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 
@@ -405,6 +407,110 @@ const downloadTrackingCsv = async (req, res) => {
     }
 };
 
+const UploadCsv = async (req, res) => {
+    try {
+        const csvFile = req.file;
+        if (!csvFile) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+
+        const filePath = csvFile.path;
+        const results = [];
+        const duplicates = [];
+        const saved = [];
+
+        fs.createReadStream(filePath)
+            .pipe(csv())
+            .on('data', (row) => {
+                results.push(row);
+            })
+            .on('end', async () => {
+                for (const row of results) {
+                    try {
+                        const {
+                            trackingId,
+                            clientName,
+                            status,
+                            estimateDate,
+                            pickUpLocation,
+                            dropLocation,
+                            transportMode,
+                            noOfPacking,
+                            pod
+                        } = row;
+
+                        if (!trackingId) {
+                            console.log("Skipping row due to missing trackingId");
+                            continue;
+                        }
+
+                        const existing = await Tracking.findOne({ trackingId });
+                        if (existing) {
+                            console.log(`Tracking ID ${trackingId} already exists. Skipping.`);
+                            duplicates.push({ trackingId, reason: 'Already exists' });
+                            continue;
+                        }
+
+                        const statusNumber = parseInt(status);
+                        const statusMap = {
+                            1: { key: 'pickup', status: 0, deliveryDateTime: '', pod: '' },
+                            2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [], pod: '' },
+                            3: { key: 'outdelivery', status: 0, deliveryDateTime: '', pod: '' },
+                            4: { key: 'delivered', status: 0, deliveryDateTime: '', pod: '' },
+                            5: { key: 'cancelled', status: 0, deliveryDateTime: '', pod: '' }
+                        };
+
+                        if (statusMap[statusNumber]) {
+                            statusMap[statusNumber].status = 1;
+                            statusMap[statusNumber].deliveryDateTime = new Date();
+                             // Only set pod if Delivered
+                            if (statusNumber === 4) {
+                                statusMap[statusNumber].pod = pod;
+                            }                         
+                        }
+                       
+                        const newTracking = new Tracking({
+                            trackingId,
+                            clientName,
+                            status: statusNumber,
+                            estimateDate: moment(estimateDate).toDate(),
+                            pickUpLocation,
+                            dropLocation,
+                            transportMode,
+                            noOfPacking: parseInt(noOfPacking),
+                            pod: statusNumber === 4 ? pod : '', // Only save pod if status == 4
+                            createdAt: new Date(),
+                            deliveryStatus: statusMap
+                        });
+
+                        await newTracking.save();
+                        saved.push(trackingId);
+                    } catch (err) {
+                        console.error("Error saving row:", err.message);
+                        duplicates.push({ trackingId: row.trackingId || 'Unknown', reason: err.message });
+                    }
+                }
+
+                res.status(200).json({
+                    success: true,
+                    message: "CSV uploaded and processed.",
+                    savedCount: saved.length,
+                    duplicateCount: duplicates.length,
+                    duplicates
+                });
+            })
+            .on('error', (err) => {
+                console.error("CSV parse error:", err.message);
+                res.status(500).json({ success: false, message: 'CSV file processing error' });
+            });
+    } catch (err) {
+        console.error("UploadCsv error:", err.message);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+
+
 module.exports = {
     trackingPage,
     trackingList,
@@ -412,5 +518,6 @@ module.exports = {
     getTrackingById,
     updateTracking,
     deleteTracking,
-    downloadTrackingCsv
+    downloadTrackingCsv,
+    UploadCsv
 };

@@ -4,6 +4,9 @@ const router = express.Router();
 
 const TrackingCtrl = require('../../controllers/websiteManagement/trackingController');
 const { checkCrudPermission } = require('../../middleware/permission/checkCrudPermission');
+const multer = require('multer'); // ✅ <-- This line is missing in your file
+
+const upload = multer({ dest: 'uploads/' });
 
 router.post('/trackingList', checkCrudPermission('isShow'), TrackingCtrl.trackingList);
 router.get('/trackingPage', checkCrudPermission(), TrackingCtrl.trackingPage);
@@ -16,6 +19,7 @@ router.post('/editTracking/:id', checkCrudPermission('edit'), TrackingCtrl.updat
 router.delete('/delete/:id', checkCrudPermission('delete'), TrackingCtrl.deleteTracking);
 
 router.get('/downloadCsv', checkCrudPermission('export'), TrackingCtrl.downloadTrackingCsv);
+router.post('/upload-csv', checkCrudPermission('export'), upload.single('file'), TrackingCtrl.UploadCsv);
 
 
 module.exports = router;
