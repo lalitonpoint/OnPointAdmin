@@ -7,40 +7,34 @@ const getOrderList = async (req, res) => {
 
     try {
         const [allOrders, completeOrders, cancelledOrders] = await Promise.all([
-            Order.find({ userId }).sort({ createdAt: -1 }),
-            Order.find({ userId, orderStatus: 4 }).sort({ createdAt: -1 }),
-            Order.find({ userId, orderStatus: 5 }).sort({ createdAt: -1 })
+            Order.find({ userId }).sort({ createdAt: -1 }).lean(),
+            Order.find({ userId, orderStatus: 4 }).sort({ createdAt: -1 }).lean(),
+            Order.find({ userId, orderStatus: 5 }).sort({ createdAt: -1 }).lean()
         ]);
 
         const transformOrders = async (orders) => {
             return Promise.all(
                 orders.map(async (order) => {
-                    const tracking = await driverPackageAssign.findOne({ packageId: order._id }).sort({ createdAt: -1 }); // Adjust key if needed
-                    let driver = null;
+                    const tracking = await driverPackageAssign
+                        .findOne({ packageId: order._id })
+                        .sort({ createdAt: -1 })
+                        .lean();
 
+                    let driver = null;
                     if (tracking?.driverId) {
-                        driver = await driverModal.findById(tracking.driverId);
+                        driver = await driverModal.findById(tracking.driverId).lean();
                     }
 
-                    const packageName = Array.isArray(order.packages)
-                        ? order.packages.map(p => p.packageName).filter(Boolean).join(', ')
-                        : '';
+                    const packages = Array.isArray(order.packages) ? order.packages : [];
+                    const packageName = packages.map(p => p.packageName).filter(Boolean).join(', ');
 
                     return {
+                        ...order,
                         packageId: order._id,
                         packageName,
-                        orderStatus: order.orderStatus,
-                        pickupAddress: order.pickupAddress,
-                        dropAddress: order.dropAddress,
-                        totalDistance: order.totalDistance,
-                        duration: order.duration,
-                        pickupLatitude: order.pickupLatitude,
-                        pickupLongitude: order.pickupLongitude,
-                        dropLatitude: order.dropLatitude,
-                        dropLongitude: order.dropLongitude,
                         driverName: driver?.personalInfo?.name || '',
                         driverProfile: driver?.personalInfo?.profilePicture || '',
-                        vehicleNumber: driver?.vehicleDetail?.truckNumber || '',
+                        vehicleNumber: driver?.vehicleDetail?.truckNumber || ''
                     };
                 })
             );
