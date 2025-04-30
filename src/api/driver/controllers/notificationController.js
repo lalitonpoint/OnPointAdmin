@@ -1,6 +1,6 @@
 const admin = require('../../../../config/firebaseConnection');
 
-// Function to send notification
+// Send FCM to driver
 const sendOrderNotificationToDriver = async (driverToken, orderData) => {
     const message = {
         token: driverToken,
@@ -13,36 +13,48 @@ const sendOrderNotificationToDriver = async (driverToken, orderData) => {
             pickupLocation: orderData.pickupLocation,
             deliveryLocation: orderData.deliveryLocation,
         },
+        android: {
+            priority: "high",
+            notification: {
+                sound: "default",
+            },
+        },
     };
 
     try {
         const response = await admin.messaging().send(message);
         console.log("Notification sent successfully:", response);
-        // res.json({ success: true, message: "Order assigned and notification sent.", response: response });
-
     } catch (error) {
         console.error("Error sending notification:", error);
     }
-}
+};
 
-// Example usage (inside order assignment logic)
 const assignOrderToDriver = async (req, res) => {
-    const { orderId, driverId } = req.body;
+    // const { orderId, driverId } = req.body;
+    const orderId = "OPL-37IU9"
 
+    // if (!orderId || !driverId) {
+    //     return res.status(400).json({ success: false, message: "Missing orderId or driverId" });
+    // }
 
-    const driverToken = 'dTL0_NH7SEGUfnuBemSwws:APA91bGNrUzxKwRUqgFcMqol9lMbWaglogn5alWSHI0c_weYRR2UN0ti875aIDTuXNMAN0c7HPYSBzxEg3Kwzvzv0RzhuDMFrOFyjWzQ8E70ARBylxEcWZE';
+    try {
+        // Replace with real DB lookup
 
-    // const driverToken = await getDriverToken(driverId); // Your DB logic
+        // const driverDeviceToken = await getDriverToken(driverId);
+        const driverDeviceToken = 'dPVvB-NNkkG_lWFJnYM9mF:APA91bHshfMe_oWlBA7wV-L9zUmG5VL6ALvwA8om_vD8uLkGSJCT_rt0tapAXYJrSkz91MNrBJYlL-8QC65HNQq2T34o6oF3ZzoT0EyHwrLhoAD2AYDT1kY';
 
-    const orderData = {
-        orderId: orderId,
-        pickupLocation: "Warehouse A",
-        deliveryLocation: "Client B",
-    };
+        const orderData = {
+            orderId,
+            pickupLocation: "Warehouse A",
+            deliveryLocation: "Client B",
+        };
 
-    await sendOrderNotificationToDriver(driverToken, orderData);
+        await sendOrderNotificationToDriver(driverDeviceToken, orderData);
 
-    res.json({ success: true, message: "Order assigned and notification sent." });
-}
+        res.json({ success: true, message: "Order assigned and notification sent." });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
 
-module.exports = { assignOrderToDriver }
+module.exports = { assignOrderToDriver };
