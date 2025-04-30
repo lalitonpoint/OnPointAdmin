@@ -3,62 +3,58 @@ const driverPackageAssign = require('../../../admin/models/ptlPackages/driverPac
 const driverModal = require('../../driver/modals/driverModal');
 
 const getOrderList = async (req, res) => {
-    const { transactionStatus } = req.body;
-
-    if (transactionStatus != 0 && transactionStatus != 1) {
-        return res.status(200).json({ success: false, message: "Transaction Status is required." });
-    }
+    const userId = req.headers['userid'];
 
     try {
-        let orderDetail;
+        const [allOrders, completeOrders, cancelledOrders] = await Promise.all([
+            Order.find({ userId }).sort({ createdAt: -1 }),
+            Order.find({ userId, orderStatus: 4 }).sort({ createdAt: -1 }),
+            Order.find({ userId, orderStatus: 5 }).sort({ createdAt: -1 })
+        ]);
 
-        if (transactionStatus === 0 || transactionStatus === 1) {
-            orderDetail = await Order.find({ transactionStatus }).sort({ createdAt: -1 });
-        } else {
-            orderDetail = await Order.find().sort({ createdAt: -1 });
-        }
+        const transformOrders = async (orders) => {
+            return Promise.all(
+                orders.map(async (order) => {
+                    const tracking = await driverPackageAssign.findOne({ packageId: order._id }).sort({ createdAt: -1 }); // Adjust key if needed
+                    let driver = null;
 
-        let orderData = [];
+                    if (tracking?.driverId) {
+                        driver = await driverModal.findById(tracking.driverId);
+                    }
 
-        for (const singleOrder of orderDetail) {
-            const existingTracking = await driverPackageAssign.findOne({ _id: singleOrder._id }).sort({ createdAt: -1 });
+                    const packageName = Array.isArray(order.packages)
+                        ? order.packages.map(p => p.packageName).filter(Boolean).join(', ')
+                        : '';
 
-            let driverDetail = null;
-            if (existingTracking && existingTracking.driverId) {
-                driverDetail = await driverModal.findById(existingTracking.driverId);
-            }
+                    return {
+                        packageId: order._id,
+                        packageName,
+                        orderStatus: order.orderStatus,
+                        pickupAddress: order.pickupAddress,
+                        dropAddress: order.dropAddress,
+                        totalDistance: order.totalDistance,
+                        duration: order.duration,
+                        pickupLatitude: order.pickupLatitude,
+                        pickupLongitude: order.pickupLongitude,
+                        dropLatitude: order.dropLatitude,
+                        dropLongitude: order.dropLongitude,
+                        driverName: driver?.personalInfo?.name || '',
+                        driverProfile: driver?.personalInfo?.profilePicture || '',
+                        vehicleNumber: driver?.vehicleDetail?.truckNumber || '',
+                    };
+                })
+            );
+        };
 
-            let packageName = "";
-            if (singleOrder.packages && Array.isArray(singleOrder.packages)) {
-                packageName = singleOrder.packages
-                    .map(pkg => pkg.packageName)
-                    .filter(Boolean)
-                    .join(', ');
-            }
-
-            const data = {
-                packageId: singleOrder._id,
-                packageName: packageName,
-                orderStatus: singleOrder.orderStatus,
-                pickupAddress: singleOrder.pickupAddress,
-                dropAddress: singleOrder.dropAddress,
-                totalDistance: singleOrder.totalDistance,
-                duration: singleOrder.duration,
-                pickupLatitude: singleOrder.pickupLatitude,
-                pickupLongitude: singleOrder.pickupLongitude,
-                dropLatitude: singleOrder.dropLatitude,
-                dropLongitude: singleOrder.dropLongitude,
-                driverName: driverDetail?.personalInfo?.name || '',
-                driverProfile: driverDetail?.personalInfo?.profilePicture || '',
-                truckNumber: driverDetail?.vehicleDetail?.truckNumber || '', // Corrected key
-            };
-
-            orderData.push(data);
-        }
+        const [allOrderData, completeOrderData, cancelledOrderData] = await Promise.all([
+            transformOrders(allOrders),
+            transformOrders(completeOrders),
+            transformOrders(cancelledOrders)
+        ]);
 
         res.status(200).json({
             success: true,
-            data: orderData
+            data: { allOrderData, completeOrderData, cancelledOrderData }
         });
 
     } catch (err) {
@@ -66,6 +62,7 @@ const getOrderList = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error', error: err.message });
     }
 };
+
 
 const singleOrderDetail = async (req, res) => {
     const { orderId } = req.body;
