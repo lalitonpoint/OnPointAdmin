@@ -22,6 +22,11 @@
             <button class="btn btn-pink" data-bs-toggle="modal" data-bs-target="#trackingModal">
                 <i class="fas fa-plus me-2"></i> Add Tracking
             </button>
+            <!-- Button to open modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                Upload CSV
+            </button>
+  
         </div>
     </div>
 
@@ -199,6 +204,28 @@
         </div>
     </div>
 </div>
+
+ 
+  <!-- Modal -->
+  <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="uploadCsvForm" action="/tracking/upload-csv" method="post" enctype="multipart/form-data">
+          <div class="modal-header">
+            <h5 class="modal-title" id="uploadModalLabel">Upload CSV File</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="file" class="form-control" name="file" accept=".csv" required />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
 <script>
     let trackingTable;
@@ -687,4 +714,52 @@
 
 
 
+</script>
+
+<script>
+
+$(document).ready(function () {
+    $('#uploadCsvForm').on('submit', function (e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/tracking/upload-csv',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                let msg = `<strong>${response.message}</strong><br/>`;
+                msg += `Saved Entries: ${response.savedCount}<br/>`;
+                msg += `Duplicate Entries: ${response.duplicateCount}<br/>`;
+
+                if (response.duplicates && response.duplicates.length > 0) {
+                    msg += '<ul>';
+                    response.duplicates.forEach(function (d) {
+                        msg += `<li>Tracking ID: ${d.trackingId}, Reason: ${d.reason}</li>`;
+                    });
+                    msg += '</ul>';
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Upload Result',
+                    html: msg
+                });
+
+                $('#uploadModal').modal('hide'); // hide the modal if needed
+                $('#csvUploadForm')[0].reset(); // reset form
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Something went wrong'
+                });
+            }
+        });
+    });
+});
 </script>
