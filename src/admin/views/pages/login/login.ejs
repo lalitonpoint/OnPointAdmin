@@ -47,6 +47,9 @@
             right: 7px;
             transform: translateY(50%);
         }
+        .adminLogo{width: 142px;}
+        .btclr{background: #00258f;}
+        
     </style>
 </head>
 
@@ -57,7 +60,7 @@
                 <div class="col-md-10">
                     <div class="row w-100">
                         <div class="col-lg-6 col-md-7 col-sm-12 login-container">
-                            <h3 class="text-center mb-4">Login</h3>
+                            <h3 class="text-center mb-4"> <img class="img-responsive adminLogo" src="/admin/images/logo.png" alt="logo"></h3>
                             <form id="loginForm" method="POST" action="/login/checkLogin">
                                 <div class="form-group position-relative">
                                     <label for="email">Email</label>
@@ -71,8 +74,9 @@
                                         placeholder="Enter password">
                                     <i class="fas fa-eye" id="togglePassword"></i>
                                 </div>
-
-                                <button type="submit" class="btn btn-primary btn-block mt-4">Login</button>
+                                <div class="col-md-12 text-center">
+                                    <button type="submit" class="btn btn-primary btclr btn-block mt-4">Login</button>
+                                </div>
                             </form>
                         </div>
                     </div>

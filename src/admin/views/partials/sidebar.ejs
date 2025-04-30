@@ -1,10 +1,13 @@
+
 <div class="sidebar p-3">
-    <h4 class="text-center mb-4">🚚 OnPoint</h4>
+    <h4 class="text-center mb-2">
+        <img class="img-responsive adminLogo" src="/admin/images/logo.png" alt="logo">
+    </h4>
     <ul class="nav flex-column" id="sidebarMenu">
 
         <!-- Dashboard -->
-        <li class="nav-item <%= session.sidebar?.dashboard ? '' : 'd-none' %>">
-            <a href="/dashboard" class="nav-link">Dashboard</a>
+        <li class="nav-item mb-2 <%= session.sidebar?.dashboard ? '' : 'd-none' %>">
+            <a href="/dashboard" class="nav-link"><span><i class="fa-solid fa-house me-2"></i> Dashboard</span></a>
         </li>
 
         <!-- Role Management -->
@@ -30,7 +33,7 @@
         <li class="nav-item mb-2 <%= session?.sidebar?.userManagement ? '' : 'd-none' %>">
             <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
                 href="#userMenu" role="button">
-                <span><i class="bi bi-people me-2"></i> User Management</span>
+                <span><i class="bi bi-people me-2"></i>User Management</span>
                 <i class="bi bi-chevron-down"></i>
             </a>
             <ul class="collapse list-unstyled ps-3" id="userMenu">
