@@ -41,6 +41,7 @@ const setGlobalPermissions = async (req, res, next) => {
     res.locals.sidebar = updatedSidebar;
     // console.log('updatedSidebar->', updatedSidebar)
 
+
     next();
 };
 const getModuleVisibility = (permissionsJson, sidebarJson) => {
