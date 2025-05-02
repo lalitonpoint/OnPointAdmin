@@ -1,160 +1,168 @@
 <div class="sidebar p-3">
-
+    <h4 class="text-center mb-2">
+        <img class="img-responsive adminLogo" src="/admin/images/logo.png" alt="logo">
+    </h4>
     <ul class="nav flex-column" id="sidebarMenu">
-        <li>
-            <h4 class="text-center mb-4">🚚 OnPoint</h4>
-        </li>
-        <!-- Dashboard -->
-        <li class="nav-item <%= session.sidebar?.dashboard ? '' : 'd-none' %>">
-            <a href="/dashboard" class="nav-link">Dashboard</a>
-        </li>
 
-        <!-- Role Management -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.rolesManagement ? '' : 'd-none' %>">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#roleMenu" role="button">
-                <span><i class="bi bi-person-gear me-2"></i> Role Management</span>
-                <i class="bi bi-chevron-down"></i>
-            </a>
-            <ul class="collapse list-unstyled ps-3" id="roleMenu">
-                <li class="sub-item <%= session?.sidebar?.manageRoles ? '' : 'd-none' %>">
-                    <a href="/roles/rolesManagement" class="nav-link sub-link"><i
-                            class="bi bi-briefcase me-2"></i>Manage Roles</a>
-                </li>
-                <li class="sub-item <%= session?.sidebar?.backendUsers ? '' : 'd-none' %>">
-                    <a href="/roles/backendUserManagement" class="nav-link sub-link"><i
-                            class="bi bi-person me-2"></i>Backend Users</a>
-                </li>
-            </ul>
-        </li>
+        <ul class="nav flex-column" id="sidebarMenu">
+            <!-- <li>
+                <h4 class="text-center mb-4">🚚 OnPoint</h4>
+            </li> -->
+            <!-- Dashboard -->
+            <li class="nav-item mb-2 <%= session.sidebar?.dashboard ? '' : 'd-none' %>">
+                <a href="/dashboard" class="nav-link"><span><i class="fa-solid fa-house me-2"></i> Dashboard</span></a>
+            </li>
 
-        <!-- User Management -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.userManagement ? '' : 'd-none' %>">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#userMenu" role="button">
-                <span><i class="bi bi-people me-2"></i> User Management</span>
-                <i class="bi bi-chevron-down"></i>
-            </a>
-            <ul class="collapse list-unstyled ps-3" id="userMenu">
-                <li class="sub-item <%= session?.sidebar?.manageUsers ? '' : 'd-none' %>">
-                    <a href="/users/userManagement" class="nav-link sub-link"><i
-                            class="bi bi-person-lines-fill me-2"></i>Manage Users</a>
-                </li>
-            </ul>
-        </li>
+            <!-- Role Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.rolesManagement ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#roleMenu" role="button">
+                    <span><i class="bi bi-person-gear me-2"></i> Role Management</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="roleMenu">
+                    <li class="sub-item <%= session?.sidebar?.manageRoles ? '' : 'd-none' %>">
+                        <a href="/roles/rolesManagement" class="nav-link sub-link"><i
+                                class="bi bi-briefcase me-2"></i>Manage Roles</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.backendUsers ? '' : 'd-none' %>">
+                        <a href="/roles/backendUserManagement" class="nav-link sub-link"><i
+                                class="bi bi-person me-2"></i>Backend Users</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- User Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.userManagement ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#userMenu" role="button">
+                    <span><i class="bi bi-people me-2"></i>User Management</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="userMenu">
+                    <li class="sub-item <%= session?.sidebar?.manageUsers ? '' : 'd-none' %>">
+                        <a href="/users/userManagement" class="nav-link sub-link"><i
+                                class="bi bi-person-lines-fill me-2"></i>Manage Users</a>
+                    </li>
+                </ul>
+            </li>
 
 
-        <!-- Warehouse Management -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.warehouseManagement ? '' : 'd-none' %>">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#warehouseMenu" role="button">
-                <span><i class="bi bi-building me-2"></i> Warehouse Management</span>
-                <i class="bi bi-chevron-down"></i>
-            </a>
-            <ul class="collapse list-unstyled ps-3" id="warehouseMenu">
-                <li class="sub-item <%= session?.sidebar?.manageWarehouse ? '' : 'd-none' %>">
-                    <a href="/warehouse/warehouseManagement" class="nav-link sub-link"><i
-                            class="bi bi-boxes me-2"></i>Manage Warehouse</a>
-                </li>
-            </ul>
-        </li>
+            <!-- Warehouse Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.warehouseManagement ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#warehouseMenu" role="button">
+                    <span><i class="bi bi-building me-2"></i> Warehouse Management</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="warehouseMenu">
+                    <li class="sub-item <%= session?.sidebar?.manageWarehouse ? '' : 'd-none' %>">
+                        <a href="/warehouse/warehouseManagement" class="nav-link sub-link"><i
+                                class="bi bi-boxes me-2"></i>Manage Warehouse</a>
+                    </li>
+                </ul>
+            </li>
 
-        <!-- Configuration -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.configuration ? '' : 'd-none' %>">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#configuration" role="button">
-                <span><i class="bi bi-gear me-2"></i> Configuration</span>
-                <i class="bi bi-chevron-down"></i>
-            </a>
-            <ul class="collapse list-unstyled ps-3" id="configuration">
-                <li class="sub-item <%= session?.sidebar?.appSetting ? '' : 'd-none' %>">
-                    <a href="/configuration/appSetting" class="nav-link sub-link"><i class="bi bi-sliders me-2"></i>App
-                        Setting</a>
-                </li>
-            </ul>
-        </li>
+            <!-- Configuration -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.configuration ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#configuration" role="button">
+                    <span><i class="bi bi-gear me-2"></i> Configuration</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="configuration">
+                    <li class="sub-item <%= session?.sidebar?.appSetting ? '' : 'd-none' %>">
+                        <a href="/configuration/appSetting" class="nav-link sub-link"><i
+                                class="bi bi-sliders me-2"></i>App
+                            Setting</a>
+                    </li>
+                </ul>
+            </li>
 
-        <!-- Website Management -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.websiteManagement ? '' : 'd-none' %>">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#websiteManagement" role="button">
-                <span><i class="bi bi-laptop me-2"></i> Website Management</span>
-                <i class="bi bi-chevron-down"></i>
-            </a>
-            <ul class="collapse list-unstyled ps-3" id="websiteManagement">
-                <li class="sub-item <%= session?.sidebar?.manageBanners ? '' : 'd-none' %>">
-                    <a href="/banner/bannerManagement" class="nav-link sub-link"><i class="bi bi-image me-2"></i>Banner
-                        Management</a>
-                </li>
-                <li class="sub-item <%= session?.sidebar?.manageBlogs ? '' : 'd-none' %>">
-                    <a href="/blogs/blogsManagement" class="nav-link sub-link"><i
-                            class="bi bi-journal-text me-2"></i>Blogs Management</a>
-                </li>
-                <li class="sub-item <%= session?.sidebar?.manageContactUs ? '' : 'd-none' %>">
-                    <a href="/contactUs/contactUs" class="nav-link sub-link"><i class="bi bi-telephone me-2"></i>Contact
-                        Us</a>
-                </li>
-                <li class="sub-item <%= session?.sidebar?.manageTestimonials ? '' : 'd-none' %>">
-                    <a href="/testimonial/testimonialManagement" class="nav-link sub-link"><i
-                            class="bi bi-chat-quote me-2"></i>Testimonial Management</a>
-                </li>
-                <li class="sub-item <%= session?.sidebar?.manageTracking ? '' : 'd-none' %>">
-                    <a href="/tracking/trackingPage" class="nav-link sub-link"><i
-                            class="bi bi-chat-quote me-2"></i>Tracking Management</a>
-                </li>
-            </ul>
-        </li>
+            <!-- Website Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.websiteManagement ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#websiteManagement" role="button">
+                    <span><i class="bi bi-laptop me-2"></i> Website Management</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="websiteManagement">
+                    <li class="sub-item <%= session?.sidebar?.manageBanners ? '' : 'd-none' %>">
+                        <a href="/banner/bannerManagement" class="nav-link sub-link"><i
+                                class="bi bi-image me-2"></i>Banner
+                            Management</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.manageBlogs ? '' : 'd-none' %>">
+                        <a href="/blogs/blogsManagement" class="nav-link sub-link"><i
+                                class="bi bi-journal-text me-2"></i>Blogs Management</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.manageContactUs ? '' : 'd-none' %>">
+                        <a href="/contactUs/contactUs" class="nav-link sub-link"><i
+                                class="bi bi-telephone me-2"></i>Contact
+                            Us</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.manageTestimonials ? '' : 'd-none' %>">
+                        <a href="/testimonial/testimonialManagement" class="nav-link sub-link"><i
+                                class="bi bi-chat-quote me-2"></i>Testimonial Management</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.manageTracking ? '' : 'd-none' %>">
+                        <a href="/tracking/trackingPage" class="nav-link sub-link"><i
+                                class="bi bi-chat-quote me-2"></i>Tracking Management</a>
+                    </li>
+                </ul>
+            </li>
 
-        <!-- Driver Management -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.driverManagement ? '' : 'd-none' %>">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#driverManagement" role="button">
-                <span><i class="bi bi-steering-wheel me-2"></i> Driver Management</span>
-                <i class="bi bi-chevron-down"></i>
-            </a>
-            <ul class="collapse list-unstyled ps-3" id="driverManagement">
-                <li class="sub-item <%= session?.sidebar?.manageDocuments ? '' : 'd-none' %>">
-                    <a href="/document/documentManagement" class="nav-link sub-link"><i
-                            class="bi bi-file-earmark-text me-2"></i>Manage Document</a>
-                </li>
-                <li class="sub-item <%= session?.sidebar?.manageDrivers ? '' : 'd-none' %>">
-                    <a href="/driver/driverManagement" class="nav-link sub-link"><i
-                            class="bi bi-person-badge me-2"></i>Manage Drivers</a>
-                </li>
-            </ul>
-        </li>
+            <!-- Driver Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.driverManagement ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#driverManagement" role="button">
+                    <span><i class="bi bi-steering-wheel me-2"></i> Driver Management</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="driverManagement">
+                    <li class="sub-item <%= session?.sidebar?.manageDocuments ? '' : 'd-none' %>">
+                        <a href="/document/documentManagement" class="nav-link sub-link"><i
+                                class="bi bi-file-earmark-text me-2"></i>Manage Document</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.manageDrivers ? '' : 'd-none' %>">
+                        <a href="/driver/driverManagement" class="nav-link sub-link"><i
+                                class="bi bi-person-badge me-2"></i>Manage Drivers</a>
+                    </li>
+                </ul>
+            </li>
 
-        <!-- Vehicle Management -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.vehicleManagement ? '' : 'd-none' %>">
-            <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                href="#vehicleManagement" role="button">
-                <span><i class="bi bi-truck me-2"></i> Vehicle Management</span>
-                <i class="bi bi-chevron-down"></i>
-            </a>
-            <ul class="collapse list-unstyled ps-3" id="vehicleManagement">
-                <li class="sub-item <%= session?.sidebar?.manageServices ? '' : 'd-none' %>">
-                    <a href="/service/serviceManagement" class="nav-link sub-link"><i
-                            class="bi bi-tools me-2"></i>Service Management</a>
-                </li>
-                <li class="sub-item <%= session?.sidebar?.manageVehicles ? '' : 'd-none' %>">
-                    <a href="/vehicle/vehicleManagement" class="nav-link sub-link"><i
-                            class="bi bi-car-front me-2"></i>Manage Vehicle</a>
-                </li>
-            </ul>
-        </li>
+            <!-- Vehicle Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.vehicleManagement ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#vehicleManagement" role="button">
+                    <span><i class="bi bi-truck me-2"></i> Vehicle Management</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="vehicleManagement">
+                    <li class="sub-item <%= session?.sidebar?.manageServices ? '' : 'd-none' %>">
+                        <a href="/service/serviceManagement" class="nav-link sub-link"><i
+                                class="bi bi-tools me-2"></i>Service Management</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.manageVehicles ? '' : 'd-none' %>">
+                        <a href="/vehicle/vehicleManagement" class="nav-link sub-link"><i
+                                class="bi bi-car-front me-2"></i>Manage Vehicle</a>
+                    </li>
+                </ul>
+            </li>
 
-        <!-- Vendor Management -->
-        <li class="nav-item mb-2 <%= session?.sidebar?.vendorManagement ? '' : 'd-none' %>">
-            <a href="/vendor/vendorManagement" class="nav-link"><i class="bi bi-shop me-2"></i>Vendor Management</a>
-        </li>
+            <!-- Vendor Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.vendorManagement ? '' : 'd-none' %>">
+                <a href="/vendor/vendorManagement" class="nav-link"><i class="bi bi-shop me-2"></i>Vendor Management</a>
+            </li>
 
-        <li class="nav-item mb-2 <%= !sidebar.faqManagement ? 'd-none' : '' %>">
-            <a href="/faq/faqManagement" class="nav-link"><i class="bi bi-patch-question me-2"></i>Faq Management</a>
-        </li>
+            <li class="nav-item mb-2 <%= !sidebar.faqManagement ? 'd-none' : '' %>">
+                <a href="/faq/faqManagement" class="nav-link"><i class="bi bi-patch-question me-2"></i>Faq
+                    Management</a>
+            </li>
 
-        <li class="nav-item mb-2 <%= session?.sidebar?.ptlManagement ? '' : 'd-none' %>">
-            <a href="/ptlPackages/ptlPackages" class="nav-link"><i class="bi bi-shop me-2"></i>PTL Management</a>
-        </li>
+            <li class="nav-item mb-2 <%= session?.sidebar?.ptlManagement ? '' : 'd-none' %>">
+                <a href="/ptlPackages/ptlPackages" class="nav-link"><i class="bi bi-shop me-2"></i>PTL Management</a>
+            </li>
 
-    </ul>
+        </ul>
 </div>

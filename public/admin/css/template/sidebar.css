@@ -1,27 +1,36 @@
 .sidebar {
     height: auto;
-    background: #343a40;
+    background: #e5e7ee;
     color: #fff;
     padding: 1rem;
     min-height: 100vh;
     min-width: 300px !important;
 }
 
-#sidebarMenu {
-    position: sticky;
-    top: 10px;
+.adminLogo {
+    height: 40px;
+    height: 70px;
+    object-fit: contain;
 }
 
+
 .sidebar a {
-    color: #adb5bd;
+    color: #2B46BD;
     text-decoration: none;
     font-size: 15px;
 }
 
 .sidebar a:hover,
 .sidebar .nav-link.active {
-    background: #495057;
+    background: #2B46BD;
     color: #fff;
     padding-left: 10px;
     transition: 0.3s;
+    border-radius: 8px;
+}
+
+.nav-item ul {
+    background: #cdd7ea;
+    margin-top: 5px;
+    border-radius: 8px;
 }
