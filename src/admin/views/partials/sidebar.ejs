@@ -155,7 +155,7 @@
                 <a href="/vendor/vendorManagement" class="nav-link"><i class="bi bi-shop me-2"></i>Vendor Management</a>
             </li>
 
-            <li class="nav-item mb-2 <%= !sidebar.faqManagement ? 'd-none' : '' %>">
+            <li class="nav-item mb-2 <%= session?.sidebar?.faqManagement ? '' : 'd-none' %>">
                 <a href="/faq/faqManagement" class="nav-link"><i class="bi bi-patch-question me-2"></i>Faq
                     Management</a>
             </li>
