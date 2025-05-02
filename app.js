@@ -4,6 +4,7 @@ const session = require('express-session');
 const path = require('path');
 const connectDB = require('./config/db');
 const indexRoutes = require('./src/admin/routes/indexRoutes');
+const vendorRoutes = require('./src/vendor/routes/indexRoutes');
 const apiRoutes = require('./apiRoutes');
 const expressLayouts = require('express-ejs-layouts');
 const { setGlobalPermissions } = require('./src/admin/middleware/login/checkPermission');
@@ -25,6 +26,8 @@ app.use(session({
     cookie: { maxAge: 24000 * 60 * 1000 }
 }));
 
+app.use('/vendor', vendorRoutes);
+
 
 app.use(setGlobalPermissions);
 
@@ -42,6 +45,7 @@ app.use((req, res, next) => {
 
 
 // Routes
+
 app.use('/api', apiRoutes);
 app.use('/', indexRoutes);
 

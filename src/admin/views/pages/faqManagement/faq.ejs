@@ -87,7 +87,33 @@
                                 <option value="2">Inactive</option>
                             </select>
                         </div>
+
                     </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="faqType" class="form-label">Faq Type<strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="faqType" id="faqType">
+                                <option value="">Select Status</option>
+                                <option value="1">User</option>
+                                <option value="2">Driver</option>
+
+                            </select>
+                        </div>
+                        <div class="col-md-6 faqTypeDiv d-none">
+                            <label for="faqCategory" class="form-label">Category</label>
+                            <select class="form-select" name="faqCategory" id="faqCategory">
+                                <option value="">Select Category</option>
+                                <option value="1">General</option>
+                                <option value="2">Account</option>
+                                <option value="3">Service</option>
+
+                            </select>
+                        </div>
+
+                    </div>
+
 
                     <div class="mb-3">
                         <label class="form-label" for="FaqDescription">Faq Description <strong
@@ -172,19 +198,35 @@
             $('#FaqModal').modal('show', this); // Pass the button element for context
         });
 
+        $('#faqType').on('change', function () {
+            var faqType = $(this).val();
+            if (faqType == 2) {
+                $('.faqTypeDiv').removeClass('d-none').hide().slideDown(300);
+            } else {
+                $('.faqTypeDiv').slideUp(300, function () {
+                    $(this).addClass('d-none');
+                });
+            }
+        });
+
         $('#FaqForm').on('submit', function (e) {
             e.preventDefault();
 
             const id = $('#FaqId').val();
             const title = $('#FaqTitle').val().trim();
             const status = $('#Faqtatus').val();
+            const faqType = $('#faqType').val();
+            let faqCategory = $('#faqCategory').val();
+            faqCategory = faqCategory ? faqCategory : 0;
+
             const description = ckEditor ? ckEditor.getData().trim() : $('#FaqDescription').val().trim();
 
             if (!title) return toastr.error('Faq Title is required.', 'Validation Error');
             if (!status) return toastr.error('Faq Status is required.', 'Validation Error');
             if (!description) return toastr.error('Faq Description is required.', 'Validation Error');
+            if (!faqType) return toastr.error('Faq Type is required.', 'Validation Error');
 
-            const payloadData = { title: title, 'status': status, 'description': description };
+            const payloadData = { title: title, 'status': status, 'description': description, 'faqType': faqType, 'faqCategory': faqCategory };
 
             const url = id ? `/faq/updateFaq/${id}` : '/faq/createFaq';
 
@@ -229,8 +271,17 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function (data) {
+                        if (data.faqType == 2) {
+                            $('.faqTypeDiv').removeClass('d-none').hide().slideDown(300);
+                        } else {
+                            $('.faqTypeDiv').slideUp(300, function () {
+                                $(this).addClass('d-none');
+                            });
+                        }
                         $('#FaqTitle').val(data.title);
                         $('#Faqtatus').val(data.status);
+                        $('#faqCategory').val(data.faqCategory);
+                        $('#faqType').val(data.faqType);
                         if (ckEditor) ckEditor.setData(data.description);
                     },
                     error: () => toastr.error('Failed to fetch FAQ details.', 'Error')

@@ -67,13 +67,13 @@ const faqList = async (req, res) => {
 // Create FAQ
 const faqCreate = async (req, res) => {
     try {
-        const { title, description, status } = req.body;
+        const { title, description, status, faqType, faqCategory } = req.body;
 
-        if (!title || !status || !description) {
-            return res.status(400).json({ error: "Title, status, and description are required" });
+        if (!title || !status || !description || !faqType) {
+            return res.status(400).json({ error: "Title, status, faqtype and description are required" });
         }
 
-        const saveFaq = new Faq({ title, description, status });
+        const saveFaq = new Faq({ title, description, status, faqType, faqCategory });
         await saveFaq.save();
         await generateLogs(req, 'Add', saveFaq);
 
@@ -97,14 +97,15 @@ const getFaq = async (req, res) => {
 // Update FAQ
 const updateFaq = async (req, res) => {
     try {
-        const { title, description, status } = req.body;
+        const { title, description, status, faqType, faqCategory } = req.body;
         const { id } = req.params;
 
-        if (!title || !status || !description) {
-            return res.status(400).json({ error: "Title, status, and description are required" });
+
+        if (!title || !status || !description || !faqType) {
+            return res.status(400).json({ error: "Title, status, faqtype and description are required" });
         }
 
-        const updateData = { title, description, status, updatedAt: new Date() };
+        const updateData = { title, description, status, faqType, faqCategory, updatedAt: new Date() };
         await Faq.findByIdAndUpdate(id, updateData);
         await generateLogs(req, 'Edit', updateData);
 
