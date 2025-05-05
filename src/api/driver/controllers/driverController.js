@@ -35,7 +35,7 @@ const createDriver = async (req, res) => {
     form.parse(req, async (err, fields, files) => {
         if (err) {
             console.error('Error parsing form:', err);
-            return res.status(500).json({ success: false, message: 'Failed to parse form data.' }); // Changed status code to 400
+            return res.status(500).json({ success: false, message: 'Failed to parse form data.' }); // Changed status code to 200
         }
 
         const getField = field => fields[field]?.[0] || '';
@@ -62,7 +62,7 @@ const createDriver = async (req, res) => {
                     const requiredFields = ['name', 'email', 'dob', 'gender', 'countryCode', 'mobile'];
                     for (const field of requiredFields) {
                         if (!getField(field)) {
-                            return res.status(200).json({ success: false, message: `${field} is required.` }); // Changed status code to 400 and using success: false for consistency
+                            return res.status(200).json({ success: false, message: `${field} is required.` }); // Changed status code to 200 and using success: false for consistency
                         }
                     }
 
@@ -89,7 +89,7 @@ const createDriver = async (req, res) => {
                     }
 
                     const profilePicture = await uploadDocument(files, 'profilePicture');
-                    if (!profilePicture) return res.status(200).json({ success: false, message: "Profile picture is required." }); // Changed status code to 400
+                    if (!profilePicture) return res.status(200).json({ success: false, message: "Profile picture is required." }); // Changed status code to 200
 
                     update.personalInfo = {
                         name: getField('name'),
@@ -199,7 +199,7 @@ const createDriver = async (req, res) => {
 
 
                 default:
-                    return res.status(200).json({ success: false, message: "Invalid step value." }); // Changed status code to 400 and using success: false
+                    return res.status(200).json({ success: false, message: "Invalid step value." }); // Changed status code to 200 and using success: false
             }
 
             let driver;
@@ -249,7 +249,81 @@ const createDriver = async (req, res) => {
         }
     });
 };
+const updateDriver = (req, res) => {
+    const form = new multiparty.Form();
+    form.maxFilesSize = 10 * 1024 * 1024;
+
+    form.parse(req, async (err, fields, files) => {
+        if (err) {
+            console.error('Error parsing form:', err);
+            return res.status(500).json({ success: false, message: 'Failed to parse form data.' });
+        }
+
+        const getField = field => fields[field]?.[0] || '';
+        const driverId = req.headers['driverid'];
+
+        if (!driverId) {
+            return res.status(400).json({ success: false, message: "driverId is required" });
+        }
+
+        const existingDriver = await DriverProfile.findById(driverId);
+        if (!existingDriver) {
+            return res.status(404).json({ success: false, message: 'Driver not found.' });
+        }
+
+        try {
+            const requiredFields = ['name', 'dob', 'gender', 'countryCode', 'mobile'];
+            const personalInfoFields = [...requiredFields, 'altMobile', 'email'];
+            const update = {};
+
+            // Validate required fields
+            for (const field of requiredFields) {
+                const value = getField(field);
+                if (!value) {
+                    return res.status(400).json({ success: false, message: `${field} is required.` });
+                }
+            }
+
+            // Build dynamic update object with dot notation
+            for (const field of personalInfoFields) {
+                const value = getField(field);
+                if (value) {
+                    update[`personalInfo.${field}`] = value;
+                }
+            }
+
+            // Upload and include profile picture if present
+            const profilePicture = await uploadDocument(files, 'profilePicture');
+            if (profilePicture) {
+                update['personalInfo.profilePicture'] = profilePicture;
+            }
+
+            const driver = await DriverProfile.findByIdAndUpdate(
+                driverId,
+                { $set: update },
+                { new: true }
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: `Driver Updated Successfully`,
+                driverId: driver._id,
+                data: driver,
+            });
+
+        } catch (error) {
+            console.error('Error in updateDriver:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error.',
+                details: error.message
+            });
+        }
+    });
+};
+
 
 module.exports = {
-    createDriver
+    createDriver,
+    updateDriver
 };
