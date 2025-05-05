@@ -2,8 +2,8 @@ const admin = require("firebase-admin");
 const fs = require("fs");
 const path = require("path");
 
-// Ensure that the firebaseCred.json path is valid
-const serviceAccountPath = path.resolve(__dirname, "./firebaseCred.json");
+// Resolve full path safely
+const serviceAccountPath = path.resolve(__dirname, "./config/firebaseCred.json");
 
 if (!fs.existsSync(serviceAccountPath)) {
     console.error("❌ firebaseCred.json file not found at path:", serviceAccountPath);
@@ -19,17 +19,28 @@ try {
 }
 
 try {
-    // Initialize Firebase Admin SDK with the provided service account
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: "https://onpoint-9cb10-default-rtdb.firebaseio.com/"
+        databaseURL: "https://onpoint-9cb10-default-rtdb.firebaseio.com",
     });
 
-    console.log("✅ Firebase initialized successfully.");
+    const db = admin.database();
+    const ref = db.ref("test_connection");
+
+    ref.set({
+        status: "✅ Firebase connected successfully!",
+        checkedAt: new Date().toISOString()
+    })
+        .then(() => {
+            console.log("✅ Firebase write success.");
+            process.exit(0);
+        })
+        .catch((error) => {
+            console.error("❌ Firebase write failed:", error.message);
+            process.exit(1);
+        });
 
 } catch (error) {
     console.error("❌ Firebase initialization failed:", error.message);
     process.exit(1);
 }
-
-module.exports = admin;
