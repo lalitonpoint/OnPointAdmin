@@ -7,4 +7,5 @@ const { createDriver, updateDriver } = require('../controllers/driverController'
 router.post('/createDriver', createDriver);
 router.post('/updateDriver', updateDriver);
 
+
 module.exports = router;

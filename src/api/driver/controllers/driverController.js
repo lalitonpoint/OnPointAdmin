@@ -249,6 +249,7 @@ const createDriver = async (req, res) => {
         }
     });
 };
+
 const updateDriver = (req, res) => {
     const form = new multiparty.Form();
     form.maxFilesSize = 10 * 1024 * 1024;
@@ -263,12 +264,12 @@ const updateDriver = (req, res) => {
         const driverId = req.headers['driverid'];
 
         if (!driverId) {
-            return res.status(400).json({ success: false, message: "driverId is required" });
+            return res.status(200).json({ success: false, message: "driverId is required" });
         }
 
         const existingDriver = await DriverProfile.findById(driverId);
         if (!existingDriver) {
-            return res.status(404).json({ success: false, message: 'Driver not found.' });
+            return res.status(200).json({ success: false, message: 'Driver not found.' });
         }
 
         try {
@@ -280,7 +281,7 @@ const updateDriver = (req, res) => {
             for (const field of requiredFields) {
                 const value = getField(field);
                 if (!value) {
-                    return res.status(400).json({ success: false, message: `${field} is required.` });
+                    return res.status(200).json({ success: false, message: `${field} is required.` });
                 }
             }
 
@@ -325,5 +326,5 @@ const updateDriver = (req, res) => {
 
 module.exports = {
     createDriver,
-    updateDriver
+    updateDriver,
 };

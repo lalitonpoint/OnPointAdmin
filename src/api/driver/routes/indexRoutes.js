@@ -6,10 +6,12 @@ const driverRoutes = require('./driverRoutes');
 const truckRoutes = require('./truckRoutes');
 const notificationRoutes = require('./notificationRoutes'); // Ensure correct path
 const hambergerRoutes = require('./hambergerRoutes'); // Ensure correct path
+const serviceRoutes = require('./serviceRoutes'); // Ensure correct path
 
 
 router.use('/otp', otpRoutes);
 router.use('/profile', driverRoutes);
+router.use('/service', serviceRoutes);
 router.use('/truck', truckRoutes);
 router.use('/notification', notificationRoutes);
 router.use('/hamberger', hambergerRoutes);
