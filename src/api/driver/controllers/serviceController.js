@@ -12,11 +12,13 @@ const saveDriverLocation = async (req, res) => {
     }
 
     try {
+
         const db = admin.database(); // Access Realtime Database
         await db.ref(`driverCurrentLocation/${driverId}/location`).set({
             latitude: lat,
             longitude: long,
-            timestamp: Date.now()
+            checkedAt: new Date().toISOString()
+
         });
 
         res.status(200).json({ message: "Location updated successfully" });
