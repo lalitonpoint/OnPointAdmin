@@ -18,7 +18,8 @@ const shipmentSchema = new mongoose.Schema({
     },
     status: {
         type: Number,
-        enum: [1, 2, 3, 4, 5], // 1: Pickup, 2: Out for Delivery, 3: In Progress, 4: Delivered, 5: Cancelled
+        enum: [0, 1, 2, 3, 4, 5], // 1: Pickup, 2: Out for Delivery, 3: In Progress, 4: Delivered, 5: Cancelled
+        default: 0,
         required: true
     },
     assignType: {

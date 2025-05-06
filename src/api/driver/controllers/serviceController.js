@@ -111,7 +111,98 @@ const getDriverLocation = async (driverId) => {
     }
 };
 
+
+const tripHistory = async (req, res) => {
+    try {
+        const driverId = req.header('driverid'); // or req.query / req.body based on how driverId is passed
+
+        if (!driverId) {
+            return res.status(200).json({
+                success: false,
+                message: "Driver ID is required"
+            });
+        }
+
+        const tripHistoryDetail = await PTL.find({
+            driverId,
+            status: { $in: [0, 4, 5] }
+        });
+
+        const categoryLabels = {
+            0: 'All',
+            4: 'Completed',
+            5: 'Cancelled'
+        };
+
+        const groupedTrips = tripHistoryDetail.reduce((acc, trip) => {
+            const category = categoryLabels[trip.status] || 'Unknown'; // assuming 'status' field
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push(trip);
+            return acc;
+        }, {});
+
+        res.status(200).json({
+            success: true,
+            data: groupedTrips,
+            message: "Trips Detail Fetch Successfully",
+
+
+        });
+
+    } catch (error) {
+        console.error("Error fetching trip history:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch trip history",
+            error: error.message
+        });
+    }
+};
+
+const tripHistoryCount = async (req, res) => {
+    try {
+        const driverId = req.header('driverid'); // or req.query / req.body
+
+        if (!driverId) {
+            return res.status(200).json({
+                success: false,
+                message: "Driver ID is required"
+            });
+        }
+
+        const tripHistoryDetail = await PTL.find({
+            driverId,
+            status: { $in: [4, 5] }
+        });
+
+        // Count status 4 and 5 separately
+        const completedCount = tripHistoryDetail.filter(trip => trip.status === 4).length;
+        const cancelledCount = tripHistoryDetail.filter(trip => trip.status === 5).length;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                completedCount,
+                cancelledCount
+            },
+            message: "Trip counts fetched successfully"
+        });
+
+    } catch (error) {
+        console.error("Error fetching trip history:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch trip history",
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     saveDriverLocation,
-    orderAssign
+    orderAssign,
+    tripHistory,
+    tripHistoryCount
 };
