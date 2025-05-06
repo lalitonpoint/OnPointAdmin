@@ -1,23 +1,35 @@
 const admin = require('../../../../config/firebaseConnection');
 const PTL = require('../../../admin/models/ptlPackages/driverPackageAssignModel'); // Adjust the model path as needed
 const { getDistanceAndDuration } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+const DriverLocation = require('../modals/driverLocModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 
-// Save Driver Location
+// Save Driver Locationconst DriverLocation = require('../models/DriverLocation'); // adjust the path as needed
+
 const saveDriverLocation = async (req, res) => {
     const driverId = req.headers['driverid'];
     const { lat, long } = req.body;
 
     if (!driverId || !lat || !long) {
-        return res.status(200).json({ message: "Missing driverId, lat or long" });
+        return res.status(200).json({ message: "Missing driverId, lat, or long" });
     }
 
     try {
-        const db = admin.database(); // Access Realtime Database
-        await db.ref(`driverCurrentLocation/${driverId}/location`).set({
-            latitude: lat,
-            longitude: long,
-            timestamp: Date.now()
-        });
+        const existingLocation = await DriverLocation.findOne({ driverId });
+
+        if (existingLocation) {
+            // Update existing location
+            existingLocation.latitude = lat;
+            existingLocation.longitude = long;
+            await existingLocation.save();
+        } else {
+            // Create new location
+            const newLocation = new DriverLocation({
+                driverId,
+                latitude: lat,
+                longitude: long
+            });
+            await newLocation.save();
+        }
 
         res.status(200).json({ message: "Location updated successfully" });
     } catch (error) {
