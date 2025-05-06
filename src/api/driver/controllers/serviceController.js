@@ -89,22 +89,19 @@ const orderAssign = async (req, res) => {
 // Get Driver Location
 const getDriverLocation = async (driverId) => {
     try {
-        const db = admin.database();
-        const locationRef = db.ref(`driverCurrentLocation/${driverId}/location`);
+        const existingLocation = await DriverLocation.findOne({ driverId });
 
-        const snapshot = await locationRef.once('value');
 
-        if (!snapshot.exists()) {
+        if (!existingLocation) {
             return { success: false, message: "Location not found for this driver" };
         }
 
-        const locationData = snapshot.val();
 
-        if (locationData) {
+        if (existingLocation) {
             return {
                 success: true,
-                lat: locationData.latitude,
-                long: locationData.longitude
+                lat: existingLocation.latitude,
+                long: existingLocation.longitude
             };
         }
 
