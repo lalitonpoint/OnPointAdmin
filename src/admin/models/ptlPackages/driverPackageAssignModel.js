@@ -26,10 +26,13 @@ const shipmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    deliveryStatus: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
-    },
+    deliveryStatus: [
+        {
+            key: String,
+            status: Number,
+            deliveryDateTime: Date
+        }
+    ],
     pickupPincode: { type: String },
     dropPincode: { type: String },
     pickupAddress: { type: String },

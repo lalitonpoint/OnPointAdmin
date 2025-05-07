@@ -200,9 +200,92 @@ const tripHistoryCount = async (req, res) => {
     }
 };
 
+const updateOrderStatus = async (req, res) => {
+    try {
+        const driverId = req.header('driverid');
+        const packageId = req.body.packageId;
+        const orderStatus = parseInt(req.body.status);
+
+        // Allowed statuses and corresponding keys
+        const statusKeyMap = {
+            0: 'pending',
+            1: 'pickup',
+            2: 'in_transit',
+            3: 'out_for_delivery',
+            4: 'delivered',
+            5: 'cancelled'
+        };
+
+        const statusMessageMap = {
+            0: 'Order is already pending',
+            1: 'Order is already picked up',
+            2: 'Order is already in transit',
+            3: 'Order is already out for delivery',
+            4: 'Order is already delivered',
+            5: 'Order is already cancelled'
+        };
+
+        // Validate status
+        if (!Object.keys(statusKeyMap).includes(orderStatus.toString())) {
+            return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
+        }
+
+        if (!packageId) {
+            return res.status(200).json({ success: false, message: 'packageId is required' });
+        }
+
+        // Find the latest order
+        const order = await PTL.findOne({ driverId, packageId }).sort({ createdAt: -1 });
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Ensure new status is greater than current status
+        if (orderStatus <= order.status) {
+            return res.status(200).json({
+                success: false,
+                message: statusMessageMap[order.status] || 'Order is already updated to this status'
+            });
+        }
+
+        // Ensure deliveryStatus is an array
+        if (!Array.isArray(order.deliveryStatus)) {
+            order.deliveryStatus = [];
+        }
+
+        // Append to deliveryStatus history
+        order.deliveryStatus.push({
+            key: statusKeyMap[orderStatus],
+            status: orderStatus,
+            deliveryDateTime: new Date()
+        });
+        // console.log('order', order);
+
+        // Update order status
+        order.status = orderStatus;
+
+        await order.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Order status updated successfully',
+            order
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
+    }
+};
+
+
 module.exports = {
     saveDriverLocation,
     orderAssign,
     tripHistory,
-    tripHistoryCount
+    tripHistoryCount,
+    updateOrderStatus
 };
