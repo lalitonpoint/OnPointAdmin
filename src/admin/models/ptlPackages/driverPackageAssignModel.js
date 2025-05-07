@@ -7,11 +7,14 @@ const shipmentSchema = new mongoose.Schema({
     },
     driverId: {
         type: String,
-        required: true
+        required: true,
+        ref: 'DriverProfile'
     },
     userId: {
         type: String,
-        required: true
+        required: true,
+        ref: 'User'
+
     },
     warehouseId: {
         type: String,

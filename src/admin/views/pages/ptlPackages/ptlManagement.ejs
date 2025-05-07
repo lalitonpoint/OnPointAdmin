@@ -61,6 +61,7 @@
                     <button class="btn btn-secondary" id="resetBtn">Reset</button>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -261,17 +262,6 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="deliveryStatus" class="form-label">Status</label>
-                            <select id="deliveryStatus" class="form-select" name="deliveryStatus">
-                                <option value="">All</option>
-                                <option value="1">In Transit</option>
-                                <option value="2">Pickup</option>
-                                <option value="3">Out for Delivery</option>
-                                <option value="4">Delivered</option>
-                                <option value="5">Cancelled</option>
-                            </select>
-                        </div>
 
                     </div>
 
@@ -280,263 +270,285 @@
 
                     <button type="submit" class="btn btn-pink w-100">Save</button>
                 </form>
+
+            </div>
+            <div class="card-body">
+                <h2>Order Tracking</h2>
+                <div class="table-responsive">
+                    <table id="orderAssignTable" class="table table-bordered table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>From Location</th>
+                                <th>Drop Location</th>
+                                <th>Driver Name</th>
+                                <th>User Name</th>
+                                <th>Delivery Status</th>
+                                <th>Deliver To</th>
+                                <th>Delivery Date</th>
+                                <th style="width:250px">Update Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-<script>
-    let trackingTable;
-    // This ensures the script runs after the DOM is fully loaded
-    $(document).ready(function () {
+    <script>
+        let trackingTable;
+        // This ensures the script runs after the DOM is fully loaded
+        $(document).ready(function () {
 
 
-        // Initialize DataTable
-        trackingTable = $('#trackingTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '/ptlPackages/trackingList/',
-                type: 'POST',
-                data: function (d) {
+            // Initialize DataTable
+            trackingTable = $('#trackingTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/ptlPackages/trackingList/',
+                    type: 'POST',
+                    data: function (d) {
 
-                    d.trackingCode = $('#searchTrackingId').val();
-                    d.pickUpLocation = $('#pickUpLocation').val();
-                    d.dropAddress = $('#dropUpLocation').val(); // Corrected ID here
-                    d.status = $('#searchStatus').val();
-                    d.date = $('#searchDate').val();
-                    // console.log("Final request data:", d.pickUpLocation); // Debug log
-                    // console.log("Final request data:", d.dropLocation); // Debug log
-                }
-            },
-            columns: [
-                {
-                    data: null,
-                    orderable: false, // Disable ordering for the index column
-                    render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
-                },
-
-                {
-                    data: 'pickupAddress',
-                    orderable: false,
-                    render: function (data, type, row) {
-                        if (!data) return '-'; // handle if pickupAddress is null
-                        return data.length > 30 ? data.substring(0, 30) + '...' : data;
-                    }
-                }, // Corrected data property to 'pickUpLocation'
-                {
-                    data: 'dropAddress',
-                    orderable: false,
-                    render: function (data, type, row) {
-                        if (!data) return '-'; // handle if pickupAddress is null
-                        return data.length > 30 ? data.substring(0, 30) + '...' : data;
+                        d.trackingCode = $('#searchTrackingId').val();
+                        d.pickUpLocation = $('#pickUpLocation').val();
+                        d.dropAddress = $('#dropUpLocation').val(); // Corrected ID here
+                        d.status = $('#searchStatus').val();
+                        d.date = $('#searchDate').val();
+                        // console.log("Final request data:", d.pickUpLocation); // Debug log
+                        // console.log("Final request data:", d.dropLocation); // Debug log
                     }
                 },
-                {
-                    data: 'orderId',
-                    orderable: false,
+                columns: [
+                    {
+                        data: null,
+                        orderable: false, // Disable ordering for the index column
+                        render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                    },
 
-                },
-                //{ data: 'userId._id' },
-                { data: 'userId.fullName' },
-                { data: 'totalPayment' },
-                // { data : 'totalWeight'},
-
-                {
-                    data: 'status',
-                    orderable: false,
-
-                    render: function (data) {
-                        // Status color mapping
-                        let statusColor = '';
-                        let statusText = '';
-
-                        switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
-                            case 1:
-                                statusColor = 'badge bg-warning'; // Pickup
-                                statusText = 'In Progress';
-                                break;
-                            case 2:
-                                statusColor = 'badge bg-info'; // Out for Delivery
-                                statusText = 'Pickup';
-                                break;
-                            case 3:
-                                statusColor = 'badge bg-primary'; // In Progress
-                                statusText = 'Out for Delivery';
-                                break;
-                            case 4:
-                                statusColor = 'badge bg-success'; // Delivered
-                                statusText = 'Delivered';
-                                break;
-                            case 5:
-                                statusColor = 'badge bg-danger'; // Cancelled
-                                statusText = 'Cancelled';
-                                break;
-                            default:
-                                statusColor = 'badge bg-secondary'; // Unknown
-                                statusText = 'Unknown';
-                                break;
+                    {
+                        data: 'pickupAddress',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if (!data) return '-'; // handle if pickupAddress is null
+                            return data.length > 30 ? data.substring(0, 30) + '...' : data;
                         }
+                    }, // Corrected data property to 'pickUpLocation'
+                    {
+                        data: 'dropAddress',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if (!data) return '-'; // handle if pickupAddress is null
+                            return data.length > 30 ? data.substring(0, 30) + '...' : data;
+                        }
+                    },
+                    {
+                        data: 'orderId',
+                        orderable: false,
 
-                        return `<span class="${statusColor}">${statusText}</span>`;
-                    }
-                },
+                    },
+                    //{ data: 'userId._id' },
+                    { data: 'userId.fullName' },
+                    { data: 'totalPayment' },
+                    // { data : 'totalWeight'},
+
+                    {
+                        data: 'status',
+                        orderable: false,
+
+                        render: function (data) {
+                            // Status color mapping
+                            let statusColor = '';
+                            let statusText = '';
+
+                            switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
+                                case 1:
+                                    statusColor = 'badge bg-warning'; // Pickup
+                                    statusText = 'In Progress';
+                                    break;
+                                case 2:
+                                    statusColor = 'badge bg-info'; // Out for Delivery
+                                    statusText = 'Pickup';
+                                    break;
+                                case 3:
+                                    statusColor = 'badge bg-primary'; // In Progress
+                                    statusText = 'Out for Delivery';
+                                    break;
+                                case 4:
+                                    statusColor = 'badge bg-success'; // Delivered
+                                    statusText = 'Delivered';
+                                    break;
+                                case 5:
+                                    statusColor = 'badge bg-danger'; // Cancelled
+                                    statusText = 'Cancelled';
+                                    break;
+                                default:
+                                    statusColor = 'badge bg-secondary'; // Unknown
+                                    statusText = 'Unknown';
+                                    break;
+                            }
+
+                            return `<span class="${statusColor}">${statusText}</span>`;
+                        }
+                    },
 
 
 
-                {
-                    data: 'deliveryDate', // Assuming your server returns the combined date and time in 'deliveryDate'
-                    render: function (data) {
-                        return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date and time as needed
-                    }
-                },
-                {
-                    data: null,
-                    orderable: false,
-                    render: function (data, type, row) {
-                        return `
+                    {
+                        data: 'deliveryDate', // Assuming your server returns the combined date and time in 'deliveryDate'
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date and time as needed
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return `
                             <button class="btn btn-sm btn-primary editBtn ptlTabBtn" data-id="${row._id}">    <i class="fas fa-eye"></i>&nbsp;View</button>
                             <button class="btn btn-sm btn-warning assignBtn ptlTabBtn" data-id="${row._id}" data-userid="${row.userId._id}">    <i class="fas fa-edit"></i>&nbsp;Assign</button> `;
+                        }
                     }
-                }
-            ]
-        });
+                ]
+            });
 
-        // Search Button
-        $('#searchBtn').click(function () {
-            trackingTable.ajax.reload();
-        });
+            // Search Button
+            $('#searchBtn').click(function () {
+                trackingTable.ajax.reload();
+            });
 
-        $('#assignType').click(function () {
-            const assignType = $(this).val();
+            $('#assignType').on('change', function () {
+                const assignType = $(this).val();
 
-            if (assignType == 1) {
-                $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
-            } else {
-                $('.warehouseDiv').slideUp(300, function () {
-                    $(this).addClass('d-none');
-                });
-            }
-        });
-
-        // Reset Button
-        $('#resetBtn').click(function () {
-            $('#searchTrackingId, #pickUpLocation, #toLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
-            trackingTable.ajax.reload();
-        });
-
-        // Submit Add/Edit Form
-        $('#trackingForm').submit(function (e) {
-            e.preventDefault();
-            const formElement = document.getElementById('trackingForm'); // Corrected: Used 'trackingForm' instead of 'bannerForm'
-
-            // Trimmed values
-            const trackingCode = $('#trackingCode').val();
-            const pickUpLocation = $('#pickUpLocation').val();
-            const dropLocation = $('#dropLocation').val();
-            const transportMode = $('#transportMode').val();
-            const noOfPacking = $('#noOfPacking').val();
-            const deliveryDate = $('#deliveryDate').val();
-            // const deliveryTime = $('#deliveryTime').val().trim();
-            const trackingStatus = $('#trackingStatus').val();
-
-            const id = $('#packageid').val();
-            const formData = new FormData(formElement);
-
-            if (trackingStatus != 4) {
-                formData.delete("pod");
-
-            }
-
-
-
-
-            const actionUrl = `/ptlPackages/editTracking/${id}`;
-            // alert(id)
-
-            $.ajax({
-                url: actionUrl,
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                dataType: 'json',
-                success: function (response) {
-                    $('#trackingModal').modal('hide');
-                    $('#trackingForm')[0].reset();
-                    trackingTable.ajax.reload();
-                    toastr.success('Tracking Data saved successfully!', 'Success');
-                    const form = $('#trackingForm')[0];
-                    form.reset(); // Reset the form every time the modal is shown
-                    $('#trackingModalLabel').text('Add Tracking')
-                    $('#filePreviewContainer').addClass('d-none');
-
-
-                    // window.location.reload();
-                },
-                error: function (xhr) {
-                    const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
-                    toastr.error(errorMsg, 'Error');
+                if (assignType == 1) {
+                    $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
+                } else {
+                    $('.warehouseDiv').slideUp(300, function () {
+                        $(this).addClass('d-none');
+                    });
                 }
             });
-        });
 
-        // Edit Button
-        $(document).on('click', '.editBtn', function () {
-            const id = $(this).data('id');
-            const statusLabels = {
-                0: "Initiate",
-                1: "Complete",
-                2: "Pending",
-                3: "Failed",
-                4: "Refunded",
-                5: "Partial Payment"
-            };
+            // Reset Button
+            $('#resetBtn').click(function () {
+                $('#searchTrackingId, #pickUpLocation, #toLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
+                trackingTable.ajax.reload();
+            });
+
+            // Submit Add/Edit Form
+            $('#trackingForm').submit(function (e) {
+                e.preventDefault();
+                const formElement = document.getElementById('trackingForm'); // Corrected: Used 'trackingForm' instead of 'bannerForm'
+
+                // Trimmed values
+                const trackingCode = $('#trackingCode').val();
+                const pickUpLocation = $('#pickUpLocation').val();
+                const dropLocation = $('#dropLocation').val();
+                const transportMode = $('#transportMode').val();
+                const noOfPacking = $('#noOfPacking').val();
+                const deliveryDate = $('#deliveryDate').val();
+                // const deliveryTime = $('#deliveryTime').val().trim();
+                const trackingStatus = $('#trackingStatus').val();
+
+                const id = $('#packageid').val();
+                const formData = new FormData(formElement);
+
+                if (trackingStatus != 4) {
+                    formData.delete("pod");
+
+                }
 
 
-            $.ajax({
-                url: '/ptlPackages/get/' + id,
-                type: 'GET',
-                success: function (data) {
-                    // $('#trackingId').val(data._id);
-                    $('.pickupPincode').text(data.packageDetail.pickupPincode || '-');
-                    $('.dropPincode').text(data.packageDetail.dropPincode); // Added pickup location
-                    $('.pickupAddress').text(data.packageDetail.pickupAddress); // Added drop location
-                    $('.dropAddress').text(data.packageDetail.dropAddress); // Added transport mode
-                    $('.pickupLatitude').text(data.packageDetail.pickupLatitude); // Added no of packing
-                    $('.pickupLongitude').text(data.packageDetail.pickupLongitude);
-                    $('.dropLatitude').text(data.packageDetail.dropLatitude);
-                    $('.dropLongitude').text(data.packageDetail.dropLongitude);
-                    $('.pickupNote').text(data.packageDetail.pickupNote);
-                    $('.subTotal').text(data.packageDetail.subTotal);
-                    $('.shippingCost').text(data.packageDetail.shippingCost);
-                    $('.specialHandling').text(data.packageDetail.specialHandling);
-                    $('.gst').text(data.packageDetail.gst);
-                    $('.totalPayment').text(data.packageDetail.totalPayment);
-                    $('.distance').text(data.packageDetail.distance);
-                    $('.duration').text(data.packageDetail.duration);
-                    $('.transactionStatus').text(statusLabels[data.packageDetail.transactionStatus]);
-                    $('.userId').text(data.packageDetail.userId);
-                    $('.preTransactionId').text(data.packageDetail.preTransactionId);
-                    $('.orderId').text(data.packageDetail.orderId);
-                    $('.transactionDate').text(new Date(data.packageDetail.transactionDate).toLocaleString());
-                    $('.totalPackage').text(data.packageDetail.packages ? data.packageDetail.packages.length : 0);
 
-                    const packages = data.packageDetail.packages || [];
-                    console.log('ppp', packages)
-                    const tbody = $('#packageTable');
 
-                    if (packages.length > 0) {
-                        packages.forEach((pkg, index) => {
-                            console.log('dddd', pkg)
+                const actionUrl = `/ptlPackages/editTracking/${id}`;
+                // alert(id)
 
-                            // Add header row for the package with a bold and centered title
-                            tbody.append(`
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function (response) {
+                        $('#trackingModal').modal('hide');
+                        $('#trackingForm')[0].reset();
+                        trackingTable.ajax.reload();
+                        toastr.success('Tracking Data saved successfully!', 'Success');
+                        const form = $('#trackingForm')[0];
+                        form.reset(); // Reset the form every time the modal is shown
+                        $('#trackingModalLabel').text('Add Tracking')
+                        $('#filePreviewContainer').addClass('d-none');
+
+
+                        // window.location.reload();
+                    },
+                    error: function (xhr) {
+                        const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
+                        toastr.error(errorMsg, 'Error');
+                    }
+                });
+            });
+
+            // Edit Button
+            $(document).on('click', '.editBtn', function () {
+                const id = $(this).data('id');
+                const statusLabels = {
+                    0: "Initiate",
+                    1: "Complete",
+                    2: "Pending",
+                    3: "Failed",
+                    4: "Refunded",
+                    5: "Partial Payment"
+                };
+
+
+                $.ajax({
+                    url: '/ptlPackages/get/' + id,
+                    type: 'GET',
+                    success: function (data) {
+                        // $('#trackingId').val(data._id);
+                        $('.pickupPincode').text(data.packageDetail.pickupPincode || '-');
+                        $('.dropPincode').text(data.packageDetail.dropPincode); // Added pickup location
+                        $('.pickupAddress').text(data.packageDetail.pickupAddress); // Added drop location
+                        $('.dropAddress').text(data.packageDetail.dropAddress); // Added transport mode
+                        $('.pickupLatitude').text(data.packageDetail.pickupLatitude); // Added no of packing
+                        $('.pickupLongitude').text(data.packageDetail.pickupLongitude);
+                        $('.dropLatitude').text(data.packageDetail.dropLatitude);
+                        $('.dropLongitude').text(data.packageDetail.dropLongitude);
+                        $('.pickupNote').text(data.packageDetail.pickupNote);
+                        $('.subTotal').text(data.packageDetail.subTotal);
+                        $('.shippingCost').text(data.packageDetail.shippingCost);
+                        $('.specialHandling').text(data.packageDetail.specialHandling);
+                        $('.gst').text(data.packageDetail.gst);
+                        $('.totalPayment').text(data.packageDetail.totalPayment);
+                        $('.distance').text(data.packageDetail.distance);
+                        $('.duration').text(data.packageDetail.duration);
+                        $('.transactionStatus').text(statusLabels[data.packageDetail.transactionStatus]);
+                        $('.userId').text(data.packageDetail.userId);
+                        $('.preTransactionId').text(data.packageDetail.preTransactionId);
+                        $('.orderId').text(data.packageDetail.orderId);
+                        $('.transactionDate').text(new Date(data.packageDetail.transactionDate).toLocaleString());
+                        $('.totalPackage').text(data.packageDetail.packages ? data.packageDetail.packages.length : 0);
+
+                        const packages = data.packageDetail.packages || [];
+                        console.log('ppp', packages)
+                        const tbody = $('#packageTable');
+
+                        if (packages.length > 0) {
+                            packages.forEach((pkg, index) => {
+                                console.log('dddd', pkg)
+
+                                // Add header row for the package with a bold and centered title
+                                tbody.append(`
             <tr style="background-color: #e0f7fa;">
                 <td colspan="4" style="font-weight: bold; text-align: center;">${pkg.packageName}</td>
             </tr>
         `);
 
-                            // Add rows for package details
-                            tbody.append(`
+                                // Add rows for package details
+                                tbody.append(`
             <tr>
                 <td style="font-weight: bold;">Package Type</td>
                 <td>${pkg.packageType}</td>
@@ -550,195 +562,370 @@
                 <td>${pkg.length} x ${pkg.width} x ${pkg.height}</td>
             </tr>
         `);
-                        });
-                    } else {
-                        // In case there are no packages, add a row with a message
-                        tbody.append(`
+                            });
+                        } else {
+                            // In case there are no packages, add a row with a message
+                            tbody.append(`
         <tr>
             <td colspan="4" style="text-align: center; font-weight: bold; color: red;">No packages available</td>
         </tr>
     `);
+                        }
+
+
+
+                        $('#trackingModal').modal('show');
                     }
+                });
+
+                $('#trackingStatus').change(function () {
+                    // Code to execute when the element's value changes
+                    console.log("The value of the element has changed!");
+                    let trackingVal = $(this).val();
+                    if (trackingVal == 4)
+                        $('.pod').removeClass('d-none');
+                    else
+                        $('.pod').addClass('d-none');
+
+                });
+            });
+
+
+            $(document).on('click', '.assignBtn', function () {
+                const id = $(this).data('id');
+                const userId = $(this).data('userid');
+                $('#userId').val(userId);
+                // alert(id)
+                $('#packageId').val(id);
+
+
+                $.ajax({
+                    url: '/ptlPackages/getData/' + id,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: async function (data) {
+
+                        const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
+                        const dropdown = $('#driverlist');
+                        dropdown.empty(); // Clear existing options
+                        dropdown.append('<option value="">Select Driver</option>');
+
+                        await drivers.forEach(driver => {
+                            const name = driver.personalInfo?.name || 'No Name';
+                            const id = driver._id;
+                            dropdown.append(`<option value="${id}">${name}</option>`);
+                        });
+
+                        const warehouse = data.warehouse || [];
+                        console.log(data.warehouse)
+
+                        const Warehouse_drop = $('#warehouselist');
+
+                        Warehouse_drop.empty(); // Clear existing options
+                        Warehouse_drop.append('<option value="">Select Warehouse</option>');
+
+                        await warehouse.forEach(warehouseData => {
+                            const name = warehouseData.Warehousename || 'No Name';
+                            const id = warehouseData._id;
+                            Warehouse_drop.append(`<option value="${id}">${name}</option>`);
+                        });
+
+                        let driverId = data.latestAssignOrderDetail.driverId || 0;
+                        let warehouseId = data.latestAssignOrderDetail.warehouseId || 0;
+                        let status = data.latestAssignOrderDetail.status || 0;
+                        let assignType = data.latestAssignOrderDetail.assignType || 0;
+
+                        $('#driverlist').val(driverId);
+                        $('#warehouselist').val(warehouseId);
+                        $('#deliveryStatus').val(status);
+                        $('#assignType').val(assignType);
+
+                        if (assignType == 1) {
+                            $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
+                        } else {
+                            $('.warehouseDiv').slideUp(300, function () {
+                                $(this).addClass('d-none');
+                            });
+                        }
 
 
 
-                    $('#trackingModal').modal('show');
+
+                    },
+                    error: function (xhr) {
+                        const errorMsg = xhr.responseJSON?.message;
+                        toastr.error(errorMsg, 'Error');
+                    }
+                });
+
+                $('#assignModal').modal('show');
+
+
+
+
+            });
+
+            $('#trackingTable').on('click', '.editBtn', function () {
+                const trackingId = $(this).data('id');
+                $('#trackingModalLabel').text('Edit Ptl package')
+                $('#trackingModal').modal('show', this); // Pass the button element for context
+            });
+
+            // Delete Button
+            $(document).on('click', '.deleteBtn', function () {
+                const id = $(this).data('id');
+                if (confirm("Are you sure you want to delete this tracking?")) {
+                    $.ajax({
+                        url: '/tracking/delete/' + id,
+                        type: 'DELETE',
+                        success: function () {
+                            trackingTable.ajax.reload();
+                        }
+                    });
                 }
             });
 
-            $('#trackingStatus').change(function () {
-                // Code to execute when the element's value changes
-                console.log("The value of the element has changed!");
-                let trackingVal = $(this).val();
-                if (trackingVal == 4)
-                    $('.pod').removeClass('d-none');
-                else
-                    $('.pod').addClass('d-none');
+            // Download CSV
+            $('.btn-close').click(function () {
+                window.location.reload();
+            });
 
+            $('#downloadAllTrackingCsv').click(function () {
+                const params = new URLSearchParams({
+                    trackingCode: $('#searchTrackingId').val(),
+                    status: $('#searchStatus').val(),
+                    date: $('#searchDate').val()
+                });
+                window.location.href = '/tracking/downloadCsv?' + params.toString();
+            });
+
+        });
+        $(document).on('click', '#viewPackageBtn', function () {
+            const packageId = $('#packageid').val().trim();
+            if (packageId) {
+                loadPackageDetails(packageId);
+            } else {
+                $('#packageDetailsTableBody').html('<tr><td colspan="3" class="text-warning text-center">Please enter a valid Package ID</td></tr>');
+            }
+        });
+
+
+        $('#assignForm').submit(function (e) {
+            e.preventDefault();
+            const formElement = document.getElementById('assignForm'); // Corrected: Used 'trackingForm' instead of 'bannerForm'
+
+            // Trimmed values
+
+
+            const driver = $('#driverId').val();
+            const assignType = $('#assignType').val();
+            const warehouseid = $('#warehouselist').val();
+            const status = $('#deliveryStatus').val();
+            const packageId = $('#packageId').val();
+            const userId = $('#userId').val();
+
+            const formData = new FormData(formElement);
+            formData.append('packageId', packageId)
+            formData.append('userId', userId)
+
+
+            const actionUrl = `/ptlPackages/assignDriver`;
+            // alert(id)
+
+            $.ajax({
+                url: actionUrl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (response) {
+                    $('#assignModal').modal('hide');
+                    $('#assignForm')[0].reset();
+                    trackingTable.ajax.reload();
+                    toastr.success('Order Data saved successfully!', 'Success');
+                },
+                error: function (xhr) {
+                    const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
+                    toastr.error(errorMsg, 'Error');
+                }
+            });
+        });
+
+
+    </script>
+
+
+    <script>
+        // Delegate the change event for dynamically created #updateOrderStatus elements
+        $(document).on('change', '#updateOrderStatus', function () {
+
+            // Get the selected value and the associated order ID
+            let orderValue = $(this).val();
+            let assignOrderId = $(this).data('id');  // Ensure data-id is correctly attached to the select element
+
+            // Make the AJAX request
+            $.ajax({
+                url: '/ptlPackages/updateOrderStatus/', // Your API endpoint
+                type: 'POST',
+                data: {
+                    orderStatus: orderValue,       // Renamed to match your expected backend field
+                    assignOrderId: assignOrderId   // Include the assignOrderId for the backend to identify the order
+                },
+                dataType: 'json',  // Expect JSON response
+                success: function (response) {
+                    // Reload the DataTable to reflect the updated status
+                    orderAssignTable.ajax.reload();
+                    // Display a success message
+                    toastr.success('Order Updated Successfully', 'Success');
+                },
+                error: function (xhr) {
+                    // Display an error message if something goes wrong
+                    const errorMsg = xhr.responseJSON?.message || 'Failed to update the order status';
+                    toastr.error(errorMsg, 'Error');
+                }
             });
         });
 
 
         $(document).on('click', '.assignBtn', function () {
-            const id = $(this).data('id');
-            const userId = $(this).data('userid');
-            $('#userId').val(userId);
-            // alert(id)
-            $('#packageId').val(id);
+
+            // const packageId = $('#packageid').val();
+            const packageId = $(this).data('id');
+            // alert(packageId);
 
 
-            $.ajax({
-                url: '/ptlPackages/getData/' + id,
-                type: 'GET',
-                dataType: 'json',
-                success: async function (data) {
-
-                    const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
-                    const dropdown = $('#driverlist');
-                    dropdown.empty(); // Clear existing options
-                    dropdown.append('<option value="">Select Driver</option>');
-
-                    await drivers.forEach(driver => {
-                        const name = driver.personalInfo?.name || 'No Name';
-                        const id = driver._id;
-                        dropdown.append(`<option value="${id}">${name}</option>`);
-                    });
-
-                    const warehouse = data.warehouse || [];
-                    console.log(data.warehouse)
-
-                    const Warehouse_drop = $('#warehouselist');
-
-                    Warehouse_drop.empty(); // Clear existing options
-                    Warehouse_drop.append('<option value="">Select Warehouse</option>');
-
-                    await warehouse.forEach(warehouseData => {
-                        const name = warehouseData.Warehousename || 'No Name';
-                        const id = warehouseData._id;
-                        Warehouse_drop.append(`<option value="${id}">${name}</option>`);
-                    });
-
-                    let driverId = data.latestAssignOrderDetail.driverId || 0;
-                    let warehouseId = data.latestAssignOrderDetail.warehouseId || 0;
-                    let status = data.latestAssignOrderDetail.status || 0;
-                    let assignType = data.latestAssignOrderDetail.assignType || 0;
-
-                    $('#driverlist').val(driverId);
-                    $('#warehouselist').val(warehouseId);
-                    $('#deliveryStatus').val(status);
-                    $('#assignType').val(assignType);
-
-                    if (assignType == 1) {
-                        $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);
-                    } else {
-                        $('.warehouseDiv').slideUp(300, function () {
-                            $(this).addClass('d-none');
-                        });
+            orderAssignTable = $('#orderAssignTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/ptlPackages/orderAssignList/',
+                    data: { packageId: packageId },
+                    type: 'POST',
+                    data: function (d) {
+                        d.packageId = $('#packageId').val();
                     }
-
-
-
-
                 },
-                error: function (xhr) {
-                    const errorMsg = xhr.responseJSON?.message;
-                    toastr.error(errorMsg, 'Error');
-                }
-            });
+                columns: [
+                    {
+                        data: null,
+                        orderable: false, // Disable ordering for the index column
+                        render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                    },
 
-            $('#assignModal').modal('show');
+                    {
+                        data: 'pickupAddress',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if (!data) return '-'; // handle if pickupAddress is null
+                            return data.length > 30 ? data.substring(0, 30) + '...' : data;
+                        }
+                    }, // Corrected data property to 'pickUpLocation'
+                    {
+                        data: 'dropAddress',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            if (!data) return '-'; // handle if pickupAddress is null
+                            return data.length > 30 ? data.substring(0, 30) + '...' : data;
+                        }
+                    },
+
+                    {
+                        data: 'driverId',  // Assuming 'driverId' is part of your data
+                        render: function (driverId, type, row) {
+                            const driverName = driverId?.personalInfo?.name || 'Unknown Driver';
+                            return `<span>${driverName}</span>`;
+                        }
+                    },
+                    {
+                        data: 'userId.fullName',
+                        orderable: false,
+
+                    },
 
 
+                    {
+                        data: 'status',
+                        orderable: false,
 
+                        render: function (data) {
+                            // Status color mapping
+                            let statusColor = '';
+                            let statusText = '';
 
-        });
+                            switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
+                                case 1:
+                                    statusColor = 'badge bg-warning'; // Pickup
+                                    statusText = 'Pickup';
+                                    break;
+                                case 2:
+                                    statusColor = 'badge bg-info'; // Out for Delivery
+                                    statusText = 'In Transit';
+                                    break;
+                                case 3:
+                                    statusColor = 'badge bg-primary'; // In Progress
+                                    statusText = 'Out for Delivery';
+                                    break;
+                                case 4:
+                                    statusColor = 'badge bg-success'; // Delivered
+                                    statusText = 'Delivered';
+                                    break;
+                                case 5:
+                                    statusColor = 'badge bg-danger'; // Cancelled
+                                    statusText = 'Cancelled';
+                                    break;
+                                default:
+                                    statusColor = 'badge bg-secondary'; // Unknown
+                                    statusText = 'Unknown';
+                                    break;
+                            }
 
-        $('#trackingTable').on('click', '.editBtn', function () {
-            const trackingId = $(this).data('id');
-            $('#trackingModalLabel').text('Edit Ptl package')
-            $('#trackingModal').modal('show', this); // Pass the button element for context
-        });
+                            return `<span class="${statusColor}">${statusText}</span>`;
+                        }
+                    },
 
-        // Delete Button
-        $(document).on('click', '.deleteBtn', function () {
-            const id = $(this).data('id');
-            if (confirm("Are you sure you want to delete this tracking?")) {
-                $.ajax({
-                    url: '/tracking/delete/' + id,
-                    type: 'DELETE',
-                    success: function () {
-                        trackingTable.ajax.reload();
+                    {
+                        data: 'assignType',
+                        orderable: false,
+                        render: function (data) {
+                            return data == 1 ? 'Warehouse' : 'User Location';
+                        }
+                    },
+
+                    {
+                        data: 'deliveryDate', // Assuming your server returns the combined date and time in 'deliveryDate'
+                        orderable: false,
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date and time as needed
+                        }
+                    },
+                    {
+                        data: 'status',  // Ensure the correct data field name from your backend
+                        orderable: false,
+                        render: function (status, type, row) {
+                            return `
+            <select id="updateOrderStatus" class="form-select" data-id="${row._id}">
+                <option value="1" ${status == 1 ? 'selected' : ''}>Pickup</option>
+                <option value="2" ${status == 2 ? 'selected' : ''}>In Transit</option>
+                <option value="3" ${status == 3 ? 'selected' : ''}>Out for Delivery</option>
+                <option value="4" ${status == 4 ? 'selected' : ''}>Delivered</option>
+                <option value="5" ${status == 5 ? 'selected' : ''}>Cancelled</option>
+            </select>
+        `;
+                        }
                     }
-                });
-            }
-        });
 
-        // Download CSV
-        $('.btn-close').click(function () {
-            window.location.reload();
-        });
-
-        $('#downloadAllTrackingCsv').click(function () {
-            const params = new URLSearchParams({
-                trackingCode: $('#searchTrackingId').val(),
-                status: $('#searchStatus').val(),
-                date: $('#searchDate').val()
+                ]
             });
-            window.location.href = '/tracking/downloadCsv?' + params.toString();
+
         });
 
-    });
-    $(document).on('click', '#viewPackageBtn', function () {
-        const packageId = $('#packageid').val().trim();
-        if (packageId) {
-            loadPackageDetails(packageId);
-        } else {
-            $('#packageDetailsTableBody').html('<tr><td colspan="3" class="text-warning text-center">Please enter a valid Package ID</td></tr>');
-        }
-    });
 
 
-    $('#assignForm').submit(function (e) {
-        e.preventDefault();
-        const formElement = document.getElementById('assignForm'); // Corrected: Used 'trackingForm' instead of 'bannerForm'
-
-        // Trimmed values
 
 
-        const driver = $('#driverId').val();
-        const assignType = $('#assignType').val();
-        const warehouseid = $('#warehouselist').val();
-        const status = $('#deliveryStatus').val();
-        const packageId = $('#packageId').val();
-        const userId = $('#userId').val();
-
-        const formData = new FormData(formElement);
-        formData.append('packageId', packageId)
-        formData.append('userId', userId)
 
 
-        const actionUrl = `/ptlPackages/assignDriver`;
-        // alert(id)
-
-        $.ajax({
-            url: actionUrl,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            success: function (response) {
-                $('#assignModal').modal('hide');
-                $('#assignForm')[0].reset();
-                trackingTable.ajax.reload();
-                toastr.success('Order Data saved successfully!', 'Success');
-            },
-            error: function (xhr) {
-                const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
-                toastr.error(errorMsg, 'Error');
-            }
-        });
-    });
 
 
-</script>
+    </script>

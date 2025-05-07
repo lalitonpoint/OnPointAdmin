@@ -216,26 +216,15 @@ const assignDriver = async (req, res) => {
             const driverId = fields.driver?.[0] || '';
             const assignType = parseInt(fields.assignType?.[0]) || null;
             const warehouseId = fields.warehouse?.[0] || '';
-            const status = parseInt(fields.deliveryStatus?.[0]) || 1;
             const packageId = fields.packageId?.[0] || '';
             const userId = fields.userId?.[0] || '';
 
             // Validation
-            if (!driverId || !assignType || !warehouseId || !status || !packageId || !userId) {
-                return res.status(400).json({ message: 'DriverId, AssignType, WarehouseId, Status, PackageId & UserId are required' });
+            if (!driverId || !assignType || !warehouseId || !packageId || !userId) {
+                return res.status(400).json({ message: 'DriverId, AssignType, WarehouseId, PackageId & UserId are required' });
             }
 
-            if (isNaN(status) || status < 1 || status > 5) {
-                return res.status(400).json({ message: 'Invalid status value' });
-            }
 
-            const statusMap = {
-                1: { key: 'inProcess', status: 1, deliveryDateTime: new Date() },
-                2: { key: 'pickup', status: 1, deliveryDateTime: new Date() },
-                3: { key: 'outdelivery', status: 1, deliveryDateTime: new Date() },
-                4: { key: 'delivered', status: 1, deliveryDateTime: new Date() },
-                5: { key: 'cancelled', status: 1, deliveryDateTime: new Date() }
-            };
 
             // Initialize pickup/drop fields
             let pickupPincode = '', pickupAddress = '', pickupLatitude = '', pickupLongitude = '';
@@ -286,10 +275,8 @@ const assignDriver = async (req, res) => {
                 packageId,
                 driverId,
                 warehouseId,
-                status,
                 userId,
                 assignType,
-                deliveryStatus: statusMap[status],
                 pickupPincode,
                 pickupAddress,
                 pickupLatitude,
@@ -433,6 +420,75 @@ const getDriverWarehouseData = async (req, res) => {
     }
 };
 
+const orderAssignList = async (req, res) => {
+    try {
+        const { start, length, search, columns, order, packageId } = req.body;
+        let query = {};
+        let sort = {};
+
+        // const packageId = '681063389107f6e6eb4a0a5b';
+        const assignedOrderDetail = await driverPackageAssign.find({ packageId }) // ✅ fixed duplicate key
+            .skip(Number(start))
+            .limit(Number(length))
+            .sort(sort)
+            .populate({ path: 'userId', select: 'fullName' }) // ✅ separate populate call
+            .populate({ path: 'driverId', select: 'personalInfo.name' }); // ✅ separate populate call
+
+        assignedOrderDetail.forEach((singleAssign) => {
+            const lastStatus = singleAssign.deliveryStatus?.[singleAssign.deliveryStatus.length - 1];
+            const deliveryDate = lastStatus?.deliveryDateTime || null;
+
+            singleAssign._doc.deliveryDate = deliveryDate;
+        });
+
+
+
+        const totalRecords = await driverPackageAssign.countDocuments();
+        const filteredRecords = await driverPackageAssign.countDocuments(query);
+
+        res.json({
+            draw: req.body.draw,
+            recordsTotal: totalRecords,
+            recordsFiltered: filteredRecords,
+            data: assignedOrderDetail
+        });
+    } catch (error) {
+        console.error('Error fetching tracking list:', error);
+        res.status(500).json({ error: 'Failed to fetch tracking data' });
+    }
+};
+
+const updateOrderStatus = async (req, res) => {
+    const { orderStatus, assignOrderId } = req.body;
+
+    if (!orderStatus) {
+        return res.json({ success: false, message: "Order Status is required" });
+    }
+    if (!assignOrderId) {
+        return res.json({ success: false, message: "Assign Order is required" });
+    }
+
+
+    try {
+        let orderAssignDetail = await driverPackageAssign.findOne({ _id: assignOrderId });
+
+        if (!orderAssignDetail) {
+            return res.json({ success: false, message: "Order Not Assigned" });
+        }
+
+        orderAssignDetail.status = orderStatus;
+
+        await orderAssignDetail.save();
+
+        res.json({ success: true, message: "Order status updated successfully" });
+
+    } catch (error) {
+        // Handle any errors that occur during the process
+        console.error(error);
+        res.status(500).json({ success: false, message: "An error occurred while updating the order status" });
+    }
+};
+
 
 module.exports = {
     trackingPage,
@@ -442,5 +498,7 @@ module.exports = {
     assignDriver,
     deleteTracking,
     downloadTrackingCsv,
-    getDriverWarehouseData
+    getDriverWarehouseData,
+    orderAssignList,
+    updateOrderStatus
 };
