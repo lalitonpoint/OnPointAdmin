@@ -322,21 +322,23 @@
 
         $(document).on('click', '.delFaqBtn', function () {
             const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this Faq?')) {
+
+            swalConfirm('Are you sure you want to delete this FAQ?', function () {
                 $.ajax({
-                    url: '/faq/deleteFaq/' + id, // Replace with your actual delete route
-                    type: 'delete',
+                    url: '/faq/deleteFaq/' + id,
+                    type: 'DELETE',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
-                        toastr.success('Faq deleted successfully!', 'Success');
+                        toastr.success('FAQ deleted successfully!', 'Success');
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error deleting Faq:", status, error, xhr);
-                        toastr.error('Error deleting Faq.', 'Error');
+                        console.error("Error deleting FAQ:", status, error, xhr);
+                        toastr.error('Error deleting FAQ.', 'Error');
                     }
                 });
-            }
+            });
         });
+
     });
 </script>

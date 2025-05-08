@@ -543,22 +543,24 @@
 
         $('#artistTable').on('click', '.delUserBtn', function () {
             const buId = $(this).data('id');
-            if (confirm('Are you sure you want to delete this Backend User?')) {
+
+            swalConfirm('Are you sure you want to delete this Backend User?', function () {
                 $.ajax({
-                    url: '/roles/deleteBackendUser/' + buId, // Replace with your actual delete route
-                    type: 'delete',
+                    url: '/roles/deleteBackendUser/' + buId,
+                    type: 'DELETE',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
                         toastr.success('Backend User deleted successfully!', 'Success');
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error deleting banner:", status, error, xhr);
-                        toastr.error('Error deleting banner.', 'Error');
+                        console.error("Error deleting Backend User:", status, error, xhr);
+                        toastr.error('Error deleting Backend User.', 'Error');
                     }
                 });
-            }
+            });
         });
+
 
         $('#searchBtn').on('click', function () {
             table.ajax.reload(); // Reload the DataTable, the search parameters are sent in the ajax.data function

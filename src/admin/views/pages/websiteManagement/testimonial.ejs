@@ -394,10 +394,11 @@
         // Event delegation for Delete button
         $('#testimonialTable').on('click', '.delTestimonialBtn', function () {
             const testimonialId = $(this).data('id');
-            if (confirm('Are you sure you want to delete this testimonial?')) {
+
+            swalConfirm('Are you sure you want to delete this testimonial?', function () {
                 $.ajax({
-                    url: '/testimonial/deleteTestimonial/' + testimonialId, // Replace with your actual delete route
-                    type: 'delete',
+                    url: '/testimonial/deleteTestimonial/' + testimonialId,
+                    type: 'DELETE',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
@@ -408,8 +409,9 @@
                         toastr.error('Error deleting testimonial.', 'Error');
                     }
                 });
-            }
+            });
         });
+
         $('#testimonialTable').on('click', '.changeStatus', function () {
             const testimonialId = $(this).data('id');
             const newStatus = $(this).data('status'); // Get the new status from the data attribute
