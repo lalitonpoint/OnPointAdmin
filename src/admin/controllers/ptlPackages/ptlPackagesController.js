@@ -484,6 +484,7 @@ const orderAssignList = async (req, res) => {
             data: assignedOrderDetail,
         });
 
+
     } catch (error) {
         console.error('Error fetching tracking list:', error);
         res.status(500).json({ error: 'Failed to fetch tracking data' });
