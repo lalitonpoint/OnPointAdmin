@@ -12,6 +12,7 @@ router.get('/driverManagement', checkCrudPermission(), DriverCtrl.driverPage);
 router.get('/getDriver/:id', checkCrudPermission('edit'), DriverCtrl.singleDriver);
 router.post('/updateDriver/:id', checkCrudPermission('edit'), DriverCtrl.updateDriver);
 router.delete('/deleteDriver/:id', checkCrudPermission('delete'), DriverCtrl.deleteDriver);
+router.post('/updateApproval', checkCrudPermission('edit'), DriverCtrl.updateApproval);
 
 
 module.exports = router;

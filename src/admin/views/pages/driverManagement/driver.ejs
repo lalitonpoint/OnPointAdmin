@@ -27,6 +27,10 @@
         .modal-title {
             font-weight: bold;
         }
+        #editTabs{font-size: 14px;}
+        .aproveSwitch{
+            margin-left: 30%!important;
+        }
     </style>
 </head>
 
@@ -111,10 +115,17 @@
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header d-flex justify-content-between align-items-center">
                     <h5 class="modal-title" id="editDriverModalTitle">Edit Driver</h5>
+                    
+                    <div class="form-check form-switch me-3 aproveSwitch">
+                        <input class="form-check-input" type="checkbox" id="driverApprovedToggle" data-id="DRIVER_ID_HERE">
+                        <label class="form-check-label" for="driverApprovedToggle">Approved</label>
+                    </div>
+                
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                
                 <div class="modal-body">
                     <form id="editDriverForm" enctype="multipart/form-data">
                         <input type="hidden" id="editDriverId" name="driverId">
@@ -127,20 +138,30 @@
                                 <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab"
                                     aria-controls="address" aria-selected="false">Address Details</a>
                             </li>
-                            <li class="nav-item" role="presentation">
+                            <!-- <li class="nav-item" role="presentation">
                                 <a class="nav-link" id="emergency-tab" data-bs-toggle="tab" href="#emergency" role="tab"
                                     aria-controls="emergency" aria-selected="false">Emergency Detail</a>
-                            </li>
+                            </li> -->
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab"
-                                    aria-controls="documents" aria-selected="false">Upload Documents</a>
+                                    aria-controls="documents" aria-selected="false">Driver Documents</a>
                             </li>
 
                             <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="vhicledetails-tab" data-bs-toggle="tab" href="#vhicledetails" role="tab"
+                                    aria-controls="vhicledetails" aria-selected="false">Vehicle Details</a>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="vhicledocuments-tab" data-bs-toggle="tab" href="#vhicledocuments" role="tab"
+                                    aria-controls="vhicledocuments" aria-selected="false">Vehicle Documents</a>
+                            </li>
+
+                            <!-- <li class="nav-item" role="presentation">
                                 <a class="nav-link" id="additional-info-tab" data-bs-toggle="tab"
                                     href="#additional-info" role="tab" aria-controls="additional-info"
                                     aria-selected="false">Additional Info</a>
-                            </li>
+                            </li> -->
 
                         </ul>
                         <div class="tab-content" id="editTabsContent">
@@ -162,9 +183,9 @@
                                     <label for="editGender" class="form-label">Gender</label>
                                     <select class="form-control" id="editGender" name="gender">
                                         <option value="">Select Gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -178,13 +199,13 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="editProfileImage" class="form-label">Profile Image</label>
-                                    <input type="file" class="form-control" id="editProfileImage" name="profileImage">
-                                    <img alt="editProfile" id="editProfileImg">
+                                    <input type="file" class="form-control " id="editProfileImage" name="profileImage">
+                                    <img class="w-100" alt="editProfile" id="editProfileImg">
                                     <small class="form-text text-muted">Leave blank to keep the current image.</small>
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="emergency" role="tabpanel" aria-labelledby="emergency-tab">
+                            <!-- <div class="tab-pane fade" id="emergency" role="tabpanel" aria-labelledby="emergency-tab">
                                 <div class="mb-3">
                                     <label for="emergencyName" class="form-label">Emergency Contact Name</label>
                                     <input type="text" class="form-control" id="emergencyName" name="emergencyName">
@@ -204,8 +225,8 @@
                                     <label for="emergencyPhone" class="form-label">Emergency Contact Number</label>
                                     <input type="tel" class="form-control" id="emergencyPhone" name="emergencyPhone">
                                 </div>
-                            </div>
-                            <div class="tab-pane fade" id="additional-info" role="tabpanel"
+                            </div> -->
+                            <!-- <div class="tab-pane fade" id="additional-info" role="tabpanel"
                                 aria-labelledby="additional-info-tab">
                                 <div class="mb-3">
                                     <label class="form-label">Do you have prior experience in logistics?</label>
@@ -277,38 +298,162 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Aadhaar Front -->
+                                        <img src="" id="viewAadhaarFront" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="aadhaarFront" class="form-label">Front Side of Aadhaar Card</label>
+                                        <input type="file" class="form-control" id="aadhaarFront" name="aadhaarFront" onchange="previewImage(this, 'viewAadhaarFront')">
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Aadhaar Back -->
+                                        <img src="" id="viewAadhaarBack" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="aadhaarBack" class="form-label">Back Side of Aadhaar Card</label>
+                                        <input type="file" class="form-control" id="aadhaarBack" name="aadhaarBack" onchange="previewImage(this, 'viewAadhaarBack')">
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Pan Card -->
+                                        <img src="" id="viewPanCard" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="panCard" class="form-label">Pan Card</label>
+                                        <input type="file" class="form-control" id="panCard" name="panCard" onchange="previewImage(this, 'viewPanCard')">
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Driving License -->
+                                        <img src="" id="viewDrivingLicense" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="drivingLicense" class="form-label">Driving License</label>
+                                        <input type="file" class="form-control" id="drivingLicense" name="drivingLicense" onchange="previewImage(this, 'viewDrivingLicense')">
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Vehicle RC -->
+                                        <img src="" id="viewVehicleRC" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="vehicleRC" class="form-label">Vehicle RC</label>
+                                        <input type="file" class="form-control" id="vehicleRC" name="vehicleRC" onchange="previewImage(this, 'viewVehicleRC')">
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Vehicle Insurance -->
+                                        <img src="" id="viewVehicleInsurance" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="vehicleInsurance" class="form-label">Vehicle Insurance Copy</label>
+                                        <input type="file" class="form-control" id="vehicleInsurance" name="vehicleInsurance" onchange="previewImage(this, 'viewVehicleInsurance')">
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Bank Passbook -->
+                                        <img src="" id="viewBankPassbook" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bankPassbook" class="form-label">Bank Passbook / Cancelled Cheque</label>
+                                        <input type="file" class="form-control" id="bankPassbook" name="bankPassbook" onchange="previewImage(this, 'viewBankPassbook')">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="vhicledetails" role="tabpanel" aria-labelledby="vhicledetails-tab">
                                 <div class="mb-3">
-                                    <label for="aadhaarFront" class="form-label">Front Side of Aadhaar Card</label>
-                                    <input type="file" class="form-control" id="aadhaarFront" name="aadhaarFront">
+                                    <label for="vehicleName" class="form-label">Vehicle Name</label>
+                                    <input type="text" class="form-control" id="vehicleName" name="vehicleName">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="aadhaarBack" class="form-label">Back Side of Aadhaar Card</label>
-                                    <input type="file" class="form-control" id="aadhaarBack" name="aadhaarBack">
+                                    <label for="vehicleModel" class="form-label">Vehicle Model</label>
+                                    <input type="text" class="form-control" id="vehicleModel" name="vehicleModel">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="panCard" class="form-label">Pan Card</label>
-                                    <input type="file" class="form-control" id="panCard" name="panCard">
+                                    <label for="yearOfManufacture" class="form-label">Year of Manufacture</label>
+                                    <input type="text" class="form-control" id="yearOfManufacture" name="yearOfManufacture">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="drivingLicense" class="form-label">Driving License</label>
-                                    <input type="file" class="form-control" id="drivingLicense" name="drivingLicense">
+                                    <label for="plateNumber" class="form-label">Plate Number</label>
+                                    <input type="text" class="form-control" id="plateNumber" name="plateNumber">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="vehicleRC" class="form-label">Vehicle RC</label>
-                                    <input type="file" class="form-control" id="vehicleRC" name="vehicleRC">
+                                    <label for="vin" class="form-label">VIN</label>
+                                    <input type="text" class="form-control" id="vin" name="vin">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="vehicleInsurance" class="form-label">Vehicle Insurance Copy</label>
-                                    <input type="file" class="form-control" id="vehicleInsurance"
-                                        name="vehicleInsurance">
+                                    <label for="capacity" class="form-label">Capacity</label>
+                                    <input type="text" class="form-control" id="capacity" name="capacity">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="bankPassbook" class="form-label">Bank Passbook / Cancelled
-                                        Cheque</label>
-                                    <input type="file" class="form-control" id="bankPassbook" name="bankPassbook">
+                                    <label for="fuelType" class="form-label">Fuel Type</label>
+                                    <input type="text" class="form-control" id="fuelType" name="fuelType">
                                 </div>
+                                <div class="mb-3">
+                                    <label for="odometerReading" class="form-label">Odometer Reading</label>
+                                    <input type="text" class="form-control" id="odometerReading" name="odometerReading">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="serviceType" class="form-label">Service Type</label>
+                                    <input type="text" class="form-control" id="serviceType" name="serviceType">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="vehicleId" class="form-label">Vehicle ID</label>
+                                    <input type="text" class="form-control" id="vehicleId" name="vehicleId">
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="vhicledocuments" role="tabpanel" aria-labelledby="vhicledocuments-tab">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Aadhaar Front -->
+                                        <img src="" id="viewinsuranceCertificate" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="insuranceCertificate" class="form-label">Insurance Certificate</label>
+                                        <input type="file" class="form-control" id="insuranceCertificate" name="insuranceCertificate" onchange="previewImage(this, 'viewAadhaarFront')">
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Aadhaar Back -->
+                                        <img src="" id="viewpollutionCertificate" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="pollutionCertificate" class="form-label">Pollution Certificate</label>
+                                        <input type="file" class="form-control" id="pollutionCertificate" name="pollutionCertificate" onchange="previewImage(this, 'viewAadhaarBack')">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <!-- Image preview for Aadhaar Back -->
+                                        <img src="" id="viewregistrationCertificate" class="img-thumbnail w-50 mb-2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="registrationCertificate" class="form-label">Registration Certificate</label>
+                                        <input type="file" class="form-control" id="registrationCertificate" name="registrationCertificate" onchange="previewImage(this, 'viewAadhaarBack')">
+                                    </div>
+                                </div>
+                            
                             </div>
                             <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                                 <div class="row">
@@ -382,10 +527,10 @@
                 ajax: { url: '/driver/driverList', type: 'POST' },
                 columns: [
                     { data: null, render: (data, type, row, meta) => meta.row + 1 },
-                    { data: 'name' },
-                    { data: 'email' },
-                    { data: 'mobileNo' },
-                    { data: 'alternateMobileNo' },
+                    { data: 'personalInfo.name' },
+                    { data: 'personalInfo.email' },
+                    { data: 'personalInfo.mobile' },
+                    { data: 'personalInfo.altMobile' },
                     { data: 'createdAt', render: (data) => new Date(data).toLocaleString() },
                     {
                         data: null,
@@ -451,31 +596,37 @@
             $('#driverTable').on('click', '.editDriverBtn', function () {
                 const id = $(this).data('id');
                 $('#editDriverModal').modal('show');
+                $('#editDriverModal form')[0].reset(); // Reset form inputs
+                $('#driverApprovedToggle').prop('checked', false).removeAttr('data-id');
+                $('#editProfileImg').attr('src', '/images/default-profile.png');
+                $('#editDriverId,#driverApprovedToggle').val('');
 
                 $.get(`/driver/getDriver/${id}`, function (data) {
                     const driver = data.driver;
-                    $('#driverId').val(driver._id);
-
+                    const vehicle = driver.vehicleDetail;
+                    $('#driverId, #editDriverId').val(id);
+                    $('#driverApprovedToggle').prop('checked', driver.approvalStatus === 1).attr('data-id', driver._id); 
+                    
                     // Personal Detail Tab
-                    $('#editName').val(driver.name);
-                    $('#editEmail').val(driver.email);
-                    $('#editDateOfBirth').val(driver.dateOfBirth ? driver.dateOfBirth.substring(0, 10) : ''); // Format date
-                    $('#editGender').val(driver.gender);
-                    $('#editMobileNo').val(driver.mobileNo);
-                    $('#editAlternateMobileNo').val(driver.alternateMobileNo);
-                    $('#editProfileImg').attr('src', driver.profileImage || '/images/default-profile.png'); // Set profile image or default
+                    $('#editName').val(driver.personalInfo.name);
+                    $('#editEmail').val(driver.personalInfo.email);
+                    $('#editDateOfBirth').val(driver.personalInfo.dob ? `${driver.personalInfo.dob.split('/')[2]}-${driver.personalInfo.dob.split('/')[1]}-${driver.personalInfo.dob.split('/')[0]}` : '');
+                    $('#editGender').val(driver.personalInfo.gender);
+                    $('#editMobileNo').val(driver.personalInfo.mobile);
+                    $('#editAlternateMobileNo').val(driver.personalInfo.altMobile);
+                    $('#editProfileImg').attr('src', driver.personalInfo.profilePicture || '/images/default-profile.png'); // Set profile image or default
 
                     // Address Details Tab - Permanent Address
-                    $('#permanentHouseNo').val(driver.permanentHouseNo);
-                    $('#permanentCity').val(driver.permanentCity);
-                    $('#permanentState').val(driver.permanentState);
-                    $('#permanentPinCode').val(driver.permanentPinCode);
+                    $('#permanentHouseNo').val(driver.addressInfo.permanent.street);
+                    $('#permanentCity').val(driver.addressInfo.permanent.city);
+                    $('#permanentState').val(driver.addressInfo.permanent.state);
+                    $('#permanentPinCode').val(driver.addressInfo.permanent.pin);
 
                     // Address Details Tab - Current Address
-                    $('#currentHouseNo').val(driver.currentHouseNo);
-                    $('#currentCity').val(driver.currentCity);
-                    $('#currentState').val(driver.currentState);
-                    $('#currentPinCode').val(driver.currentPinCode);
+                    $('#currentHouseNo').val(driver.addressInfo.current.street);
+                    $('#currentCity').val(driver.addressInfo.current.city);
+                    $('#currentState').val(driver.addressInfo.current.state);
+                    $('#currentPinCode').val(driver.addressInfo.current.pin);
 
                     // Emergency Detail Tab
                     $('#emergencyName').val(driver.emergencyName);
@@ -483,13 +634,30 @@
                     $('#emergencyPhone').val(driver.emergencyPhone);
 
                     // Upload Documents Tab
-                    $('#viewAadhaarFront').attr('src', driver.aadhaarFront || '/images/default-doc.png'); // Set Aadhaar front image or default
-                    $('#viewAadhaarBack').attr('src', driver.aadhaarBack || '/images/default-doc.png');   // Set Aadhaar back image or default
-                    $('#viewPanCard').attr('src', driver.panCard || '/images/default-doc.png');           // Set Pan Card image or default
-                    $('#viewDrivingLicense').attr('src', driver.drivingLicense || '/images/default-doc.png'); // Set Driving License image or default
-                    $('#viewVehicleRC').attr('src', driver.vehicleRC || '/images/default-doc.png');       // Set Vehicle RC image or default
-                    $('#viewVehicleInsurance').attr('src', driver.vehicleInsurance || '/images/default-doc.png'); // Set Vehicle Insurance image or default
-                    $('#viewBankPassbook').attr('src', driver.bankPassbook || '/images/default-doc.png');   // Set Bank Passbook image or default
+                    $('#viewAadhaarFront').attr('src', driver.documents.aadhaarFront || '/images/default-doc.png'); // Set Aadhaar front image or default
+                    $('#viewAadhaarBack').attr('src', driver.documents.aadhaarBack || '/images/default-doc.png');   // Set Aadhaar back image or default
+                    $('#viewPanCard').attr('src', driver.documents.panCard || '/images/default-doc.png');           // Set Pan Card image or default
+                    $('#viewDrivingLicense').attr('src', driver.documents.drivingLicense || '/images/default-doc.png'); // Set Driving License image or default
+                    $('#viewVehicleRC').attr('src', driver.documents.vehicleRC || '/images/default-doc.png');       // Set Vehicle RC image or default
+                    $('#viewVehicleInsurance').attr('src', driver.documents.insuranceCopy || '/images/default-doc.png'); // Set Vehicle Insurance image or default
+                    $('#viewBankPassbook').attr('src', driver.documents.bankPassbook || '/images/default-doc.png');   // Set Bank Passbook image or default
+
+                    // vhicle Details Tab 
+                    $('#vehicleName').val(vehicle.vehicleName);
+                    $('#vehicleModel').val(vehicle.vehicleModel);
+                    $('#yearOfManufacture').val(vehicle.yearOfManufacture);
+                    $('#plateNumber').val(vehicle.plateNumber);
+                    $('#vin').val(vehicle.vin);
+                    $('#capacity').val(vehicle.capacity);
+                    $('#fuelType').val(vehicle.fuelType);
+                    $('#odometerReading').val(vehicle.odometerReading);
+                    $('#serviceType').val(vehicle.serviceType);
+                    $('#vehicleId').val(vehicle.vehicleId);
+
+                    //vhicle documents
+                    $('#viewinsuranceCertificate').attr('src', driver.vehicleDocuments.insuranceCertificate || '/images/default-doc.png'); 
+                    $('#viewpollutionCertificate').attr('src', driver.vehicleDocuments.pollutionCertificate || '/images/default-doc.png');  
+                    $('#viewregistrationCertificate').attr('src', driver.vehicleDocuments.registrationCertificate || '/images/default-doc.png');        
 
                     // Additional Info Tab
                     $('input[name="priorExperience"][value="' + driver.priorExperience + '"]').prop('checked', true);
@@ -521,8 +689,52 @@
                 $('#driverForm')[0].reset();
                 $('#modalTitle').text('Add Driver');
                 $('#driverId').val(''); // Clear driver ID on modal close
+                
+            });
+            $('#editDriverModal').on('hidden.bs.modal', function () {
+                $('#driverApprovedToggle').prop('checked', false).removeAttr('data-id');
+                //location.reload(); // This will reload the page
             });
         });
+
+        $(document).on('change', '#driverApprovedToggle', function () {
+            const isChecked = $(this).is(':checked');
+            const driverId = $(this).data('id');
+            const status = isChecked ? 1 : 0;
+            console.log(driverId);
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to ${isChecked ? 'approve' : 'disable'} this driver.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, confirm it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with update
+                    $.ajax({
+                        url: '/driver/updateApproval',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ driverId, approved: status }),
+                        success: function (response) {
+                            Swal.fire('Updated!', response.message || 'Driver status updated.', 'success').then(() => {
+                                location.reload(); // refresh the page
+                            });
+                        },
+                        error: function () {
+                            Swal.fire('Error!', 'Something went wrong. Try again later.', 'error');
+                        }
+                    });
+                } else {
+                    // Revert toggle if cancelled
+                    $(this).prop('checked', !isChecked);
+                }
+            });
+        });
+
     </script>
 </body>
 

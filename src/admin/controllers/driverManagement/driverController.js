@@ -1,6 +1,6 @@
 // ✅ CREATE DRIVER (POST)
 
-const Driver = require('../../models/driverManagement/driverModel');
+const Driver = require('../../../api/driver/modals/driverModal');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 const { generateLogs } = require('../../utils/logsHelper');
@@ -269,4 +269,36 @@ const deleteDriver = async (req, res) => {
     }
 }
 
-module.exports = { saveDrivers, updateDriver, deleteDriver, driverList, driverPage, singleDriver }
+// POST /driver/updateApproval
+const updateApproval = async (req, res) => {
+    const { driverId, approved } = req.body;
+    // console.log(req.session);
+    // Assuming admin info is stored in req.admin from middleware or session
+    const adminId = req.session.admin?.id || null;
+    const adminName = req.session.admin?.name || 'Unknown';
+
+    try {
+        await Driver.updateOne(
+            { _id: driverId },
+            {
+                $set: {
+                    approvalStatus: approved,
+                    approvedBy: {
+                        adminId: adminId,
+                        adminName: adminName,
+                        approvedAt: new Date()
+                    }
+                }
+            }
+        );
+
+        res.json({ success: true, message: 'Approval status updated successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error updating status.' });
+    }
+};
+
+
+
+module.exports = { saveDrivers, updateDriver, deleteDriver, driverList, driverPage, singleDriver, updateApproval }

@@ -234,9 +234,7 @@
                         <div class="col-md-6">
                             <label for="driver" class="form-label">Driver<strong class="text-danger">*</strong></label>
                             <select class="form-select" name="driver" id="driverlist">
-                                <option value="">Select Driver</option>
-                                <option value="1">Driver 1</option>
-                                <option value="2">Driver 2</option>
+                               
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -608,9 +606,10 @@
                         const drivers = data.drivers || []; // ✅ FIX: access the 'drivers' array
                         const dropdown = $('#driverlist');
                         dropdown.empty(); // Clear existing options
-                        dropdown.append('<option value="">Select Driver</option>');
+                        dropdown.append('<option value="" selected readonly>Select Driver</option>');
 
-                        await drivers.forEach(driver => {
+                        // Append driver options
+                        drivers.forEach(driver => {
                             const name = driver.personalInfo?.name || 'No Name';
                             const id = driver._id;
                             dropdown.append(`<option value="${id}">${name}</option>`);
