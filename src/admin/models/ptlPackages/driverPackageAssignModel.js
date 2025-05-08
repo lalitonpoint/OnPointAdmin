@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+const deliveryStageSchema = new mongoose.Schema({
+    key: { type: String, required: true },
+    status: { type: Number, default: 0 }, // 0 = pending, 1 = done
+    deliveryDateTime: { type: Date, default: '' }
+}, { _id: false });
+
+
 const shipmentSchema = new mongoose.Schema({
     packageId: {
         type: String,
@@ -29,13 +36,13 @@ const shipmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    deliveryStatus: [
-        {
-            key: String,
-            status: Number,
-            deliveryDateTime: Date
-        }
-    ],
+    deliveryStatus: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    }
+
+    ,
+
     pickupPincode: { type: String },
     dropPincode: { type: String },
     pickupAddress: { type: String },

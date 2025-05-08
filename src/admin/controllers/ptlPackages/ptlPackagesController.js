@@ -271,6 +271,14 @@ const assignDriver = async (req, res) => {
                 }
             }
 
+            const statusMap = {
+                1: { key: 'pickup', status: 0, deliveryDateTime: '' },
+                2: { key: 'intransit', status: 0, deliveryDateTime: '' },
+                3: { key: 'outdelivery', status: 0, deliveryDateTime: '' },
+                4: { key: 'delivered', status: 0, deliveryDateTime: '' },
+                5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
+            };
+
             const newTracking = new driverPackageAssign({
                 packageId,
                 driverId,
@@ -282,6 +290,7 @@ const assignDriver = async (req, res) => {
                 pickupLatitude,
                 pickupLongitude,
                 dropPincode,
+                deliveryStatus: statusMap,
                 dropAddress,
                 dropLatitude,
                 dropLongitude
@@ -419,76 +428,128 @@ const getDriverWarehouseData = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
-
 const orderAssignList = async (req, res) => {
     try {
-        const { start, length, search, columns, order, packageId } = req.body;
+        const { start, length, search, columns, order, packageId, draw } = req.body;
         let query = {};
+
+        if (packageId) {
+            query.packageId = packageId;
+        }
+
+        // Optional: Add search filter logic
+        if (search && search.value) {
+            const searchValue = search.value.trim();
+            query.$or = [
+                { status: { $regex: searchValue, $options: 'i' } },
+                // Add other searchable fields as needed
+            ];
+        }
+
+        // Handle sorting
         let sort = {};
+        if (order && order.length > 0) {
+            const colIndex = order[0].column;
+            const colName = columns[colIndex]?.data;
+            const dir = order[0].dir === 'asc' ? 1 : -1;
+            if (colName) {
+                sort[colName] = dir;
+            }
+        }
 
-        // const packageId = '681063389107f6e6eb4a0a5b';
-        const assignedOrderDetail = await driverPackageAssign.find({ packageId }) // ✅ fixed duplicate key
-            .skip(Number(start))
-            .limit(Number(length))
+        // Fetch records
+        const assignedOrderDetail = await driverPackageAssign
+            .find(query)
+            .skip(Number(start) || 0)
+            .limit(Number(length) || 10)
             .sort(sort)
-            .populate({ path: 'userId', select: 'fullName' }) // ✅ separate populate call
-            .populate({ path: 'driverId', select: 'personalInfo.name' }); // ✅ separate populate call
+            .populate({ path: 'userId', select: 'fullName' })
+            .populate({ path: 'driverId', select: 'personalInfo.name' });
 
+        // Inject deliveryDate dynamically
         assignedOrderDetail.forEach((singleAssign) => {
-            const lastStatus = singleAssign.deliveryStatus?.[singleAssign.deliveryStatus.length - 1];
-            const deliveryDate = lastStatus?.deliveryDateTime || null;
-
+            const curStatus = singleAssign.status;
+            const deliveryStatus = singleAssign.deliveryStatus;
+            const deliveryDate = deliveryStatus?.[curStatus]?.deliveryDateTime || null;
             singleAssign._doc.deliveryDate = deliveryDate;
         });
-
-
 
         const totalRecords = await driverPackageAssign.countDocuments();
         const filteredRecords = await driverPackageAssign.countDocuments(query);
 
         res.json({
-            draw: req.body.draw,
+            draw: draw || 0,
             recordsTotal: totalRecords,
             recordsFiltered: filteredRecords,
-            data: assignedOrderDetail
+            data: assignedOrderDetail,
         });
+
     } catch (error) {
         console.error('Error fetching tracking list:', error);
         res.status(500).json({ error: 'Failed to fetch tracking data' });
     }
 };
 
-const updateOrderStatus = async (req, res) => {
-    const { orderStatus, assignOrderId } = req.body;
 
-    if (!orderStatus) {
-        return res.json({ success: false, message: "Order Status is required" });
-    }
+const updateOrderStatus = async (req, res) => {
+    console.log('234');
+
+    let { orderStatus, assignOrderId } = req.body;
+
+    if (orderStatus) orderStatus = parseInt(orderStatus);
+
     if (!assignOrderId) {
         return res.json({ success: false, message: "Assign Order is required" });
     }
 
+    if (orderStatus < 0 || orderStatus > 5) {
+        return res.json({ success: false, message: "Invalid order status" });
+    }
 
     try {
-        let orderAssignDetail = await driverPackageAssign.findOne({ _id: assignOrderId });
+        const orderAssignDetail = await driverPackageAssign.findById(assignOrderId);
 
         if (!orderAssignDetail) {
             return res.json({ success: false, message: "Order Not Assigned" });
         }
 
+        const updatedDeliveryStatus = { ...orderAssignDetail.deliveryStatus };
+
+        // Loop through status keys 1-5
+        for (let i = 1; i <= 5; i++) {
+            const key = i.toString();
+            if (!updatedDeliveryStatus[key]) {
+                updatedDeliveryStatus[key] = { status: 0, deliveryDateTime: '' };
+            }
+
+            if (i <= orderStatus) {
+                updatedDeliveryStatus[key].status = 1;
+                if (!updatedDeliveryStatus[key].deliveryDateTime) {
+                    updatedDeliveryStatus[key].deliveryDateTime = new Date();
+                }
+            } else {
+                updatedDeliveryStatus[key].status = 0;
+                updatedDeliveryStatus[key].deliveryDateTime = '';
+            }
+        }
+
         orderAssignDetail.status = orderStatus;
+        orderAssignDetail.deliveryStatus = updatedDeliveryStatus;
+
+        console.log(orderAssignDetail);
+
+        orderAssignDetail.markModified('deliveryStatus'); // Ensure Mongoose knows about the modification
 
         await orderAssignDetail.save();
+        console.log('5678', orderAssignDetail);
 
-        res.json({ success: true, message: "Order status updated successfully" });
+        return res.json({ success: true, message: "Order status updated successfully" });
 
     } catch (error) {
-        // Handle any errors that occur during the process
-        console.error(error);
-        res.status(500).json({ success: false, message: "An error occurred while updating the order status" });
+        console.error("Update Order Error:", error);
+        return res.status(500).json({ success: false, message: "An error occurred while updating the order status" });
     }
 };
-
 
 module.exports = {
     trackingPage,

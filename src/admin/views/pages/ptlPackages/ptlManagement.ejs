@@ -240,7 +240,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="assignType" class="form-label">Assign Type<strong
+                            <label for="assignType" class="form-label">Deliver To<strong
                                     class="text-danger">*</strong></label>
                             <select class="form-select" name="assignType" id="assignType">
                                 <option value="">Select Assign Type</option>
@@ -383,8 +383,8 @@
                                     statusText = 'Cancelled';
                                     break;
                                 default:
-                                    statusColor = 'badge bg-secondary'; // Unknown
-                                    statusText = 'Unknown';
+                                    statusColor = 'badge bg-secondary'; // In Process
+                                    statusText = 'In Process';
                                     break;
                             }
 
@@ -769,7 +769,7 @@
                 url: '/ptlPackages/updateOrderStatus/', // Your API endpoint
                 type: 'POST',
                 data: {
-                    orderStatus: orderValue,       // Renamed to match your expected backend field
+                    orderStatus: Number(orderValue),       // Renamed to match your expected backend field
                     assignOrderId: assignOrderId   // Include the assignOrderId for the backend to identify the order
                 },
                 dataType: 'json',  // Expect JSON response
@@ -798,12 +798,14 @@
             orderAssignTable = $('#orderAssignTable').DataTable({
                 processing: true,
                 serverSide: true,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
                 ajax: {
                     url: '/ptlPackages/orderAssignList/',
-                    data: { packageId: packageId },
                     type: 'POST',
                     data: function (d) {
-                        d.packageId = $('#packageId').val();
+                        d.packageId = packageId;
                     }
                 },
                 columns: [
@@ -831,14 +833,16 @@
                     },
 
                     {
-                        data: 'driverId',  // Assuming 'driverId' is part of your data
+                        data: 'driverId',
+                        orderable: false,
                         render: function (driverId, type, row) {
-                            const driverName = driverId?.personalInfo?.name || 'Unknown Driver';
+                            const driverName = driverId?.personalInfo?.name || 'In Process Driver';
                             return `<span>${driverName}</span>`;
                         }
                     },
                     {
                         data: 'userId.fullName',
+
                         orderable: false,
 
                     },
@@ -875,8 +879,8 @@
                                     statusText = 'Cancelled';
                                     break;
                                 default:
-                                    statusColor = 'badge bg-secondary'; // Unknown
-                                    statusText = 'Unknown';
+                                    statusColor = 'badge bg-secondary'; // In Process
+                                    statusText = 'In Process';
                                     break;
                             }
 
