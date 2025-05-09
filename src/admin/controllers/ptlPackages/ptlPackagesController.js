@@ -240,6 +240,12 @@ const assignDriver = async (req, res) => {
                         message: 'Please Complete the Previous job'
                     });
                 }
+                if (existingTracking.status == 4 && existingTracking.assignType == 2) {
+                    return res.status(200).json({
+                        success: false,
+                        message: 'Order Already Delivered to User Location'
+                    });
+                }
             }
 
             const initiateOrderDetail = await PTL.findOne({ _id: packageId, userId });
