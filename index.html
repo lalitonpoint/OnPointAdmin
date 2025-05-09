@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery Status Info</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h5>
+            Delivery Info
+            <i class="bi bi-info-circle-fill text-primary" id="infoIcon" data-bs-toggle="tooltip" data-bs-html="true"
+                title="">
+            </i>
+        </h5>
+    </div>
+
+    <script>
+        const deliveryStatus = {
+            '1': { status: 1, deliveryDateTime: '2025-05-08T09:51:09.446Z' },
+            '2': { status: 1, deliveryDateTime: '2025-05-08T09:51:09.446Z' },
+            '3': { status: 1, deliveryDateTime: '2025-05-08T09:51:09.446Z' },
+            '4': { status: 1, deliveryDateTime: '2025-05-08T09:51:09.446Z' },
+            '5': { status: 1, deliveryDateTime: '2025-05-08T09:51:14.508Z' }
+        };
+
+        let tooltipContent = '<ul class="mb-0">';
+        Object.entries(deliveryStatus).forEach(([id, data]) => {
+            const date = new Date(data.deliveryDateTime).toLocaleString();
+            tooltipContent += `<li><strong>ID ${id}</strong>: Status ${data.status}, <br>Delivered: ${date}</li>`;
+        });
+        tooltipContent += '</ul>';
+
+        const infoIcon = document.getElementById('infoIcon');
+        infoIcon.setAttribute('title', tooltipContent);
+
+        // Initialize tooltip
+        document.addEventListener('DOMContentLoaded', function () {
+            new bootstrap.Tooltip(infoIcon);
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

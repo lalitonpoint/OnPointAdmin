@@ -231,6 +231,17 @@ const assignDriver = async (req, res) => {
             let dropPincode = '', dropAddress = '', dropLatitude = '', dropLongitude = '';
 
             const existingTracking = await driverPackageAssign.findOne({ packageId }).sort({ createdAt: -1 });
+
+            if (existingTracking) {
+                if (existingTracking.status < 4) {
+                    // If the job isn't 'Delivered' (status < 4), don't allow creating a new job
+                    return res.status(200).json({
+                        success: false,
+                        message: 'Please Complete the Previous job'
+                    });
+                }
+            }
+
             const initiateOrderDetail = await PTL.findOne({ _id: packageId, userId });
 
             if (existingTracking) {
@@ -299,7 +310,7 @@ const assignDriver = async (req, res) => {
             await newTracking.save();
             await generateLogs(req, 'Add', newTracking);
 
-            return res.status(201).json({ message: 'Tracking added successfully', data: newTracking });
+            return res.status(201).json({ success: true, message: 'Tracking added successfully', data: newTracking });
         });
     } catch (error) {
         console.error("Server error:", error);
@@ -467,12 +478,67 @@ const orderAssignList = async (req, res) => {
             .populate({ path: 'driverId', select: 'personalInfo.name' });
 
         // Inject deliveryDate dynamically
+        // assignedOrderDetail.forEach((singleAssign) => {
+        //     const deliveryStatus = singleAssign.deliveryStatus;
+        //     singleAssign._doc.deliveryDate = deliveryDate;
+        // });
+
+
+        // Mapping delivery status keys to their labels
+        const deliveryStageMap = {
+            1: 'Pickup',
+            2: 'In Transit',
+            3: 'Out for Delivery',
+            4: 'Delivered',
+            5: 'Cancelled'
+        };
+
         assignedOrderDetail.forEach((singleAssign) => {
-            const curStatus = singleAssign.status;
             const deliveryStatus = singleAssign.deliveryStatus;
-            const deliveryDate = deliveryStatus?.[curStatus]?.deliveryDateTime || null;
+            const deliveryDate = singleAssign.deliveryDate;
+
+            // Order status label
+            const statusMap = {
+                0: 'InProgress',
+                1: 'Pickup',
+                2: 'In Transit',
+                3: 'Out for Delivery',
+                4: 'Delivered',
+                5: 'Cancelled'
+            };
+            const orderStatusValue = singleAssign.orderStatus;
+            const orderStatusText = statusMap[orderStatusValue] || 'Unknown';
+
+            // Tooltip generation
+            let infoHTML = '';
+            if (deliveryStatus && typeof deliveryStatus === 'object') {
+                let tooltipContent = '<strong>Delivery Date:</strong><br>';
+
+                for (const key in deliveryStatus) {
+                    const entry = deliveryStatus[key];
+                    if (entry.status === 1) {
+                        const stageLabel = deliveryStageMap[key] || `Stage ${key}`;
+                        const formattedDate = new Date(entry.deliveryDateTime).toISOString().replace('T', ' ').slice(0, 19);
+                        tooltipContent += `${stageLabel} - ${formattedDate}<br>`;
+                    }
+                }
+
+                if (tooltipContent.includes('-')) {
+                    const escapedTooltip = tooltipContent.replace(/"/g, '&quot;');
+                    infoHTML = `
+                <i class="fa fa-info-circle text-primary ms-2"
+                   title="Delivery Info"
+                   data-bs-toggle="tooltip"
+                   data-bs-html="true"
+                   data-bs-title="${escapedTooltip}"></i>`;
+                }
+            }
+
             singleAssign._doc.deliveryDate = deliveryDate;
+            singleAssign._doc.deliveryInfoIcon = infoHTML;
+            singleAssign._doc.orderStatusText = orderStatusText;
         });
+
 
         const totalRecords = await driverPackageAssign.countDocuments();
         const filteredRecords = await driverPackageAssign.countDocuments(query);

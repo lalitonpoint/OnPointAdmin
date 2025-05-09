@@ -11,6 +11,14 @@
     .custom-modal {
         max-width: 70%;
     }
+
+    .tooltip-inner {
+        max-width: 350px;
+        /* default is 200px */
+        white-space: normal;
+        /* allow wrapping */
+        text-align: left;
+    }
 </style>
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -740,11 +748,16 @@
                 contentType: false,
                 dataType: 'json',
                 success: function (response) {
-                    $('#assignModal').modal('hide');
-                    $('#assignForm')[0].reset();
-                    trackingTable.ajax.reload();
-                    toastr.success('Order Data saved successfully!', 'Success');
+                    if (response.success) {
+                        $('#assignModal').modal('hide');
+                        $('#assignForm')[0].reset();
+                        trackingTable.ajax.reload();
+                        toastr.success('Order Data saved successfully!', 'Success');
+                    } else {
+                        toastr.error(response.message, 'Error');
+                    }
                 },
+
                 error: function (xhr) {
                     const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
                     toastr.error(errorMsg, 'Error');
@@ -793,6 +806,9 @@
             // const packageId = $('#packageid').val();
             const packageId = $(this).data('id');
             // alert(packageId);
+            if ($.fn.dataTable.isDataTable('#orderAssignTable')) {
+                $('#orderAssignTable').DataTable().clear().destroy();
+            }
 
 
             orderAssignTable = $('#orderAssignTable').DataTable({
@@ -800,6 +816,8 @@
                 serverSide: true,
                 processData: false,
                 contentType: false,
+                dom: 'lrtip', // removes the default search box
+
                 dataType: 'json',
                 ajax: {
                     url: '/ptlPackages/orderAssignList/',
@@ -807,6 +825,9 @@
                     data: function (d) {
                         d.packageId = packageId;
                     }
+                },
+                drawCallback: function () {
+                    $('[data-bs-toggle="tooltip"]').tooltip();
                 },
                 columns: [
                     {
@@ -897,18 +918,20 @@
                     },
 
                     {
-                        data: 'deliveryDate', // Assuming your server returns the combined date and time in 'deliveryDate'
+                        data: 'deliveryInfoIcon',
                         orderable: false,
                         render: function (data) {
-                            return moment(data).format('YYYY-MM-DD HH:mm:ss'); // Format the date and time as needed
+                            return data || ''; // use icon HTML if exists
                         }
                     },
+
                     {
                         data: 'status',  // Ensure the correct data field name from your backend
                         orderable: false,
                         render: function (status, type, row) {
                             return `
             <select id="updateOrderStatus" class="form-select" data-id="${row._id}">
+                <option value="0" ${status == 0 ? 'selected' : ''}>In Process</option>
                 <option value="1" ${status == 1 ? 'selected' : ''}>Pickup</option>
                 <option value="2" ${status == 2 ? 'selected' : ''}>In Transit</option>
                 <option value="3" ${status == 3 ? 'selected' : ''}>Out for Delivery</option>
