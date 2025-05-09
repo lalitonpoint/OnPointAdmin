@@ -10,7 +10,9 @@ const deliveryStageSchema = new mongoose.Schema({
 const shipmentSchema = new mongoose.Schema({
     packageId: {
         type: String,
-        required: true
+        required: true,
+        ref: 'PaymentDetails'
+
     },
     driverId: {
         type: String,

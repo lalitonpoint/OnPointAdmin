@@ -46,7 +46,9 @@ const orderAssign = async (req, res) => {
             return res.status(200).json({ success: false, message: "Driver ID is required" });
         }
 
-        const driverRequest = await PTL.find({ driverId: driverId, status: 0 }).sort({ createdAt: -1 });
+        const driverRequest = await PTL.find({ driverId, status: 0 }).sort({ createdAt: -1 })
+            .populate({ path: 'userId', select: 'fullName' })
+            .populate({ path: 'packageId', select: 'packages' });
 
         if (!driverRequest.length) {
             return res.status(200).json({ success: true, message: "No requests found for this driver", driverRequest: [] });
@@ -58,25 +60,65 @@ const orderAssign = async (req, res) => {
             return res.status(200).json({ success: false, message: "Please update driver's current location" });
         }
 
-        // Loop through all requests and calculate distance/duration
         const enrichedRequests = await Promise.all(driverRequest.map(async (request) => {
-            const { distanceInKm, duration } = await getDistanceAndDuration(
-                driverCurrentLocation.lat,
-                driverCurrentLocation.long,
-                request.pickupLatitude,
-                request.pickupLongitude
-            );
-
             const requestObj = request.toObject();
-            requestObj.pickupDistance = distanceInKm;
-            requestObj.pickupDuration = duration;
+
+            // Default values
+            let pickupDistance = 0, pickupDuration = 0;
+            let dropDistance = 0, dropDuration = 0;
+
+            // Calculate pickup distance & duration
+            try {
+                ({ distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
+                    driverCurrentLocation.lat,
+                    driverCurrentLocation.long,
+                    request.pickupLatitude,
+                    request.pickupLongitude
+                ));
+            } catch (e) {
+                console.error(`Error in pickup distance for request ${request._id}:`, e.message);
+            }
+
+            // Calculate drop distance & duration
+            try {
+                ({ distanceInKm: dropDistance, duration: dropDuration } = await getDistanceAndDuration(
+                    request.pickupLatitude,
+                    request.pickupLongitude,
+                    request.dropLatitude,
+                    request.dropLongitude
+                ));
+            } catch (e) {
+                console.error(`Error in drop distance for request ${request._id}:`, e.message);
+            }
+
+            requestObj.pickupDistance = pickupDistance;
+            requestObj.pickupDuration = pickupDuration;
+            requestObj.dropDistance = dropDistance;
+            requestObj.dropDuration = dropDuration;
+            requestObj.arrivalTime = getArrivalTime(pickupDuration);
+            requestObj.userName = requestObj.userId?.fullName || '';
+            requestObj.packageName = await requestObj.packageId?.packages
+                ?.map(p => p.packageName)
+                ?.filter(Boolean)
+                ?.join(', ') || '';
+            requestObj.packageId = requestObj.packageId?._id;
+
+            delete requestObj.createdAt;
+            delete requestObj.updatedAt;
+            delete requestObj.__v;
+            delete requestObj.deliveryStatus;
+            delete requestObj.userId;
+            // delete requestObj.packageId;
+
+
+
 
             return requestObj;
         }));
 
         return res.json({
             success: true,
-            driverRequest: enrichedRequests,
+            data: enrichedRequests,
             message: `${enrichedRequests.length} Request(s) Incoming`
         });
 
@@ -280,6 +322,32 @@ const updateOrderStatus = async (req, res) => {
         });
     }
 };
+
+const parseDurationText = (durationText) => {
+
+}
+
+
+function getArrivalTime(durationInText) {
+
+    const regex = /(?:(\d+)\s*hour[s]?)?\s*(?:(\d+)\s*min[s]?)?/;
+    const matches = durationInText.match(regex);
+    const hours = parseInt(matches[1]) || 0;
+    const minutes = parseInt(matches[2]) || 0;
+    const durationInSeconds = (hours * 60 + minutes) * 60; // in seconds
+
+    const now = new Date(); // Current time
+    const arrivalTime = new Date(now.getTime() + durationInSeconds * 1000);
+
+    // Format to readable IST time
+    return arrivalTime.toLocaleTimeString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+}
+
 
 
 module.exports = {

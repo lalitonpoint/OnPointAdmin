@@ -115,7 +115,7 @@ const addTracking = async (req, res) => {
         form.parse(req, async (err, fields) => {
             if (err) {
                 console.error("Error parsing form data:", err);
-                return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
+                return res.status(200).json({ error: "Failed to parse form data" }); // Changed status code to 200 for bad request
             }
 
             const trackingCode = fields.trackingId ? fields.trackingId[0] : '';
@@ -137,13 +137,13 @@ const addTracking = async (req, res) => {
             // console.log('deliveryDate', deliveryDate);
             // console.log('deliveryTime', deliveryTime);
             if (!trackingCode || !status || !deliveryDate || !noOfPacking) {
-                return res.status(400).json({ message: 'Tracking ID, Status, Delivery Date, No. of Packing, and Delivery Time are required' });
+                return res.status(200).json({ message: 'Tracking ID, Status, Delivery Date, No. of Packing, and Delivery Time are required' });
             }
 
             // Convert status to number
             const statusNumber = parseInt(status);
             if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
-                return res.status(400).json({ message: 'Invalid status value' });
+                return res.status(200).json({ message: 'Invalid status value' });
             }
             const statusMap = {
                 1: { key: 'in_process', status: 0, deliveryDateTime: '' },
@@ -209,7 +209,7 @@ const assignDriver = async (req, res) => {
         form.parse(req, async (err, fields) => {
             if (err) {
                 console.error("Error parsing form data:", err);
-                return res.status(400).json({ error: "Failed to parse form data" });
+                return res.status(200).json({ error: "Failed to parse form data" });
             }
 
             // Extracting fields
@@ -221,7 +221,7 @@ const assignDriver = async (req, res) => {
 
             // Validation
             if (!driverId || !assignType || !warehouseId || !packageId || !userId) {
-                return res.status(400).json({ message: 'DriverId, AssignType, WarehouseId, PackageId & UserId are required' });
+                return res.status(200).json({ message: 'DriverId, AssignType, WarehouseId, PackageId & UserId are required' });
             }
 
 
