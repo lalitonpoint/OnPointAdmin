@@ -355,22 +355,24 @@
         // Event delegation for Delete button
         $('#vehicleTable').on('click', '.delvehicleBtn', function () {
             const vehicleId = $(this).data('id');
-            if (confirm('Are you sure you want to delete this vehicle?')) {
+
+            swalConfirm('Are you sure you want to delete this vehicle?', function () {
                 $.ajax({
-                    url: '/vehicle/deletevehicle/' + vehicleId, // Replace with your actual delete route
-                    type: 'delete',
+                    url: '/vehicle/deletevehicle/' + vehicleId,
+                    type: 'DELETE',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
-                        toastr.success('vehicle deleted successfully!', 'Success');
+                        toastr.success('Vehicle deleted successfully!', 'Success');
                     },
                     error: function (xhr, status, error) {
                         console.error("Error deleting vehicle:", status, error, xhr);
                         toastr.error('Error deleting vehicle.', 'Error');
                     }
                 });
-            }
+            });
         });
+
         $('#vehicleTable').on('click', '.changeStatus', function () {
             const vehicleId = $(this).data('id');
             const newStatus = $(this).data('status'); // Get the new status from the data attribute

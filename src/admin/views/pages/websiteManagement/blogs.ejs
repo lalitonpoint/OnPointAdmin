@@ -343,10 +343,11 @@
         // Event delegation for Delete button
         $('#blogTable').on('click', '.delBlogBtn', function () {
             const blogId = $(this).data('id');
-            if (confirm('Are you sure you want to delete this blog?')) {
+
+            swalConfirm('Are you sure you want to delete this blog?', function () {
                 $.ajax({
-                    url: '/blogs/deleteBlog/' + blogId, // Replace with your actual delete route
-                    type: 'delete',
+                    url: '/blogs/deleteBlog/' + blogId,
+                    type: 'DELETE',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
@@ -357,8 +358,9 @@
                         toastr.error('Error deleting blog.', 'Error');
                     }
                 });
-            }
+            });
         });
+
         $('#blogTable').on('click', '.changeStatus', function () {
             const blogId = $(this).data('id');
             const newStatus = $(this).data('status'); // Get the new status from the data attribute

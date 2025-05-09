@@ -320,10 +320,11 @@
 
         $('#serviceTable').on('click', '.delServiceBtn', function () {
             const serviceId = $(this).data('id');
-            if (confirm('Are you sure you want to delete this service?')) {
+
+            swalConfirm('Are you sure you want to delete this service?', function () {
                 $.ajax({
                     url: '/service/deleteService/' + serviceId,
-                    type: 'delete',
+                    type: 'DELETE',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
@@ -334,8 +335,9 @@
                         toastr.error('Error deleting service.', 'Error');
                     }
                 });
-            }
+            });
         });
+
 
         $('#serviceTable').on('click', '.changeStatus', function () {
             const serviceId = $(this).data('id');

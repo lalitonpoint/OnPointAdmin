@@ -444,10 +444,11 @@
         // Event delegation for Delete button
         $('#bannerTable').on('click', '.delBannerBtn', function () {
             const bannerId = $(this).data('id');
-            if (confirm('Are you sure you want to delete this banner?')) {
+
+            swalConfirm('Are you sure you want to delete this banner?', function () {
                 $.ajax({
-                    url: '/banner/deleteBanner/' + bannerId, // Replace with your actual delete route
-                    type: 'delete',
+                    url: '/banner/deleteBanner/' + bannerId,
+                    type: 'DELETE',
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
@@ -455,11 +456,12 @@
                     },
                     error: function (xhr, status, error) {
                         console.error("Error deleting banner:", status, error, xhr);
-                        // toastr.error(error.message, 'Error');
+                        toastr.error('Error deleting banner.', 'Error');
                     }
                 });
-            }
+            });
         });
+
         $('#bannerTable').on('click', '.changeStatus', function () {
             const bannerId = $(this).data('id');
             const newStatus = $(this).data('status'); // Get the new status from the data attribute

@@ -466,10 +466,11 @@
 
         $('#userTable').on('click', '.deleteUser', function () {
             const userId = $(this).data('id');
-            if (confirm('Are you sure you want to delete this blog?')) {
+            
+            swalConfirm('Are you sure you want to delete this user?', function () {
                 $.ajax({
                     url: '/users/deleteUser/' + userId, // Replace with your actual delete route
-                    type: 'post',
+                    type: 'POST',  // Ensure the correct HTTP method is used
                     dataType: 'json',
                     success: function () {
                         table.ajax.reload();
@@ -480,8 +481,9 @@
                         toastr.error('Error deleting User.', 'Error');
                     }
                 });
-            }
+            });
         });
+
         $('#userTable').on('click', '.changeStatus', function () {
             const userId = $(this).data('id');
             const newStatus = $(this).data('status'); // Get the new status from the data attribute

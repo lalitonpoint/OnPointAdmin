@@ -1,48 +1,84 @@
 // ✅ CREATE DRIVER (POST)
 
-const Driver = require('../../models/driverManagement/driverModel');
+const Driver = require('../../../api/driver/modals/driverModal');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 const { generateLogs } = require('../../utils/logsHelper');
+
+const uploadDocument = async (files, docField) => {
+    if (files?.[docField]?.length > 0) {
+        const file = files[docField][0];
+        const tempFile = {
+            path: file.path,
+            originalFilename: file.originalFilename,
+            mimetype: file.headers?.['content-type'] || 'application/octet-stream',
+            size: file.size,
+        };
+
+        const result = await uploadImage(tempFile);
+        if (result.success) {
+            // Clean up the temporary file after successful upload
+            // await fs.unlink(file.path);
+            return result.url;
+        } else {
+            console.error(`Failed to upload ${docField}:`, result.message);
+            return ''; // Or perhaps throw an error for better handling in the caller
+        }
+    }
+    return '';
+};
+
 
 const saveDrivers = async (req, res) => {
     try {
         const form = new multiparty.Form();
 
-        // Parse the form data
         form.parse(req, async (err, fields, files) => {
             if (err) {
                 console.error("Error parsing form data:", err);
                 return res.status(500).json({ error: "Failed to parse form data" });
             }
 
-            const name = fields.name ? fields.name[0] : '';
-            const email = fields.email ? fields.email[0] : '';
-            const dateOfBirth = fields.dateOfBirth ? fields.dateOfBirth[0] : '';
-            const gender = fields.gender ? fields.gender[0] : '';
-            const mobileNumber = fields.mobileNumber ? fields.mobileNumber[0] : '';
-            const alternateMobileNo = fields.alternateMobileNo ? fields.alternateMobileNo[0] : '';
-
+            const name = fields.name?.[0] || '';
+            const email = fields.email?.[0] || '';
+            const dateOfBirth = fields.dateOfBirth?.[0] || '';
+            const gender = fields.gender?.[0] || '';
+            const mobileNumber = fields.mobileNo?.[0] || '';
+            const alternateMobileNo = fields.alternateMobileNo?.[0] || '';
+            const countryCode = fields.countryCode?.[0] || '';
+            console.log(name)
+            console.log(email)
+            console.log(mobileNumber)
             if (!name || !email || !mobileNumber) {
                 return res.status(400).json({ error: "Name, Email, and Mobile No. are required" });
             }
 
-            const file = files.profileImage ? files.profileImage[0] : null; // Get profileImage file
+            const file = files.profileImage ? files.profileImage[0] : null;
 
-            let imageUrl = '';
-            if (file && file.path && file.originalFilename) {
+            let imageUrl = null;
+            if (file) {
                 const result = await uploadImage(file);
-                imageUrl = result.success ? result.url : `http://localhost:${process.env.PORT || 3000}${result.path}`;
+                if (result.success) {
+                    imageUrl = result.url;
+                } else {
+                    console.error("Error uploading image:", result.error || result.message);
+                    return res.status(500).json({ error: "Failed to upload banner image" }); 
+                }
+            } else {
+                imageUrl = ''; 
             }
 
             const driver = new Driver({
-                name,
-                email,
-                dateOfBirth,
-                gender,
-                mobileNumber,
-                alternateMobileNo,
-                profileImage: imageUrl,
+                personalInfo: {
+                    name,
+                    email,
+                    dob: dateOfBirth,
+                    gender,
+                    countryCode,
+                    mobile: mobileNumber,
+                    altMobile: alternateMobileNo,
+                    profilePicture: imageUrl,
+                }
             });
 
             await driver.save();
@@ -52,9 +88,11 @@ const saveDrivers = async (req, res) => {
         });
 
     } catch (err) {
+        console.error(err);
         res.status(500).json({ success: false, message: err.message });
     }
 }
+
 
 const driverList = async (req, res) => {
     try {
@@ -269,4 +307,36 @@ const deleteDriver = async (req, res) => {
     }
 }
 
-module.exports = { saveDrivers, updateDriver, deleteDriver, driverList, driverPage, singleDriver }
+// POST /driver/updateApproval
+const updateApproval = async (req, res) => {
+    const { driverId, approved } = req.body;
+    // console.log(req.session);
+    // Assuming admin info is stored in req.admin from middleware or session
+    const adminId = req.session.admin?.id || null;
+    const adminName = req.session.admin?.name || 'Unknown';
+
+    try {
+        await Driver.updateOne(
+            { _id: driverId },
+            {
+                $set: {
+                    approvalStatus: approved,
+                    approvedBy: {
+                        adminId: adminId,
+                        adminName: adminName,
+                        approvedAt: new Date()
+                    }
+                }
+            }
+        );
+
+        res.json({ success: true, message: 'Approval status updated successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error updating status.' });
+    }
+};
+
+
+
+module.exports = { saveDrivers, updateDriver, deleteDriver, driverList, driverPage, singleDriver, updateApproval }

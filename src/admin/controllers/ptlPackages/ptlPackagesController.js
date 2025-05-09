@@ -425,7 +425,7 @@ const getDriverWarehouseData = async (req, res) => {
         if (!latestAssignOrderDetail) {
             latestAssignOrderDetail = {};
         }
-        const drivers = await Driver.find(); // If you want to filter, add a query here
+        const drivers = await Driver.find({ approvalStatus: 1 });
         const warehouse = await Warehouse.find(); // If you want to filter, add a query here
 
         res.json({

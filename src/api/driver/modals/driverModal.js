@@ -57,7 +57,13 @@ const driverProfileSchema = new mongoose.Schema({
         pollutionCertificate: { type: String },
     },
     status: { type: Number, enum: [1, 2, 3], default: 1 }, // 1 = Active, 2 = Inactive , 3 => Delete
-    step: { type: Number, enum: [1, 2, 3, 4, 5] } // 1 = Screen 1, 2 = Screen 2 , 3 => Screen 3
+    step: { type: Number, enum: [1, 2, 3, 4, 5] }, // 1 = Screen 1, 2 = Screen 2 , 3 => Screen 3
+    approvedBy: {
+        adminId: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+        adminName: String,
+        approvedAt: Date
+    },
+    approvalStatus: { type: Number, enum: [0 ,1], default: 0 } // 1 = Active, 0 = Inactive 
 
 }, { timestamps: true });
 
