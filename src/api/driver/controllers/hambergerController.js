@@ -34,7 +34,7 @@ const getHambergerData = async (req, res) => {
         res.status(200).json({
             success: true,
             data: {
-                driverDocument: driverDocument.documents,
+                driverDocument: driverDocument?.documents || {},
                 driverInstruction: driverInstructionData?.aboutUs?.content || '',
                 faqData: groupedFaqs,
             }
