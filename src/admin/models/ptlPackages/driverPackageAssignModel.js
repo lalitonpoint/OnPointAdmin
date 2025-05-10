@@ -1,12 +1,5 @@
 const mongoose = require('mongoose');
 
-const deliveryStageSchema = new mongoose.Schema({
-    key: { type: String, required: true },
-    status: { type: Number, default: 0 }, // 0 = pending, 1 = done
-    deliveryDateTime: { type: Date, default: '' }
-}, { _id: false });
-
-
 const shipmentSchema = new mongoose.Schema({
     packageId: {
         type: String,

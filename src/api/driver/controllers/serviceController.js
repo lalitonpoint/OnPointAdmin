@@ -2,6 +2,7 @@ const admin = require('../../../../config/firebaseConnection');
 const PTL = require('../../../admin/models/ptlPackages/driverPackageAssignModel'); // Adjust the model path as needed
 const { getDistanceAndDuration } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 const DriverLocation = require('../modals/driverLocModal'); // Assuming the common function is located in '../utils/distanceCalculate'
+const mongoose = require('mongoose');
 
 // Save Driver Locationconst DriverLocation = require('../models/DriverLocation'); // adjust the path as needed
 
@@ -245,10 +246,9 @@ const tripHistoryCount = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
     try {
         const driverId = req.header('driverid');
-        const packageId = req.body.packageId;
+        const id = req.body.id;
         const orderStatus = parseInt(req.body.status);
 
-        // Allowed statuses and corresponding keys
         const statusKeyMap = {
             0: 'pending',
             1: 'pickup',
@@ -267,23 +267,19 @@ const updateOrderStatus = async (req, res) => {
             5: 'Order is already cancelled'
         };
 
-        // Validate status
-        if (!Object.keys(statusKeyMap).includes(orderStatus.toString())) {
+        if (!(orderStatus in statusKeyMap)) {
             return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
         }
 
-        if (!packageId) {
-            return res.status(200).json({ success: false, message: 'packageId is required' });
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(200).json({ success: false, message: 'Valid id is required' });
         }
 
-        // Find the latest order
-        const order = await PTL.findOne({ driverId, packageId }).sort({ createdAt: -1 });
-
+        const order = await PTL.findById(id);
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-        // Ensure new status is greater than current status
         if (orderStatus <= order.status) {
             return res.status(200).json({
                 success: false,
@@ -291,28 +287,31 @@ const updateOrderStatus = async (req, res) => {
             });
         }
 
-        // Ensure deliveryStatus is an array
-        if (!Array.isArray(order.deliveryStatus)) {
-            order.deliveryStatus = [];
+        const now = new Date();
+
+        // Backfill only blank intermediate statuses (i.e., if status is 0 or date is missing)
+        const updateFields = {};
+
+        for (let i = order.status + 1; i <= orderStatus; i++) {
+            if (order.deliveryStatus[i]) {
+                // If status is 0 or deliveryDateTime is empty, update them
+                if (order.deliveryStatus[i].status !== 1 || !order.deliveryStatus[i].deliveryDateTime) {
+                    updateFields[`deliveryStatus.${i}.status`] = 1;
+                    updateFields[`deliveryStatus.${i}.deliveryDateTime`] = now;
+                }
+            }
         }
 
-        // Append to deliveryStatus history
-        order.deliveryStatus.push({
-            key: statusKeyMap[orderStatus],
-            status: orderStatus,
-            deliveryDateTime: new Date()
-        });
-        // console.log('order', order);
+        // Set the new main status
+        updateFields.status = orderStatus;
 
-        // Update order status
-        order.status = orderStatus;
-
-        await order.save();
+        // Perform the update operation
+        await PTL.updateOne({ _id: id }, { $set: updateFields });
 
         res.status(200).json({
             success: true,
-            message: 'Order status updated successfully',
-            order
+            message: 'Order status updated successfully with blank intermediate statuses filled',
+            order: await PTL.findById(id) // Fetch the updated order
         });
     } catch (error) {
         res.status(500).json({
@@ -323,9 +322,7 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
-const parseDurationText = (durationText) => {
 
-}
 
 
 function getArrivalTime(durationInText) {
