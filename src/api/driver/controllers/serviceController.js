@@ -246,7 +246,7 @@ const tripHistoryCount = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
     try {
         const driverId = req.header('driverid');
-        const id = req.body.id;
+        const id = req.body.assignId;
         const orderStatus = parseInt(req.body.status);
 
         const statusKeyMap = {
