@@ -88,8 +88,8 @@ const createDriver = async (req, res) => {
                         });
                     }
 
-                    const profilePicture = await uploadDocument(files, 'profilePicture');
-                    if (!profilePicture) return res.status(200).json({ success: false, message: "Profile picture is required." }); // Changed status code to 200
+                    // const profilePicture = await uploadDocument(files, 'profilePicture');
+                    // if (!profilePicture) return res.status(200).json({ success: false, message: "Profile picture is required." }); // Changed status code to 200
 
                     update.personalInfo = {
                         name: getField('name'),
@@ -99,7 +99,7 @@ const createDriver = async (req, res) => {
                         mobile: getField('mobile'),
                         altMobile: getField('altMobile'),
                         countryCode: getField('countryCode'),
-                        profilePicture
+                        profilePicture: ''
                     };
                     break;
                 };
