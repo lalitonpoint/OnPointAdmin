@@ -13,13 +13,13 @@ const razorpayWebhook = async (req, res) => {
         .digest('hex');
 
     if (receivedSignature !== generatedSignature) {
-        return res.status(400).json({ success: false, message: 'Invalid webhook signature' });
+        return res.status(200).json({ success: false, message: 'Invalid webhook signature' });
     }
 
     const { event, payload } = req.body;
 
     if (!event || !payload) {
-        return res.status(400).json({ success: false, message: 'Invalid webhook data' });
+        return res.status(200).json({ success: false, message: 'Invalid webhook data' });
     }
 
     if (event === 'payment.captured') {

@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 
 // Mongoose Schema
 const WalletSchema = new mongoose.Schema({
-    userId: { type: String, required: true, unique: true },
+    userId: { type: String, default: null },  // required conditionally
+    driverId: { type: String, default: null }, // required conditionally
+    type: { type: Number, enum: [0, 1], default: 0, required: true }, // 0 => User, 1 => Driver 
     balance: { type: Number, default: 0 },
     transactions: [
         {

@@ -11,7 +11,7 @@ const saveDriverLocation = async (req, res) => {
     const { lat, long } = req.body;
 
     if (!driverId || !lat || !long) {
-        return res.status(200).json({ message: "Missing driverId, lat, or long" });
+        return res.status(200).json({ success: false, message: "Missing driverId, lat, or long" });
     }
 
     try {

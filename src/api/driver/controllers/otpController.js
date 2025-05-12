@@ -112,7 +112,7 @@ const verifyOtp = async (req, res) => {
             const token = jwt.sign(
                 { driverId: driver._id, mobileNumber: driver.mobileNumber },
                 secretKey,
-                { expiresIn: '7d' }
+                { expiresIn: '30d' }
             );
 
             return res.status(200).json({

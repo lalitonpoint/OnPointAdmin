@@ -126,7 +126,7 @@ const createUser = async (req, res) => {
             const token = jwt.sign(
                 { userId: savedUser._id, mobileNumber: savedUser.mobileNumber },
                 secretKey,
-                { expiresIn: '7d' });
+                { expiresIn: '30d' });
 
             return res.status(201).json({
                 success: true,
