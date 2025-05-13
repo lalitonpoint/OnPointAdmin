@@ -169,18 +169,22 @@
 
             $('#documentTable').on('click', '.delDocumentBtn', function () {
                 const id = $(this).data('id');
-                if (confirm('Are you sure you want to delete this document?')) {
+
+                swalConfirm('Are you sure you want to delete this document?', function () {
                     $.ajax({
                         url: `/document/deleteDocument/${id}`,
                         type: 'DELETE',
                         success: function (response) {
-                            alert(response.message);
+                            toastr.success(response.message || 'Document deleted successfully!', 'Success');
                             table.ajax.reload();
                         },
-                        error: function () { alert('Failed to delete document'); }
+                        error: function () {
+                            toastr.error('Failed to delete document.', 'Error');
+                        }
                     });
-                }
+                });
             });
+
         });
     </script>
 </body>
