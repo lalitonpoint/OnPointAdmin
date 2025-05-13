@@ -256,16 +256,14 @@ const tripHistoryCount = async (req, res) => {
 };
 
 const updateOrderStatus = async (req, res) => {
-
     try {
         const driverId = req.header('driverid');
         const id = req.body.assignId;
         const orderStatus = parseInt(req.body.status);
 
-
-
-
-
+        if (!id || isNaN(orderStatus)) {
+            return res.status(200).json({ success: false, message: 'Invalid order ID or status' });
+        }
 
         const statusKeyMap = {
             0: 'pending',
@@ -289,8 +287,10 @@ const updateOrderStatus = async (req, res) => {
             return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
         }
 
-
-
+        const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' });
+        if (!order) {
+            return res.status(200).json({ success: false, message: 'Order not found' });
+        }
 
         if (orderStatus <= order.status) {
             return res.status(200).json({
@@ -300,13 +300,10 @@ const updateOrderStatus = async (req, res) => {
         }
 
         const now = new Date();
-
-        // Backfill only blank intermediate statuses (i.e., if status is 0 or date is missing)
         const updateFields = {};
 
         for (let i = order.status + 1; i <= orderStatus; i++) {
             if (order.deliveryStatus[i]) {
-                // If status is 0 or deliveryDateTime is empty, update them
                 if (order.deliveryStatus[i].status !== 1 || !order.deliveryStatus[i].deliveryDateTime) {
                     updateFields[`deliveryStatus.${i}.status`] = 1;
                     updateFields[`deliveryStatus.${i}.deliveryDateTime`] = now;
@@ -314,17 +311,60 @@ const updateOrderStatus = async (req, res) => {
             }
         }
 
-        // Set the new main status
         updateFields.status = orderStatus;
-
-        // Perform the update operation
         await PTL.updateOne({ _id: id }, { $set: updateFields });
 
-        res.status(200).json({
-            success: true,
-            message: 'Order status updated successfully',
-            order: await PTL.findById(id) // Fetch the updated order
-        });
+        const user = order.userId;
+        let topHeader = '';
+        let bottomHeader = '';
+
+        if (orderStatus === 2 || orderStatus === 3) {
+            topHeader = orderStatus === 2 ? 'Start' : 'Arrived';
+            bottomHeader = orderStatus === 2
+                ? (order.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop off')
+                : 'Arrived';
+
+            const driverCurrentLocation = await getDriverLocation(driverId);
+            if (!driverCurrentLocation.success) {
+                return res.status(200).json({ success: false, message: "Please update driver's current location" });
+            }
+
+            const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
+                driverCurrentLocation.lat,
+                driverCurrentLocation.long,
+                order.pickupLatitude,
+                order.pickupLongitude
+            );
+
+            return res.json({
+                success: true,
+                data: {
+                    topHeader,
+                    bottomHeader,
+                    pickupDistance,
+                    pickupDuration,
+                    username: user.fullName,
+                    address: order.pickupAddress,
+                    dropLatitude: order.dropLatitude,
+                    dropLongitude: order.dropLongitude
+                },
+                message: 'Order status updated successfully',
+            });
+        }
+
+        if (orderStatus === 4) {
+            return res.json({
+                success: true,
+                data: {
+                    isDelivered: 1,
+                },
+                message: 'Your shipment has been successfully delivered to the warehouse',
+            });
+        }
+
+        // Default response for other status changes
+        return res.json({ success: true, message: 'Order status updated successfully' });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -337,13 +377,15 @@ const updateOrderStatus = async (req, res) => {
 const pickupOrder = async (req, res) => {
     try {
         const { assignId: id, pickupStatus } = req.body;
-        const driverId = req.header('driverid')
+        const driverId = req.header('driverid');
 
         if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(200).json({ success: false, message: 'Assign Id is required' });
+            return res.status(200).json({ success: false, message: 'Assign Id is required or invalid' });
         }
 
-
+        if (![0, 1, 2].includes(pickupStatus)) {
+            return res.status(200).json({ success: false, message: 'Invalid pickup status' });
+        }
 
         const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' });
         if (!order) {
@@ -351,112 +393,55 @@ const pickupOrder = async (req, res) => {
         }
 
         const user = order.userId;
-        let topHeader = '';
-        let bottomHeader = '';
+        const driverLocation = await getDriverLocation(driverId);
 
-
-        // === Step 1: Trip started (Go to pickup)
-        if (pickupStatus === 0) {
-            topHeader = 'Start Trip';
-            bottomHeader = 'Way To Pickup';
-
-            const driverCurrentLocation = await getDriverLocation(driverId);
-            if (!driverCurrentLocation.success) {
-                return res.status(200).json({ success: false, message: "Please update driver's current location" });
-            }
-
-            const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
-                driverCurrentLocation.lat,
-                driverCurrentLocation.long,
-                order.pickupLatitude,
-                order.pickupLongitude
-            );
-
-            return res.json({
-                success: true,
-                data: {
-                    topHeader,
-                    bottomHeader,
-                    pickupDistance,
-                    pickupDuration,
-                    username: user.fullName,
-                    address: order.pickupAddress,
-                    pickupLatitude: order.pickupLatitude,
-                    pickupLongitude: order.pickupLongitude,
-
-                },
-                message: "Driver Way to Pickup"
-            });
+        if (!driverLocation.success) {
+            return res.status(200).json({ success: false, message: "Please update driver's current location" });
         }
 
-        // === Step 2: Arrived at pickup location
-        if (pickupStatus === 1) {
-            // ❗ Check if the trip was started first
-            // if (order.pickupStatus !== 0) {
-            //     return res.status(200).json({ success: false, message: "You can only arrive after starting the pickup trip" });
-            // }
+        const { lat, long } = driverLocation;
+        const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
+            lat, long, order.pickupLatitude, order.pickupLongitude
+        );
 
-            const updatedOrder = await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 1 } }, { new: true });
-            if (!updatedOrder) {
-                return res.status(200).json({ success: false, message: "Failed to update pickup status" });
-            }
+        let topHeader = '', bottomHeader = '', message = '';
 
-            topHeader = 'Arrived';
-            bottomHeader = 'Arrived';
+        switch (pickupStatus) {
+            case 0: // Start trip
+                topHeader = 'Start Trip';
+                bottomHeader = 'Way To Pickup';
+                message = "Driver Way to Pickup";
+                break;
 
-            const driverCurrentLocation = await getDriverLocation(driverId);
-            if (!driverCurrentLocation.success) {
-                return res.status(200).json({ success: false, message: "Please update driver's current location" });
-            }
+            case 1: // Arriving at pickup
+                await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 1 } });
+                topHeader = 'Arriving';
+                bottomHeader = 'Way to user location';
+                message = "Driver Go For Pickup";
+                break;
 
-            const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
-                driverCurrentLocation.lat,
-                driverCurrentLocation.long,
-                order.pickupLatitude,
-                order.pickupLongitude
-            );
-
-            return res.json({
-                success: true,
-                data: {
-                    topHeader,
-                    bottomHeader,
-                    pickupDistance,
-                    pickupDuration,
-                    username: user.fullName,
-                    address: order.pickupAddress,
-                    pickupLatitude: order.pickupLatitude,
-                    pickupLongitude: order.pickupLongitude,
-                },
-                message: "Driver Go For Pickup"
-
-            });
+            case 2: //  Arrived at pickup
+                await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 2 } });
+                topHeader = 'Arrived';
+                bottomHeader = 'Arrived';
+                message = "Driver Arrived At User Location";
+                break;
         }
 
-        // === Step 3: Picked up successfully
-        if (pickupStatus === 2) {
-            // if (order.pickupStatus !== 1) {
-            //     return res.status(200).json({ success: false, message: "You can only mark pickup after arriving" });
-            // }
-
-            const updatedOrder = await PTL.findByIdAndUpdate(
-                id,
-                { $set: { pickupStatus: 2, status: 1 } },
-                { new: true }
-            );
-
-            if (!updatedOrder) {
-                return res.status(200).json({ success: false, message: "Failed to mark order as picked up" });
-            }
-
-            return res.status(200).json({
-                success: true,
-                message: "Driver Arrived At PickupLoaction",
-                data: { verification: updatedOrder.pickupStatus == 2 ? 1 : 0 },
-            });
-        }
-
-        return res.status(200).json({ success: false, message: "Invalid pickup status" });
+        return res.status(200).json({
+            success: true,
+            data: {
+                topHeader,
+                bottomHeader,
+                pickupDistance,
+                pickupDuration,
+                username: user.fullName,
+                address: order.pickupAddress,
+                pickupLatitude: order.pickupLatitude,
+                pickupLongitude: order.pickupLongitude,
+            },
+            message
+        });
 
     } catch (error) {
         console.error("pickupOrder error:", error);
@@ -594,6 +579,7 @@ const pickupVerifyOtp = async (req, res) => {
         const now = new Date();
         const updateFields = {
             status: 1,
+            pickupMobile: parsed.formatted,
             'deliveryStatus.0.status': 1,
             'deliveryStatus.0.deliveryDateTime': now
         };
@@ -601,7 +587,7 @@ const pickupVerifyOtp = async (req, res) => {
         const result = await PTL.updateOne({ _id: id }, { $set: updateFields });
 
         if (result.modifiedCount === 0) {
-            return res.status(404).json({
+            return res.status(200).json({
                 success: false,
                 message: 'No record found to update.',
             });

@@ -55,7 +55,8 @@ const shipmentSchema = new mongoose.Schema({
     dropLatitude: { type: String },
     dropLongitude: { type: String },
     totalDuration: { type: String },
-    totalDistance: { type: String }
+    totalDistance: { type: String },
+    pickupMobile: { type: String },
 }, {
     timestamps: true
 });
