@@ -5,7 +5,6 @@ const DriverLocation = require('../modals/driverLocModal'); // Assuming the comm
 const mongoose = require('mongoose');
 
 // Save Driver Locationconst DriverLocation = require('../models/DriverLocation'); // adjust the path as needed
-
 const saveDriverLocation = async (req, res) => {
     const driverId = req.headers['driverid'];
     const { lat, long } = req.body;
@@ -15,6 +14,9 @@ const saveDriverLocation = async (req, res) => {
     }
 
     try {
+        let latitude = lat;
+        let longitude = long;
+
         const existingLocation = await DriverLocation.findOne({ driverId });
 
         if (existingLocation) {
@@ -32,7 +34,14 @@ const saveDriverLocation = async (req, res) => {
             await newLocation.save();
         }
 
-        res.status(200).json({ success: true, message: "Location updated successfully" });
+        res.status(200).json({
+            success: true,
+            message: "Location updated successfully",
+            data: {
+                lat: latitude,
+                long: longitude
+            }
+        });
     } catch (error) {
         console.error("Error updating location:", error);
         res.status(500).json({ success: false, message: "Failed to update location", error: error.message });
