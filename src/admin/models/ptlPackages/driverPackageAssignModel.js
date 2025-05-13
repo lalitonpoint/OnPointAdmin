@@ -27,6 +27,17 @@ const shipmentSchema = new mongoose.Schema({
         default: 0,
         required: true
     },
+    pickupStatus: {
+        type: Number,
+        enum: [0, 1, 2], // 0: Not Pickup 1: Go to Pickup , 2: arrived at user location
+        default: 0
+    },
+    pickupMobile: {
+        type: String
+    },
+
+
+
     assignType: {
         type: String,
         required: true
@@ -43,6 +54,8 @@ const shipmentSchema = new mongoose.Schema({
     pickupLongitude: { type: String },
     dropLatitude: { type: String },
     dropLongitude: { type: String },
+    totalDuration: { type: String },
+    totalDistance: { type: String }
 }, {
     timestamps: true
 });

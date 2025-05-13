@@ -4,6 +4,8 @@ const Driver = require('../../../api/driver/modals/driverModal');
 const Warehouse = require('../../models/warehouseManagemnet/warehouseModal');
 const driverPackageAssign = require('../../models/ptlPackages/driverPackageAssignModel');
 const { generateLogs } = require('../../utils/logsHelper');
+const { getDistanceAndDuration } = require('../../../api/driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+
 
 // const Driver = require('../models/Driver');
 const moment = require('moment'); // Ensure moment.js is installed: npm install moment
@@ -296,6 +298,13 @@ const assignDriver = async (req, res) => {
                 5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
             };
 
+            const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
+                pickupLatitude,
+                pickupLongitude,
+                dropLatitude,
+                dropLongitude
+            );
+
             const newTracking = new driverPackageAssign({
                 packageId,
                 driverId,
@@ -310,7 +319,9 @@ const assignDriver = async (req, res) => {
                 deliveryStatus: statusMap,
                 dropAddress,
                 dropLatitude,
-                dropLongitude
+                dropLongitude,
+                totalDistance: pickupDistance,
+                totalDuration: pickupDuration
             });
 
             await newTracking.save();
