@@ -368,7 +368,10 @@ const pickupOrder = async (req, res) => {
                     pickupDistance,
                     pickupDuration,
                     username: user.fullName,
-                    address: order.pickupAddress
+                    address: order.pickupAddress,
+                    pickupLatitude: order.pickupLatitude,
+                    pickupLongitude: order.pickupLongitude,
+
                 }
             });
         }
@@ -408,7 +411,9 @@ const pickupOrder = async (req, res) => {
                     pickupDistance,
                     pickupDuration,
                     username: user.fullName,
-                    address: order.pickupAddress
+                    address: order.pickupAddress,
+                    pickupLatitude: order.pickupLatitude,
+                    pickupLongitude: order.pickupLongitude,
                 }
             });
         }
