@@ -372,7 +372,8 @@ const pickupOrder = async (req, res) => {
                     pickupLatitude: order.pickupLatitude,
                     pickupLongitude: order.pickupLongitude,
 
-                }
+                },
+                message: "Driver Way to Pickup"
             });
         }
 
@@ -414,7 +415,9 @@ const pickupOrder = async (req, res) => {
                     address: order.pickupAddress,
                     pickupLatitude: order.pickupLatitude,
                     pickupLongitude: order.pickupLongitude,
-                }
+                },
+                message: "Driver Go For Pickup"
+
             });
         }
 
@@ -434,7 +437,11 @@ const pickupOrder = async (req, res) => {
                 return res.status(200).json({ success: false, message: "Failed to mark order as picked up" });
             }
 
-            return res.status(200).json({ success: true, message: "Driver Arrived At PickupLoaction", data: { verification: updatedOrder.pickupStatus == 2 ? 1 : 0 } });
+            return res.status(200).json({
+                success: true,
+                message: "Driver Arrived At PickupLoaction",
+                data: { verification: updatedOrder.pickupStatus == 2 ? 1 : 0 },
+            });
         }
 
         return res.status(200).json({ success: false, message: "Invalid pickup status" });
