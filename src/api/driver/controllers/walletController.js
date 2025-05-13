@@ -14,9 +14,13 @@ const walletBalance = async (req, res) => {
         const wallet = await Wallet.findOne({ driverId: driverId });
 
         if (wallet) {
-            res.status(200).json({ success: true, balance: wallet.balance });
+            res.status(200).json({
+                success: true, data: {
+                    balance: wallet.balance
+                }
+            });
         } else {
-            res.status(404).json({ success: false, message: 'Wallet not found' });
+            res.status(200).json({ success: false, message: 'Wallet not found' });
         }
     } catch (error) {
         console.error('Wallet Balance Error:', error);
@@ -54,7 +58,12 @@ const addMoney = async (req, res) => {
 
     try {
         const order = await razorpay.orders.create(options);
-        res.json({ success: true, order_id: order.id, razorpay_key: razorpay.key_id, amount });
+        res.json({
+            success: true,
+            data: {
+                order_id: order.id, razorpay_key: razorpay.key_id, amount
+            }
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error creating Razorpay order', error });
     }
@@ -194,8 +203,10 @@ const walletUse = async (req, res) => {
         return res.json({
             success: true,
             message: 'Wallet amount applied successfully',
-            remaining_balance: wallet.balance,
-            order_id
+            data: {
+                remaining_balance: wallet.balance,
+                order_id
+            }
         });
 
     } catch (err) {
@@ -219,7 +230,7 @@ const walletRefund = async (req, res) => {
         let wallet = await Wallet.findOne({ driverId: driverId });
 
         if (!wallet) {
-            return res.status(404).json({ success: false, message: 'Wallet not found' });
+            return res.status(200).json({ success: false, message: 'Wallet not found' });
         }
 
         wallet.balance += amount;
@@ -228,7 +239,12 @@ const walletRefund = async (req, res) => {
 
         await wallet.save();
 
-        res.json({ success: true, message: 'Amount refunded to wallet', balance: wallet.balance });
+        res.json({
+            success: true, message: 'Amount refunded to wallet',
+            data: {
+                balance: wallet.balance
+            }
+        });
     } catch (err) {
         console.error('Error processing wallet refund:', err);
         res.status(500).json({ success: false, message: 'An error occurred while processing the wallet refund' });
@@ -244,9 +260,9 @@ const walletTransaction = async (req, res) => {
         const wallet = await Wallet.findOne({ driverId: driverId });
 
         if (wallet) {
-            res.status(200).json({ success: true, balance: wallet.balance, data: wallet.transactions.reverse() });
+            res.status(200).json({ success: true, data: { balance: wallet.balance, transactions: wallet.transactions.reverse() } });
         } else {
-            res.status(200).json({ success: false, message: 'Wallet not found' });
+            res.status(200).json({ success: false, message: 'Wallet not found', data: { balance: 0 } });
         }
     } catch (error) {
         console.error('Wallet Transaction Error:', error);
