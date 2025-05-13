@@ -558,7 +558,6 @@ const pickupVerifyOtp = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 message: 'Country code, mobile number, OTP, and AssignId are required.',
-                isRegistered: false
             });
         }
 
@@ -568,7 +567,6 @@ const pickupVerifyOtp = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 message: 'Invalid mobile number format.',
-                isRegistered: false
             });
         }
 
@@ -578,7 +576,6 @@ const pickupVerifyOtp = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 message: 'OTP expired or not found.',
-                isRegistered: false
             });
         }
 
@@ -586,7 +583,6 @@ const pickupVerifyOtp = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 message: 'Invalid OTP.',
-                isRegistered: false
             });
         }
 
@@ -608,7 +604,6 @@ const pickupVerifyOtp = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'No record found to update.',
-                isRegistered: false
             });
         }
 
