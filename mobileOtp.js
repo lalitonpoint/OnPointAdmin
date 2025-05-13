@@ -1,48 +1,31 @@
 const axios = require('axios');
 
-const sendOtp = async (mobileNumber, otp) => {
-    const apiKey = '444881AGhSNFD7zMI6822f745P1';
-    const senderId = 'ONPNT';
-    const templateId = '6808ca80d6fc054bef421352';
+function send_sms(data) {
+    const mobile = data.mobile;
+    const otp = data.otp;
+    const template_id = '6808ca80d6fc054bef421352'; // Replace with dynamic template ID if needed
+    const authkey = '444881AGhSNFD7zMI6822f745P1'; // Authkey remains constant
 
-    // Ensure number is like '919xxxxxxxxx'
-    if (!/^\d{12}$/.test(mobileNumber)) {
-        return console.error('❌ Invalid mobile number. Use format like 919xxxxxxxxx');
-    }
+    const url = `https://control.msg91.com/api/v5/otp?otp=${otp}&otp_expiry=1&template_id=${template_id}&mobile=${mobile}&authkey=${authkey}&realTimeResponse=1`;
 
-    if (!/^\d{4}$/.test(otp)) {
-        return console.error('❌ Invalid OTP. Use 6-digit numeric OTP.');
-    }
+    const payload = {
+        Param1: 'value1',
+        Param2: 'value2',
+        Param3: 'value3'
+    };
 
-    try {
-        const response = await axios.post('https://api.msg91.com/api/v5/otp', {
-            flow_id: templateId,
-            sender: senderId,
-            mobile: `${mobileNumber}`, // Must be in 91XXXXXXXXXX format
-            OTP: otp // This must match the {{OTP}} variable in the flow
-        }, {
-            headers: {
-                authkey: apiKey,
-                'Content-Type': 'application/json',
-            }
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+
+    return axios.post(url, payload, { headers })
+        .then(response => response.data)
+        .catch(error => {
+            console.error('SMS sending failed:', error.response ? error.response.data : error.message);
+            return false;
         });
+}
 
-        if (response.data.type === 'success') {
-            console.log('✅ SMS sent successfully:', response.data);
-        } else {
-            console.error('❌ MSG91 returned an error:', response.data);
-        }
-
-    } catch (error) {
-        if (error.response) {
-            console.error('❌ Response error:', error.response.data);
-        } else if (error.request) {
-            console.error('❌ Request error:', error.request);
-        } else {
-            console.error('❌ General error:', error.message);
-        }
-    }
-};
-
-// 🔁 Example usage
-sendOtp('919354978804', '1234');
+send_sms({ mobile: '919354978804', otp: '123456' })
+    .then(response => console.log('SMS sent response:', response))
+    .catch(err => console.error('Error:', err));

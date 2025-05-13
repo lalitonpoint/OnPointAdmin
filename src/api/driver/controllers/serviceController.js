@@ -550,6 +550,84 @@ const pickupSendOtp = async (req, res) => {
 };
 
 
+const pickupVerifyOtp = async (req, res) => {
+    try {
+        const { countryCode, mobileNumber, otp, assignId: id } = req.body;
+
+        if (!countryCode || !mobileNumber || !otp || !id) {
+            return res.status(200).json({
+                success: false,
+                message: 'Country code, mobile number, OTP, and AssignId are required.',
+                isRegistered: false
+            });
+        }
+
+        const parsed = formatMobile(countryCode, mobileNumber);
+
+        if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
+            return res.status(200).json({
+                success: false,
+                message: 'Invalid mobile number format.',
+                isRegistered: false
+            });
+        }
+
+        const storedOTP = otpStorage[parsed.formatted];
+
+        if (!storedOTP) {
+            return res.status(200).json({
+                success: false,
+                message: 'OTP expired or not found.',
+                isRegistered: false
+            });
+        }
+
+        if (otp !== storedOTP) {
+            return res.status(200).json({
+                success: false,
+                message: 'Invalid OTP.',
+                isRegistered: false
+            });
+        }
+
+        // OTP is valid, delete it
+        delete otpStorage[parsed.formatted];
+        console.log(`OTP verified for ${parsed.formatted}`);
+
+        // Prepare update fields
+        const now = new Date();
+        const updateFields = {
+            status: 1,
+            'deliveryStatus.0.status': 1,
+            'deliveryStatus.0.deliveryDateTime': now
+        };
+
+        const result = await PTL.updateOne({ _id: id }, { $set: updateFields });
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No record found to update.',
+                isRegistered: false
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'OTP verified and Order Is Successfully Pickup.',
+        });
+
+    } catch (error) {
+        console.error('verifyOtp Error:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: 'Unexpected error in OTP verification.',
+            msg: error.message
+        });
+    }
+};
+
+
 module.exports = {
     saveDriverLocation,
     orderAssign,
@@ -557,5 +635,6 @@ module.exports = {
     tripHistoryCount,
     updateOrderStatus,
     pickupOrder,
-    pickupSendOtp
+    pickupSendOtp,
+    pickupVerifyOtp
 };
