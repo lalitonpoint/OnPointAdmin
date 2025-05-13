@@ -3,6 +3,9 @@ const PTL = require('../../../admin/models/ptlPackages/driverPackageAssignModel'
 const { getDistanceAndDuration } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 const DriverLocation = require('../modals/driverLocModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 const mongoose = require('mongoose');
+const { generateOTP } = require('../utils/generateOtp');
+const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
+
 
 // Save Driver Locationconst DriverLocation = require('../models/DriverLocation'); // adjust the path as needed
 const saveDriverLocation = async (req, res) => {
@@ -484,6 +487,68 @@ function getArrivalTime(durationInText) {
 }
 
 
+const formatMobile = (countryCode, mobileNumber) => {
+    try {
+        const fullNumber = `${countryCode}${mobileNumber}`;
+        const parsed = parsePhoneNumber(fullNumber);
+        if (parsed && parsed.isValid()) {
+            return {
+                formatted: parsed.number, // E.164 format: +919354978804
+                countryCode: parsed.countryCallingCode,
+                nationalNumber: parsed.nationalNumber,
+            };
+        }
+        return null;
+    } catch (error) {
+        return null;
+    }
+};
+
+const otpStorage = {}; // Use Redis for production
+
+const pickupSendOtp = async (req, res) => {
+
+    try {
+        const { countryCode, mobileNumber } = req.body;
+
+        if (!countryCode || !mobileNumber) {
+            return res.status(200).json({ success: false, message: 'Country code and mobile number are required.' });
+        }
+
+        const parsed = formatMobile(countryCode, mobileNumber);
+
+        if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
+            return res.status(200).json({ success: false, message: 'Invalid mobile number format.' });
+        }
+
+        const otp = "123456";
+        // const otp = generateOTP();
+        otpStorage[parsed.formatted] = otp;
+
+        console.log(`Generated OTP for ${parsed.formatted}: ${otp}`);
+        res.status(200).json({ success: true, message: 'OTP sent successfully on ' + parsed.formatted, otp: otp });
+        return;
+
+        try {
+            const message = await client.messages.create({
+                body: `Your OTP for login is: ${otp}`,
+                to: parsed.formatted,
+                from: twilioPhoneNumber,
+            });
+
+            console.log(`OTP sent to ${parsed.formatted}, SID: ${message.sid}`);
+            return res.status(200).json({ success: true, message: 'OTP sent successfully.' });
+        } catch (error) {
+            console.error('Twilio Error:', error);
+            return res.status(500).json({ success: false, message: 'Failed to send OTP via SMS.' });
+        }
+
+    } catch (error) {
+        console.error('sendOtp Error:', error);
+        return res.status(500).json({ success: false, message: 'Unexpected error in sending OTP.' });
+    }
+};
+
 
 module.exports = {
     saveDriverLocation,
@@ -491,5 +556,6 @@ module.exports = {
     tripHistory,
     tripHistoryCount,
     updateOrderStatus,
-    pickupOrder
+    pickupOrder,
+    pickupSendOtp
 };
