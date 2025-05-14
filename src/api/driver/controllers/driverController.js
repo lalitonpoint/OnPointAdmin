@@ -40,7 +40,8 @@ const createDriver = async (req, res) => {
 
         const getField = field => fields[field]?.[0] || '';
         const step = parseInt(getField("step"), 10);
-        const driverId = getField("driverId");
+        // const driverId = getField("driverId");
+        const driverId = req.header("driverid");
         let update = {};
         let existingDriver = null;
 
@@ -229,8 +230,10 @@ const createDriver = async (req, res) => {
                         secretKey,
                         { expiresIn: '30d' }
                     );
-                    driver.tokens.push(token);
-                    await driver.save();
+
+                    driver = driver.toObject(); // Convert to plain object
+                    driver.token = token;       // Add token
+
 
 
                 }
