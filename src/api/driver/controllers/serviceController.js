@@ -168,23 +168,23 @@ const getDriverLocation = async (driverId) => {
         return { success: false, message: "Failed to fetch location", error: error.message };
     }
 };
-
-
 const tripHistory = async (req, res) => {
     try {
-        const driverId = req.header('driverid'); // or req.query / req.body based on how driverId is passed
+        const driverId = req.header('driverid');
 
         if (!driverId) {
-            return res.status(200).json({
+            return res.status(400).json({
                 success: false,
                 message: "Driver ID is required"
             });
         }
 
-        const tripHistoryDetail = await PTL.find({
+        const trips = await PTL.find({
             driverId,
             status: { $in: [0, 4, 5] }
-        });
+        })
+            .populate({ path: 'userId', select: 'fullName' })
+            .populate({ path: 'packageId', select: 'orderId' });
 
         const categoryLabels = {
             0: 'All',
@@ -192,32 +192,45 @@ const tripHistory = async (req, res) => {
             5: 'Cancelled'
         };
 
-        const groupedTrips = tripHistoryDetail.reduce((acc, trip) => {
-            const category = categoryLabels[trip.status] || 'Unknown'; // assuming 'status' field
-            if (!acc[category]) {
-                acc[category] = [];
+        const groupedTrips = {
+            All: [],
+            Completed: [],
+            Cancelled: []
+        };
+
+        for (const trip of trips) {
+            const category = categoryLabels[trip.status];
+            if (category) {
+                groupedTrips[category].push({
+                    userName: trip?.userId?.fullName || '',
+                    status: trip.status,
+                    orderId: trip?.packageId?.orderId || '',
+                    pickAddress: trip.pickupAddress || '',
+                    dropAddress: trip.dropAddress || '',
+                    totalDistance: trip.totalDistance || '',
+                    totalDuration: trip.totalDuration || '',
+                    createdAt: trip.createdAt
+                });
             }
-            acc[category].push(trip);
-            return acc;
-        }, {});
+        }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            data: groupedTrips,
-            message: "Trips Detail Fetch Successfully",
-
-
+            message: "Trips detail fetched successfully",
+            data: groupedTrips
         });
 
     } catch (error) {
         console.error("Error fetching trip history:", error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Failed to fetch trip history",
             error: error.message
         });
     }
 };
+
+
 
 const tripHistoryCount = async (req, res) => {
     try {
@@ -319,7 +332,7 @@ const pickupOrder = async (req, res) => {
                 bottomHeader,
                 pickupDistance,
                 pickupDuration,
-                username: user.fullName,
+                userName: user.fullName,
                 address: order.pickupAddress,
                 pickupLatitude: order.pickupLatitude,
                 pickupLongitude: order.pickupLongitude,
@@ -656,7 +669,7 @@ const updateOrderStatus = async (req, res) => {
                     bottomHeader,
                     pickupDistance,
                     pickupDuration,
-                    username: user.fullName,
+                    userName: user.fullName,
                     address: order.pickupAddress,
                     dropLatitude: order.dropLatitude,
                     dropLongitude: order.dropLongitude

@@ -262,7 +262,7 @@ const walletTransaction = async (req, res) => {
         if (wallet) {
             res.status(200).json({ success: true, data: { balance: wallet.balance, transactions: wallet.transactions.reverse() } });
         } else {
-            res.status(200).json({ success: false, message: 'Wallet not found', data: { balance: 0 } });
+            res.status(200).json({ success: true, message: 'Wallet not found', data: { balance: 0, transactions: [] } });
         }
     } catch (error) {
         console.error('Wallet Transaction Error:', error);
