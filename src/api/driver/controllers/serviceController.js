@@ -5,6 +5,8 @@ const DriverLocation = require('../modals/driverLocModal'); // Assuming the comm
 const mongoose = require('mongoose');
 const { generateOTP } = require('../utils/generateOtp');
 const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
+const { uploadImage } = require("../../../admin/utils/uploadHelper"); // Import helper for file upload
+const multiparty = require('multiparty');
 
 
 // Save Driver Locationconst DriverLocation = require('../models/DriverLocation'); // adjust the path as needed
@@ -255,125 +257,6 @@ const tripHistoryCount = async (req, res) => {
     }
 };
 
-const updateOrderStatus = async (req, res) => {
-    try {
-        const driverId = req.header('driverid');
-        const id = req.body.assignId;
-        const orderStatus = parseInt(req.body.status);
-
-        if (!id || isNaN(orderStatus)) {
-            return res.status(200).json({ success: false, message: 'Invalid order ID or status' });
-        }
-
-        const statusKeyMap = {
-            0: 'pending',
-            1: 'pickup',
-            2: 'in_transit',
-            3: 'out_for_delivery',
-            4: 'delivered',
-            5: 'cancelled'
-        };
-
-        const statusMessageMap = {
-            0: 'Order is already pending',
-            1: 'Order is already picked up',
-            2: 'Order is already in transit',
-            3: 'Order is already out for delivery',
-            4: 'Order is already delivered',
-            5: 'Order is already cancelled'
-        };
-
-        if (!(orderStatus in statusKeyMap)) {
-            return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
-        }
-
-        const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' });
-        if (!order) {
-            return res.status(200).json({ success: false, message: 'Order not found' });
-        }
-
-        if (orderStatus <= order.status) {
-            return res.status(200).json({
-                success: false,
-                message: statusMessageMap[order.status] || 'Order is already updated to this status'
-            });
-        }
-
-        const now = new Date();
-        const updateFields = {};
-
-        for (let i = order.status + 1; i <= orderStatus; i++) {
-            if (order.deliveryStatus[i]) {
-                if (order.deliveryStatus[i].status !== 1 || !order.deliveryStatus[i].deliveryDateTime) {
-                    updateFields[`deliveryStatus.${i}.status`] = 1;
-                    updateFields[`deliveryStatus.${i}.deliveryDateTime`] = now;
-                }
-            }
-        }
-
-        updateFields.status = orderStatus;
-        await PTL.updateOne({ _id: id }, { $set: updateFields });
-
-        const user = order.userId;
-        let topHeader = '';
-        let bottomHeader = '';
-
-        if (orderStatus === 2 || orderStatus === 3) {
-            topHeader = orderStatus === 2 ? 'Start' : 'Arrived';
-            bottomHeader = orderStatus === 2
-                ? (order.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop off')
-                : 'Arrived';
-
-            const driverCurrentLocation = await getDriverLocation(driverId);
-            if (!driverCurrentLocation.success) {
-                return res.status(200).json({ success: false, message: "Please update driver's current location" });
-            }
-
-            const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
-                driverCurrentLocation.lat,
-                driverCurrentLocation.long,
-                order.pickupLatitude,
-                order.pickupLongitude
-            );
-
-            return res.json({
-                success: true,
-                data: {
-                    topHeader,
-                    bottomHeader,
-                    pickupDistance,
-                    pickupDuration,
-                    username: user.fullName,
-                    address: order.pickupAddress,
-                    dropLatitude: order.dropLatitude,
-                    dropLongitude: order.dropLongitude
-                },
-                message: 'Order status updated successfully',
-            });
-        }
-
-        if (orderStatus === 4) {
-            return res.json({
-                success: true,
-                data: {
-                    isDelivered: 1,
-                },
-                message: 'Your shipment has been successfully delivered to the warehouse',
-            });
-        }
-
-        // Default response for other status changes
-        return res.json({ success: true, message: 'Order status updated successfully' });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Server error',
-            error: error.message
-        });
-    }
-};
-
 const pickupOrder = async (req, res) => {
     try {
         const { assignId: id, pickupStatus } = req.body;
@@ -607,6 +490,167 @@ const pickupVerifyOtp = async (req, res) => {
         });
     }
 };
+
+
+const updateOrderStatus = async (req, res) => {
+    try {
+        const form = new multiparty.Form({ maxFilesSize: 100 * 1024 * 1024 });
+
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                console.error("Error parsing form data:", err);
+                return res.status(200).json({ error: "Failed to parse form data" });
+            }
+
+            const id = fields.assignId?.[0] || '';
+            const orderStatus = parseInt(fields.status?.[0], 10);
+            const driverId = req.header('driverid');
+
+            if (!id) {
+                return res.status(200).json({ success: false, message: 'Assign Id is required' });
+            }
+
+            if (!orderStatus) {
+                return res.status(200).json({ success: false, message: 'Status is required' });
+            }
+            const statusKeyMap = {
+                0: 'pending',
+                1: 'pickup',
+                2: 'in_transit',
+                3: 'out_for_delivery',
+                4: 'delivered',
+                5: 'cancelled'
+            };
+
+            const statusMessageMap = {
+                0: 'Order is already pending',
+                1: 'Order is already picked up',
+                2: 'Order is already in transit',
+                3: 'Order is already out for delivery',
+                4: 'Order is already delivered',
+                5: 'Order is already cancelled'
+            };
+
+            if (!(orderStatus in statusKeyMap)) {
+                return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
+            }
+
+            const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' });
+            if (!order) {
+                return res.status(200).json({ success: false, message: 'Order not found' });
+            }
+
+            // if (orderStatus <= order.status) {
+            //     return res.status(200).json({
+            //         success: false,
+            //         message: statusMessageMap[order.status] || 'Order is already updated to this status'
+            //     });
+            // }
+
+            const now = new Date();
+            const updateFields = { status: orderStatus };
+
+            // Update delivery status chain
+            for (let i = order.status + 1; i <= orderStatus; i++) {
+                if (order.deliveryStatus[i]?.status !== 1 || !order.deliveryStatus[i].deliveryDateTime) {
+                    updateFields[`deliveryStatus.${i}.status`] = 1;
+                    updateFields[`deliveryStatus.${i}.deliveryDateTime`] = now;
+                }
+            }
+
+            // POD upload if required
+            if (order.assignType == 2 && orderStatus == 4) {
+                const recipientName = fields.recipientName?.[0] || null;
+                const confirmNumber = fields.confirmNumber?.[0] || null;
+                const pod = files.pod?.[0];
+
+                const requiredFields = {
+                    recipientName,
+                    confirmNumber,
+                    pod
+                };
+
+                for (const [key, value] of Object.entries(requiredFields)) {
+                    if (value == null) {
+                        return res.status(200).json({ success: false, message: `${key} is required.` });
+                    }
+                }
+
+
+
+                const result = await uploadImage(pod);
+                if (!result.success) {
+                    console.error("Error uploading image:", result.error || result.message);
+                    return res.status(500).json({ error: "Failed to upload POD image" });
+                }
+
+                updateFields.recipientName = recipientName;
+                updateFields.confirmNumber = confirmNumber;
+                updateFields.pod = result.url;
+            }
+
+            // Update DB
+            await PTL.updateOne({ _id: id }, { $set: updateFields });
+
+            // Driver location & distance calc
+            const driverLocation = await getDriverLocation(driverId);
+            if (!driverLocation.success) {
+                return res.status(200).json({ success: false, message: "Please update driver's current location" });
+            }
+
+            const { lat, long } = driverLocation;
+            const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
+                lat, long, order.pickupLatitude, order.pickupLongitude
+            );
+
+            const user = order.userId;
+            let topHeader = '', bottomHeader = '', message = '';
+
+            switch (orderStatus) {
+                case 2:
+                    topHeader = 'Start';
+                    bottomHeader = order.assignType === 1 ? 'Way To Warehouse' : 'Way to Drop-off';
+                    message = "Order In Transit";
+                    break;
+                case 3:
+                    topHeader = 'Arriving';
+                    bottomHeader = order.assignType === 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
+                    message = "Order Out For Delivery";
+                    break;
+                case 4:
+                    topHeader = 'Delivered';
+                    bottomHeader = order.assignType === 1 ? 'Delivered to Warehouse' : 'Delivered to User';
+                    message = order.assignType === 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
+                    break;
+                default:
+                    message = 'Order status updated successfully';
+            }
+
+            return res.status(200).json({
+                success: true,
+                message,
+                data: {
+                    topHeader,
+                    bottomHeader,
+                    pickupDistance,
+                    pickupDuration,
+                    username: user.fullName,
+                    address: order.pickupAddress,
+                    pickupLatitude: order.pickupLatitude,
+                    pickupLongitude: order.pickupLongitude
+                }
+            });
+        });
+    } catch (error) {
+        console.error("Internal error:", error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
+    }
+};
+
 
 
 module.exports = {
