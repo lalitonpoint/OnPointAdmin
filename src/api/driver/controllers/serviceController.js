@@ -678,7 +678,8 @@ const updateOrderStatus = async (req, res) => {
                     pickupLatitude: order.pickupLatitude,
                     pickupLongitude: order.pickupLongitude,
                     dropLatitude: order.dropLatitude,
-                    dropLongitude: order.dropLongitude
+                    dropLongitude: order.dropLongitude,
+                    assignType: order.assignType
                 }
             });
         });
