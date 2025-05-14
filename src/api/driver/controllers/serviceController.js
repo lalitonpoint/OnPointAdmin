@@ -2,6 +2,7 @@ const admin = require('../../../../config/firebaseConnection');
 const PTL = require('../../../admin/models/ptlPackages/driverPackageAssignModel'); // Adjust the model path as needed
 const { getDistanceAndDuration } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 const DriverLocation = require('../modals/driverLocModal'); // Assuming the common function is located in '../utils/distanceCalculate'
+const PaymentDetail = require('../../../api/user/models/paymentModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 const mongoose = require('mongoose');
 const { generateOTP } = require('../utils/generateOtp');
 const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
@@ -417,11 +418,11 @@ const pickupSendOtp = async (req, res) => {
     }
 };
 
-
 const pickupVerifyOtp = async (req, res) => {
     try {
         const { countryCode, mobileNumber, otp, assignId: id } = req.body;
 
+        // Validate required fields
         if (!countryCode || !mobileNumber || !otp || !id) {
             return res.status(200).json({
                 success: false,
@@ -454,11 +455,11 @@ const pickupVerifyOtp = async (req, res) => {
             });
         }
 
-        // OTP is valid, delete it
+        // OTP is valid, delete it from memory
         delete otpStorage[parsed.formatted];
         console.log(`OTP verified for ${parsed.formatted}`);
 
-        // Prepare update fields
+        // Update PTL document
         const now = new Date();
         const updateFields = {
             status: 1,
@@ -476,13 +477,34 @@ const pickupVerifyOtp = async (req, res) => {
             });
         }
 
+        // Fetch updated PTL data with populated user info and package detail
+        const [ptlData, packageDetail] = await Promise.all([
+            PTL.findById(id).populate({ path: 'userId', select: 'fullName mobileNumber countryCode' }),
+            PTL.findById(id).then(data => PaymentDetail.findById(data.packageId)) // Avoid re-querying PTL twice
+        ]);
+
+        if (!ptlData || !ptlData.userId || !packageDetail) {
+            return res.status(200).json({
+                success: false,
+                message: 'Required data not found after update.',
+            });
+        }
+
         return res.status(200).json({
             success: true,
             message: 'OTP verified and Order Is Successfully Pickup.',
+            data: {
+                totalPackage: packageDetail.packages.length,
+                userName: ptlData.userId.fullName,
+                userContact: ptlData.userId.countryCode + ptlData.userId.mobileNumber,
+                notes: packageDetail.notes,
+                address: ptlData.pickupAddress,
+                packages: packageDetail.packages,
+            }
         });
 
     } catch (error) {
-        console.error('verifyOtp Error:', error.message);
+        console.error('verifyOtp Error:', error);
         return res.status(500).json({
             success: false,
             message: 'Unexpected error in OTP verification.',
