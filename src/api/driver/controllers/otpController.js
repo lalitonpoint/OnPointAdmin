@@ -102,7 +102,7 @@ const verifyOtp = async (req, res) => {
         console.log(`OTP verified for ${parsed.formatted}`);
 
         // Now look for the Driver
-        const driver = await Driver.findOne({
+        let driver = await Driver.findOne({
             'personalInfo.countryCode': countryCode, // e.g. "91"
             'personalInfo.mobile': mobileNumber,
             status: { $ne: 3 }
@@ -114,14 +114,19 @@ const verifyOtp = async (req, res) => {
                 { driverId: driver._id, mobileNumber: driver.mobileNumber },
                 secretKey,
                 { expiresIn: '30d' }
+
             );
+
+            driver = driver.toObject(); // Convert to plain object
+            driver.token = token;       // Add token
+
 
             return res.status(200).json({
                 success: true,
                 message: 'OTP verified and login successful.',
                 token,
                 isRegistered: true,
-                driver: driver
+                data: driver
             });
         } else {
             return res.status(200).json({
