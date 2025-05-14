@@ -658,8 +658,8 @@ const updateOrderStatus = async (req, res) => {
                     pickupDuration,
                     username: user.fullName,
                     address: order.pickupAddress,
-                    pickupLatitude: order.pickupLatitude,
-                    pickupLongitude: order.pickupLongitude
+                    dropLatitude: order.dropLatitude,
+                    dropLongitude: order.dropLongitude
                 }
             });
         });
