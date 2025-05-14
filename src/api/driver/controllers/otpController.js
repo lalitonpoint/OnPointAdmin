@@ -39,7 +39,7 @@ const sendOtp = async (req, res) => {
         }
 
         const parsed = formatMobile(countryCode, mobileNumber);
-        console.log('parsed', parsed);
+        // console.log('parsed', parsed);
 
         if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
             return res.status(200).json({ success: false, message: 'Invalid mobile number format.' });

@@ -140,7 +140,7 @@ const getList = async (req, res) => {
         } else {
             sort.name = -1; // Default sort by name ascending
         }
-        console.log(sort);
+        // console.log(sort);
 
 
         const users = await AdminUser.find(query)

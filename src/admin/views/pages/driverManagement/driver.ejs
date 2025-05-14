@@ -27,11 +27,20 @@
         .modal-title {
             font-weight: bold;
         }
-        #editTabs{font-size: 14px;}
-        .aproveSwitch{
-            margin-left: 30%!important;
+
+        #editTabs {
+            font-size: 14px;
+        }
+
+        .aproveSwitch {
+            margin-left: 30% !important;
+        }
+
+        .custom-modal {
+            max-width: 70%;
         }
     </style>
+
 </head>
 
 <body>
@@ -62,7 +71,8 @@
     </div>
 
     <div class="modal fade" id="driverModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg custom-modal">
+
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle">Add Driver</h5>
@@ -71,38 +81,54 @@
                 <div class="modal-body">
                     <form id="driverForm" enctype="multipart/form-data">
                         <input type="hidden" id="driverId" name="driverId">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="row mb-3">
+
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required
+                                    placeholder="Enter Name">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required
+                                    placeholder="Enter email">
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-control" id="gender" name="gender">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="mobileNo" class="form-label">Mobile No.</label>
+                                <input type="tel" class="form-control" id="mobileNo" name="mobileNo" required
+                                    placeholder="Enter Mobile No.">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="alternateMobileNo" class="form-label">Alternate Mobile No.</label>
+                                <input type="tel" class="form-control" id="alternateMobileNo" name="alternateMobileNo"
+                                    placeholder="Alternate Mobile">
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select class="form-control" id="gender" name="gender">
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mobileNo" class="form-label">Mobile No.</label>
-                            <input type="tel" class="form-control" id="mobileNo" name="mobileNo" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="alternateMobileNo" class="form-label">Alternate Mobile No.</label>
-                            <input type="tel" class="form-control" id="alternateMobileNo" name="alternateMobileNo">
-                        </div>
-                        <div class="mb-3">
-                            <label for="profileImage" class="form-label">Profile Image</label>
-                            <input type="file" class="form-control" id="profileImage" name="profileImage">
+                        <div class="row mb-3">
+
+                            <div class="col-md-6">
+                                <label for="profileImage" class="form-label">Profile Image</label>
+                                <input type="file" class="form-control" id="profileImage" name="profileImage">
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-pink w-100">Save</button>
                     </form>
@@ -113,19 +139,21 @@
 
     <div class="modal fade" id="editDriverModal" tabindex="-1" aria-labelledby="editDriverModalTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg custom-modal">
+
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-between align-items-center">
                     <h5 class="modal-title" id="editDriverModalTitle">Edit Driver</h5>
-                    
+
                     <div class="form-check form-switch me-3 aproveSwitch">
-                        <input class="form-check-input" type="checkbox" id="driverApprovedToggle" data-id="DRIVER_ID_HERE">
+                        <input class="form-check-input" type="checkbox" id="driverApprovedToggle"
+                            data-id="DRIVER_ID_HERE">
                         <label class="form-check-label" for="driverApprovedToggle">Approved</label>
                     </div>
-                
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
+
                 <div class="modal-body">
                     <form id="editDriverForm" enctype="multipart/form-data">
                         <input type="hidden" id="editDriverId" name="driverId">
@@ -148,20 +176,15 @@
                             </li>
 
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="vhicledetails-tab" data-bs-toggle="tab" href="#vhicledetails" role="tab"
-                                    aria-controls="vhicledetails" aria-selected="false">Vehicle Details</a>
+                                <a class="nav-link" id="vhicledetails-tab" data-bs-toggle="tab" href="#vhicledetails"
+                                    role="tab" aria-controls="vhicledetails" aria-selected="false">Vehicle Details</a>
                             </li>
 
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="vhicledocuments-tab" data-bs-toggle="tab" href="#vhicledocuments" role="tab"
-                                    aria-controls="vhicledocuments" aria-selected="false">Vehicle Documents</a>
+                                <a class="nav-link" id="vhicledocuments-tab" data-bs-toggle="tab"
+                                    href="#vhicledocuments" role="tab" aria-controls="vhicledocuments"
+                                    aria-selected="false">Vehicle Documents</a>
                             </li>
-
-                            <!-- <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="additional-info-tab" data-bs-toggle="tab"
-                                    href="#additional-info" role="tab" aria-controls="additional-info"
-                                    aria-selected="false">Additional Info</a>
-                            </li> -->
 
                         </ul>
                         <div class="tab-content" id="editTabsContent">
@@ -200,105 +223,13 @@
                                 <div class="mb-3">
                                     <label for="editProfileImage" class="form-label">Profile Image</label>
                                     <input type="file" class="form-control " id="editProfileImage" name="profileImage">
-                                    <img class="w-100" alt="editProfile" id="editProfileImg">
-                                    <small class="form-text text-muted">Leave blank to keep the current image.</small>
+                                    <img class="img-responsive" alt="editProfile" id="editProfileImg"
+                                        style="width:100px;">
+                                    <!-- <small class="form-text text-muted">Leave blank to keep the current image.</small> -->
                                 </div>
                             </div>
 
-                            <!-- <div class="tab-pane fade" id="emergency" role="tabpanel" aria-labelledby="emergency-tab">
-                                <div class="mb-3">
-                                    <label for="emergencyName" class="form-label">Emergency Contact Name</label>
-                                    <input type="text" class="form-control" id="emergencyName" name="emergencyName">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="emergencyRelation" class="form-label">Emergency Contact Relation</label>
-                                    <select class="form-control" id="emergencyRelation" name="emergencyRelation">
-                                        <option value="">Select Relation</option>
-                                        <option value="spouse">Spouse</option>
-                                        <option value="friend">Friend</option>
-                                        <option value="parent">Parent</option>
-                                        <option value="sibling">Sibling</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="emergencyPhone" class="form-label">Emergency Contact Number</label>
-                                    <input type="tel" class="form-control" id="emergencyPhone" name="emergencyPhone">
-                                </div>
-                            </div> -->
-                            <!-- <div class="tab-pane fade" id="additional-info" role="tabpanel"
-                                aria-labelledby="additional-info-tab">
-                                <div class="mb-3">
-                                    <label class="form-label">Do you have prior experience in logistics?</label>
-                                    <div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="priorExperience"
-                                                id="experienceYes" value="yes">
-                                            <label class="form-check-label" for="experienceYes">Yes</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="priorExperience"
-                                                id="experienceNo" value="no">
-                                            <label class="form-check-label" for="experienceNo">No</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Preferred Working Region:</label>
-                                    <div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="preferredRegion"
-                                                id="regionLocal" value="local">
-                                            <label class="form-check-label" for="regionLocal">Local</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="preferredRegion"
-                                                id="regionState" value="state">
-                                            <label class="form-check-label" for="regionState">State</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="preferredRegion"
-                                                id="regionNational" value="national">
-                                            <label class="form-check-label" for="regionNational">National</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Languages Known:</label>
-                                    <div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="languagesKnown"
-                                                id="languageHindi" value="hindi">
-                                            <label class="form-check-label" for="languageHindi">Hindi</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="languagesKnown"
-                                                id="languageEnglish" value="english">
-                                            <label class="form-check-label" for="languageEnglish">English</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="languagesKnown"
-                                                id="languageOther" value="other">
-                                            <label class="form-check-label" for="languageOther">Other</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Willing to work night shifts?</label>
-                                    <div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="nightShiftWilling"
-                                                id="nightShiftYes" value="yes">
-                                            <label class="form-check-label" for="nightShiftYes">Yes</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="nightShiftWilling"
-                                                id="nightShiftNo" value="no">
-                                            <label class="form-check-label" for="nightShiftNo">No</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
+
                             <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
@@ -307,10 +238,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="aadhaarFront" class="form-label">Front Side of Aadhaar Card</label>
-                                        <input type="file" class="form-control" id="aadhaarFront" name="aadhaarFront" onchange="previewImage(this, 'viewAadhaarFront')">
+                                        <input type="file" class="form-control" id="aadhaarFront" name="aadhaarFront"
+                                            onchange="previewImage(this, 'viewAadhaarFront')">
                                     </div>
                                 </div>
-                            
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Aadhaar Back -->
@@ -318,10 +250,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="aadhaarBack" class="form-label">Back Side of Aadhaar Card</label>
-                                        <input type="file" class="form-control" id="aadhaarBack" name="aadhaarBack" onchange="previewImage(this, 'viewAadhaarBack')">
+                                        <input type="file" class="form-control" id="aadhaarBack" name="aadhaarBack"
+                                            onchange="previewImage(this, 'viewAadhaarBack')">
                                     </div>
                                 </div>
-                            
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Pan Card -->
@@ -329,10 +262,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="panCard" class="form-label">Pan Card</label>
-                                        <input type="file" class="form-control" id="panCard" name="panCard" onchange="previewImage(this, 'viewPanCard')">
+                                        <input type="file" class="form-control" id="panCard" name="panCard"
+                                            onchange="previewImage(this, 'viewPanCard')">
                                     </div>
                                 </div>
-                            
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Driving License -->
@@ -340,10 +274,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="drivingLicense" class="form-label">Driving License</label>
-                                        <input type="file" class="form-control" id="drivingLicense" name="drivingLicense" onchange="previewImage(this, 'viewDrivingLicense')">
+                                        <input type="file" class="form-control" id="drivingLicense"
+                                            name="drivingLicense" onchange="previewImage(this, 'viewDrivingLicense')">
                                     </div>
                                 </div>
-                            
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Vehicle RC -->
@@ -351,10 +286,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="vehicleRC" class="form-label">Vehicle RC</label>
-                                        <input type="file" class="form-control" id="vehicleRC" name="vehicleRC" onchange="previewImage(this, 'viewVehicleRC')">
+                                        <input type="file" class="form-control" id="vehicleRC" name="vehicleRC"
+                                            onchange="previewImage(this, 'viewVehicleRC')">
                                     </div>
                                 </div>
-                            
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Vehicle Insurance -->
@@ -362,84 +298,105 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="vehicleInsurance" class="form-label">Vehicle Insurance Copy</label>
-                                        <input type="file" class="form-control" id="vehicleInsurance" name="vehicleInsurance" onchange="previewImage(this, 'viewVehicleInsurance')">
+                                        <input type="file" class="form-control" id="vehicleInsurance"
+                                            name="vehicleInsurance"
+                                            onchange="previewImage(this, 'viewVehicleInsurance')">
                                     </div>
                                 </div>
-                            
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Bank Passbook -->
                                         <img src="" id="viewBankPassbook" class="img-thumbnail w-50 mb-2">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="bankPassbook" class="form-label">Bank Passbook / Cancelled Cheque</label>
-                                        <input type="file" class="form-control" id="bankPassbook" name="bankPassbook" onchange="previewImage(this, 'viewBankPassbook')">
+                                        <label for="bankPassbook" class="form-label">Bank Passbook / Cancelled
+                                            Cheque</label>
+                                        <input type="file" class="form-control" id="bankPassbook" name="bankPassbook"
+                                            onchange="previewImage(this, 'viewBankPassbook')">
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="vhicledetails" role="tabpanel" aria-labelledby="vhicledetails-tab">
+                            <div class="tab-pane fade" id="vhicledetails" role="tabpanel"
+                                aria-labelledby="vhicledetails-tab">
                                 <div class="mb-3">
                                     <label for="vehicleName" class="form-label">Vehicle Name</label>
-                                    <input type="text" class="form-control" id="vehicleName" name="vehicleName">
+                                    <input type="text" class="form-control" id="vehicleName" name="vehicleName"
+                                        placeholder="Enter Vehicle Name">
                                 </div>
                                 <div class="mb-3">
                                     <label for="vehicleModel" class="form-label">Vehicle Model</label>
-                                    <input type="text" class="form-control" id="vehicleModel" name="vehicleModel">
+                                    <input type="text" class="form-control" id="vehicleModel" name="vehicleModel"
+                                        placeholder="Enter Vehicle Model">
                                 </div>
                                 <div class="mb-3">
                                     <label for="yearOfManufacture" class="form-label">Year of Manufacture</label>
-                                    <input type="text" class="form-control" id="yearOfManufacture" name="yearOfManufacture">
+                                    <input type="text" class="form-control" id="yearOfManufacture"
+                                        name="yearOfManufacture" placeholder="Enter yearOfManufacture">
                                 </div>
                                 <div class="mb-3">
                                     <label for="plateNumber" class="form-label">Plate Number</label>
-                                    <input type="text" class="form-control" id="plateNumber" name="plateNumber">
+                                    <input type="text" class="form-control" id="plateNumber" name="plateNumber"
+                                        placeholder="Enter Plate Number">
                                 </div>
                                 <div class="mb-3">
                                     <label for="vin" class="form-label">VIN</label>
-                                    <input type="text" class="form-control" id="vin" name="vin">
+                                    <input type="text" class="form-control" id="vin" name="vin" placeholder="Enter VIN">
                                 </div>
                                 <div class="mb-3">
                                     <label for="capacity" class="form-label">Capacity</label>
-                                    <input type="text" class="form-control" id="capacity" name="capacity">
+                                    <input type="text" class="form-control" id="capacity" name="capacity"
+                                        placeholder="Enter Capacity">
                                 </div>
                                 <div class="mb-3">
                                     <label for="fuelType" class="form-label">Fuel Type</label>
-                                    <input type="text" class="form-control" id="fuelType" name="fuelType">
+                                    <input type="text" class="form-control" id="fuelType" name="fuelType"
+                                        placeholder="Enter Fuel Type">
                                 </div>
                                 <div class="mb-3">
                                     <label for="odometerReading" class="form-label">Odometer Reading</label>
-                                    <input type="text" class="form-control" id="odometerReading" name="odometerReading">
+                                    <input type="text" class="form-control" id="odometerReading" name="odometerReading"
+                                        placeholder="Enter Odometer Reading">
                                 </div>
                                 <div class="mb-3">
                                     <label for="serviceType" class="form-label">Service Type</label>
-                                    <input type="text" class="form-control" id="serviceType" name="serviceType">
+                                    <input type="text" class="form-control" id="serviceType" name="serviceType"
+                                        placeholder="Enter Service Type">
                                 </div>
                                 <div class="mb-3">
                                     <label for="vehicleId" class="form-label">Vehicle ID</label>
-                                    <input type="text" class="form-control" id="vehicleId" name="vehicleId">
+                                    <input type="text" class="form-control" id="vehicleId" name="vehicleId"
+                                        placeholder="Enter Vehicle Id">
                                 </div>
                             </div>
-                            
-                            <div class="tab-pane fade" id="vhicledocuments" role="tabpanel" aria-labelledby="vhicledocuments-tab">
+
+                            <div class="tab-pane fade" id="vhicledocuments" role="tabpanel"
+                                aria-labelledby="vhicledocuments-tab">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Aadhaar Front -->
                                         <img src="" id="viewinsuranceCertificate" class="img-thumbnail w-50 mb-2">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="insuranceCertificate" class="form-label">Insurance Certificate</label>
-                                        <input type="file" class="form-control" id="insuranceCertificate" name="insuranceCertificate" onchange="previewImage(this, 'viewAadhaarFront')">
+                                        <label for="insuranceCertificate" class="form-label">Insurance
+                                            Certificate</label>
+                                        <input type="file" class="form-control" id="insuranceCertificate"
+                                            name="insuranceCertificate"
+                                            onchange="previewImage(this, 'viewAadhaarFront')">
                                     </div>
                                 </div>
-                            
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <!-- Image preview for Aadhaar Back -->
                                         <img src="" id="viewpollutionCertificate" class="img-thumbnail w-50 mb-2">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="pollutionCertificate" class="form-label">Pollution Certificate</label>
-                                        <input type="file" class="form-control" id="pollutionCertificate" name="pollutionCertificate" onchange="previewImage(this, 'viewAadhaarBack')">
+                                        <label for="pollutionCertificate" class="form-label">Pollution
+                                            Certificate</label>
+                                        <input type="file" class="form-control" id="pollutionCertificate"
+                                            name="pollutionCertificate"
+                                            onchange="previewImage(this, 'viewAadhaarBack')">
                                     </div>
                                 </div>
 
@@ -449,11 +406,14 @@
                                         <img src="" id="viewregistrationCertificate" class="img-thumbnail w-50 mb-2">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="registrationCertificate" class="form-label">Registration Certificate</label>
-                                        <input type="file" class="form-control" id="registrationCertificate" name="registrationCertificate" onchange="previewImage(this, 'viewAadhaarBack')">
+                                        <label for="registrationCertificate" class="form-label">Registration
+                                            Certificate</label>
+                                        <input type="file" class="form-control" id="registrationCertificate"
+                                            name="registrationCertificate"
+                                            onchange="previewImage(this, 'viewAadhaarBack')">
                                     </div>
                                 </div>
-                            
+
                             </div>
                             <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                                 <div class="row">
@@ -462,22 +422,22 @@
                                         <div class="mb-3">
                                             <label for="permanentHouseNo" class="form-label">House No./Street</label>
                                             <input type="text" class="form-control" id="permanentHouseNo"
-                                                name="permanentHouseNo">
+                                                name="permanentHouseNo" placeholder="Enter House No.">
                                         </div>
                                         <div class="mb-3">
                                             <label for="permanentCity" class="form-label">City</label>
                                             <input type="text" class="form-control" id="permanentCity"
-                                                name="permanentCity">
+                                                name="permanentCity" placeholder="Enter City">
                                         </div>
                                         <div class="mb-3">
                                             <label for="permanentState" class="form-label">State</label>
                                             <input type="text" class="form-control" id="permanentState"
-                                                name="permanentState">
+                                                name="permanentState" placeholder="Enter State">
                                         </div>
                                         <div class="mb-3">
                                             <label for="permanentPinCode" class="form-label">PIN Code</label>
                                             <input type="text" class="form-control" id="permanentPinCode"
-                                                name="permanentPinCode">
+                                                name="permanentPinCode" placeholder="Enter Pin Code">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -485,21 +445,22 @@
                                         <div class="mb-3">
                                             <label for="currentHouseNo" class="form-label">House No./Street</label>
                                             <input type="text" class="form-control" id="currentHouseNo"
-                                                name="currentHouseNo">
+                                                name="currentHouseNo" placeholder="Enter House No.">
                                         </div>
                                         <div class="mb-3">
                                             <label for="currentCity" class="form-label">City</label>
-                                            <input type="text" class="form-control" id="currentCity" name="currentCity">
+                                            <input type="text" class="form-control" id="currentCity" name="currentCity"
+                                                placeholder="Enter City">
                                         </div>
                                         <div class="mb-3">
                                             <label for="currentState" class="form-label">State</label>
                                             <input type="text" class="form-control" id="currentState"
-                                                name="currentState">
+                                                name="currentState" placeholder="Enter State">
                                         </div>
                                         <div class="mb-3">
                                             <label for="currentPinCode" class="form-label">PIN Code</label>
                                             <input type="text" class="form-control" id="currentPinCode"
-                                                name="currentPinCode">
+                                                name="currentPinCode" placeholder="Enter Pin Code">
                                         </div>
                                     </div>
                                 </div>
@@ -524,6 +485,8 @@
             let table = $('#driverTable').DataTable({
                 processing: true,
                 serverSide: true,
+                dom: 'lrtip', // removes the default search box
+
                 ajax: { url: '/driver/driverList', type: 'POST' },
                 columns: [
                     { data: null, render: (data, type, row, meta) => meta.row + 1 },
@@ -580,9 +543,12 @@
                     contentType: false, // Don't set content type, let browser handle it for FormData
                     processData: false, // Don't process the data
                     success: function (response) {
-                        alert(response.message);
-                        if (typeof table !== 'undefined' && table.ajax) {
+                        toastr.success(response.message, 'Success');
+
+                        if (table.ajax) {
                             table.ajax.reload();
+                            $('.btn-close').click();
+
                         }
                         $('#editDriverForm').modal('hide');
                         // $('#driverForm')[0].reset();
@@ -597,23 +563,24 @@
                 $('#editDriverModal').modal('show');
                 $('#editDriverModal form')[0].reset(); // Reset form inputs
                 $('#driverApprovedToggle').prop('checked', false).removeAttr('data-id');
-                $('#editProfileImg').attr('src', '/images/default-profile.png');
+                // $('#editProfileImg').attr('src', '/images/default-profile.png');
                 $('#editDriverId,#driverApprovedToggle').val('');
 
                 $.get(`/driver/getDriver/${id}`, function (data) {
                     const driver = data.driver;
                     const vehicle = driver.vehicleDetail;
                     $('#driverId, #editDriverId').val(id);
-                    $('#driverApprovedToggle').prop('checked', driver.approvalStatus === 1).attr('data-id', driver._id); 
-                    
+                    $('#driverApprovedToggle').prop('checked', driver.approvalStatus === 1).attr('data-id', driver._id);
+
                     // Personal Detail Tab
                     $('#editName').val(driver.personalInfo.name);
                     $('#editEmail').val(driver.personalInfo.email);
-                    $('#editDateOfBirth').val(driver.personalInfo.dob ? `${driver.personalInfo.dob.split('/')[2]}-${driver.personalInfo.dob.split('/')[1]}-${driver.personalInfo.dob.split('/')[0]}` : '');
+                    $('#editDateOfBirth').val(driver.personalInfo.dob);
+                    // $('#editDateOfBirth').val(driver.personalInfo.dob ? `${driver.personalInfo.dob.split('/')[2]}-${driver.personalInfo.dob.split('/')[1]}-${driver.personalInfo.dob.split('/')[0]}` : '');
                     $('#editGender').val(driver.personalInfo.gender);
                     $('#editMobileNo').val(driver.personalInfo.mobile);
                     $('#editAlternateMobileNo').val(driver.personalInfo.altMobile);
-                    $('#editProfileImg').attr('src', driver.personalInfo.profilePicture || '/images/default-profile.png'); // Set profile image or default
+                    $('#editProfileImg').attr('src', driver.personalInfo.profilePicture); // Set profile image or default
 
                     // Address Details Tab - Permanent Address
                     $('#permanentHouseNo').val(driver.addressInfo.permanent.street);
@@ -633,13 +600,13 @@
                     $('#emergencyPhone').val(driver.emergencyPhone);
 
                     // Upload Documents Tab
-                    $('#viewAadhaarFront').attr('src', driver.documents.aadhaarFront || '/images/default-doc.png'); // Set Aadhaar front image or default
-                    $('#viewAadhaarBack').attr('src', driver.documents.aadhaarBack || '/images/default-doc.png');   // Set Aadhaar back image or default
-                    $('#viewPanCard').attr('src', driver.documents.panCard || '/images/default-doc.png');           // Set Pan Card image or default
-                    $('#viewDrivingLicense').attr('src', driver.documents.drivingLicense || '/images/default-doc.png'); // Set Driving License image or default
-                    $('#viewVehicleRC').attr('src', driver.documents.vehicleRC || '/images/default-doc.png');       // Set Vehicle RC image or default
-                    $('#viewVehicleInsurance').attr('src', driver.documents.insuranceCopy || '/images/default-doc.png'); // Set Vehicle Insurance image or default
-                    $('#viewBankPassbook').attr('src', driver.documents.bankPassbook || '/images/default-doc.png');   // Set Bank Passbook image or default
+                    $('#viewAadhaarFront').attr('src', driver.documents.aadhaarFront || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg'); // Set Aadhaar front image or default
+                    $('#viewAadhaarBack').attr('src', driver.documents.aadhaarBack || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg');   // Set Aadhaar back image or default
+                    $('#viewPanCard').attr('src', driver.documents.panCard || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg');           // Set Pan Card image or default
+                    $('#viewDrivingLicense').attr('src', driver.documents.drivingLicense || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg'); // Set Driving License image or default
+                    $('#viewVehicleRC').attr('src', driver.documents.vehicleRC || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg');       // Set Vehicle RC image or default
+                    $('#viewVehicleInsurance').attr('src', driver.documents.insuranceCopy || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg'); // Set Vehicle Insurance image or default
+                    $('#viewBankPassbook').attr('src', driver.documents.bankPassbook || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg');   // Set Bank Passbook image or default
 
                     // vhicle Details Tab 
                     $('#vehicleName').val(vehicle.vehicleName);
@@ -654,9 +621,9 @@
                     $('#vehicleId').val(vehicle.vehicleId);
 
                     //vhicle documents
-                    $('#viewinsuranceCertificate').attr('src', driver.vehicleDocuments.insuranceCertificate || '/images/default-doc.png'); 
-                    $('#viewpollutionCertificate').attr('src', driver.vehicleDocuments.pollutionCertificate || '/images/default-doc.png');  
-                    $('#viewregistrationCertificate').attr('src', driver.vehicleDocuments.registrationCertificate || '/images/default-doc.png');        
+                    $('#viewinsuranceCertificate').attr('src', driver.vehicleDocuments.insuranceCertificate || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg');
+                    $('#viewpollutionCertificate').attr('src', driver.vehicleDocuments.pollutionCertificate || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg');
+                    $('#viewregistrationCertificate').attr('src', driver.vehicleDocuments.registrationCertificate || 'https://onpoint-08042025.s3.ap-south-1.amazonaws.com/uploads/56a1459d-a9f2-453e-9c9c-90c09c1e4eb3_download.jpg');
 
                     // Additional Info Tab
                     $('input[name="priorExperience"][value="' + driver.priorExperience + '"]').prop('checked', true);
@@ -691,7 +658,7 @@
                 $('#driverForm')[0].reset();
                 $('#modalTitle').text('Add Driver');
                 $('#driverId').val(''); // Clear driver ID on modal close
-                
+
             });
             $('#editDriverModal').on('hidden.bs.modal', function () {
                 $('#driverApprovedToggle').prop('checked', false).removeAttr('data-id');
@@ -703,7 +670,7 @@
             const isChecked = $(this).is(':checked');
             const driverId = $(this).data('id');
             const status = isChecked ? 1 : 0;
-            console.log(driverId);
+            // console.log(driverId);
 
             Swal.fire({
                 title: 'Are you sure?',

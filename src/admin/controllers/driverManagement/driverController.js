@@ -167,132 +167,122 @@ const singleDriver = async (req, res) => {
     }
 }
 
-// ✅ UPDATE DRIVER (PUT)
 const updateDriver = async (req, res) => {
     try {
         const form = new multiparty.Form();
 
         form.parse(req, async (err, fields, files) => {
             if (err) {
-                console.error("Error parsing form data for update:", err);
-                return res.status(500).json({ error: "Failed to parse form data for update" });
+                console.error("Error parsing form data:", err);
+                return res.status(500).json({ success: false, message: "Form data parsing failed" });
             }
 
-            // Personal Details
-            const name = fields.name ? fields.name[0] : undefined;
-            const email = fields.email ? fields.email[0] : undefined;
-            const dateOfBirth = fields.dateOfBirth ? fields.dateOfBirth[0] : undefined;
-            const gender = fields.gender ? fields.gender[0] : undefined;
-            const mobileNo = fields.mobileNo ? fields.mobileNo[0] : undefined;
-            const alternateMobileNo = fields.alternateMobileNo ? fields.alternateMobileNo[0] : undefined;
-
-            // Address Details - Permanent
-            const permanentHouseNo = fields.permanentHouseNo ? fields.permanentHouseNo[0] : undefined;
-            const permanentCity = fields.permanentCity ? fields.permanentCity[0] : undefined;
-            const permanentState = fields.permanentState ? fields.permanentState[0] : undefined;
-            const permanentPinCode = fields.permanentPinCode ? fields.permanentPinCode[0] : undefined;
-
-            // Address Details - Current
-            const currentHouseNo = fields.currentHouseNo ? fields.currentHouseNo[0] : undefined;
-            const currentCity = fields.currentCity ? fields.currentCity[0] : undefined;
-            const currentState = fields.currentState ? fields.currentState[0] : undefined;
-            const currentPinCode = fields.currentPinCode ? fields.currentPinCode[0] : undefined;
-
-            // Emergency Detail
-            const emergencyName = fields.emergencyName ? fields.emergencyName[0] : undefined;
-            const emergencyRelation = fields.emergencyRelation ? fields.emergencyRelation[0] : undefined;
-            const emergencyPhone = fields.emergencyPhone ? fields.emergencyPhone[0] : undefined;
-
-            // Additional Info
-            const priorExperience = fields.priorExperience ? fields.priorExperience[0] : undefined;
-            const preferredRegion = fields.preferredRegion ? fields.preferredRegion[0] : undefined;
-            const languagesKnown = fields.languagesKnown ? fields.languagesKnown[0] : undefined;
-            const nightShiftWilling = fields.nightShiftWilling ? fields.nightShiftWilling[0] : undefined;
-
-            const profileImageFile = files.profileImage ? files.profileImage[0] : null;
-            const aadhaarFrontFile = files.aadhaarFront ? files.aadhaarFront[0] : null;
-            const aadhaarBackFile = files.aadhaarBack ? files.aadhaarBack[0] : null;
-            const panCardFile = files.panCard ? files.panCard[0] : null;
-            const drivingLicenseFile = files.drivingLicense ? files.drivingLicense[0] : null;
-            const vehicleRCFile = files.vehicleRC ? files.vehicleRC[0] : null;
-            const vehicleInsuranceFile = files.vehicleInsurance ? files.vehicleInsurance[0] : null;
-            const bankPassbookFile = files.bankPassbook ? files.bankPassbook[0] : null;
-
-            let profileImageUrl;
-            let aadhaarFrontUrl;
-            let aadhaarBackUrl;
-            let panCardUrl;
-            let drivingLicenseUrl;
-            let vehicleRCUrl;
-            let vehicleInsuranceUrl;
-            let bankPassbookUrl;
-
-            // Function to handle image upload
             const handleFileUpload = async (file) => {
                 if (file && file.path && file.originalFilename) {
                     const result = await uploadImage(file);
-                    return result.success ? result.url : `http://localhost:${process.env.PORT || 3000}${result.path}`;
+                    return result.success ? result.url : false;
                 }
-                return undefined;
+                return null;
             };
 
-            profileImageUrl = await handleFileUpload(profileImageFile);
-            aadhaarFrontUrl = await handleFileUpload(aadhaarFrontFile);
-            aadhaarBackUrl = await handleFileUpload(aadhaarBackFile);
-            panCardUrl = await handleFileUpload(panCardFile);
-            drivingLicenseUrl = await handleFileUpload(drivingLicenseFile);
-            vehicleRCUrl = await handleFileUpload(vehicleRCFile);
-            vehicleInsuranceUrl = await handleFileUpload(vehicleInsuranceFile);
-            bankPassbookUrl = await handleFileUpload(bankPassbookFile);
+            // Upload files
+            const profileImageUrl = await handleFileUpload(files?.profileImage?.[0]);
+            const aadhaarFrontUrl = await handleFileUpload(files?.aadhaarFront?.[0]);
+            const aadhaarBackUrl = await handleFileUpload(files?.aadhaarBack?.[0]);
+            const panCardUrl = await handleFileUpload(files?.panCard?.[0]);
+            const drivingLicenseUrl = await handleFileUpload(files?.drivingLicense?.[0]);
+            const vehicleRCUrl = await handleFileUpload(files?.vehicleRC?.[0]);
+            const vehicleInsuranceUrl = await handleFileUpload(files?.vehicleInsurance?.[0]);
+            const bankPassbookUrl = await handleFileUpload(files?.bankPassbook?.[0]);
+            const registrationCertificateUrl = await handleFileUpload(files?.registrationCertificate?.[0]);
+            const pollutionCertificateUrl = await handleFileUpload(files?.pollutionCertificate?.[0]);
+            const insuranceCertificateUrl = await handleFileUpload(files?.insuranceCertificate?.[0]);
 
-            const updateData = {
-                name,
-                email,
-                dateOfBirth,
-                gender,
-                mobileNo,
-                alternateMobileNo,
-                profileImage: profileImageUrl,
-                emergencyName,
-                emergencyRelation,
-                emergencyPhone,
-                priorExperience,
-                preferredRegion,
-                languagesKnown,
-                nightShiftWilling,
-                aadhaarFront: aadhaarFrontUrl,
-                aadhaarBack: aadhaarBackUrl,
-                panCard: panCardUrl,
-                drivingLicense: drivingLicenseUrl,
-                vehicleRC: vehicleRCUrl,
-                vehicleInsurance: vehicleInsuranceUrl,
-                bankPassbook: bankPassbookUrl,
-                permanentHouseNo,
-                permanentCity,
-                permanentState,
-                permanentPinCode,
-                currentHouseNo,
-                currentCity,
-                currentState,
-                currentPinCode,
-            };
 
-            // Remove undefined properties to avoid overwriting with null values
-            Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-
-            const updatedDriver = await Driver.findByIdAndUpdate(req.params.id, updateData, { new: true });
-
-            if (!updatedDriver) {
-                return res.status(404).json({ success: false, message: 'Driver not found' });
+            // Find driver
+            const existingDriver = await Driver.findById(req.params.id);
+            if (!existingDriver) {
+                return res.status(404).json({ success: false, message: "Driver not found" });
             }
-            res.json({ success: true, message: 'Driver updated successfully', driver: updatedDriver });
+
+            // Personal Info
+            const personal = existingDriver.personalInfo || {};
+            personal.name = fields.name?.[0] || personal.name;
+            personal.email = fields.email?.[0] || personal.email;
+            personal.dob = fields.dateOfBirth?.[0] || personal.dob;
+            personal.gender = fields.gender?.[0] || personal.gender;
+            personal.mobile = fields.mobileNo?.[0] || personal.mobile;
+            personal.altMobile = fields.alternateMobileNo?.[0] || personal.altMobile;
+            if (profileImageUrl) personal.profilePicture = profileImageUrl;
+            existingDriver.personalInfo = personal;
+
+            // Address Info
+            existingDriver.addressInfo = existingDriver.addressInfo || {};
+            existingDriver.addressInfo.permanent = existingDriver.addressInfo.permanent || {};
+            existingDriver.addressInfo.current = existingDriver.addressInfo.current || {};
+
+            const p = existingDriver.addressInfo.permanent;
+            p.street = fields.permanentHouseNo?.[0] || p.street;
+            p.city = fields.permanentCity?.[0] || p.city;
+            p.state = fields.permanentState?.[0] || p.state;
+            p.pin = fields.permanentPinCode?.[0] || p.pin;
+
+            const c = existingDriver.addressInfo.current;
+            c.street = fields.currentHouseNo?.[0] || c.street;
+            c.city = fields.currentCity?.[0] || c.city;
+            c.state = fields.currentState?.[0] || c.state;
+            c.pin = fields.currentPinCode?.[0] || c.pin;
+
+
+
+
+            // Documents
+            const docs = existingDriver.documents || {};
+            if (aadhaarFrontUrl) docs.aadhaarFront = aadhaarFrontUrl;
+            if (aadhaarBackUrl) docs.aadhaarBack = aadhaarBackUrl;
+            if (panCardUrl) docs.panCard = panCardUrl;
+            if (drivingLicenseUrl) docs.drivingLicense = drivingLicenseUrl;
+            if (vehicleRCUrl) docs.vehicleRC = vehicleRCUrl;
+            if (vehicleInsuranceUrl) docs.insuranceCopy = vehicleInsuranceUrl;
+            if (bankPassbookUrl) docs.bankPassbook = bankPassbookUrl;
+            existingDriver.documents = docs;
+
+            const vehcile = existingDriver.vehicleDetail || {};
+
+            vehcile.vehicleName = fields.vehicleName?.[0] || vehcile.vehicleName;
+            vehcile.vehicleModel = fields.vehicleModel?.[0] || vehcile.vehicleModel;
+            vehcile.yearOfManufacture = fields.yearOfManufacture?.[0] || vehcile.yearOfManufacture;
+            vehcile.plateNumber = fields.plateNumber?.[0] || vehcile.plateNumber;
+            vehcile.vin = fields.vin?.[0] || vehcile.vin;
+            vehcile.capacity = fields.capacity?.[0] || vehcile.capacity;
+            vehcile.fuelType = fields.fuelType?.[0] || vehcile.fuelType;
+            vehcile.odometerReading = fields.odometerReading?.[0] || vehcile.odometerReading;
+            vehcile.serviceType = fields.serviceType?.[0] || vehcile.serviceType;
+            vehcile.vehicleId = fields.vehicleId?.[0] || vehcile.vehicleId;
+
+            existingDriver.vehicleDetail = vehcile;
+
+            const vechileDocs = existingDriver.vehicleDocuments || {};
+            if (insuranceCertificateUrl) vechileDocs.insuranceCertificate = insuranceCertificateUrl;
+            if (pollutionCertificateUrl) vechileDocs.pollutionCertificate = pollutionCertificateUrl;
+            if (registrationCertificateUrl) vechileDocs.registrationCertificate = registrationCertificateUrl;
+            existingDriver.vehicleDocuments = vechileDocs;
+
+
+            // Save changes
+            await existingDriver.save();
+
+            return res.json({
+                success: true,
+                message: "Driver updated successfully",
+                driver: existingDriver
+            });
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        console.error("Update error:", err);
+        return res.status(500).json({ success: false, message: err.message });
     }
 };
-
-module.exports = updateDriver;
 
 // ✅ DELETE DRIVER (DELETE)
 const deleteDriver = async (req, res) => {

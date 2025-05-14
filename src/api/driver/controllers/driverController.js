@@ -107,8 +107,8 @@ const createDriver = async (req, res) => {
 
                 case 2: {
 
-                    console.log('existingDriver');
-                    console.log('existingDriver', existingDriver);
+                    // console.log('existingDriver');
+                    // console.log('existingDriver', existingDriver);
                     const permanent = {};
                     const permanentRequiredFields = ['Street', 'City', 'State', 'Pin'];
                     for (const field of permanentRequiredFields) {
@@ -173,7 +173,7 @@ const createDriver = async (req, res) => {
                     break;
                 };
                 case 5: {
-                    console.log(34567890);
+                    // console.log(34567890);
 
                     const fieldsToUpload = [
                         'registrationCertificate',
