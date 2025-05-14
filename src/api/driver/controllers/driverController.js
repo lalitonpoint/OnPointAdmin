@@ -223,12 +223,18 @@ const createDriver = async (req, res) => {
 
                 let token = null;
 
-                if (step == 5)
+                if (step == 5) {
                     token = jwt.sign(
                         { driverId: driver._id, mobileNumber: driver.personalInfo?.mobile },
                         secretKey,
                         { expiresIn: '30d' }
                     );
+                    driver.tokens.push(token);
+                    await driver.save();
+
+
+                }
+
 
                 return res.status(200).json({
                     success: true,
