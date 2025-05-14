@@ -1,6 +1,10 @@
 const checkCrudPermission = (action = "") => {
     return (req, res, next) => {
         const permissions = req.session.modulePermissions;
+        let adminType = req.session.admin?.admin_type
+        if (adminType == 'Admin')
+            return next();
+
 
         if (!permissions || typeof permissions !== 'object') {
             // console.log('❌ No permissions found in session.');

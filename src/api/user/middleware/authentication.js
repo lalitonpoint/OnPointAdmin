@@ -10,7 +10,7 @@ const verifyToken = (req, res, next) => {
     const userId = req.headers['userid'];
 
     const serviceId = req.headers['serviceid'];
-    console.log(userId);
+    // console.log(userId);
 
     if (!token) {
         return res.status(200).json({ success: false, message: 'Token is missing' });

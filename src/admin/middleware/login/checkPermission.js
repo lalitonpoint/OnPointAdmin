@@ -28,7 +28,7 @@ const setGlobalPermissions = async (req, res, next) => {
     // Dynamically load sidebar.ejs and extract structure
     const menuStructure = extractSidebarStructure('./src/admin/views/partials/sidebar.ejs');
 
-    const updatedSidebar = getModuleVisibility(modulePermissions, menuStructure);
+    const updatedSidebar = getModuleVisibility(modulePermissions, menuStructure, req);
     // console.log('Final Sidebar Permissions:', updatedSidebar);
 
     // console.log('permissions', permissions)
@@ -44,8 +44,10 @@ const setGlobalPermissions = async (req, res, next) => {
 
     next();
 };
-const getModuleVisibility = (permissionsJson, sidebarJson) => {
+const getModuleVisibility = (permissionsJson, sidebarJson, req) => {
     const moduleVisibility = {};
+
+    let adminType = req.session.admin?.admin_type
 
     sidebarJson.forEach(module => {
         const parentKey = module.parentModule;
@@ -54,7 +56,7 @@ const getModuleVisibility = (permissionsJson, sidebarJson) => {
         if (module.route) {
             // Direct parent route case
             for (const p of Object.values(permissionsJson)) {
-                if (p.url === module.route && p.isShow) {
+                if (p.url === module.route && p.isShow || adminType == 'Admin') {
                     moduleVisibility[parentKey] = true;
                     break;
                 }
@@ -64,14 +66,14 @@ const getModuleVisibility = (permissionsJson, sidebarJson) => {
         if (module.children && Array.isArray(module.children)) {
             module.children.forEach(child => {
                 for (const p of Object.values(permissionsJson)) {
-                    if (p.url === child.route && p.isShow) {
+                    if (p.url === child.route && p.isShow || adminType == 'Admin') {
                         moduleVisibility[child.submodule] = true;
                         parentVisible = true; // At least one child is visible
                     }
                 }
             });
 
-            if (parentVisible) {
+            if (parentVisible || adminType == 'Admin') {
                 moduleVisibility[parentKey] = true;
             }
         }

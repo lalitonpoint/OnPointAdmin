@@ -46,9 +46,9 @@ const saveDrivers = async (req, res) => {
             const mobileNumber = fields.mobileNo?.[0] || '';
             const alternateMobileNo = fields.alternateMobileNo?.[0] || '';
             const countryCode = fields.countryCode?.[0] || '';
-            console.log(name)
-            console.log(email)
-            console.log(mobileNumber)
+            // console.log(name)
+            // console.log(email)
+            // console.log(mobileNumber)
             if (!name || !email || !mobileNumber) {
                 return res.status(400).json({ error: "Name, Email, and Mobile No. are required" });
             }
@@ -62,10 +62,10 @@ const saveDrivers = async (req, res) => {
                     imageUrl = result.url;
                 } else {
                     console.error("Error uploading image:", result.error || result.message);
-                    return res.status(500).json({ error: "Failed to upload banner image" }); 
+                    return res.status(500).json({ error: "Failed to upload banner image" });
                 }
             } else {
-                imageUrl = ''; 
+                imageUrl = '';
             }
 
             const driver = new Driver({

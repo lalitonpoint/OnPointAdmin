@@ -81,7 +81,7 @@ const razorpayWebhook = async (req, res) => {
             return res.status(500).json({ success: false, message: 'Error updating payment' });
         }
     } else if (event === 'payment.failed') {
-        console.log('Payment failed:', payload.payment);
+        // console.log('Payment failed:', payload.payment);
         return res.status(200).json({ success: true, message: 'Payment failed handled' });
     } else {
         return res.status(200).json({ success: true, message: 'Unhandled event type' });

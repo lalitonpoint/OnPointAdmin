@@ -188,7 +188,7 @@ const addTracking = async (req, res) => {
 const getPackageDetail = async (req, res) => {
     try {
         const packageDetail = await PTL.findById(req.params.id);
-        console.log(packageDetail);
+        // console.log(packageDetail);
         if (!packageDetail) {
             return res.status(404).json({ message: 'PTL Order not found' });
         }
@@ -435,7 +435,7 @@ const downloadTrackingCsv = async (req, res) => {
 const getDriverWarehouseData = async (req, res) => {
     try {
         const id = req.params.id
-        console.log('iddd', id)
+        //  console.log('iddd', id)
 
         let latestAssignOrderDetail = await driverPackageAssign.findOne({ packageId: id }).sort({ createdAt: -1 });
 
@@ -576,7 +576,7 @@ const orderAssignList = async (req, res) => {
 
 
 const updateOrderStatus = async (req, res) => {
-    console.log('234');
+    // console.log('234');
 
     let { orderStatus, assignOrderId } = req.body;
 
@@ -620,12 +620,12 @@ const updateOrderStatus = async (req, res) => {
         orderAssignDetail.status = orderStatus;
         orderAssignDetail.deliveryStatus = updatedDeliveryStatus;
 
-        console.log(orderAssignDetail);
+        //  console.log(orderAssignDetail);
 
         orderAssignDetail.markModified('deliveryStatus'); // Ensure Mongoose knows about the modification
 
         await orderAssignDetail.save();
-        console.log('5678', orderAssignDetail);
+        //  console.log('5678', orderAssignDetail);
 
         return res.json({ success: true, message: "Order status updated successfully" });
 

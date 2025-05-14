@@ -539,12 +539,12 @@
                         $('.totalPackage').text(data.packageDetail.packages ? data.packageDetail.packages.length : 0);
 
                         const packages = data.packageDetail.packages || [];
-                        console.log('ppp', packages)
+                        // console.log('ppp', packages)
                         const tbody = $('#packageTable');
 
                         if (packages.length > 0) {
                             packages.forEach((pkg, index) => {
-                                console.log('dddd', pkg)
+                                // console.log('dddd', pkg)
 
                                 // Add header row for the package with a bold and centered title
                                 tbody.append(`

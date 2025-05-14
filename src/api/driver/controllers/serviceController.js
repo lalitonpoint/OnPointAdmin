@@ -173,7 +173,7 @@ const tripHistory = async (req, res) => {
         const driverId = req.header('driverid');
 
         if (!driverId) {
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Driver ID is required"
             });
@@ -181,16 +181,10 @@ const tripHistory = async (req, res) => {
 
         const trips = await PTL.find({
             driverId,
-            status: { $in: [0, 4, 5] }
+            status: { $in: [0, 1, 2, 3, 4, 5] }
         })
             .populate({ path: 'userId', select: 'fullName' })
             .populate({ path: 'packageId', select: 'orderId' });
-
-        const categoryLabels = {
-            0: 'All',
-            4: 'Completed',
-            5: 'Cancelled'
-        };
 
         const groupedTrips = {
             All: [],
@@ -199,18 +193,25 @@ const tripHistory = async (req, res) => {
         };
 
         for (const trip of trips) {
-            const category = categoryLabels[trip.status];
-            if (category) {
-                groupedTrips[category].push({
-                    userName: trip?.userId?.fullName || '',
-                    status: trip.status,
-                    orderId: trip?.packageId?.orderId || '',
-                    pickAddress: trip.pickupAddress || '',
-                    dropAddress: trip.dropAddress || '',
-                    totalDistance: trip.totalDistance || '',
-                    totalDuration: trip.totalDuration || '',
-                    createdAt: trip.createdAt
-                });
+            const tripData = {
+                userName: trip?.userId?.fullName || '',
+                status: trip.status,
+                orderId: trip?.packageId?.orderId || '',
+                pickAddress: trip.pickupAddress || '',
+                dropAddress: trip.dropAddress || '',
+                totalDistance: trip.totalDistance || '',
+                totalDuration: trip.totalDuration || '',
+                createdAt: trip.createdAt
+            };
+
+            // Push all trips to "All"
+            groupedTrips.All.push(tripData);
+
+            // Push to specific status-based categories
+            if (trip.status === 4) {
+                groupedTrips.Completed.push(tripData);
+            } else if (trip.status === 5) {
+                groupedTrips.Cancelled.push(tripData);
             }
         }
 
@@ -229,7 +230,6 @@ const tripHistory = async (req, res) => {
         });
     }
 };
-
 
 
 const tripHistoryCount = async (req, res) => {
