@@ -510,9 +510,13 @@ const pickupVerifyOtp = async (req, res) => {
                 totalPackage: packageDetail.packages.length,
                 userName: ptlData.userId.fullName,
                 userContact: ptlData.userId.countryCode + ptlData.userId.mobileNumber,
-                notes: packageDetail.notes,
+                notes: packageDetail.pickupNote,
                 address: ptlData.pickupAddress,
                 packages: packageDetail.packages,
+                pickupLatitude: ptlData.pickupLatitude,
+                pickupLongitude: ptlData.pickupLongitude,
+                dropLatitude: ptlData.dropLatitude,
+                dropLongitude: ptlData.dropLongitude
             }
         });
 
@@ -671,6 +675,8 @@ const updateOrderStatus = async (req, res) => {
                     pickupDuration,
                     userName: user.fullName,
                     address: order.pickupAddress,
+                    pickupLatitude: order.pickupLatitude,
+                    pickupLongitude: order.pickupLongitude,
                     dropLatitude: order.dropLatitude,
                     dropLongitude: order.dropLongitude
                 }
