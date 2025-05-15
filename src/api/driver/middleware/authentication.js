@@ -27,6 +27,7 @@ const verifyToken = (req, res, next) => {
         return res.status(200).json({ success: false, message: 'Invalid Jwt token' });
     }
 };
+
 const headerAuth = (req, res, next) => {
     const deviceType = req.headers['devicetype']; // headers are lowercase
     const deviceId = req.headers['deviceid']; // headers are lowercase

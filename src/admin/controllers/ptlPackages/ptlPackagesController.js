@@ -328,7 +328,11 @@ const assignDriver = async (req, res) => {
             const assignData = await newTracking.save();
             await generateLogs(req, 'Add', newTracking);
 
-            const notificationSend = await assignOrderToDriver(driverId, packageId, assignData._id);
+            console.log('DriverID', driverId)
+            console.log('packageId', packageId)
+            console.log('assignId', assignData._id.toString())
+
+            const notificationSend = await assignOrderToDriver(driverId, packageId, assignData._id.toString());
 
             return res.status(201).json({ success: true, message: 'Tracking added successfully', data: newTracking, notificationSend: notificationSend });
         });
