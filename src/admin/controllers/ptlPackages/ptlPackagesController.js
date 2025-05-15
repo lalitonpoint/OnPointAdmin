@@ -5,6 +5,7 @@ const Warehouse = require('../../models/warehouseManagemnet/warehouseModal');
 const driverPackageAssign = require('../../models/ptlPackages/driverPackageAssignModel');
 const { generateLogs } = require('../../utils/logsHelper');
 const { getDistanceAndDuration } = require('../../../api/driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+const { assignOrderToDriver } = require('../../../api/driver/controllers/notificationController'); // Assuming the common function is located in '../utils/distanceCalculate'
 
 
 // const Driver = require('../models/Driver');
@@ -324,8 +325,10 @@ const assignDriver = async (req, res) => {
                 totalDuration: pickupDuration
             });
 
-            await newTracking.save();
+            const assignData = await newTracking.save();
             await generateLogs(req, 'Add', newTracking);
+
+            // await assignOrderToDriver(driverId, packageId, assignData._id);
 
             return res.status(201).json({ success: true, message: 'Tracking added successfully', data: newTracking });
         });

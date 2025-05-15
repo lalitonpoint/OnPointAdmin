@@ -1,4 +1,6 @@
 const admin = require('../../../../config/firebaseConnection');
+const Driver = require('../../../api/driver/modals/driverModal');
+const Package = require('../../../api/user/models/paymentModal');
 
 // Send FCM to driver
 const sendOrderNotificationToDriver = async (driverToken, orderData) => {
@@ -29,22 +31,16 @@ const sendOrderNotificationToDriver = async (driverToken, orderData) => {
     }
 };
 
-const assignOrderToDriver = async (req, res) => {
-    // const { orderId, driverId } = req.body;
-    const orderId = "OPL-37IU9"
+const assignOrderToDriver = async (driverId, packageId) => {
 
-    // if (!orderId || !driverId) {
-    //     return res.status(400).json({ success: false, message: "Missing orderId or driverId" });
-    // }
+    const packageData = await Package.findById(packageId);
+    const driverData = await Driver.findById(driverId);
 
     try {
-        // Replace with real DB lookup
-
-        // const driverDeviceToken = await getDriverToken(driverId);
-        const driverDeviceToken = 'dPVvB-NNkkG_lWFJnYM9mF:APA91bHshfMe_oWlBA7wV-L9zUmG5VL6ALvwA8om_vD8uLkGSJCT_rt0tapAXYJrSkz91MNrBJYlL-8QC65HNQq2T34o6oF3ZzoT0EyHwrLhoAD2AYDT1kY';
+        const driverDeviceToken = driverData.deviceToken;
 
         const orderData = {
-            orderId,
+            orderId: packageData.orderId,
             pickupLocation: "Warehouse A",
             deliveryLocation: "Client B",
         };

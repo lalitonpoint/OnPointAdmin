@@ -250,7 +250,9 @@ const tripHistoryCount = async (req, res) => {
             status: { $in: [4, 5] }
         });
 
-        const driverData = await DriverModal.find({ driverId, status: 0 })
+        const driverData = await DriverModal.find({ _id: driverId, status: 1 });
+
+        console.log('dddd', driverData[0]);
 
         // Count status 4 and 5 separately
         const completedCount = tripHistoryDetail.filter(trip => trip.status === 4).length;
@@ -261,7 +263,7 @@ const tripHistoryCount = async (req, res) => {
             data: {
                 completedCount,
                 cancelledCount,
-                driverApprovalStatus: driverData.approvalStatus || 0
+                driverApprovalStatus: driverData[0].approvalStatus || 0
             },
             message: "Trip counts fetched successfully"
         });
