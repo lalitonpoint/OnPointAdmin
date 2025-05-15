@@ -29,8 +29,8 @@ const verifyToken = (req, res, next) => {
 };
 const headerAuth = (req, res, next) => {
     const deviceType = req.headers['devicetype']; // headers are lowercase
-    const deviceId = req.headers['deviceId']; // headers are lowercase
-    const deviceToken = req.headers['deviceToken']; // headers are lowercase
+    const deviceId = req.headers['deviceid']; // headers are lowercase
+    const deviceToken = req.headers['devicetoken']; // headers are lowercase
 
     if (!deviceType) {
         return res.status(200).json({ success: false, message: 'DeviceType is missing' });
