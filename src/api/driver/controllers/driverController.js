@@ -243,8 +243,8 @@ const createDriver = async (req, res) => {
                     success: true,
                     message: `Step ${step} completed`,
                     driverId: driver._id,
-                    data: driver,
-                    token
+                    data: driver
+                    // token
                 });
             }
 

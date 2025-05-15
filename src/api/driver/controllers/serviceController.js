@@ -8,6 +8,8 @@ const { generateOTP } = require('../utils/generateOtp');
 const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
 const { uploadImage } = require("../../../admin/utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
+const DriverModal = require('../../../api/driver/modals/driverModal'); // Assuming the common function is located in '../utils/distanceCalculate'
+
 
 
 // Save Driver Locationconst DriverLocation = require('../models/DriverLocation'); // adjust the path as needed
@@ -248,6 +250,8 @@ const tripHistoryCount = async (req, res) => {
             status: { $in: [4, 5] }
         });
 
+        const driverData = await DriverModal.find({ driverId, status: 0 })
+
         // Count status 4 and 5 separately
         const completedCount = tripHistoryDetail.filter(trip => trip.status === 4).length;
         const cancelledCount = tripHistoryDetail.filter(trip => trip.status === 5).length;
@@ -256,7 +260,8 @@ const tripHistoryCount = async (req, res) => {
             success: true,
             data: {
                 completedCount,
-                cancelledCount
+                cancelledCount,
+                driverApprovalStatus: driverData.approvalStatus || 0
             },
             message: "Trip counts fetched successfully"
         });
