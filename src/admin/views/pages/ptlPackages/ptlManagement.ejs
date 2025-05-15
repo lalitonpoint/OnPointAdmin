@@ -928,8 +928,11 @@
                         data: 'status',  // Ensure the correct data field name from your backend
                         orderable: false,
                         render: function (status, type, row) {
+
+                            const disabledAttr = !row.isLastRow ? 'disabled' : '';
+
                             return `
-            <select id="updateOrderStatus" class="form-select" data-id="${row._id}">
+            <select id="updateOrderStatus" class="form-select" data-id="${row._id}" ${disabledAttr}>
                 <option value="0" ${status == 0 ? 'selected' : ''}>In Process</option>
                 <option value="1" ${status == 1 ? 'selected' : ''}>Pickup</option>
                 <option value="2" ${status == 2 ? 'selected' : ''}>In Transit</option>

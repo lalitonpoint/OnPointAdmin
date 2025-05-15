@@ -510,7 +510,7 @@ const orderAssignList = async (req, res) => {
             5: 'Cancelled'
         };
 
-        assignedOrderDetail.forEach((singleAssign) => {
+        assignedOrderDetail.forEach((singleAssign, index) => {
             const deliveryStatus = singleAssign.deliveryStatus;
             const deliveryDate = singleAssign.deliveryDate;
 
@@ -550,6 +550,9 @@ const orderAssignList = async (req, res) => {
                    data-bs-title="${escapedTooltip}"></i>`;
                 }
             }
+            const isLastRow = index === assignedOrderDetail.length - 1;
+
+            singleAssign._doc.isLastRow = isLastRow; // Add the flag here
 
             singleAssign._doc.deliveryDate = deliveryDate;
             singleAssign._doc.deliveryInfoIcon = infoHTML;
@@ -557,7 +560,7 @@ const orderAssignList = async (req, res) => {
         });
 
 
-        const totalRecords = await driverPackageAssign.countDocuments();
+        const totalRecords = await driverPackageAssign.countDocuments(query);
         const filteredRecords = await driverPackageAssign.countDocuments(query);
 
         res.json({
