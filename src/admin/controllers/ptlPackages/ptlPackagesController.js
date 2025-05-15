@@ -328,9 +328,9 @@ const assignDriver = async (req, res) => {
             const assignData = await newTracking.save();
             await generateLogs(req, 'Add', newTracking);
 
-            // await assignOrderToDriver(driverId, packageId, assignData._id);
+            const notificationSend = await assignOrderToDriver(driverId, packageId, assignData._id);
 
-            return res.status(201).json({ success: true, message: 'Tracking added successfully', data: newTracking });
+            return res.status(201).json({ success: true, message: 'Tracking added successfully', data: newTracking, notificationSend: notificationSend });
         });
     } catch (error) {
         console.error("Server error:", error);

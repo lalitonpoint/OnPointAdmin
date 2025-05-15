@@ -102,6 +102,7 @@ const createDriver = async (req, res) => {
                         countryCode: getField('countryCode'),
                         profilePicture: profilePicture
                     };
+
                     break;
                 };
 
@@ -208,6 +209,11 @@ const createDriver = async (req, res) => {
             if (step === 1) {
                 update.status = 1;
                 update.step = 1;
+
+                update.deviceType = req.header('deviceType')
+                update.deviceToken = req.header('deviceToken')
+                update.deviceId = req.header('deviceId')
+
                 driver = new DriverProfile(update);
                 await driver.save();
                 return res.status(201).json({ // Changed status code to 201 for successful creation

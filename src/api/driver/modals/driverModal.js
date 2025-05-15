@@ -63,7 +63,16 @@ const driverProfileSchema = new mongoose.Schema({
         adminName: String,
         approvedAt: Date
     },
-    approvalStatus: { type: Number, enum: [0 ,1], default: 0 } // 1 = Active, 0 = Inactive 
+    approvalStatus: { type: Number, enum: [0, 1], default: 0 },// 1 = Active, 0 = Inactive 
+    deviceType: {
+        type: Number, enum: [1, 2, 3] // 1 = Android, 2 = Ios , 3 => Website
+    }, deviceToken: {
+        type: String,
+        default: ''
+    }, deviceId: {
+        type: String,
+        default: ''
+    }
 
 }, { timestamps: true });
 
