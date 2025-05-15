@@ -40,14 +40,7 @@ const saveSettings = async (req, res) => {
                 supportMobile: req.body.helpSupport.supportMobile
             };
         }
-        if (req.body.firebase) {
-            settings.firebase = {
-                projectId: req.body.firebase.projectId,
-                firebaseEmail: req.body.firebase.firebaseEmail,
-                firebaseId: req.body.firebase.firebaseId,
-                tokenUrl: req.body.firebase.tokenUrl
-            };
-        }
+
         if (req.body.applicationLinks) {
             settings.applicationLinks = {
                 androidClientAppUrl: req.body.applicationLinks.androidClientUrl,
@@ -86,6 +79,23 @@ const saveSettings = async (req, res) => {
                 gst: req.body.payment.gst
             };
         }
+
+        if (req.body.firebase) {
+            settings.firebase = {
+                type: req.body.firebase.type || "",
+                project_id: req.body.firebase.project_id || "",
+                private_key_id: req.body.firebase.private_key_id || "",
+                private_key: req.body.firebase.private_key || "",
+                client_email: req.body.firebase.client_email || "",
+                client_id: req.body.firebase.client_id || "",
+                auth_uri: req.body.firebase.auth_uri || "",
+                token_uri: req.body.firebase.token_uri || "",
+                auth_provider_x509_cert_url: req.body.firebase.auth_provider_x509_cert_url || "",
+                client_x509_cert_url: req.body.firebase.client_x509_cert_url || "",
+                universe_domain: req.body.firebase.universe_domain || ""
+            };
+        }
+
         // console.log(settings);
 
         await settings.save();

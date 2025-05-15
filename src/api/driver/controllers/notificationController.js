@@ -1,47 +1,12 @@
-const admin = require('../../../../config/firebaseConnection');
+const { initFirebaseAdmin } = require('../../../../config/firebaseConnection');
 const Driver = require('../../../api/driver/modals/driverModal');
 const Package = require('../../user/models/paymentModal');
 const Assign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 
-// // Send FCM to driver
-// const sendOrderNotificationToDriver = async (driverToken, orderData) => {
-//     if (!driverToken) {
-//         console.error("Driver token is missing.");
-//         return false;
-//     }
-
-//     const message = {
-//         token: driverToken,
-//         notification: {
-//             title: "New Order Assigned",
-//             body: `Order #${orderData.orderId} has been assigned to you.`,
-//         },
-//         data: {
-//             orderId: String(orderData.orderId),
-//             pickupLocation: orderData.pickupLocation || '',
-//             deliveryLocation: orderData.deliveryLocation || '',
-//         },
-//         android: {
-//             priority: "high",
-//             notification: {
-//                 sound: "default",
-//             },
-//         },
-//     };
-
-//     try {
-//         const response = await admin.messaging().send(message);
-//         console.log("Notification sent successfully:", response);
-//         return true;
-//     } catch (error) {
-//         console.error("Error sending notification:", error);
-//         return false;
-//     }
-// };
-
+// Send FCM to driver
 const sendOrderNotificationToDriver = async (driverToken, orderData) => {
     if (!driverToken) {
-        console.error("Driver token is missing.");
+        console.error("❌ Driver token is missing.");
         return false;
     }
 
@@ -80,21 +45,17 @@ const sendOrderNotificationToDriver = async (driverToken, orderData) => {
     };
 
     try {
-        const response = await admin.messaging().send(message);
-        console.log("Notification sent successfully:", response);
+        const adminApp = await initFirebaseAdmin();
+        const response = await adminApp.messaging().send(message);
+        console.log("✅ Notification sent successfully:", response);
         return true;
     } catch (error) {
-        console.error("Error sending notification:", error);
+        console.error("❌ Error sending notification:", error.message);
         return false;
     }
 };
 
 const assignOrderToDriver = async (driverId, packageId, assignId) => {
-
-    console.log('DriverID', driverId)
-    console.log('packageId', packageId)
-    console.log('assignId', assignId)
-
     try {
         const [packageData, driverData, assignData] = await Promise.all([
             Package.findById(packageId),
@@ -103,7 +64,7 @@ const assignOrderToDriver = async (driverId, packageId, assignId) => {
         ]);
 
         if (!packageData || !driverData || !assignData) {
-            console.warn("One or more records not found");
+            console.warn("⚠️ One or more records not found.");
             return false;
         }
 
@@ -113,13 +74,11 @@ const assignOrderToDriver = async (driverId, packageId, assignId) => {
             deliveryLocation: assignData.dropAddress,
         };
 
-        console.log('orderData', orderData);
-        console.log('driverData.deviceToken', driverData.deviceToken);
+        console.log("ℹ️ Sending notification with orderData:", orderData);
 
-        const notificationSent = await sendOrderNotificationToDriver(driverData.deviceToken, orderData);
-        return notificationSent;
+        return await sendOrderNotificationToDriver(driverData.deviceToken, orderData);
     } catch (error) {
-        console.error("Error assigning order:", error.message);
+        console.error("❌ Error assigning order:", error.message);
         return false;
     }
 };

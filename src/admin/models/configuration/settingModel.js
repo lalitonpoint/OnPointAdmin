@@ -13,12 +13,7 @@ const SettingsSchema = new mongoose.Schema({
     driverInstruction: {
         content: { type: String, default: "" }
     },
-    firebase: {
-        projectId: { type: String, default: "" },
-        firebaseEmail: { type: String, default: "" },
-        firebaseId: { type: String, default: "" },
-        tokenUrl: { type: String, default: "" }
-    },
+
     helpSupport: {
         supportEmail: { type: String, default: "" },
         supportMobile: { type: String, default: "" }
@@ -49,7 +44,21 @@ const SettingsSchema = new mongoose.Schema({
         shippingCost: { type: String, default: "" },
         specialHandling: { type: String, default: "" },
         gst: { type: String, default: "" },
+    },
+    firebase: {
+        type: { type: String, default: "" },
+        project_id: { type: String, default: "" },
+        private_key_id: { type: String, default: "" },
+        private_key: { type: String, default: "" },
+        client_email: { type: String, default: "" },
+        client_id: { type: String, default: "" },
+        auth_uri: { type: String, default: "" },
+        token_uri: { type: String, default: "" },
+        auth_provider_x509_cert_url: { type: String, default: "" },
+        client_x509_cert_url: { type: String, default: "" },
+        universe_domain: { type: String, default: "" }
     }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Settings", SettingsSchema);

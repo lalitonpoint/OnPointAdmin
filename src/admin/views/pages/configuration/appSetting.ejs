@@ -22,10 +22,10 @@
             <button class="nav-link" id="privacyPolicy-tab" data-bs-toggle="tab" data-bs-target="#privacyPolicy"
                 type="button" role="tab">Privacy & Policy</button>
         </li>
-        <li class="nav-item" role="presentation">
+        <!-- <li class="nav-item" role="presentation">
             <button class="nav-link" id="firebase-tab" data-bs-toggle="tab" data-bs-target="#firebase" type="button"
                 role="tab">Firebase Credential</button>
-        </li>
+        </li> -->
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="applicationLinks-tab" data-bs-toggle="tab" data-bs-target="#applicationLinks"
                 type="button" role="tab">Application Link</button>
@@ -45,6 +45,10 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="driverInstruction-tab" data-bs-toggle="tab" data-bs-target="#driverInstruction"
                 type="button" role="tab">Driver Instruction</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="firebaseCred-tab" data-bs-toggle="tab" data-bs-target="#firebaseCred"
+                type="button" role="tab">Firebase Credential</button>
         </li>
     </ul>
 
@@ -120,29 +124,6 @@
             </form>
         </div>
 
-        <!-- Firebase -->
-        <div class="tab-pane fade" id="firebase" role="tabpanel">
-            <form id="firebaseForm">
-                <input type="hidden" name="firebase">
-                <div class="mb-3">
-                    <label class="form-label">Project ID</label>
-                    <input type="text" class="form-control" id="projectId" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Firebase Email</label>
-                    <input type="email" class="form-control" id="firebaseEmail" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Firebase ID</label>
-                    <input type="text" class="form-control" id="firebaseId" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Token URL</label>
-                    <input type="url" class="form-control" id="tokenUrl" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </form>
-        </div>
 
         <!-- Application Links -->
         <div class="tab-pane fade" id="applicationLinks" role="tabpanel">
@@ -231,7 +212,7 @@
                 <button type="submit" class="btn btn-info">Submit</button>
             </form>
         </div>
-        <div class="tab-pane fade show active" id="driverInstruction" role="tabpanel">
+        <div class="tab-pane fade " id="driverInstruction" role="tabpanel">
             <form id="driverInstructionForm">
                 <input type="hidden" name="driverInstruction">
                 <div class="mb-3">
@@ -239,6 +220,70 @@
                     <textarea class="form-control" name="description" id="driverInstructionText" rows="5"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="firebaseCred" role="tabpanel">
+            <form id="firebaseForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="type" class="form-label">Type</label>
+                        <input type="text" class="form-control" id="type" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="project_id" class="form-label">Project Id</label>
+                        <input type="text" class="form-control" id="project_id" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col md-6">
+                        <label for="private_key_id" class="form-label">Private Key Id</label>
+                        <input type="text" class="form-control" id="private_key_id" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="private_key" class="form-label">Private Key</label>
+                        <input type="text" class="form-control" id="private_key" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col md-6">
+                        <label for="client_email" class="form-label">Client Email</label>
+                        <input type="text" class="form-control" id="client_email" required>
+                    </div>
+                    <div class="col md-6">
+                        <label for="client_id" class="form-label">Client Id</label>
+                        <input type="text" class="form-control" id="client_id" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col md-6">
+                        <label for="auth_uri" class="form-label">Auth URI</label>
+                        <input type="text" class="form-control" id="auth_uri" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="token_uri" class="form-label">Token URI</label>
+                        <input type="text" class="form-control" id="token_uri" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col md-6">
+                        <label for="auth_provider_x509_cert_url" class="form-label">Auth Provider X509 Cert Url</label>
+                        <input type="text" class="form-control" id="auth_provider_x509_cert_url" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="client_x509_cert_url" class="form-label">Client X509 Cert Url</label>
+                        <input type="text" class="form-control" id="client_x509_cert_url" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col md-6">
+                        <label for="universe_domain" class="form-label">Universe Domain</label>
+                        <input type="text" class="form-control" id="universe_domain" required>
+                    </div>
+
+                </div>
+                <button type="submit" class="btn btn-info">Submit</button>
             </form>
         </div>
 
@@ -312,11 +357,10 @@
         saveForm("termConditionForm", "termCondition");
         saveForm("privacyAndPolicyForm", "privacyAndPolicy");
         saveForm("helpSupportForm", "helpSupport");
-        saveForm("firebaseForm", "firebase");
         saveForm("applicationLinksForm", "applicationLinks");
         saveForm("appVersionForm", "appVersion");
         saveForm("twilioForm", "twilioCred");
-        saveForm("s3Form", "awsS3");
+        saveForm("firebaseForm", "firebase");
         saveForm("paymentForm", "payment");
 
         function setData() {
@@ -338,10 +382,7 @@
                     }
                     $('#supportEmail').val(data.data?.helpSupport?.supportEmail);
                     $('#supportMobile').val(data.data?.helpSupport?.supportMobile);
-                    $('#projectId').val(data.data?.firebase?.projectId);
-                    $('#firebaseEmail').val(data.data?.firebase?.firebaseEmail);
-                    $('#firebaseId').val(data.data?.firebase?.firebaseId);
-                    $('#tokenUrl').val(data.data?.firebase?.tokenUrl);
+
                     $('#androidClientUrl').val(data.data?.applicationLinks?.androidClientAppUrl);
                     $('#androidDriverUrl').val(data.data?.applicationLinks?.androidDriverAppUrl);
                     $('#iosClientUrl').val(data.data?.applicationLinks?.iosClientAppUrl);
@@ -360,6 +401,18 @@
                     $('#shippingCost').val(data.data?.paymentDetails?.shippingCost); // Corrected ID
                     $('#specialHandling').val(data.data?.paymentDetails?.specialHandling); // Corrected ID
                     $('#gst').val(data.data?.paymentDetails?.gst); // Corrected ID
+
+                    $('#type').val(data.data?.firebase?.type);
+                    $('#project_id').val(data.data?.firebase?.project_id);
+                    $('#private_key_id').val(data.data?.firebase?.private_key_id);
+                    $('#private_key').val(data.data?.firebase?.private_key);
+                    $('#client_email').val(data.data?.firebase?.client_email);
+                    $('#client_id').val(data.data?.firebase?.client_id);
+                    $('#auth_uri').val(data.data?.firebase?.auth_uri);
+                    $('#token_uri').val(data.data?.firebase?.token_uri);
+                    $('#auth_provider_x509_cert_url').val(data.data?.firebase?.auth_provider_x509_cert_url);
+                    $('#client_x509_cert_url').val(data.data?.firebase?.client_x509_cert_url);
+                    $('#universe_domain').val(data.data?.firebase?.universe_domain);
                 },
                 error: function (xhr, status, error) {
                     console.error("Error loading settings:", error);
