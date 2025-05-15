@@ -111,7 +111,7 @@ const verifyOtp = async (req, res) => {
 
         if (driver) {
 
-            const exist = await Driver.findOne({ mobileNumber });
+            const exist = await Driver.findOne({ 'personalInfo.mobileNumber': mobileNumber });
 
             if (exist && exist.deviceToken !== req.header('deviceToken')) {
                 await Driver.findOneAndUpdate(
