@@ -3,11 +3,11 @@ const settingModel = require('../../../admin/models/configuration/settingModel')
 const driverModel = require('../../driver/modals/driverModal');
 
 const getHambergerData = async (req, res) => {
-    const driverId = req.headers['driverid']; // Fix: lowercase and correct access
+    // const driverId = req.headers['driverid']; // Fix: lowercase and correct access
 
-    if (!driverId) {
-        return res.status(200).json({ success: false, message: 'Driver Id is required.' });
-    }
+    // if (!driverId) {
+    //     return res.status(200).json({ success: false, message: 'Driver Id is required.' });
+    // }
 
     try {
         const faqs = await FAQ.find({ status: 1, faqType: 2 }).sort({ createdAt: -1 });
@@ -29,12 +29,14 @@ const getHambergerData = async (req, res) => {
         }, {});
 
         const driverInstructionData = await settingModel.findOne({ 'driverInstruction.content': { $exists: true } }).sort({ createdAt: -1 });
-        const driverDocument = await driverModel.findOne({ _id: driverId });
+        const termsAndConditionsData = await settingModel.findOne({ 'termsAndConditions.content': { $exists: true } }).sort({ createdAt: -1 });
+        // const driverDocument = await driverModel.findOne({ _id: driverId });
 
         res.status(200).json({
             success: true,
             data: {
-                driverDocument: driverDocument?.documents || {},
+                // driverDocument: driverDocument?.documents || {},
+                termsAndConditions: termsAndConditionsData?.termsAndConditions?.content || '',
                 driverInstruction: driverInstructionData?.aboutUs?.content || '',
                 faqData: groupedFaqs,
             }

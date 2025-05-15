@@ -15,11 +15,12 @@ router.use('/otp', otpRoutes);
 router.use('/profile', driverRoutes);
 router.use('/truck', truckRoutes);
 router.use('/notification', notificationRoutes);
+router.use('/hamberger', hambergerRoutes);
+
 
 router.use(headerAuth);
 router.use(verifyToken);
 router.use('/service', serviceRoutes);
-router.use('/hamberger', hambergerRoutes);
 router.use('/wallet', walletRoutes);
 
 
