@@ -110,6 +110,17 @@ const verifyOtp = async (req, res) => {
 
 
         if (driver) {
+
+            const exist = await Driver.findOne({ mobileNumber });
+
+            if (exist && exist.deviceToken !== req.headers['devicetoken']) {
+                await DriverProfile.findOneAndUpdate(
+                    { mobileNumber: exist.mobileNumber },
+                    { $set: { deviceToken: req.headers['devicetoken'] } },
+                    { new: true }
+                );
+            }
+
             const token = jwt.sign(
                 { driverId: driver._id, mobileNumber: driver.mobileNumber },
                 secretKey,
