@@ -8,6 +8,7 @@ const notificationRoutes = require('./notificationRoutes'); // Ensure correct pa
 const hambergerRoutes = require('./hambergerRoutes'); // Ensure correct path
 const serviceRoutes = require('./serviceRoutes'); // Ensure correct path
 const walletRoutes = require('./walletRoutes'); // Ensure correct path
+const masterRoutes = require('./masterRoutes'); // Ensure correct path
 const { verifyToken, headerAuth } = require('../middleware/authentication');
 
 
@@ -22,6 +23,7 @@ router.use('/hamberger', hambergerRoutes);
 router.use(verifyToken);
 router.use('/service', serviceRoutes);
 router.use('/wallet', walletRoutes);
+router.use('/master', masterRoutes);
 
 
 module.exports = router;

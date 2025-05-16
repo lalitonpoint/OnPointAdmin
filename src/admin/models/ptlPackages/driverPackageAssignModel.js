@@ -36,8 +36,6 @@ const shipmentSchema = new mongoose.Schema({
         type: String
     },
 
-
-
     assignType: {
         type: String,
         required: true

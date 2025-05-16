@@ -170,6 +170,7 @@ const getDriverLocation = async (driverId) => {
         return { success: false, message: "Failed to fetch location", error: error.message };
     }
 };
+
 const tripHistory = async (req, res) => {
     try {
         const driverId = req.header('driverid');
@@ -320,7 +321,7 @@ const pickupOrder = async (req, res) => {
             case 1: // Arriving at pickup
                 await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 1 } });
                 topHeader = 'Arriving';
-                bottomHeader = 'Way to user location';
+                bottomHeader = 'Way to Pickup';
                 message = "Driver Go For Pickup";
                 break;
 
@@ -655,18 +656,18 @@ const updateOrderStatus = async (req, res) => {
             switch (orderStatus) {
                 case 2:
                     topHeader = 'Start';
-                    bottomHeader = order.assignType === 1 ? 'Way To Warehouse' : 'Way to Drop-off';
+                    bottomHeader = order.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off';
                     message = "Order In Transit";
                     break;
                 case 3:
                     topHeader = 'Arriving';
-                    bottomHeader = order.assignType === 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
+                    bottomHeader = order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
                     message = "Order Out For Delivery";
                     break;
                 case 4:
                     topHeader = 'Delivered';
-                    bottomHeader = order.assignType === 1 ? 'Delivered to Warehouse' : 'Delivered to User';
-                    message = order.assignType === 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
+                    bottomHeader = order.assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User';
+                    message = order.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
                     break;
                 default:
                     message = 'Order status updated successfully';
@@ -710,5 +711,6 @@ module.exports = {
     updateOrderStatus,
     pickupOrder,
     pickupSendOtp,
-    pickupVerifyOtp
+    pickupVerifyOtp,
+    getDriverLocation
 };
