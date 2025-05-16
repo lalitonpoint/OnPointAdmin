@@ -2,6 +2,7 @@ const { initFirebaseAdmin } = require('../../../../config/firebaseConnection');
 const Driver = require('../../../api/driver/modals/driverModal');
 const Package = require('../../user/models/paymentModal');
 const Assign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
+const Notification = require('../../driver/modals/notificationModal');
 
 // Send FCM to driver
 const sendOrderNotificationToDriver = async (driverToken, orderData) => {
@@ -48,6 +49,7 @@ const sendOrderNotificationToDriver = async (driverToken, orderData) => {
         const adminApp = await initFirebaseAdmin();
         const response = await adminApp.messaging().send(message);
         console.log("✅ Notification sent successfully:", response);
+
         return true;
     } catch (error) {
         console.error("❌ Error sending notification:", error.message);
@@ -83,4 +85,25 @@ const assignOrderToDriver = async (driverId, packageId, assignId) => {
     }
 };
 
-module.exports = { assignOrderToDriver };
+
+const getNotification = async (req, res) => {
+
+    try {
+        const driverId = req.header('driverid');
+
+        const notificationDetail = await Notification.find({ recipientId: driverId, recipientType: 'driver' }).sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: notificationDetail,
+            message: notificationDetail.length > 0 ? 'Notification Fetch Successfully' : 'No Notification Found'
+        });
+
+    } catch (err) {
+        console.error('Error fetching Notification data:', err);
+        res.status(500).json({ success: false, message: 'Server Error', error: err.message });
+    }
+};
+
+
+module.exports = { assignOrderToDriver, getNotification };

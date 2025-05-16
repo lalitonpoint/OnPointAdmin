@@ -6,6 +6,7 @@ const driverPackageAssign = require('../../models/ptlPackages/driverPackageAssig
 const { generateLogs } = require('../../utils/logsHelper');
 const { getDistanceAndDuration } = require('../../../api/driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 const { assignOrderToDriver } = require('../../../api/driver/controllers/notificationController'); // Assuming the common function is located in '../utils/distanceCalculate'
+const Notification = require('../../../api/driver/modals/notificationModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 
 
 // const Driver = require('../models/Driver');
@@ -333,6 +334,13 @@ const assignDriver = async (req, res) => {
             console.log('assignId', assignData._id.toString())
 
             const notificationSend = await assignOrderToDriver(driverId, packageId, assignData._id.toString());
+            await new Notification({
+                recipientId: driverId,
+                recipientType: 'driver',
+                title: 'New Order Assigned',
+                message: "Order Deliver to " + (assignData.assignType == 1 ? 'Warehouse' : 'User Location'),
+                notificationType: 'order',
+            }).save();
 
             return res.status(201).json({ success: true, message: 'Tracking added successfully', data: newTracking, notificationSend: notificationSend });
         });
