@@ -55,6 +55,11 @@ const shipmentSchema = new mongoose.Schema({
     totalDuration: { type: String },
     totalDistance: { type: String },
     pickupMobile: { type: String },
+    step: {
+        type: Number,
+        enum: [0, 1, 2, 3, 4, 5],
+        default: 0
+    },
 }, {
     timestamps: true
 });

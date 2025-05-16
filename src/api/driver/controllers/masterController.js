@@ -82,12 +82,12 @@ const masterDetail = async (req, res) => {
             address: pendingRequest.pickupAddress || 'N/A',
             pickupLatitude: pendingRequest.pickupLatitude || '',
             pickupLongitude: pendingRequest.pickupLongitude || '',
+            step: pendingRequest.step || 0,
         }];
 
         res.status(200).json({
             success: true,
             pendingRequest: 1,
-            step: step,
             data,
             message: 'Master Data',
         });

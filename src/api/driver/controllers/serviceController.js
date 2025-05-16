@@ -281,7 +281,7 @@ const tripHistoryCount = async (req, res) => {
 
 const pickupOrder = async (req, res) => {
     try {
-        const { assignId: id, pickupStatus } = req.body;
+        const { assignId: id, pickupStatus, step } = req.body;
         const driverId = req.header('driverid');
 
         if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -290,6 +290,16 @@ const pickupOrder = async (req, res) => {
 
         if (![0, 1, 2].includes(pickupStatus)) {
             return res.status(200).json({ success: false, message: 'Invalid pickup status' });
+        }
+
+
+        if (!step) {
+            return res.status(200).json({ success: false, message: 'Step Is required' });
+        }
+
+
+        if (![0, 1, 2, 3, 4, 5].includes(step)) {
+            return res.status(200).json({ success: false, message: 'Invaild Step' });
         }
 
         const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' });
@@ -319,19 +329,20 @@ const pickupOrder = async (req, res) => {
                 break;
 
             case 1: // Arriving at pickup
-                await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 1 } });
+                await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 1, step: step } });
                 topHeader = 'Arriving';
                 bottomHeader = 'Way to Pickup';
                 message = "Driver Go For Pickup";
                 break;
 
             case 2: //  Arrived at pickup
-                await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 2 } });
+                await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 2, step: step } });
                 topHeader = 'Arrived';
                 bottomHeader = 'Arrived';
                 message = "Driver Arrived At User Location";
                 break;
         }
+
 
         return res.status(200).json({
             success: true,
@@ -344,6 +355,9 @@ const pickupOrder = async (req, res) => {
                 address: order.pickupAddress,
                 pickupLatitude: order.pickupLatitude,
                 pickupLongitude: order.pickupLongitude,
+                dropLatitude: order.dropLatitude,
+                dropLongitude: order.dropLongitude,
+                step: step
             },
             message
         });
@@ -551,6 +565,7 @@ const updateOrderStatus = async (req, res) => {
 
             const id = fields.assignId?.[0] || '';
             const orderStatus = parseInt(fields.status?.[0], 10);
+            const step = parseInt(fields.step?.[0], 10);
             const driverId = req.header('driverid');
 
             if (!id) {
@@ -560,6 +575,17 @@ const updateOrderStatus = async (req, res) => {
             if (!orderStatus) {
                 return res.status(200).json({ success: false, message: 'Status is required' });
             }
+
+            if (!step) {
+                return res.status(200).json({ success: false, message: 'Step Is required' });
+            }
+
+
+            if (![0, 1, 2, 3, 4, 5].includes(step)) {
+                return res.status(200).json({ success: false, message: 'Invaild Step' });
+            }
+
+
             const statusKeyMap = {
                 0: 'pending',
                 1: 'pickup',
@@ -634,6 +660,7 @@ const updateOrderStatus = async (req, res) => {
                 updateFields.recipientName = recipientName;
                 updateFields.confirmNumber = confirmNumber;
                 updateFields.pod = result.url;
+                updateFields.step = step;
             }
 
             // Update DB
@@ -687,7 +714,8 @@ const updateOrderStatus = async (req, res) => {
                     pickupLongitude: order.pickupLongitude,
                     dropLatitude: order.dropLatitude,
                     dropLongitude: order.dropLongitude,
-                    assignType: order.assignType
+                    assignType: order.assignType,
+                    step: step
                 }
             });
         });
