@@ -87,6 +87,7 @@ const masterDetail = async (req, res) => {
         res.status(200).json({
             success: true,
             pendingRequest: 1,
+            step: step,
             data,
             message: 'Master Data',
         });
