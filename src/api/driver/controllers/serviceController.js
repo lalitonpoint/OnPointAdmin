@@ -292,8 +292,7 @@ const pickupOrder = async (req, res) => {
             return res.status(200).json({ success: false, message: 'Invalid pickup status' });
         }
 
-
-        if (!step) {
+        if (typeof step == "undefined") {
             return res.status(200).json({ success: false, message: 'Step Is required' });
         }
 
@@ -576,7 +575,7 @@ const updateOrderStatus = async (req, res) => {
                 return res.status(200).json({ success: false, message: 'Status is required' });
             }
 
-            if (!step) {
+            if (typeof step == "undefined") {
                 return res.status(200).json({ success: false, message: 'Step Is required' });
             }
 
