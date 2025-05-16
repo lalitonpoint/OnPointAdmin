@@ -34,14 +34,14 @@ const masterDetail = async (req, res) => {
         const user = pendingRequest.userId;
         const assignType = pendingRequest.assignType;
 
-        let step = 0;
-        const { pickupStatus, status } = pendingRequest;
+        const step = pendingRequest.step || 0;
+        // const { pickupStatus, status } = pendingRequest;
 
-        if (pickupStatus === 1 && status === 0) step = 1;
-        else if (pickupStatus === 2 && status === 0) step = 2;
-        else if (pickupStatus === 2 && status === 2) step = 3;
-        else if (pickupStatus === 2 && status === 3) step = 4;
-        else if (pickupStatus === 2 && status === 4) step = 5;
+        // if (pickupStatus === 1 && status === 0) step = 1;
+        // else if (pickupStatus === 2 && status === 0) step = 2;
+        // else if (pickupStatus === 2 && status === 2) step = 3;
+        // else if (pickupStatus === 2 && status === 3) step = 4;
+        // else if (pickupStatus === 2 && status === 4) step = 5;
 
         let topHeader = '', bottomHeader = '', message = '';
 
