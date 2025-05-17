@@ -264,37 +264,37 @@
 
                 const name = $('#name').val().trim();
                 if (!name) {
-                    toastr.error('Profile Name is required.', 'Validation Error');
+                    toastr.error('Profile Name is required.', 'Error');
                     return;
                 }
 
                 const designation = $('#designation').val().trim();
                 if (!designation) {
-                    toastr.error('Profile Designation is required.', 'Validation Error');
+                    toastr.error('Profile Designation is required.', 'Error');
                     return;
                 }
 
                 const profileImage = $('#profile_image')[0].files[0];
                 if (!profileImage && !$('#testimonialId').val()) { // Required on add
-                    toastr.error('Profile Image is required on adding new testimonial.', 'Validation Error');
+                    toastr.error('Profile Image is required on adding new testimonial.', 'Error');
                     return;
                 }
 
                 const rating = $('#rating').val();
                 if (!rating) {
-                    toastr.error('Rating is required.', 'Validation Error');
+                    toastr.error('Rating is required.', 'Error');
                     return;
                 }
 
                 const status = $('#status').val();
                 if (!status) {
-                    toastr.error('Status is required.', 'Validation Error');
+                    toastr.error('Status is required.', 'Error');
                     return;
                 }
 
                 const description = ckEditor ? ckEditor.getData().trim() : $('#testmonial_description').val().trim();
                 if (!description) {
-                    toastr.error('Testimonial Message is required.', 'Validation Error');
+                    toastr.error('Testimonial Message is required.', 'Error');
                     return;
                 }
 

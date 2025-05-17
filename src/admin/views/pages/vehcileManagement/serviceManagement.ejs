@@ -230,18 +230,18 @@
 
                 const serviceName = $('#serviceName').val().trim();
                 if (!serviceName) {
-                    toastr.error('Service Name is required.', 'Validation Error');
+                    toastr.error('Service Name is required.', 'Error');
                     return;
                 }
 
                 const status = $('#status').val();
                 if (!status) {
-                    toastr.error('Status is required.', 'Validation Error');
+                    toastr.error('Status is required.', 'Error');
                     return;
                 }
                 const serviceImage = $('#serviceImage')[0].files[0];
                 if (!serviceImage && !$('#serviceId').val()) {
-                    toastr.error('Service Image is required when adding a new service.', 'Validation Error');
+                    toastr.error('Service Image is required when adding a new service.', 'Error');
                     return;
                 }
 

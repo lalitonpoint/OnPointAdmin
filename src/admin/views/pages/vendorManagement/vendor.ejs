@@ -12,7 +12,7 @@
         max-width: 70%;
     }
 
-    .bodyContentSection{
+    .bodyContentSection {
         width: calc(100% - 300px);
     }
 </style>
@@ -113,18 +113,17 @@
                         <div class="col-md-6">
                             <label for="trackingCode" class="form-label"> Name<strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="name" name="name"
-                                autocomplete="off" placeholder="Enter  Name">
+                            <input type="text" class="form-control" id="name" name="name" autocomplete="off"
+                                placeholder="Enter  Name">
                         </div>
                         <div class="col-md-6">
                             <label for="pickUpLocation" class="form-label">mobile</label>
-                            <input type="text" class="form-control" id="mobile"
-                                placeholder="Enter mobile" name="mobile">
+                            <input type="text" class="form-control" id="mobile" placeholder="Enter mobile"
+                                name="mobile">
                         </div>
                         <div class="col-md-6">
                             <label for="warehouseemail" class="form-label">email</label>
-                            <input type="text" class="form-control" id="email"
-                                placeholder="Enter email" name="email">
+                            <input type="text" class="form-control" id="email" placeholder="Enter email" name="email">
                         </div>
                         <div class="col-md-6">
                             <label for="pincode" class="form-label">password<strong
@@ -327,35 +326,35 @@
 
             // Validation
             // if (!trackingCode) {
-            //     toastr.error('Please enter tracking ID', 'Validation Error');
+            //     toastr.error('Please enter tracking ID', 'Error');
             //     return;
             // }
             // if (!Warehousename) {
-            //     toastr.error('Please enter pickup location', 'Validation Error');
+            //     toastr.error('Please enter pickup location', 'Error');
             //     return;
             // }
             // if (!warehouseLocation) {
-            //     toastr.error('Please enter drop location', 'Validation Error');
+            //     toastr.error('Please enter drop location', 'Error');
             //     return;
             // }
             // if (!warehouseAddress) {
-            //     toastr.error('Please enter transport mode', 'Validation Error');
+            //     toastr.error('Please enter transport mode', 'Error');
             //     return;
             // }
             // if (!pincode) {
-            //     toastr.error('Please enter number of packings', 'Validation Error');
+            //     toastr.error('Please enter number of packings', 'Error');
             //     return;
             // }
             // if (!phone) {
-            //     toastr.error('Please select a date.', 'Validation Error');
+            //     toastr.error('Please select a date.', 'Error');
             //     return;
             // }
             // if (!deliveryTime) {
-            //     toastr.error('Please select delivery time.', 'Validation Error');
+            //     toastr.error('Please select delivery time.', 'Error');
             //     return;
             // }
             if (!trackingStatus) {
-                toastr.error('Please select tracking status.', 'Validation Error');
+                toastr.error('Please select tracking status.', 'Error');
                 return;
             }
 
@@ -497,10 +496,10 @@
             const params = new URLSearchParams({
                 trackingCode: $('#searchname').val(),
                 status: $('#searchStatus').val(),
-                mobile : $('#mobile'),
-                email : $('#emial'),
-                business_name : $('#business_name'),
-                business_category : $('#business_category'),
+                mobile: $('#mobile'),
+                email: $('#emial'),
+                business_name: $('#business_name'),
+                business_category: $('#business_category'),
                 date: $('#searchDate').val()
             });
             window.location.href = '/vendor/downloadCsv?' + params.toString();

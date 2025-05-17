@@ -306,39 +306,39 @@
 
                 const bannerTitle = $('#bannerTitle').val().trim();
                 if (!bannerTitle) {
-                    toastr.error('Banner Title is required.', 'Validation Error');
+                    toastr.error('Banner Title is required.', 'Error');
                     return;
                 }
 
                 const bannerType = $('#bannerType').val();
                 if (!bannerType) {
-                    toastr.error('Banner Type is required.', 'Validation Error');
+                    toastr.error('Banner Type is required.', 'Error');
                     return;
                 }
                 const plateformType = $('#plateformType').val();
                 if (!plateformType) {
-                    toastr.error('Plateform Type is required.', 'Validation Error');
+                    toastr.error('Plateform Type is required.', 'Error');
                     return;
                 }
 
                 const status = $('#status').val();
                 if (!status) {
-                    toastr.error('Status is required.', 'Validation Error');
+                    toastr.error('Status is required.', 'Error');
                     return;
                 }
 
                 const bannerFile = $('#bannerFile')[0].files[0];
                 const bannerId = $('#bannerId').val();
                 if (!bannerId && !bannerFile) { // Required on add
-                    toastr.error('Banner File is required when adding a new banner.', 'Validation Error');
+                    toastr.error('Banner File is required when adding a new banner.', 'Error');
                     return;
                 }
                 if (bannerType === '1' && bannerFile && !bannerFile.type.startsWith('image/')) {
-                    toastr.error('Please upload a valid image file.', 'Validation Error');
+                    toastr.error('Please upload a valid image file.', 'Error');
                     return;
                 }
                 if (bannerType === '2' && bannerFile && !bannerFile.type.startsWith('video/')) {
-                    toastr.error('Please upload a valid video file.', 'Validation Error');
+                    toastr.error('Please upload a valid video file.', 'Error');
                     return;
                 }
 

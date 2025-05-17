@@ -125,7 +125,7 @@ const saveUserData = async (req, res) => {
             const status = fields.status ? fields.status[0] : '';
             const deviceType = fields.deviceType ? fields.deviceType[0] : '';
 
-            const existingUser = await User.findOne({ emailAddress, mobileNumber }, { status: { $ne: 3 } });
+            const existingUser = await User.findOne({ emailAddress, mobileNumber, status: { $ne: 3 } });
             if (existingUser) {
                 return res.status(400).json({ error: "User already exists with the same email and mobile number" });
             }

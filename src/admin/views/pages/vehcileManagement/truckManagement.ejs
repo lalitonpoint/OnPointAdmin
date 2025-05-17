@@ -244,25 +244,25 @@
 
                 const name = $('#name').val().trim();
                 if (!name) {
-                    toastr.error('Vehicle Name is required.', 'Validation Error');
+                    toastr.error('Vehicle Name is required.', 'Error');
                     return;
                 }
 
                 const bodyType = $('#bodyType').val().trim();
                 if (!bodyType) {
-                    toastr.error(' Body Type is required.', 'Validation Error');
+                    toastr.error(' Body Type is required.', 'Error');
                     return;
                 }
 
                 const vechileImage = $('#vechileImage')[0].files[0];
                 if (!vechileImage && !$('#vehicleId').val()) { // Required on add
-                    toastr.error('Vehcile Image is required on adding new vehicle.', 'Validation Error');
+                    toastr.error('Vehcile Image is required on adding new vehicle.', 'Error');
                     return;
                 }
 
                 const status = $('#status').val();
                 if (!status) {
-                    toastr.error('Status is required.', 'Validation Error');
+                    toastr.error('Status is required.', 'Error');
                     return;
                 }
 

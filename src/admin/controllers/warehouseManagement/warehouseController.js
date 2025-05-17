@@ -97,71 +97,69 @@ const warehouseList = async (req, res) => {
 
 
 const addWarehouse = async (req, res) => {
-
     try {
         const form = new multiparty.Form();
 
         form.parse(req, async (err, fields) => {
             if (err) {
                 console.error("Error parsing form data:", err);
-                return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400 for bad request
+                return res.status(400).json({ error: "Invalid form data" });
             }
 
-            const Warehousename = fields.Warehousename ? fields.Warehousename[0] : '';
-            const status = fields.status ? parseInt(fields.status[0]) : null;
-            const warehouseLocation = fields.warehouseLocation ? fields.warehouseLocation[0] : ''; // Default to Active
-            const warehouseAddress = fields.warehouseAddress ? fields.warehouseAddress[0] : ''; // Default to Active
-            const warehouseLatitude = fields.warehouseLatitude ? fields.warehouseLatitude[0] : ''; // Default to Active
-            const warehouseLongitude = fields.warehouseLongitude ? fields.warehouseLongitude[0] : ''; // Default to Active
-            const pincode = fields.pincode ? fields.pincode[0] : ''; // Default to Active
-            // const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
-            const phone = fields.phone ? fields.phone[0] : ''; // Default to Active
-            // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : ''; // Default to Active
+            const {
+                Warehousename = [''],
+                status = [''],
+                warehouseLocation = [''],
+                warehouseAddress = [''],
+                warehouseLatitude = [''],
+                warehouseLongitude = [''],
+                pincode = [''],
+                phone = ['']
+            } = fields;
 
+            const warehouseName = Warehousename[0].trim();
+            const warehouseStatus = parseInt(status[0]);
+            const location = warehouseLocation[0].trim();
+            const address = warehouseAddress[0]?.trim() || null;
+            const latitude = warehouseLatitude[0] || null;
+            const longitude = warehouseLongitude[0] || null;
+            const zip = pincode[0].trim();
+            const contact = phone[0]?.trim() || null;
 
-            if (!Warehousename || !status || !pincode || !warehouseLocation) {
-                return res.status(400).json({ message: 'Tracking ID, Status, Delivery Date, No. of Packing, and Delivery Time are required' });
+            // Basic validation
+            if (!warehouseName || !warehouseStatus || !zip || !location) {
+                return res.status(400).json({ message: 'Warehouse Name, Status, Pincode, and Location are required' });
             }
 
-            // Convert status to number
-            const statusNumber = parseInt(status);
-            if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
+            if (isNaN(warehouseStatus) || ![1, 2].includes(warehouseStatus)) {
                 return res.status(400).json({ message: 'Invalid status value' });
             }
-            const statusMap = {
-                1: { key: 'active', status: 0, deliveryDateTime: '' },
-                2: { key: 'inactive', status: 0, deliveryDateTime: '' }
-            };
-            statusMap[status].status = 1;
-            statusMap[status].deliveryDateTime = new Date();
-            // console.log(statusMap[status].status); // Output: 0
 
-            // Create a new tracking entry
-            const newwarehouse = new warehouse({
-                Warehousename: Warehousename,
-                status: statusNumber,
-                warehouseLocation: warehouseLocation || null,
-                warehouseAddress: warehouseAddress || null,
-                warehouseLatitude: warehouseLatitude || null,
-                warehouseLongitude: warehouseLongitude || null,
-                pincode: pincode || null,
-                phone: phone || null,
-                // deliveryTime: deliveryTime,
+            // Create new warehouse entry
+            const newWarehouse = new warehouse({
+                Warehousename: warehouseName,
+                status: warehouseStatus,
+                warehouseLocation: location,
+                warehouseAddress: address,
+                warehouseLatitude: latitude,
+                warehouseLongitude: longitude,
+                pincode: zip,
+                phone: contact,
                 createdAt: new Date()
             });
 
-            // Save the new tracking entry to the database
-            await newwarehouse.save();
-            await generateLogs(req, 'Add', newwarehouse);
+            await newWarehouse.save();
+            await generateLogs(req, 'Add', newWarehouse);
 
-            // Send success response with a more standard status code
-            res.status(201).json({ message: 'newwarehouse added successfully', data: newwarehouse });
+            return res.status(201).json({ message: 'Warehouse added successfully', data: newWarehouse });
         });
+
     } catch (err) {
-        console.error('Error adding tracking:', err);
-        res.status(500).json({ message: 'Internal server error', error: err.message });
+        console.error('Error adding warehouse:', err);
+        return res.status(500).json({ message: 'Internal server error', error: err.message });
     }
 };
+
 
 const getwareHousebyId = async (req, res) => {
     try {
@@ -288,80 +286,51 @@ const deleteWarehouse = async (req, res) => {
     }
 };
 
-const downloadTrackingCsv = async (req, res) => {
+
+const downloadAllCsv = async (req, res) => {
     try {
-        const { trackingCode, status, date } = req.query;
-        let query = {};
+        const warehouseData = await warehouse.find().sort({ createdAt: -1 });
 
-        if (trackingCode) {
-            query.trackingId = new RegExp(trackingCode, 'i');
-        }
-        if (status) {
-            query.status = parseInt(status);
-        }
-        if (date) {
-            const startDate = moment(date).startOf('day');
-            const endDate = moment(date).endOf('day');
-            query.estimateDate = {
-                $gte: startDate.toDate(),
-                $lte: endDate.toDate()
-            };
+        if (warehouseData.length === 0) {
+            return res.status(200).send("No Data to download.");
         }
 
-        const trackings = await Tracking.find(query).sort({ createdAt: -1 });
-
-        if (trackings.length === 0) {
-            return res.status(200).send("No tracking data found for the current filters.");
-        }
-
-        const csvHeaders = [
-            "#",
-            "Tracking ID",
-            "Pickup Location",
-            "Drop Location",
-            "Transport Mode",
-            "No. of Packing",
+        const headers = [
+            "Warehouse Name",
+            "Contact No.",
+            "Warehouse Address",
+            "Warehouse Location",
+            "Warehouse Latitude",
+            "Warehouse Longitude",
+            "Warehouse Pincode",
             "Status",
-            "Delivery Date",
             "Created At"
         ];
 
-        const csvData = trackings.map((tracking, index) => [
-            index + 1,
-            tracking.trackingId,
-            tracking.pickUpLocation || '',
-            tracking.dropLocation || '',
-            tracking.transportMode || '',
-            tracking.noOfPacking,
-            getStatusText(tracking.status), // Assuming you have a function to convert status code to text
-            moment(tracking.deliveryDate).format('YYYY-MM-DD HH:mm:ss'),
-            moment(tracking.createdAt).format('YYYY-MM-DD HH:mm:ss')
-        ]);
+        const csvRows = warehouseData.map(war => [
+            `"${war.Warehousename?.replace(/"/g, '""') || ''}"`,
+            war.phone || '',
+            war.warehouseAddress || '',
+            war.warehouseLocation || '',
+            war.warehouseLatitude || '',
+            war.warehouseLongitude || '',
+            war.pincode || '',
+            war.status === 1 ? "Active" : "Inactive",
+            moment(war.createdAt).format('YYYY-MM-DD HH:mm:ss')
+        ].join(","));
 
-        // Helper function to convert status code to text
-        function getStatusText(status) {
-            switch (status) {
-                case 1: return 'Pickup';
-                case 2: return 'Out for Delivery';
-                case 3: return 'In Progress';
-                case 4: return 'Delivered';
-                case 5: return 'Cancelled';
-                default: return 'Unknown';
-            }
-        }
-
-        // Format the CSV data
-        const csvRows = [csvHeaders, ...csvData].map(row => row.join(',')).join('\n');
+        const csvData = [headers.join(","), ...csvRows].join("\n");
 
         res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
-        res.status(200).send(csvRows);
+        res.setHeader('Content-Disposition', 'attachment; filename="Warehouse_list.csv"');
 
+        res.status(200).send(csvData);
     } catch (error) {
-        console.error('Error downloading tracking CSV:', error);
-        res.status(500).send("Error generating CSV file.");
+        console.error("Error downloading all Warehouse as CSV:", error);
+        res.status(500).send("Error downloading CSV file.");
     }
 };
+
 
 module.exports = {
     warehousePage,
@@ -370,5 +339,5 @@ module.exports = {
     getwareHousebyId,
     updateWarehouse,
     deleteWarehouse,
-    downloadTrackingCsv
+    downloadAllCsv
 };

@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <div >
+                    <div>
                         <label class="d-block" for="">&nbsp;</label>
                         <div class="mt-2">
                             <button class="btn btn-primary" id="searchBtn">Search</button>
@@ -93,19 +93,19 @@
 
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Name</label>
+                        <label class="form-label">Name <strong class="text-danger">*</strong></label>
                         <input type="text" class="form-control" name="name" id="name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Mobile</label>
+                        <label class="form-label">Mobile <strong class="text-danger">*</strong></label>
                         <input type="text" class="form-control" name="mobile" id="mobile" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Email</label>
+                        <label class="form-label">Email <strong class="text-danger">*</strong></label>
                         <input type="email" class="form-control" name="email" id="email" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Admin Type</label>
+                        <label class="form-label">Admin Type <strong class="text-danger">*</strong></label>
                         <select class="form-control" name="admin_type" id="adminType">
                             <option value="Admin">Admin</option>
                             <option value="Sub Admin">Sub Admin</option>
@@ -124,7 +124,7 @@
 
                     <div id="permissionsSection">
 
-                        <h5>Permissions</h5>
+                        <h5>Permissions<strong class="text-danger">*</strong></h5>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -477,17 +477,58 @@
         $("#adminForm").on("submit", function (event) {
             event.preventDefault();
 
+
+            let name = $("input[name='name']").val();
+            let mobile = $("input[name='mobile']").val();
+            let email = $("input[name='email']").val();
+            let admin_type = $("select[name='admin_type']").val();
+            let password = $("input[name='password']").val()
+            let country_access = $("input[name='country_access']").prop("checked");
+            let city_access = $("input[name='city_access']").prop("checked");
+
+            if (!name) {
+                toastr.error('Please Enter Name', 'Error');
+                return;
+            }
+            if (!mobile) {
+                toastr.error('Please Enter mobile', 'Error');
+                return;
+            }
+            if (!email) {
+                toastr.error('Please Enter Email', 'Error');
+                return;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { // Simple email regex
+                toastr.error('Enter a valid Email address.', 'Error');
+                return;
+            }
+            if (!admin_type) {
+                toastr.error('Please Select Admin Type', 'Error');
+                return;
+            }
+
+            const anyChecked = $('input[type="checkbox"]:checked').length > 0;
+
+            if (admin_type == 'Sub Admin') {
+                if (!anyChecked) {
+                    toastr.error('Please select at least one permission.', 'Error');
+                    return;
+                }
+            }
+
+
             let formData = {
-                name: $("input[name='name']").val(),
+                name: name,
                 user_id: $("input[name='user_id']").val(),
-                mobile: $("input[name='mobile']").val(),
-                email: $("input[name='email']").val(),
-                admin_type: $("select[name='admin_type']").val(),
-                // password: $("input[name='password']").val(),
-                country_access: $("input[name='country_access']").prop("checked"),
-                city_access: $("input[name='city_access']").prop("checked"),
+                mobile: mobile,
+                email: email,
+                admin_type: admin_type,
+                password: password,
+                country_access: country_access,
+                city_access: city_access,
                 permissions: []
             };
+
+
             let adminType = $('#adminType').val();
 
             if (adminType === "Sub Admin") {

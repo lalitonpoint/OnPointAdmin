@@ -321,46 +321,46 @@
 
                 // Validation
                 if (!fullName) {
-                    toastr.error('Full Name is required.', 'Validation Error');
+                    toastr.error('Please Enter Full Name', 'Error');
                     isValid = false;
                     return;
                 }
 
                 if (!email) {
-                    toastr.error('Email is required.', 'Validation Error');
+                    toastr.error('Please Enter Email', 'Error');
                     return;
                 } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { // Simple email regex
-                    toastr.error('Enter a valid Email address.', 'Validation Error');
+                    toastr.error('Enter a valid Email address.', 'Error');
                     return;
                 }
 
                 if (!country) {
-                    toastr.error('Country selection is required.', 'Validation Error');
+                    toastr.error('Please Select Country', 'Error');
                     return;
                 }
 
                 if (!mobileNumber) {
-                    toastr.error('Mobile Number is required.', 'Validation Error');
+                    toastr.error('Please Enter Mobile Number', 'Error');
                     return;
                 } else if (!/^\d{7,15}$/.test(mobileNumber)) { // Example: Mobile should be 7-15 digits
-                    toastr.error('Enter a valid Mobile Number.', 'Validation Error');
+                    toastr.error('Enter a valid Mobile Number.', 'Error');
                     return;
                 }
 
                 if (!gender) {
-                    toastr.error('Gender selection is required.', 'Validation Error');
+                    toastr.error('Please Select Gender', 'Error');
                     return;
                 }
                 if (!status) {
-                    toastr.error('Status selection is required.', 'Validation Error');
+                    toastr.error('Please Select Status', 'Error');
                     return;
                 }
                 if (!profilePicture) {
-                    toastr.error('Profile selection is required.', 'Validation Error');
+                    toastr.error('Please Choose Profile Picture', 'Error');
                     return;
                 }
                 if (!deviceType) {
-                    toastr.error('Device selection is required.', 'Validation Error');
+                    toastr.error('Please Select Device Type', 'Error');
                     return;
                 }
 
@@ -466,7 +466,7 @@
 
         $('#userTable').on('click', '.deleteUser', function () {
             const userId = $(this).data('id');
-            
+
             swalConfirm('Are you sure you want to delete this user?', function () {
                 $.ajax({
                     url: '/users/deleteUser/' + userId, // Replace with your actual delete route

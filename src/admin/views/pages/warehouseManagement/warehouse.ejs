@@ -65,14 +65,15 @@
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
-                            <th> ID</th>
                             <th>Warehouse Name</th>
                             <th>Phone Number</th>
                             <th>Warehouse Address</th>
-                            <th>Warehouse Location</th>
+                            <th> Location</th>
+                            <th> Latitude</th>
+                            <th> Longitude</th>
                             <th>Pincode</th>
                             <th>Status</th>
-                            <th>Estimate Date</th>
+                            <th>Created At</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -103,22 +104,26 @@
                                 autocomplete="off" placeholder="Enter Warehouse Name">
                         </div>
                         <div class="col-md-6">
-                            <label for="pickUpLocation" class="form-label">Warehouse Location / City</label>
+                            <label for="pickUpLocation" class="form-label">Warehouse Location / City<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="warehouseLocation"
                                 placeholder="Enter Warehouse Location" name="warehouseLocation">
                         </div>
                         <div class="col-md-6">
-                            <label for="warehouselatitude" class="form-label">Warehouse Latitude</label>
+                            <label for="warehouselatitude" class="form-label">Warehouse Latitude<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="warehouselatitude"
                                 placeholder="Enter Warehouse Latitude" name="warehouseLatitude">
                         </div>
                         <div class="col-md-6">
-                            <label for="warehouselongitude" class="form-label">Warehouse Longitude</label>
+                            <label for="warehouselongitude" class="form-label">Warehouse Longitude<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="warehouselongitude"
                                 placeholder="Enter Warehouse Longitude" name="warehouseLongitude">
                         </div>
                         <div class="col-md-6">
-                            <label for="warehouseAddress" class="form-label">Warehouse Address</label>
+                            <label for="warehouseAddress" class="form-label">Warehouse Address<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="warehouseAddress"
                                 placeholder="Enter Warehouse Address" name="warehouseAddress">
                         </div>
@@ -196,11 +201,7 @@
                     orderable: false, // Disable ordering for the index column
                     render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
                 },
-                {
-                    data: '_id',
-                    orderable: false,
 
-                },
                 {
                     data: 'Warehousename',
                     orderable: false,
@@ -216,8 +217,26 @@
                     orderable: false,
 
                 },
-                { data: 'warehouseLocation' },
-                { data: 'pincode' },
+                {
+                    data: 'warehouseLocation',
+                    orderable: false,
+
+                },
+                {
+                    data: 'warehouseLatitude',
+                    orderable: false,
+
+                },
+                {
+                    data: 'warehouseLongitude',
+                    orderable: false,
+
+                },
+                {
+                    data: 'pincode',
+                    orderable: false,
+
+                },
 
                 {
                     data: 'status',
@@ -230,25 +249,14 @@
 
                         switch (parseInt(data)) { // Ensure data is treated as an integer for comparison
                             case 1:
-                                statusColor = 'badge bg-warning'; // Pickup
+                                statusColor = 'badge bg-success'; // Pickup
                                 statusText = 'Active';
                                 break;
                             case 2:
-                                statusColor = 'badge bg-info'; // Out for Delivery
+                                statusColor = 'badge bg-primary'; // Out for Delivery
                                 statusText = 'Inactive';
                                 break;
-                            case 3:
-                                statusColor = 'badge bg-primary'; // In Progress
-                                statusText = 'Out for Delivery';
-                                break;
-                            case 4:
-                                statusColor = 'badge bg-success'; // Delivered
-                                statusText = 'Delivered';
-                                break;
-                            case 5:
-                                statusColor = 'badge bg-danger'; // Cancelled
-                                statusText = 'Cancelled';
-                                break;
+
                             default:
                                 statusColor = 'badge bg-secondary'; // Unknown
                                 statusText = 'Unknown';
@@ -258,9 +266,6 @@
                         return `<span class="${statusColor}">${statusText}</span>`;
                     }
                 },
-
-
-
                 {
                     data: 'deliveryDate', // Assuming your server returns the combined date and time in 'deliveryDate'
                     render: function (data) {
@@ -304,63 +309,46 @@
             const warehouseLongitude = $('#warehouselongitude').val();
             const pincode = $('#pincode').val();
             const phone = $('#phone').val();
-            // const deliveryTime = $('#deliveryTime').val().trim();
-            const trackingStatus = $('#trackingStatus').val();
-            // const id = $('#trackingId').val();
 
-            // Validation
-            // if (!trackingCode) {
-            //     toastr.error('Please enter tracking ID', 'Validation Error');
-            //     return;
-            // }
+            const trackingStatus = $('#trackingStatus').val();
+
             if (!Warehousename) {
-                toastr.error('Please enter pickup location', 'Validation Error');
+                toastr.error('Please Enter Warehouse Name', 'Error');
                 return;
             }
             if (!warehouseLocation) {
-                toastr.error('Please enter drop location', 'Validation Error');
+                toastr.error('Please Enter Warehouse Location', 'Error');
                 return;
             }
-            if (!warehouseAddress) {
-                toastr.error('Please enter transport mode', 'Validation Error');
-                return;
-            }
+
             if (!warehouseLatitude) {
-                toastr.error('Please enter Warehouse Latitude', 'Validation Error');
+                toastr.error('Please enter Warehouse Latitude', 'Error');
                 return;
             }
             if (!warehouseLongitude) {
-                toastr.error('Please enter Warehouse Longtitude', 'Validation Error');
+                toastr.error('Please Enter Warehouse Longtitude', 'Error');
+                return;
+            }
+            if (!warehouseAddress) {
+                toastr.error('Please Enter Warehouse Address', 'Error');
                 return;
             }
             if (!pincode) {
-                toastr.error('Please enter number of packings', 'Validation Error');
+                toastr.error('Please Enter Pincode', 'Error');
                 return;
             }
             if (!phone) {
-                toastr.error('Please select a date.', 'Validation Error');
+                toastr.error('Please Enter Warehouse Contact No.', 'Error');
                 return;
             }
-            // if (!deliveryTime) {
-            //     toastr.error('Please select delivery time.', 'Validation Error');
-            //     return;
-            // }
             if (!trackingStatus) {
-                toastr.error('Please select tracking status.', 'Validation Error');
+                toastr.error('Please Select Status', 'Error');
                 return;
             }
 
 
             const id = $('#trackingId').val();
             const formData = new FormData(formElement);
-
-            if (trackingStatus != 4) {
-                formData.delete("pod");
-
-            }
-
-
-
 
             const actionUrl = id ? `/warehouse/editWarehouse/${id}` : '/warehouse/addWarehouse';
 
@@ -375,14 +363,9 @@
                     $('#trackingModal').modal('hide');
                     $('#trackingForm')[0].reset();
                     trackingTable.ajax.reload();
-                    toastr.success('Tracking Data saved successfully!', 'Success');
+                    toastr.success('Warehouse Data saved successfully!', 'Success');
                     const form = $('#trackingForm')[0];
                     form.reset(); // Reset the form every time the modal is shown
-                    $('#trackingModalLabel').text('Add Tracking')
-                    $('#filePreviewContainer').addClass('d-none');
-
-
-                    // window.location.reload();
                 },
                 error: function (xhr) {
                     const errorMsg = xhr.responseJSON?.message || 'Failed to save tracking.';
@@ -402,52 +385,20 @@
                 success: function (data) {
                     $('#trackingId').val(data._id);
                     $('#Warehousename').val(data.Warehousename);
+                    $('#warehouselatitude').val(data.warehouseLatitude);
+                    $('#warehouselongitude').val(data.warehouseLongitude);
                     $('#warehouseLocation').val(data.warehouseLocation); // Added pickup location
                     $('#warehouseAddress').val(data.warehouseAddress); // Added drop location
                     $('#pincode').val(data.pincode); // Added transport mode
                     $('#phone').val(data.phone); // Added no of packing
                     $('#trackingStatus').val(data.status);
-                    // $('#deliveryDate').val(moment(data.deliveryDate).format('YYYY-MM-DD')); // Corrected ID and format date
-                    // let time = data.deliveryTime?.substring(0, 5); // "14:30:00" → "14:30"
-                    // $('#deliveryTime').val(time);
-
-                    if (data.status == 4) {
-                        $('.pod').removeClass('d-none');
-                        $('#pod').attr('src', data.pod);
-                        // alert(data.pod);
-
-                        if (data.pod) {
-                            // alert(11);
-                            $('#filePreviewContainer').removeClass('d-none');
-
-                            const imagePreview = $('#imagePreview');
-
-                            const imagePreviewContainer = $('#filePreviewContainer');
-
-                            imagePreview.attr('src', data.pod);
-                            imagePreviewContainer.show();
-                            imagePreview.css("display", "block");
 
 
-                        }
-                    }
-                    else {
-                        $('.pod').addClass('d-none');
-                    }
                     $('#trackingModal').modal('show');
                 }
             });
 
-            $('#trackingStatus').change(function () {
-                // Code to execute when the element's value changes
-                console.log("The value of the element has changed!");
-                let trackingVal = $(this).val();
-                if (trackingVal == 4)
-                    $('.pod').removeClass('d-none');
-                else
-                    $('.pod').addClass('d-none');
 
-            });
         });
 
         $('#trackingTable').on('click', '.editBtn', function () {
@@ -488,7 +439,7 @@
                 status: $('#searchStatus').val(),
                 date: $('#searchDate').val()
             });
-            window.location.href = '/tracking/downloadCsv?' + params.toString();
+            window.location.href = '/warehouse/downloadAllCsv?' + params.toString();
         });
     });
 

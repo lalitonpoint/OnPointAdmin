@@ -221,10 +221,10 @@
 
             const description = ckEditor ? ckEditor.getData().trim() : $('#FaqDescription').val().trim();
 
-            if (!title) return toastr.error('Faq Title is required.', 'Validation Error');
-            if (!status) return toastr.error('Faq Status is required.', 'Validation Error');
-            if (!description) return toastr.error('Faq Description is required.', 'Validation Error');
-            if (!faqType) return toastr.error('Faq Type is required.', 'Validation Error');
+            if (!title) return toastr.error('Faq Title is required.', 'Error');
+            if (!status) return toastr.error('Faq Status is required.', 'Error');
+            if (!description) return toastr.error('Faq Description is required.', 'Error');
+            if (!faqType) return toastr.error('Faq Type is required.', 'Error');
 
             const payloadData = { title: title, 'status': status, 'description': description, 'faqType': faqType, 'faqCategory': faqCategory };
 

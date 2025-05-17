@@ -229,25 +229,25 @@
 
                 const blogTitle = $('#blogTitle').val().trim();
                 if (!blogTitle) {
-                    toastr.error('Blog Title is required.', 'Validation Error');
+                    toastr.error('Blog Title is required.', 'Error');
                     return;
                 }
 
                 const blogStatus = $('#blogStatus').val();
                 if (!blogStatus) {
-                    toastr.error('Blog Status is required.', 'Validation Error');
+                    toastr.error('Blog Status is required.', 'Error');
                     return;
                 }
 
                 const blogImage = $('#blogImage')[0].files[0];
                 if (!blogImage && !$('#blogId').val()) { // Required on add
-                    toastr.error('Blog Image is required on adding new blog.', 'Validation Error');
+                    toastr.error('Blog Image is required on adding new blog.', 'Error');
                     return;
                 }
 
                 const blogDescription = ckEditor ? ckEditor.getData().trim() : $('#blogDescription').val().trim();
                 if (!blogDescription) {
-                    toastr.error('Blog Description is required.', 'Validation Error');
+                    toastr.error('Blog Description is required.', 'Error');
                     return;
                 }
 
