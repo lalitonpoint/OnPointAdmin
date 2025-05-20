@@ -319,6 +319,7 @@ const pickupOrder = async (req, res) => {
         );
 
         const stepStatusMap = {
+            0: 0,
             1: 1,
             2: 2
         };
@@ -719,7 +720,7 @@ const updateOrderStatus = async (req, res) => {
                     message = "Order Out For Delivery";
                     break;
                 case 4:
-                    topHeader = 'Delivered';
+                    topHeader = 'Deliver';
                     bottomHeader = order.assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User';
                     buttonText = 'Delivered';
                     message = order.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
