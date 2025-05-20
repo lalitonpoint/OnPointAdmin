@@ -604,7 +604,7 @@ const updateOrderStatus = async (req, res) => {
                 5: 4
             };
 
-            if (stepStatusMap[step] && orderStatus === stepStatusMap[step]) {
+            if (orderStatus != stepStatusMap[step]) {
                 return res.status(200).json({ success: false, message: 'Order Status Is According To Steps' });
             }
 
