@@ -39,7 +39,7 @@ const masterDetail = async (req, res) => {
                     assignId: '',
                     isPtl,
                     isWallet: 0,
-                    request: [],
+                    request: {},
                     tripCount: {
                         completedCount,
                         cancelledCount
