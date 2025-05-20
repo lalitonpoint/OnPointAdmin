@@ -1,6 +1,7 @@
 const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
-const { getDriverLocation } = require('./serviceController')
-const { getDistanceAndDuration } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+const DriverModal = require('../../../api/driver/modals/driverModal');
+const { getDriverLocation } = require('./serviceController');
+const { getDistanceAndDuration } = require('../utils/distanceCalculate');
 
 const masterDetail = async (req, res) => {
     const isPtl = 1;
@@ -8,22 +9,42 @@ const masterDetail = async (req, res) => {
     try {
         const driverId = req.header('driverid');
         if (!driverId) {
-            return res.status(200).json({ success: false, message: "Driver ID is required in headers." });
+            return res.status(400).json({ success: false, message: "Driver ID is required in headers." });
         }
 
+        // Find latest active request
         const pendingRequest = await DriverAssign.findOne({
             driverId,
             pickupStatus: { $ne: 0 },
             status: { $nin: [4, 5] }
-        })
-            .sort({ createdAt: -1 })
+        }).sort({ createdAt: -1 })
             .populate({ path: 'userId', select: 'fullName' });
+
+        const tripHistory = await DriverAssign.find({ driverId, status: { $in: [4, 5] } });
+
+        const completedCount = tripHistory.filter(trip => trip.status === 4).length;
+        const cancelledCount = tripHistory.filter(trip => trip.status === 5).length;
+
+        const driverData = await DriverModal.findOne({ _id: driverId, status: 1 }).lean();
+        const approvalStatus = driverData?.approvalStatus || 0;
+
 
         if (!pendingRequest) {
             return res.status(200).json({
-                success: true, data: {
-                    pendingRequest: 0, assignId: '', isPtl, isWallet: isPtl === 1 ? 0 : 1, request: []
-                }, message: 'No pending requests'
+                success: true,
+                message: 'No pending requests',
+                data: {
+                    driverApprovalStatus: approvalStatus,
+                    pendingRequest: 0,
+                    assignId: '',
+                    isPtl,
+                    isWallet: 0,
+                    request: [],
+                    tripCount: {
+                        completedCount,
+                        cancelledCount
+                    }
+                }
             });
         }
 
@@ -33,64 +54,51 @@ const masterDetail = async (req, res) => {
         }
 
         const { lat, long } = driverLocation;
-        const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
-            lat, long, pendingRequest.pickupLatitude, pendingRequest.pickupLongitude
-        );
+        const { pickupLatitude, pickupLongitude, dropLatitude = '', dropLongitude = '', pickupAddress = '', userId, assignType, step = 0 } = pendingRequest;
 
-        const user = pendingRequest.userId;
-        const assignType = pendingRequest.assignType;
-        const step = pendingRequest.step || 0;
+        const { distanceInKm: pickupDistance, duration: pickupDuration } =
+            await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
 
-        let topHeader = '', bottomHeader = '', message = '';
+        const headersByStep = {
+            1: { top: 'Arriving', bottom: 'Way to Pickup', message: "Driver Go For Pickup" },
+            2: { top: 'Arrived', bottom: 'Arrived', message: "Driver Arrived At User Location" },
+            3: { top: 'Start', bottom: assignType === 1 ? 'Way To Warehouse' : 'Way to Drop-off', message: "Order In Transit" },
+            4: { top: 'Arriving', bottom: assignType === 1 ? 'Arriving to Warehouse' : 'Arriving to User Location', message: "Order Out For Delivery" },
+            5: { top: 'Delivered', bottom: assignType === 1 ? 'Delivered to Warehouse' : 'Delivered to User', message: assignType === 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location' }
+        };
 
-        switch (step) {
-            case 1:
-                topHeader = 'Arriving';
-                bottomHeader = 'Way to Pickup';
-                message = "Driver Go For Pickup";
-                break;
-            case 2:
-                topHeader = 'Arrived';
-                bottomHeader = 'Arrived';
-                message = "Driver Arrived At User Location";
-                break;
-            case 3:
-                topHeader = 'Start';
-                bottomHeader = assignType === 1 ? 'Way To Warehouse' : 'Way to Drop-off';
-                message = "Order In Transit";
-                break;
-            case 4:
-                topHeader = 'Arriving';
-                bottomHeader = assignType === 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
-                message = "Order Out For Delivery";
-                break;
-            case 5:
-                topHeader = 'Delivered';
-                bottomHeader = assignType === 1 ? 'Delivered to Warehouse' : 'Delivered to User';
-                message = assignType === 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
-                break;
-        }
+        const headerData = headersByStep[step] || { top: '', bottom: '', message: '' };
 
-        const driverData = {
-            topHeader,
-            bottomHeader,
+        const driverRequestData = {
+            topHeader: headerData.top,
+            bottomHeader: headerData.bottom,
             pickupDistance,
             pickupDuration,
-            userName: user?.fullName || 'N/A',
-            address: pendingRequest.pickupAddress || 'N/A',
-            pickupLatitude: pendingRequest.pickupLatitude || '',
-            pickupLongitude: pendingRequest.pickupLongitude || '',
-            dropLatitude: pendingRequest.dropLatitude || '',
-            dropLongitude: pendingRequest.dropLongitude || '',
-            step,
+            userName: userId?.fullName || 'N/A',
+            address: pickupAddress || 'N/A',
+            pickupLatitude,
+            pickupLongitude,
+            dropLatitude,
+            dropLongitude,
+            step
         };
+
 
         res.status(200).json({
             success: true,
-            data: {
-                pendingRequest: 1, assignId: pendingRequest._id, isPtl, isWallet: isPtl === 1 ? 0 : 1, request: driverData
-            },
             message: 'Master Data',
+            data: {
+                driverApprovalStatus: approvalStatus,
+                pendingRequest: 1,
+                assignId: pendingRequest._id,
+                isPtl,
+                isWallet: 0,
+                request: driverRequestData,
+                tripCount: {
+                    completedCount,
+                    cancelledCount
+                }
+            }
         });
 
     } catch (error) {
@@ -98,7 +106,5 @@ const masterDetail = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
     }
 };
-
-
 
 module.exports = { masterDetail };
