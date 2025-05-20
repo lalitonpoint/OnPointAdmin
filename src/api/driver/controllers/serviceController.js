@@ -736,6 +736,7 @@ const updateOrderStatus = async (req, res) => {
                 data: {
                     topHeader,
                     bottomHeader,
+                    buttonText,
                     pickupDistance,
                     pickupDuration,
                     userName: user.fullName,
