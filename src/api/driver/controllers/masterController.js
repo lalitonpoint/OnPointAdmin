@@ -80,7 +80,9 @@ const masterDetail = async (req, res) => {
             pickupLongitude,
             dropLatitude,
             dropLongitude,
-            step
+            step,
+            assignType: pendingRequest.assignType,
+
         };
 
 
@@ -93,6 +95,7 @@ const masterDetail = async (req, res) => {
                 assignId: pendingRequest._id,
                 isPtl,
                 isWallet: 0,
+
                 request: driverRequestData,
                 tripCount: {
                     completedCount,

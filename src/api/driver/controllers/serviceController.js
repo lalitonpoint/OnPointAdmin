@@ -318,12 +318,22 @@ const pickupOrder = async (req, res) => {
             lat, long, order.pickupLatitude, order.pickupLongitude
         );
 
+        const stepStatusMap = {
+            1: 1,
+            2: 2
+        };
+
+        if (stepStatusMap[step] && pickupStatus === stepStatusMap[step]) {
+            return res.status(200).json({ success: false, message: 'Order Status Is According To Steps' });
+        }
+
         let topHeader = '', bottomHeader = '', message = '';
 
         switch (pickupStatus) {
             case 0: // Start trip
                 topHeader = 'Start Trip';
                 bottomHeader = 'Way To Pickup';
+                buttonText = 'Go Now';
                 message = "Driver Way to Pickup";
                 break;
 
@@ -331,14 +341,16 @@ const pickupOrder = async (req, res) => {
                 await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 1, step: step } });
                 topHeader = 'Arriving';
                 bottomHeader = 'Way to Pickup';
+                buttonText = 'Arriving to Pickup';
                 message = "Driver Go For Pickup";
                 break;
 
             case 2: //  Arrived at pickup
                 await PTL.findByIdAndUpdate(id, { $set: { pickupStatus: 2, step: step } });
                 topHeader = 'Arrived';
-                bottomHeader = 'Arrived';
-                message = "Driver Arrived At User Location";
+                bottomHeader = 'Arrived at Pickup Location';
+                buttonText = 'Arrived';
+                message = "Driver Arrived At Pickup Location";
                 break;
         }
 
@@ -356,6 +368,7 @@ const pickupOrder = async (req, res) => {
                 pickupLongitude: order.pickupLongitude,
                 dropLatitude: order.dropLatitude,
                 dropLongitude: order.dropLongitude,
+                assignType: order.assignType,
                 step: step
             },
             message
@@ -537,7 +550,8 @@ const pickupVerifyOtp = async (req, res) => {
                 pickupLatitude: ptlData.pickupLatitude,
                 pickupLongitude: ptlData.pickupLongitude,
                 dropLatitude: ptlData.dropLatitude,
-                dropLongitude: ptlData.dropLongitude
+                dropLongitude: ptlData.dropLongitude,
+                buttonText: ptlData.assignType == 1 ? 'Way To Warehouse' : 'Way To User Location'
             }
         });
 
@@ -583,6 +597,17 @@ const updateOrderStatus = async (req, res) => {
             if (![0, 1, 2, 3, 4, 5].includes(step)) {
                 return res.status(200).json({ success: false, message: 'Invaild Step' });
             }
+
+            const stepStatusMap = {
+                3: 2,
+                4: 3,
+                5: 4
+            };
+
+            if (stepStatusMap[step] && orderStatus === stepStatusMap[step]) {
+                return res.status(200).json({ success: false, message: 'Order Status Is According To Steps' });
+            }
+
 
 
             const statusKeyMap = {
@@ -678,22 +703,25 @@ const updateOrderStatus = async (req, res) => {
             );
 
             const user = order.userId;
-            let topHeader = '', bottomHeader = '', message = '';
+            let topHeader = '', bottomHeader = '', buttonText = '', message = '';
 
             switch (orderStatus) {
                 case 2:
                     topHeader = 'Start';
                     bottomHeader = order.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off';
+                    buttonText = 'Go Now'
                     message = "Order In Transit";
                     break;
                 case 3:
                     topHeader = 'Arriving';
                     bottomHeader = order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
+                    buttonText = order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
                     message = "Order Out For Delivery";
                     break;
                 case 4:
                     topHeader = 'Delivered';
                     bottomHeader = order.assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User';
+                    buttonText = 'Delivered';
                     message = order.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
                     break;
                 default:
