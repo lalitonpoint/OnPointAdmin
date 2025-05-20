@@ -323,7 +323,7 @@ const pickupOrder = async (req, res) => {
             2: 2
         };
 
-        if (stepStatusMap[step] && pickupStatus === stepStatusMap[step]) {
+        if (pickupStatus != stepStatusMap[step]) {
             return res.status(200).json({ success: false, message: 'Order Status Is According To Steps' });
         }
 
