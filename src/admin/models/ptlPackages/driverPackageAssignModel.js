@@ -20,6 +20,7 @@ const shipmentSchema = new mongoose.Schema({
     },
     warehouseId: {
         type: String,
+        ref: 'Warehouse'
     },
     status: {
         type: Number,
