@@ -659,8 +659,9 @@ const updateOrderStatus = async (req, res) => {
                 updateFields.recipientName = recipientName;
                 updateFields.confirmNumber = confirmNumber;
                 updateFields.pod = result.url;
-                updateFields.step = step;
             }
+            updateFields.step = step;
+
 
             // Update DB
             await PTL.updateOne({ _id: id }, { $set: updateFields });
