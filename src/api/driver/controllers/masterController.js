@@ -63,8 +63,8 @@ const masterDetail = async (req, res) => {
             1: { top: 'Arriving', bottom: 'Way to Pickup', buttonText: 'Arriving to Pickup', message: "Driver Go For Pickup" },
             2: { top: 'Arrived', bottom: 'Arrived at Pickup Location', buttonText: 'Arrived', message: "Driver Arrived At Pickup Location" },
             3: { top: 'Start', bottom: assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off', buttonText: 'Go Now', message: "Order In Transit" },
-            4: { top: 'Arriving', bottom: assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location', buttonText: order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location', message: "Order Out For Delivery" },
-            5: { top: 'Delivered', bottom: assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User', buttonText: 'Delivered', message: order.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location' }
+            4: { top: 'Arriving', bottom: assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location', buttonText: assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location', message: "Order Out For Delivery" },
+            5: { top: 'Delivered', bottom: assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User', buttonText: 'Delivered', message: assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location' }
         };
 
         const headerData = headersByStep[step] || { top: '', bottom: '', message: '' };
