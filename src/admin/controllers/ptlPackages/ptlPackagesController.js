@@ -234,7 +234,7 @@ const assignDriver = async (req, res) => {
             let pickupPincode = '', pickupAddress = '', pickupLatitude = '', pickupLongitude = '';
             let dropPincode = '', dropAddress = '', dropLatitude = '', dropLongitude = '';
 
-            const existingTracking = await driverPackageAssign.findOne({ packageId }).sort({ createdAt: -1 });
+            const existingTracking = await driverPackageAssign.findOne({ packageId, status: 4 }).sort({ createdAt: -1 });
 
             if (existingTracking) {
                 if (existingTracking.status < 4) {
