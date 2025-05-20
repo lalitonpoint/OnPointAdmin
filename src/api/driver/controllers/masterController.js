@@ -3,6 +3,8 @@ const { getDriverLocation } = require('./serviceController')
 const { getDistanceAndDuration } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 
 const masterDetail = async (req, res) => {
+    const isPtl = 1;
+
     try {
         const driverId = req.header('driverid');
         if (!driverId) {
@@ -18,7 +20,11 @@ const masterDetail = async (req, res) => {
             .populate({ path: 'userId', select: 'fullName' });
 
         if (!pendingRequest) {
-            return res.status(200).json({ success: true, pendingRequest: 0, data: [], message: 'No pending requests' });
+            return res.status(200).json({
+                success: true, data: {
+                    pendingRequest: 0, assignId: '', isPtl, isWallet: isPtl === 1 ? 0 : 1, request: []
+                }, message: 'No pending requests'
+            });
         }
 
         const driverLocation = await getDriverLocation(driverId);
@@ -33,15 +39,7 @@ const masterDetail = async (req, res) => {
 
         const user = pendingRequest.userId;
         const assignType = pendingRequest.assignType;
-
         const step = pendingRequest.step || 0;
-        // const { pickupStatus, status } = pendingRequest;
-
-        // if (pickupStatus === 1 && status === 0) step = 1;
-        // else if (pickupStatus === 2 && status === 0) step = 2;
-        // else if (pickupStatus === 2 && status === 2) step = 3;
-        // else if (pickupStatus === 2 && status === 3) step = 4;
-        // else if (pickupStatus === 2 && status === 4) step = 5;
 
         let topHeader = '', bottomHeader = '', message = '';
 
@@ -73,7 +71,7 @@ const masterDetail = async (req, res) => {
                 break;
         }
 
-        const data = [{
+        const driverData = {
             topHeader,
             bottomHeader,
             pickupDistance,
@@ -82,20 +80,25 @@ const masterDetail = async (req, res) => {
             address: pendingRequest.pickupAddress || 'N/A',
             pickupLatitude: pendingRequest.pickupLatitude || '',
             pickupLongitude: pendingRequest.pickupLongitude || '',
-            step: pendingRequest.step || 0,
-        }];
+            dropLatitude: pendingRequest.dropLatitude || '',
+            dropLongitude: pendingRequest.dropLongitude || '',
+            step,
+        };
 
         res.status(200).json({
             success: true,
-            pendingRequest: 1,
-            data,
+            data: {
+                pendingRequest: 1, assignId: pendingRequest._id, isPtl, isWallet: isPtl === 1 ? 0 : 1, request: driverData
+            },
             message: 'Master Data',
         });
 
-    } catch (err) {
-        console.error('Error fetching Master data:', err);
-        res.status(500).json({ success: false, message: 'Server Error', error: err.message });
+    } catch (error) {
+        console.error("Error in masterDetail:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
     }
 };
+
+
 
 module.exports = { masterDetail };
