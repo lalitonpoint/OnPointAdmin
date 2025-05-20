@@ -328,7 +328,7 @@ const pickupOrder = async (req, res) => {
             return res.status(200).json({ success: false, message: 'Order Status Is According To Steps' });
         }
 
-        let topHeader = '', bottomHeader = '', message = '';
+        let topHeader = '', bottomHeader = '', buttonText = '', message = '';
 
         switch (pickupStatus) {
             case 0: // Start trip
@@ -361,6 +361,7 @@ const pickupOrder = async (req, res) => {
             data: {
                 topHeader,
                 bottomHeader,
+                buttonText,
                 pickupDistance,
                 pickupDuration,
                 userName: user.fullName,
