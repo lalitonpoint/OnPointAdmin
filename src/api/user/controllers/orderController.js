@@ -160,7 +160,8 @@ const getOrderList = async (req, res) => {
                 allOrderData,
                 completeOrderData,
                 cancelledOrderData
-            }
+            },
+            message: 'My Order Fetch Successfully'
         });
 
     } catch (err) {

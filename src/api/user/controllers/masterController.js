@@ -2,11 +2,35 @@ const Packages = require('../models/paymentModal');
 const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate');
 const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 
+const Banner = require('../../../admin/models/websiteManagement/bannerModel');
+
+const getBannerData = async (req, res) => {
+    try {
+
+        res.status(200).json({
+            success: true,
+            data: { banners }
+        });
+    } catch (err) {
+        console.error('Error fetching Banner data:', err);
+        res.status(500).json({ success: false, message: 'Server Error', error: err.message });
+    }
+};
+
+module.exports = { getBannerData };
+
 const masterDetail = async (req, res) => {
     try {
+        //for Banner
+        const [banners] = await Promise.all([
+            Banner.find({ plateformType: 1 }).sort({ createdAt: -1 }) // ✅ Fixed missing comma
+        ]);
+
+        //for Banner
+
         const userId = req.header('userid');
         if (!userId) {
-            return res.status(400).json({ success: false, message: "User ID is required in headers." });
+            return res.status(200).json({ success: false, message: "User ID is required in headers." });
         }
 
         // Fetch all active packages for the user
@@ -17,6 +41,7 @@ const masterDetail = async (req, res) => {
             .sort({ createdAt: -1 })
             .populate({ path: 'userId', select: 'fullName' })
             .lean(); // returns plain JS object, improves performance
+
 
         const packagesWithDistance = await Promise.all(currentPackages.map(async (pkg) => {
             let pickupDistance = null;
@@ -79,7 +104,14 @@ const masterDetail = async (req, res) => {
             };
         }));
 
-        return res.status(200).json({ success: true, data: packagesWithDistance });
+        return res.status(200).json({
+            success: true, data: {
+                banners: banners,
+                currentShipment: packagesWithDistance,
+
+            },
+            message: 'Master Data Fetch Successfully'
+        });
 
     } catch (error) {
         console.error("Error in masterDetail:", error);
