@@ -5,6 +5,6 @@ const router = express.Router();
 const { getServices, driverCurrentLocation } = require('../controllers/serviceController')
 
 router.get('/getServices', getServices);
-router.get('/driverCurrentLocation', driverCurrentLocation);
+router.post('/driverCurrentLocation', driverCurrentLocation);
 
 module.exports = router;
