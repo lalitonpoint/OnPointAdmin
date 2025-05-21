@@ -27,7 +27,7 @@ const addPaymentDetail = async (req, res) => {
         const requiredFields = {
             pickupLatitude, pickupLongitude,
             dropLatitude, dropLongitude,
-            pickupPincode, dropPincode,
+            // pickupPincode, dropPincode,
             pickupAddress, dropAddress
         };
 

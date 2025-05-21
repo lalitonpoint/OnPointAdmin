@@ -2,53 +2,165 @@ const Order = require('../../../api/user/models/paymentModal');
 const driverPackageAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 const driverModal = require('../../driver/modals/driverModal');
 
+// const getOrderList = async (req, res) => {
+//     const userId = req.headers['userid'];
+
+//     try {
+//         const [allOrders, completeOrders, cancelledOrders] = await Promise.all([
+//             Order.find({ userId }).sort({ createdAt: -1 }).lean(),
+//             Order.find({ userId, orderStatus: 4 }).sort({ createdAt: -1 }).lean(),
+//             Order.find({ userId, orderStatus: 5 }).sort({ createdAt: -1 }).lean()
+//         ]);
+
+//         const transformOrders = async (orders) => {
+//             return Promise.all(
+//                 orders.map(async (order) => {
+//                     const tracking = await driverPackageAssign
+//                         .findOne({ packageId: order._id })
+//                         .sort({ createdAt: -1 }).populate({ path: 'driverId', select: 'personalInfo' })
+//                         .lean();
+
+//                     let driver = tracking.driverId.personalInfo;
+
+
+//                     const packages = Array.isArray(order.packages) ? order.packages : [];
+//                     const packageName = packages.map(p => p.packageName).filter(Boolean).join(', ');
+
+//                     return {
+//                         ...order,
+//                         packageId: order._id,
+//                         packageName,
+//                         driverId: driver?._id,
+//                         driverName: driver?.name || '',
+//                         driverContact: driver?.mobile || '',
+//                         driverProfile: driver?.profilePicture || '',
+//                         vehicleNumber: driver?.vehicleDetail?.truckNumber || ''
+//                     };
+//                 })
+//             );
+//         };
+
+//         const [allOrderData, completeOrderData, cancelledOrderData] = await Promise.all([
+//             transformOrders(allOrders),
+//             transformOrders(completeOrders),
+//             transformOrders(cancelledOrders)
+//         ]);
+
+//         res.status(200).json({
+//             success: true,
+//             data: { allOrderData, completeOrderData, cancelledOrderData }
+//         });
+
+//     } catch (err) {
+//         console.error('Error fetching Order Detail:', err);
+//         res.status(500).json({ success: false, message: 'Server Error', error: err.message });
+//     }
+// };
 const getOrderList = async (req, res) => {
     const userId = req.headers['userid'];
 
     try {
-        const [allOrders, completeOrders, cancelledOrders] = await Promise.all([
-            Order.find({ userId }).sort({ createdAt: -1 }).lean(),
-            Order.find({ userId, orderStatus: 4 }).sort({ createdAt: -1 }).lean(),
-            Order.find({ userId, orderStatus: 5 }).sort({ createdAt: -1 }).lean()
-        ]);
+        const orders = await Order.find({ userId }).sort({ createdAt: -1 }).lean();
 
-        const transformOrders = async (orders) => {
-            return Promise.all(
-                orders.map(async (order) => {
-                    const tracking = await driverPackageAssign
-                        .findOne({ packageId: order._id })
-                        .sort({ createdAt: -1 })
-                        .lean();
+        if (!orders.length) {
+            return res.status(200).json({
+                success: true,
+                data: {
+                    allOrderData: [],
+                    completeOrderData: [],
+                    cancelledOrderData: []
+                }
+            });
+        }
 
-                    let driver = null;
-                    if (tracking?.driverId) {
-                        driver = await driverModal.findById(tracking.driverId).lean();
-                    }
+        const orderIds = orders.map(order => order._id);
 
-                    const packages = Array.isArray(order.packages) ? order.packages : [];
-                    const packageName = packages.map(p => p.packageName).filter(Boolean).join(', ');
+        const assignments = await driverPackageAssign.find({
+            packageId: { $in: orderIds }
+        })
+            .sort({ createdAt: 1 })
+            .populate({ path: 'driverId', select: 'personalInfo vehicleDetail' })
+            .populate({ path: 'warehouseId', select: 'Warehousename' }) // For orderStatus
+            .lean();
 
-                    return {
-                        ...order,
-                        packageId: order._id,
-                        packageName,
-                        driverName: driver?.personalInfo?.name || '',
-                        driverProfile: driver?.personalInfo?.profilePicture || '',
-                        vehicleNumber: driver?.vehicleDetail?.truckNumber || ''
-                    };
-                })
-            );
+        // Group all assignments by packageId
+        const assignmentsMap = new Map();
+        const statusMap = new Map();
+
+        for (const assign of assignments) {
+            const idStr = assign.packageId.toString();
+
+            // Keep latest assignment only
+            if (!assignmentsMap.has(idStr)) {
+                assignmentsMap.set(idStr, assign);
+            }
+
+            // Store all status=4 for buildOrderStatus
+            if (assign.status === 4) {
+                if (!statusMap.has(idStr)) {
+                    statusMap.set(idStr, []);
+                }
+                statusMap.get(idStr).push(assign);
+            }
+        }
+
+        // Build order status steps from cached statusMap
+        const buildOrderStatus = (trackingIdStr) => {
+            const orderDetails = statusMap.get(trackingIdStr) || [];
+            const steps = [];
+
+            for (let i = 0; i < orderDetails.length; i++) {
+                const detail = orderDetails[i];
+                const label = detail.assignType == 2
+                    ? 'Delivered'
+                    : (detail.warehouseId?.Warehousename || 'Warehouse');
+
+                if (i === 0) {
+                    steps.push({ orderStatus: 'Pick Up', Address: detail.pickupAddress });
+                }
+                steps.push({ orderStatus: label, Address: detail.dropAddress });
+            }
+
+            return steps;
         };
 
-        const [allOrderData, completeOrderData, cancelledOrderData] = await Promise.all([
-            transformOrders(allOrders),
-            transformOrders(completeOrders),
-            transformOrders(cancelledOrders)
-        ]);
+        // Transform all orders
+        const transformOrders = (ordersToTransform) => {
+            return ordersToTransform.map((order) => {
+                const idStr = order._id.toString();
+                const tracking = assignmentsMap.get(idStr);
+                const driver = tracking?.driverId || {};
+                const packages = Array.isArray(order.packages) ? order.packages : [];
+
+                const packageName = packages.map(p => p.packageName).filter(Boolean).join(', ');
+                const orderStatus = tracking ? buildOrderStatus(tracking.packageId.toString()) : [];
+                // console.log('456789p[', order)
+                // process.exit()
+                return {
+                    ...order,
+                    packageId: order._id,
+                    packageName,
+                    driverId: driver._id || '',
+                    driverName: driver.personalInfo?.name || '',
+                    driverContact: driver.personalInfo?.mobile || '',
+                    driverProfile: driver.personalInfo?.profilePicture || '',
+                    vehicleNumber: driver.vehicleDetail?.truckNumber || '',
+                    orderTracking: orderStatus
+                };
+            });
+        };
+
+        const allOrderData = transformOrders(orders);
+        const completeOrderData = transformOrders(orders.filter(o => o.orderStatus === 4));
+        const cancelledOrderData = transformOrders(orders.filter(o => o.orderStatus === 5));
 
         res.status(200).json({
             success: true,
-            data: { allOrderData, completeOrderData, cancelledOrderData }
+            data: {
+                allOrderData,
+                completeOrderData,
+                cancelledOrderData
+            }
         });
 
     } catch (err) {
@@ -56,6 +168,7 @@ const getOrderList = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error', error: err.message });
     }
 };
+
 
 
 const singleOrderDetail = async (req, res) => {
