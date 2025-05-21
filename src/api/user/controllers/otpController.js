@@ -1,6 +1,8 @@
 const twilio = require('twilio');
+
 const jwt = require('jsonwebtoken');
 const { generateOTP } = require('../utils/generateOtp');
+const { sendSms } = require('../utils/sendOtp');
 const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
 const User = require('../../user/models/userModal');
 
@@ -45,8 +47,9 @@ const sendOtp = async (req, res) => {
             return res.status(200).json({ success: false, message: 'Invalid mobile number format.' });
         }
 
-        const otp = "123456";
-        // const otp = generateOTP();
+        // const otp = "123456";
+        const otp = generateOTP();
+        await sendSms({ otp: otp, mobile: parsed.formatted })
         otpStorage[parsed.formatted] = otp;
 
         console.log(`Generated OTP for ${parsed.formatted}: ${otp}`);

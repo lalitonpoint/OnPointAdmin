@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-function send_sms(data) {
+const sendSms = (data) => {
     const mobile = data.mobile;
     const otp = data.otp;
     const template_id = '6808ca80d6fc054bef421352'; // Replace with dynamic template ID if needed
@@ -26,6 +26,8 @@ function send_sms(data) {
         });
 }
 
-send_sms({ mobile: '+919354978804', otp: '123456' })
-    .then(response => console.log('SMS sent response:', response))
-    .catch(err => console.error('Error:', err));
+
+module.exports = { sendSms }
+// sendSms({ mobile: '919354978804', otp: '123456' })
+//     .then(response => console.log('SMS sent response:', response))
+//     .catch(err => console.error('Error:', err));
