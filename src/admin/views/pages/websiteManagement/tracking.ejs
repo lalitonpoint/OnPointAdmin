@@ -194,6 +194,100 @@
                             </div>
                         </div>
 
+                        <div class="col-md-6">
+                            <label for="invoiceDate" class="form-label">Invoice Date </label>
+                            <input type="datetime-local" class="form-control" id="invoiceDate" name="invoiceDate">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="connectionDate" class="form-label">Connection Date </label>
+                            <input type="datetime-local" class="form-control" id="connectionDate" name="connectionDate">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="consigneeName" class="form-label">Consignee Name</label>
+                            <input type="text" class="form-control" id="consigneeName" name="consigneeName"
+                                placeholder="Enter Consignee Name">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mobile" class="form-label">Phone No. </label>
+                            <input type="text" class="form-control" id="mobile" name="mobile"
+                                placeholder="Enter Phone No.">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="consignorPincode" class="form-label">Consignor Pin Code </label>
+                            <input type="text" class="form-control" id="consignorPincode" name="consignorPincode"
+                                placeholder="Enter Consignor Pin Code">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="lrNo" class="form-label">Lr NO. </label>
+                            <input type="text" class="form-control" id="lrNo" name="lrNo" placeholder="Enter Lr No.">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="referenceNo" class="form-label">Reference Lr. No</label>
+                            <input type="text" class="form-control" id="referenceNo" name="referenceNo"
+                                placeholder="Enter Reference Lr No.">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="invoiceNumber" class="form-label">Invoice Number</label>
+                            <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber"
+                                placeholder="Enter Invoice Number">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="invoiceValue" class="form-label">Invoice Value</label>
+                            <input type="text" class="form-control" id="invoiceValue" name="invoiceValue"
+                                placeholder="Enter Invoice Value">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="boxes" class="form-label">Boxes</label>
+                            <input type="text" class="form-control" id="boxes" name="boxes" placeholder="Enter Boxes">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ewayBillNo" class="form-label">Eway bill No.</label>
+                            <input type="text" class="form-control" id="ewayBillNo" name="ewayBillNo"
+                                placeholder="Enter Bill No.">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="connectionPartner" class="form-label">Connection Partner</label>
+                            <input type="text" class="form-control" id="connectionPartner" name="connectionPartner"
+                                placeholder="Enter Connection Partner">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="partnerCnNumber" class="form-label">Partner CN Number</label>
+                            <input type="text" class="form-control" id="partnerCnNumber" name="partnerCnNumber"
+                                placeholder="Enter Partner CN Number">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="actualWeight" class="form-label">Actual Weight</label>
+                            <input type="text" class="form-control" id="actualWeight" name="actualWeight"
+                                placeholder="Enter Actual Weight">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="chargedWeight" class="form-label">Charged Weight</label>
+                            <input type="text" class="form-control" id="chargedWeight" name="chargedWeight"
+                                placeholder="Enter Charged Weight">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="tat" class="form-label">TAT</label>
+                            <input type="text" class="form-control" id="tat" name="tat" placeholder="Enter TAT">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edd" class="form-label">EDD</label>
+                            <input type="text" class="form-control" id="edd" name="edd" placeholder="Enter EDD">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="add" class="form-label">ADD</label>
+                            <input type="text" class="form-control" id="add" name="add" placeholder="Enter ADD">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="remarks" class="form-label">Remarks</label>
+                            <input type="text" class="form-control" id="remarks" name="remarks"
+                                placeholder="Enter Remarks">
+                        </div>
 
                     </div>
                 </div>
@@ -213,6 +307,10 @@
             <form id="uploadCsvForm" action="/tracking/upload-csv" method="post" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="uploadModalLabel">Upload CSV File</h5>
+                    <a href="https://dld87tjdltnh8.cloudfront.net/0/admin_v1/test_management/question_bank/11229380_shipment-data.csv"
+                        class="small text-decoration-underline" target="_blank" rel="noopener">
+                        Use Demo CSV
+                    </a>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -372,6 +470,7 @@
             const deliveryDate = $('#deliveryDate').val().trim();
             const estimateDate = $('#estimateDate').val().trim();
             const clientName = $('#clientName').val().trim();
+
             // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val().trim();
             const pod = $('#pod')[0].files[0];
@@ -441,6 +540,25 @@
             formData.append('clientName', clientName);
             formData.append('status', trackingStatus);
             formData.append('pod', pod);
+            formData.append('invoiceDate', $('#invoiceDate').val().trim());
+            formData.append('connectionDate', $('#connectionDate').val().trim());
+            formData.append('consigneeName', $('#consigneeName').val().trim());
+            formData.append('mobile', $('#mobile').val().trim());
+            formData.append('consignorPincode', $('#consignorPincode').val().trim());
+            formData.append('lrNo', $('#lrNo').val().trim());
+            formData.append('referenceNo', $('#referenceNo').val().trim());
+            formData.append('invoiceNumber', $('#invoiceNumber').val().trim());
+            formData.append('invoiceValue', $('#invoiceValue').val().trim());
+            formData.append('boxes', $('#boxes').val().trim());
+            formData.append('ewayBillNo', $('#ewayBillNo').val().trim());
+            formData.append('connectionPartner', $('#connectionPartner').val().trim());
+            formData.append('partnerCnNumber', $('#partnerCnNumber').val().trim());
+            formData.append('actualWeight', $('#actualWeight').val().trim());
+            formData.append('chargedWeight', $('#chargedWeight').val().trim());
+            formData.append('tat', $('#tat').val().trim());
+            formData.append('edd', $('#edd').val().trim());
+            formData.append('add', $('#add').val().trim());
+            formData.append('remarks', $('#remarks').val().trim());
             const id = $('#trackingId').val();
             // const formData = new FormData(formElement);
             // console.log('formData', formData);
@@ -562,9 +680,39 @@
                     $('#noOfPacking').val(data.noOfPacking); // Added no of packing
                     $('#trackingStatus').val(data.status);
                     $('#clientName').val(data.clientName);
+
+
+                    $('#consigneeName').val(data.consigneeName);
+                    $('#mobile').val(data.mobile);
+                    $('#consignorPincode').val(data.consignorPincode);
+                    $('#lrNo').val(data.lrNo);
+                    $('#referenceNo').val(data.referenceNo);
+                    $('#invoiceNumber').val(data.invoiceNumber);
+                    $('#invoiceValue').val(data.invoiceValue);
+                    $('#boxes').val(data.boxes);
+                    $('#ewayBillNo').val(data.ewayBillNo);
+                    $('#connectionPartner').val(data.connectionPartner);
+                    $('#partnerCnNumber').val(data.partnerCnNumber);
+                    $('#actualWeight').val(data.actualWeight);
+                    $('#chargedWeight').val(data.chargedWeight);
+                    $('#tat').val(data.tat);
+                    $('#edd').val(data.edd);
+                    $('#add').val(data.add);
+                    $('#remarks').val(data.remarks);
+
                     // Ensure seconds are added if missing
                     let formattedDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
                     $('#estimateDate').val(formattedDate);
+
+                    let estiInvoiceDate = moment(data.invoiceDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                    $('#invoiceDate').val(estiInvoiceDate);
+
+
+
+                    let formattedconnectionDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+
+                    $('#connectionDate').val(formattedconnectionDate);
+
 
                     let rawDateTime = data.deliveryStatus[data.status].deliveryDateTime;
                     let formattedDateTime = moment(rawDateTime, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');

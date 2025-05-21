@@ -117,6 +117,27 @@ const addTracking = async (req, res) => {
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : ''; // Default to Active
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
 
+
+            const consigneeName = fields.consigneeName ? fields.consigneeName[0] : '';
+            const mobile = fields.mobile ? fields.mobile[0] : '';
+            const consignorPincode = fields.consignorPincode ? fields.consignorPincode[0] : '';
+            const lrNo = fields.lrNo ? fields.lrNo[0] : '';
+            const referenceNo = fields.referenceNo ? fields.referenceNo[0] : '';
+            const invoiceNumber = fields.invoiceNumber ? fields.invoiceNumber[0] : '';
+            const invoiceValue = fields.invoiceValue ? parseFloat(fields.invoiceValue[0]) : 0;
+            const boxes = fields.boxes ? parseInt(fields.boxes[0]) : 0;
+            const ewayBillNo = fields.ewayBillNo ? fields.ewayBillNo[0] : '';
+            const invoiceDate = fields.invoiceDate ? new Date(fields.invoiceDate[0]) : null;
+            const connectionPartner = fields.connectionPartner ? fields.connectionPartner[0] : '';
+            const partnerCnNumber = fields.partnerCnNumber ? fields.partnerCnNumber[0] : '';
+            const actualWeight = fields.actualWeight ? parseFloat(fields.actualWeight[0]) : 0;
+            const chargedWeight = fields.chargedWeight ? parseFloat(fields.chargedWeight[0]) : 0;
+            const connectionDate = fields.connectionDate ? new Date(fields.connectionDate[0]) : null;
+            const tat = fields.tat ? fields.tat[0] : '';
+            const edd = fields.edd ? fields.edd[0] : '';
+            const add = fields.add ? fields.add[0] : '';
+            const remarks = fields.remarks ? fields.remarks[0] : '';
+
             const checkExistingTrackingCode = await Tracking.find({ 'trackingCode': trackingCode });
 
             if (!checkExistingTrackingCode) {
@@ -169,7 +190,28 @@ const addTracking = async (req, res) => {
                 transportMode: transportMode || null,
                 noOfPacking: parseInt(noOfPacking),
                 createdAt: new Date(),// Add createdAt timestamp on creation,
-                deliveryStatus: statusMap
+                deliveryStatus: statusMap,
+
+                consigneeName,
+                mobile,
+                consignorPincode,
+                lrNo,
+                referenceNo,
+                invoiceNumber,
+                invoiceValue: parseFloat(invoiceValue) || 0,
+                boxes: parseInt(boxes) || 0,
+                ewayBillNo,
+                invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : null,
+                connectionPartner,
+                partnerCnNumber,
+                actualWeight: parseFloat(actualWeight) || 0,
+                chargedWeight: parseFloat(chargedWeight) || 0,
+                connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
+                tat,
+                edd,
+                add,
+                remarks,
+
             });
 
             await newTracking.save();
@@ -219,6 +261,27 @@ const updateTracking = async (req, res) => {
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : '';
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
+
+
+            const consigneeName = fields.consigneeName ? fields.consigneeName[0] : '';
+            const mobile = fields.mobile ? fields.mobile[0] : '';
+            const consignorPincode = fields.consignorPincode ? fields.consignorPincode[0] : '';
+            const lrNo = fields.lrNo ? fields.lrNo[0] : '';
+            const referenceNo = fields.referenceNo ? fields.referenceNo[0] : '';
+            const invoiceNumber = fields.invoiceNumber ? fields.invoiceNumber[0] : '';
+            const invoiceValue = fields.invoiceValue ? parseFloat(fields.invoiceValue[0]) : 0;
+            const boxes = fields.boxes ? parseInt(fields.boxes[0]) : 0;
+            const ewayBillNo = fields.ewayBillNo ? fields.ewayBillNo[0] : '';
+            const invoiceDate = fields.invoiceDate ? new Date(fields.invoiceDate[0]) : null;
+            const connectionPartner = fields.connectionPartner ? fields.connectionPartner[0] : '';
+            const partnerCnNumber = fields.partnerCnNumber ? fields.partnerCnNumber[0] : '';
+            const actualWeight = fields.actualWeight ? parseFloat(fields.actualWeight[0]) : 0;
+            const chargedWeight = fields.chargedWeight ? parseFloat(fields.chargedWeight[0]) : 0;
+            const connectionDate = fields.connectionDate ? new Date(fields.connectionDate[0]) : null;
+            const tat = fields.tat ? fields.tat[0] : '';
+            const edd = fields.edd ? fields.edd[0] : '';
+            const add = fields.add ? fields.add[0] : '';
+            const remarks = fields.remarks ? fields.remarks[0] : '';
 
 
 
@@ -293,7 +356,27 @@ const updateTracking = async (req, res) => {
                     transportMode,
                     noOfPacking: parseInt(noOfPacking),
                     pod: imageUrl,
-                    deliveryStatus: updatedDeliveryStatus // ✅ save the updated object
+                    deliveryStatus: updatedDeliveryStatus,// ✅ save the updated object
+
+                    consigneeName,
+                    mobile,
+                    consignorPincode,
+                    lrNo,
+                    referenceNo,
+                    invoiceNumber,
+                    invoiceValue: parseFloat(invoiceValue) || 0,
+                    boxes: parseInt(boxes) || 0,
+                    ewayBillNo,
+                    invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : null,
+                    connectionPartner,
+                    partnerCnNumber,
+                    actualWeight: parseFloat(actualWeight) || 0,
+                    chargedWeight: parseFloat(chargedWeight) || 0,
+                    connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
+                    tat,
+                    edd,
+                    add,
+                    remarks,
                 },
                 { new: true } // Return the updated document
             );
@@ -367,7 +450,29 @@ const downloadTrackingCsv = async (req, res) => {
             "No. of Packing",
             "Status",
             "Delivery Date",
-            "Created At"
+            "Created At",
+
+            "Invoice Date",
+            "Connection Date",
+            "Consignee Name",
+            "Mobile",
+            "Consignor Pincode",
+            "LR No",
+            "Reference No",
+            "Invoice Number",
+            "Invoice Value",
+            "Boxes",
+            "Eway Bill No",
+            "Invoice Date",
+            "Connection Partner",
+            "Partner CN Number",
+            "Actual Weight",
+            "Charged Weight",
+            "Connection Date",
+            "TAT",
+            "EDD",
+            "ADD",
+            "Remarks"
         ];
 
         const csvData = trackings.map((tracking, index) => [
@@ -379,7 +484,29 @@ const downloadTrackingCsv = async (req, res) => {
             tracking.noOfPacking,
             getStatusText(tracking.status), // Assuming you have a function to convert status code to text
             moment(tracking.deliveryDate).format('YYYY-MM-DD HH:mm:ss'),
-            moment(tracking.createdAt).format('YYYY-MM-DD HH:mm:ss')
+            moment(tracking.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+
+            tracking.invoiceDate || '',
+            tracking.connectionDate || '',
+            tracking.consigneeName || '',
+            tracking.mobile || '',
+            tracking.consignorPincode || '',
+            tracking.lrNo || '',
+            tracking.referenceNo || '',
+            tracking.invoiceNumber || '',
+            tracking.invoiceValue || '',
+            tracking.boxes || '',
+            tracking.ewayBillNo || '',
+            moment(tracking.invoiceDate).format('YYYY-MM-DD HH:mm:ss'),
+            tracking.connectionPartner || '',
+            tracking.partnerCnNumber || '',
+            tracking.actualWeight || '',
+            tracking.chargedWeight || '',
+            moment(tracking.connectionDate).format('YYYY-MM-DD HH:mm:ss'),
+            tracking.tat || '',
+            tracking.edd || '',
+            tracking.add || '',
+            tracking.remarks || ''
         ]);
 
         // Helper function to convert status code to text
@@ -426,6 +553,7 @@ const UploadCsv = async (req, res) => {
             })
             .on('end', async () => {
                 for (const row of results) {
+                    // console.log(row);
                     try {
                         const {
                             trackingId,
@@ -436,7 +564,27 @@ const UploadCsv = async (req, res) => {
                             dropLocation,
                             transportMode,
                             noOfPacking,
-                            pod
+                            pod,
+
+                            consigneeName,
+                            mobile,
+                            consignorPincode,
+                            lrNo,
+                            referenceNo,
+                            invoiceNumber,
+                            invoiceValue,
+                            boxes,
+                            ewayBillNo,
+                            invoiceDate,
+                            connectionPartner,
+                            partnerCnNumber,
+                            actualWeight,
+                            chargedWeight,
+                            connectionDate,
+                            tat,
+                            edd,
+                            add,
+                            remarks
                         } = row;
 
                         if (!trackingId) {
@@ -463,12 +611,12 @@ const UploadCsv = async (req, res) => {
                         if (statusMap[statusNumber]) {
                             statusMap[statusNumber].status = 1;
                             statusMap[statusNumber].deliveryDateTime = new Date();
-                             // Only set pod if Delivered
+                            // Only set pod if Delivered
                             if (statusNumber === 4) {
                                 statusMap[statusNumber].pod = pod;
-                            }                         
+                            }
                         }
-                       
+
                         const newTracking = new Tracking({
                             trackingId,
                             clientName,
@@ -480,7 +628,27 @@ const UploadCsv = async (req, res) => {
                             noOfPacking: parseInt(noOfPacking),
                             pod: statusNumber === 4 ? pod : '', // Only save pod if status == 4
                             createdAt: new Date(),
-                            deliveryStatus: statusMap
+                            deliveryStatus: statusMap,
+
+                            consigneeName,
+                            mobile,
+                            consignorPincode,
+                            lrNo,
+                            referenceNo,
+                            invoiceNumber,
+                            invoiceValue,
+                            boxes,
+                            ewayBillNo,
+                            invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : null,
+                            connectionPartner,
+                            partnerCnNumber,
+                            actualWeight,
+                            chargedWeight,
+                            connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
+                            tat,
+                            edd,
+                            add,
+                            remarks
                         });
 
                         await newTracking.save();

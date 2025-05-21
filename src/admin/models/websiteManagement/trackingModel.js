@@ -41,7 +41,64 @@ const shipmentSchema = new mongoose.Schema({
     deliveryStatus: {
         type: mongoose.Schema.Types.Mixed,
         default: {}
-    }
+    },
+    invoiceDate: {
+        type: Date
+    },
+    connectionDate: {
+        type: Date
+    },
+    consigneeName: {
+        type: String
+    },
+    mobile: {
+        type: String
+    },
+    consignorPincode: {
+        type: String
+    },
+    lrNo: {
+        type: String
+    },
+    referenceNo: {
+        type: String
+    },
+    invoiceNumber: {
+        type: String
+    },
+    invoiceValue: {
+        type: Number
+    },
+    boxes: {
+        type: String
+    },
+    ewayBillNo: {
+        type: String
+    },
+    connectionPartner: {
+        type: String
+    },
+    partnerCnNumber: {
+        type: String
+    },
+    actualWeight: {
+        type: Number
+    },
+    chargedWeight: {
+        type: Number
+    },
+    tat: {
+        type: String
+    },
+    edd: {
+        type: String
+    },
+    add: {
+        type: String
+    },
+    remarks: {
+        type: String
+    },
 }, {
     timestamps: true
 });
