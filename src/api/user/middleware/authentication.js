@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
     // console.log(userId);
 
     if (!token) {
-        return res.status(200).json({ success: false, message: 'Token is missing' });
+        return res.status(200).json({ success: false, message: 'Jwt Token is missing' });
     }
     if (!userId) {
         return res.status(200).json({ success: false, message: 'User Id is missing' });

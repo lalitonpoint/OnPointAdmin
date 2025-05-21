@@ -2,8 +2,9 @@
 const express = require('express');
 const router = express.Router();
 
-const { getServices } = require('../controllers/serviceController')
+const { getServices, driverCurrentLocation } = require('../controllers/serviceController')
 
 router.get('/getServices', getServices);
+router.get('/driverCurrentLocation', driverCurrentLocation);
 
 module.exports = router;

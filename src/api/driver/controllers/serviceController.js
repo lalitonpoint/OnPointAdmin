@@ -761,7 +761,6 @@ const updateOrderStatus = async (req, res) => {
 };
 
 
-
 module.exports = {
     saveDriverLocation,
     orderAssign,
@@ -771,5 +770,5 @@ module.exports = {
     pickupOrder,
     pickupSendOtp,
     pickupVerifyOtp,
-    getDriverLocation
+    getDriverLocation,
 };
