@@ -827,19 +827,25 @@ const updateOrderStatus = async (req, res) => {
             const user = order.userId;
             let topHeader = '', bottomHeader = '', buttonText = '', message = '';
 
+            const packageDetail = Package.findById(order.packageId);
+
+
             switch (orderStatus) {
                 case 2:
                     topHeader = 'Start';
                     bottomHeader = order.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off';
                     buttonText = 'Go Now'
                     message = "Order In Transit";
+                    if (packageDetail.orderStatus < 2)
+                        await Package.updateOne({ _id: order.packageId }, { $set: { orderStatus: 2 } });
                     break;
                 case 3:
                     topHeader = 'Arriving';
                     bottomHeader = order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
                     buttonText = order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
                     message = "Order Out For Delivery";
-                    await Package.updateOne({ _id: order.packageId }, { $set: { orderStatus: 3 } });
+                    if (packageDetail.orderStatus < 3)
+                        await Package.updateOne({ _id: order.packageId }, { $set: { orderStatus: 3 } });
 
                     break;
                 case 4:
