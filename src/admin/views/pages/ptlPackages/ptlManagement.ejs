@@ -329,7 +329,7 @@
                     {
                         data: null,
                         orderable: false, // Disable ordering for the index column
-                        render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                        render: (data, type, row, meta) => meta.row + meta.settings?._iDisplayStart + 1
                     },
 
                     {
@@ -411,8 +411,8 @@
                         orderable: false,
                         render: function (data, type, row) {
                             return `
-                            <button class="btn btn-sm btn-primary editBtn ptlTabBtn" data-id="${row._id}">    <i class="fas fa-eye"></i>&nbsp;View</button>
-                            <button class="btn btn-sm btn-warning assignBtn ptlTabBtn" data-id="${row._id}" data-userid="${row.userId._id}">    <i class="fas fa-edit"></i>&nbsp;Assign</button> `;
+                            <button class="btn btn-sm btn-primary editBtn ptlTabBtn" data-id="${row?._id}">    <i class="fas fa-eye"></i>&nbsp;View</button>
+                            <button class="btn btn-sm btn-warning assignBtn ptlTabBtn" data-id="${row?._id}" data-userid="${row?.userId?._id}">    <i class="fas fa-edit"></i>&nbsp;Assign</button> `;
                         }
                     }
                 ]
@@ -619,7 +619,7 @@
                         // Append driver options
                         drivers.forEach(driver => {
                             const name = driver.personalInfo?.name || 'No Name';
-                            const id = driver._id;
+                            const id = driver?._id;
                             dropdown.append(`<option value="${id}">${name}</option>`);
                         });
 
@@ -633,7 +633,7 @@
 
                         await warehouse.forEach(warehouseData => {
                             const name = warehouseData.Warehousename || 'No Name';
-                            const id = warehouseData._id;
+                            const id = warehouseData?._id;
                             Warehouse_drop.append(`<option value="${id}">${name}</option>`);
                         });
 
@@ -832,7 +832,7 @@
                     {
                         data: null,
                         orderable: false, // Disable ordering for the index column
-                        render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                        render: (data, type, row, meta) => meta.row + meta.settings?._iDisplayStart + 1
                     },
 
                     {
@@ -932,7 +932,7 @@
                             const disabledAttr = !row.isLastRow ? 'disabled' : '';
 
                             return `
-            <select id="updateOrderStatus" class="form-select" data-id="${row._id}" ${disabledAttr}>
+            <select id="updateOrderStatus" class="form-select" data-id="${row?._id}" ${disabledAttr}>
                 <option value="0" ${status == 0 ? 'selected' : ''}>In Process</option>
                 <option value="1" ${status == 1 ? 'selected' : ''}>Pickup</option>
                 <option value="2" ${status == 2 ? 'selected' : ''}>In Transit</option>
