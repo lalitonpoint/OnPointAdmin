@@ -40,7 +40,8 @@ const shipmentSchema = new mongoose.Schema({
     },
 
     assignType: {
-        type: String,
+        type: Number,
+        enum: [1, 2], //1: Warehouse, 2: User Location
         required: true
     },
     deliveryStatus: {

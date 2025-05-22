@@ -236,7 +236,7 @@ const assignDriver = async (req, res) => {
             let pickupPincode = '', pickupAddress = '', pickupLatitude = '', pickupLongitude = '';
             let dropPincode = '', dropAddress = '', dropLatitude = '', dropLongitude = '';
 
-            const existingTracking = await driverPackageAssign.findOne({ packageId }).sort({ createdAt: -1 });
+            let existingTracking = await driverPackageAssign.findOne({ packageId }).sort({ createdAt: -1 });
 
             if (existingTracking) {
                 if (existingTracking.status < 4) {
@@ -253,6 +253,7 @@ const assignDriver = async (req, res) => {
                     });
                 }
             }
+            existingTracking = await driverPackageAssign.findOne({ packageId, status: 4 }).sort({ createdAt: -1 });
 
             const initiateOrderDetail = await PTL.findOne({ _id: packageId, userId });
 
@@ -277,7 +278,7 @@ const assignDriver = async (req, res) => {
             // If new assignment
 
 
-            if (assignType === 1) {
+            if (assignType == 1) {
                 const warehouseDetail = await Warehouse.findById(warehouseId);
                 if (warehouseDetail) {
                     dropPincode = warehouseDetail.pincode || '';
