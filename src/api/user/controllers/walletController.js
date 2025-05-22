@@ -103,7 +103,7 @@ const walletVerify = async (req, res) => {
             const transaction = {
                 type: "credit",
                 amount: amount,
-                method: "UPI",
+                method: payment.method,
                 orderId: razorPayOrderId,
                 transactionStatus: 1
             };
