@@ -10,6 +10,7 @@ const { uploadImage } = require("../../../admin/utils/uploadHelper"); // Import 
 const multiparty = require('multiparty');
 const DriverModal = require('../../../api/driver/modals/driverModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 
+const Package = require('../../user/models/paymentModal'); // Adjust the model path as needed
 
 
 // Save Driver Locationconst DriverLocation = require('../models/DriverLocation'); // adjust the path as needed
@@ -518,6 +519,7 @@ const pickupVerifyOtp = async (req, res) => {
         };
 
         const result = await PTL.updateOne({ _id: id }, { $set: updateFields });
+        await Package.updateOne({ _id: result.packageId }, { $set: { orderStatus: 1 } });
 
         if (result.modifiedCount === 0) {
             return res.status(200).json({
@@ -719,12 +721,18 @@ const updateOrderStatus = async (req, res) => {
                     bottomHeader = order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
                     buttonText = order.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
                     message = "Order Out For Delivery";
+                    await Package.updateOne({ _id: order.packageId }, { $set: { orderStatus: 3 } });
+
                     break;
                 case 4:
                     topHeader = 'Deliver';
                     bottomHeader = order.assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User';
                     buttonText = 'Delivered';
                     message = order.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
+                    if (order.assignType == 2) {
+                        await Package.updateOne({ _id: order.packageId }, { $set: { orderStatus: 4 } });
+                    }
+
                     break;
                 default:
                     message = 'Order status updated successfully';

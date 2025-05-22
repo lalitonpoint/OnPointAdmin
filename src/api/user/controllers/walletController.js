@@ -100,6 +100,7 @@ const walletVerify = async (req, res) => {
 
     try {
         const payment = await razorpay.payments.fetch(razorpayPaymentId);
+        // console.log('payment', payment);
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
             let wallet = await Wallet.findOne({ userId: userId });
