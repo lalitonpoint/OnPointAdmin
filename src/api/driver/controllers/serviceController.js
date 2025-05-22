@@ -468,20 +468,124 @@ const pickupSendOtp = async (req, res) => {
     }
 };
 
+// const pickupVerifyOtp = async (req, res) => {
+//     try {
+//         const { countryCode, mobileNumber, otp, assignId: id } = req.body;
+
+//         // Validate required fields
+//         if (!countryCode || !mobileNumber || !otp || !id) {
+//             return res.status(200).json({
+//                 success: false,
+//                 message: 'Country code, mobile number, OTP, and AssignId are required.',
+//             });
+//         }
+
+//         const parsed = formatMobile(countryCode, mobileNumber);
+
+//         if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
+//             return res.status(200).json({
+//                 success: false,
+//                 message: 'Invalid mobile number format.',
+//             });
+//         }
+
+//         const storedOTP = otpStorage[parsed.formatted];
+
+//         if (!storedOTP) {
+//             return res.status(200).json({
+//                 success: false,
+//                 message: 'OTP expired or not found.',
+//             });
+//         }
+
+//         if (otp !== storedOTP) {
+//             return res.status(200).json({
+//                 success: false,
+//                 message: 'Invalid OTP.',
+//             });
+//         }
+
+//         // OTP is valid, delete it from memory
+//         delete otpStorage[parsed.formatted];
+//         console.log(`OTP verified for ${parsed.formatted}`);
+
+//         // Update PTL document
+//         const now = new Date();
+//         const updateFields = {
+//             status: 1,
+//             pickupMobile: parsed.formatted,
+//             'deliveryStatus.0.status': 1,
+//             'deliveryStatus.0.deliveryDateTime': now
+//         };
+
+//         const result = await PTL.updateOne({ _id: id }, { $set: updateFields });
+//         await Package.findByIdAndUpdate(result.packageId, {
+//             $set: { orderStatus: 1 }
+//         });
+
+//         if (result.modifiedCount === 0) {
+//             return res.status(200).json({
+//                 success: false,
+//                 message: 'No record found to update.',
+//             });
+//         }
+
+//         // Fetch updated PTL data with populated user info and package detail
+//         const [ptlData, packageDetail] = await Promise.all([
+//             PTL.findById(id).populate({ path: 'userId', select: 'fullName mobileNumber countryCode' }),
+//             PTL.findById(id).then(data => PaymentDetail.findById(data.packageId)) // Avoid re-querying PTL twice
+//         ]);
+
+//         if (!ptlData || !ptlData.userId || !packageDetail) {
+//             return res.status(200).json({
+//                 success: false,
+//                 message: 'Required data not found after update.',
+//             });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'OTP verified and Order Is Successfully Pickup.',
+//             data: {
+//                 totalPackage: packageDetail.packages.length,
+//                 userName: ptlData.userId.fullName,
+//                 userContact: ptlData.userId.countryCode + ptlData.userId.mobileNumber,
+//                 notes: packageDetail.pickupNote,
+//                 address: ptlData.pickupAddress,
+//                 packages: packageDetail.packages,
+//                 pickupLatitude: ptlData.pickupLatitude,
+//                 pickupLongitude: ptlData.pickupLongitude,
+//                 dropLatitude: ptlData.dropLatitude,
+//                 dropLongitude: ptlData.dropLongitude,
+//                 buttonText: ptlData.assignType == 1 ? 'Way To Warehouse' : 'Way To User Location'
+//             }
+//         });
+
+//     } catch (error) {
+//         console.error('verifyOtp Error:', error);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Unexpected error in OTP verification.',
+//             msg: error.message
+//         });
+//     }
+// };
+
+
 const pickupVerifyOtp = async (req, res) => {
     try {
-        const { countryCode, mobileNumber, otp, assignId: id } = req.body;
+        const { countryCode, mobileNumber, otp, assignId } = req.body;
 
         // Validate required fields
-        if (!countryCode || !mobileNumber || !otp || !id) {
+        if (!countryCode || !mobileNumber || !otp || !assignId) {
             return res.status(200).json({
                 success: false,
                 message: 'Country code, mobile number, OTP, and AssignId are required.',
             });
         }
 
+        // Format and validate mobile number
         const parsed = formatMobile(countryCode, mobileNumber);
-
         if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
             return res.status(200).json({
                 success: false,
@@ -489,8 +593,10 @@ const pickupVerifyOtp = async (req, res) => {
             });
         }
 
-        const storedOTP = otpStorage[parsed.formatted];
+        const formattedMobile = parsed.formatted;
+        const storedOTP = otpStorage[formattedMobile];
 
+        // Check OTP
         if (!storedOTP) {
             return res.status(200).json({
                 success: false,
@@ -505,57 +611,68 @@ const pickupVerifyOtp = async (req, res) => {
             });
         }
 
-        // OTP is valid, delete it from memory
-        delete otpStorage[parsed.formatted];
-        console.log(`OTP verified for ${parsed.formatted}`);
+        // OTP is valid, delete from memory
+        delete otpStorage[formattedMobile];
+        console.log(`OTP verified for ${formattedMobile}`);
 
-        // Update PTL document
         const now = new Date();
-        const updateFields = {
-            status: 1,
-            pickupMobile: parsed.formatted,
-            'deliveryStatus.0.status': 1,
-            'deliveryStatus.0.deliveryDateTime': now
-        };
 
-        const result = await PTL.updateOne({ _id: id }, { $set: updateFields });
-        await Package.updateOne({ _id: result.packageId }, { $set: { orderStatus: 1 } });
-
-        if (result.modifiedCount === 0) {
+        // Fetch PTL document to get packageId
+        const ptlRecord = await PTL.findById(assignId);
+        if (!ptlRecord) {
             return res.status(200).json({
                 success: false,
-                message: 'No record found to update.',
+                message: 'AssignId record not found.',
             });
         }
 
-        // Fetch updated PTL data with populated user info and package detail
-        const [ptlData, packageDetail] = await Promise.all([
-            PTL.findById(id).populate({ path: 'userId', select: 'fullName mobileNumber countryCode' }),
-            PTL.findById(id).then(data => PaymentDetail.findById(data.packageId)) // Avoid re-querying PTL twice
+        // Update PTL status
+        await PTL.updateOne(
+            { _id: assignId },
+            {
+                $set: {
+                    status: 1,
+                    pickupMobile: formattedMobile,
+                    'deliveryStatus.0.status': 1,
+                    'deliveryStatus.0.deliveryDateTime': now
+                }
+            }
+        );
+
+        // Update Package orderStatus
+        await Package.findByIdAndUpdate(ptlRecord.packageId, {
+            $set: { orderStatus: 1 }
+        });
+
+        // Fetch updated PTL and PackageDetail
+        const [updatedPTL, packageDetail] = await Promise.all([
+            PTL.findById(assignId).populate({ path: 'userId', select: 'fullName mobileNumber countryCode' }),
+            PaymentDetail.findById(ptlRecord.packageId)
         ]);
 
-        if (!ptlData || !ptlData.userId || !packageDetail) {
+        if (!updatedPTL || !updatedPTL.userId || !packageDetail) {
             return res.status(200).json({
                 success: false,
                 message: 'Required data not found after update.',
             });
         }
 
+        // Send success response
         return res.status(200).json({
             success: true,
-            message: 'OTP verified and Order Is Successfully Pickup.',
+            message: 'OTP verified and order successfully picked up.',
             data: {
                 totalPackage: packageDetail.packages.length,
-                userName: ptlData.userId.fullName,
-                userContact: ptlData.userId.countryCode + ptlData.userId.mobileNumber,
+                userName: updatedPTL.userId.fullName,
+                userContact: updatedPTL.userId.countryCode + updatedPTL.userId.mobileNumber,
                 notes: packageDetail.pickupNote,
-                address: ptlData.pickupAddress,
+                address: updatedPTL.pickupAddress,
                 packages: packageDetail.packages,
-                pickupLatitude: ptlData.pickupLatitude,
-                pickupLongitude: ptlData.pickupLongitude,
-                dropLatitude: ptlData.dropLatitude,
-                dropLongitude: ptlData.dropLongitude,
-                buttonText: ptlData.assignType == 1 ? 'Way To Warehouse' : 'Way To User Location'
+                pickupLatitude: updatedPTL.pickupLatitude,
+                pickupLongitude: updatedPTL.pickupLongitude,
+                dropLatitude: updatedPTL.dropLatitude,
+                dropLongitude: updatedPTL.dropLongitude,
+                buttonText: updatedPTL.assignType == 1 ? 'Way To Warehouse' : 'Way To User Location'
             }
         });
 
@@ -568,6 +685,7 @@ const pickupVerifyOtp = async (req, res) => {
         });
     }
 };
+
 
 
 const updateOrderStatus = async (req, res) => {
