@@ -84,6 +84,10 @@ const walletVerify = async (req, res) => {
         });
     }
 
+    amount = parseFloat(amount);
+    if (isNaN(amount)) {
+        return res.status(200).json({ success: false, message: 'Amount must be a valid number' });
+    }
 
     const generatedSignature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)

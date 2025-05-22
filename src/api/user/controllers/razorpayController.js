@@ -51,8 +51,12 @@ const razorpayWebhook = async (req, res) => {
                     userId: userId,
                     'transactions.orderId': orderId
                 });
-                const amount = paymentData.amount / 100;  // Convert paisa to rupees
+                let amount = paymentData.amount / 100;  // Convert paisa to rupees
 
+                amount = parseFloat(amount);
+                if (isNaN(amount)) {
+                    return res.status(200).json({ success: false, message: 'Amount must be a valid number' });
+                }
                 const transaction = {
                     type: "credit",
                     amount: amount,
