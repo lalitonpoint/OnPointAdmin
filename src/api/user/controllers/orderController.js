@@ -82,7 +82,7 @@ const getOrderList = async (req, res) => {
         })
             .sort({ createdAt: 1 })
             .populate({ path: 'driverId', select: 'personalInfo vehicleDetail' })
-            .populate({ path: 'warehouseId', select: 'Warehousename' }) // For orderStatus
+            // .populate({ path: 'warehouseId', select: 'Warehousename' }) // For orderStatus
             .lean();
 
         // Group all assignments by packageId
@@ -115,7 +115,7 @@ const getOrderList = async (req, res) => {
                 const detail = orderDetails[i];
                 const label = detail.assignType == 2
                     ? 'Delivered'
-                    : (detail.warehouseId?.Warehousename || 'Warehouse');
+                    : ('Warehouse');
 
                 if (i === 0) {
                     steps.push({ orderStatus: 'Pick Up', Address: detail.pickupAddress });
