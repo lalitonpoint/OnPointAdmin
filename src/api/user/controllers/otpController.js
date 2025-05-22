@@ -47,9 +47,9 @@ const sendOtp = async (req, res) => {
             return res.status(200).json({ success: false, message: 'Invalid mobile number format.' });
         }
 
-        // const otp = "123456";
-        const otp = generateOTP();
-        await sendSms({ otp: otp, mobile: parsed.formatted })
+        const otp = "123456";
+        // const otp = generateOTP();
+        // await sendSms({ otp: otp, mobile: parsed.formatted })
         otpStorage[parsed.formatted] = otp;
 
         console.log(`Generated OTP for ${parsed.formatted}: ${otp}`);

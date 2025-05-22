@@ -637,15 +637,15 @@
                             Warehouse_drop.append(`<option value="${id}">${name}</option>`);
                         });
 
-                        let driverId = data.latestAssignOrderDetail.driverId || 0;
-                        let warehouseId = data.latestAssignOrderDetail.warehouseId || 0;
-                        let status = data.latestAssignOrderDetail.status || 0;
-                        let assignType = data.latestAssignOrderDetail.assignType || 0;
+                        // let driverId = data.latestAssignOrderDetail.driverId || 0;
+                        // let warehouseId = data.latestAssignOrderDetail.warehouseId || 0;
+                        // let status = data.latestAssignOrderDetail.status || 0;
+                        // let assignType = data.latestAssignOrderDetail.assignType || 0;
 
-                        $('#driverlist').val(driverId);
-                        $('#warehouselist').val(warehouseId);
-                        $('#deliveryStatus').val(status);
-                        $('#assignType').val(assignType);
+                        // $('#driverlist').val(driverId);
+                        // $('#warehouselist').val(warehouseId);
+                        // $('#deliveryStatus').val(status);
+                        // $('#assignType').val(assignType);
 
                         if (assignType == 1) {
                             $('.warehouseDiv').removeClass('d-none').hide().slideDown(300);

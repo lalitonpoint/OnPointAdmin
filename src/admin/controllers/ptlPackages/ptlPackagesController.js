@@ -224,8 +224,8 @@ const assignDriver = async (req, res) => {
             const userId = fields.userId?.[0] || '';
 
             // Validation
-            if (!driverId || !assignType || !warehouseId || !packageId || !userId) {
-                return res.status(200).json({ message: 'DriverId, AssignType, WarehouseId, PackageId & UserId are required' });
+            if (!driverId || !assignType || !packageId || !userId) {
+                return res.status(200).json({ message: 'DriverId, AssignType, PackageId & UserId are required' });
             }
 
 
@@ -234,7 +234,7 @@ const assignDriver = async (req, res) => {
             let pickupPincode = '', pickupAddress = '', pickupLatitude = '', pickupLongitude = '';
             let dropPincode = '', dropAddress = '', dropLatitude = '', dropLongitude = '';
 
-            const existingTracking = await driverPackageAssign.findOne({ packageId, status: 4 }).sort({ createdAt: -1 });
+            const existingTracking = await driverPackageAssign.findOne({ packageId }).sort({ createdAt: -1 });
 
             if (existingTracking) {
                 if (existingTracking.status < 4) {
