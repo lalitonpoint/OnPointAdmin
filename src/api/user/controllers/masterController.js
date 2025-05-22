@@ -135,7 +135,7 @@ const masterDetail = async (req, res) => {
         // Fetch active packages
         const currentPackages = await Packages.find({
             userId,
-            orderStatus: { $nin: [4, 5] }
+            orderStatus: { $nin: [0, 4, 5] }
         }).sort({ createdAt: -1 }).lean();
 
         const packagesWithDistance = await Promise.all(

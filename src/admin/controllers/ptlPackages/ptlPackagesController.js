@@ -87,6 +87,8 @@ const trackingList = async (req, res) => {
             sort.createdAt = -1;
         }
 
+        query.transactionStatus = 1;
+
         const tracking = await Tracking.find(query)
             .skip(Number(start))
             .limit(Number(length))
