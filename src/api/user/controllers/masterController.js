@@ -162,6 +162,8 @@ const masterDetail = async (req, res) => {
 
                     pickupDistance = distanceData.distanceInKm;
                     pickupDuration = distanceData.duration;
+                    packageName = pkg.packages.map(p => p.packageName).filter(Boolean).join(', ');
+
 
                     // Assigned drivers (status 4)
                     const orderDetails = await DriverAssign.find({
@@ -187,6 +189,7 @@ const masterDetail = async (req, res) => {
                                 vehicleNumber: truckNumber
                             };
                         }
+
 
                         // Build order status
                         orderStatus.push({
@@ -219,6 +222,7 @@ const masterDetail = async (req, res) => {
 
                 return {
                     ...pkg,
+                    packageName,
                     pickupDistance,
                     pickupDuration,
                     ...driverData,
