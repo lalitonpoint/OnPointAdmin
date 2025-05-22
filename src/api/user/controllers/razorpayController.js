@@ -55,7 +55,8 @@ const razorpayWebhook = async (req, res) => {
 
                 const transaction = {
                     type: "credit",
-                    amount: amount,
+                    amount: parseFloat(amount, 2),
+
                     method: paymentData.method,
                     orderId: paymentData.order_id,
                     transactionStatus: paymentData.status
@@ -64,12 +65,13 @@ const razorpayWebhook = async (req, res) => {
                 if (!wallet) {
                     wallet = new Wallet({
                         userId,
-                        balance: amount,
+                        balance: parseFloat(amount, 2),
                         transactions: [transaction]
                     });
                     await wallet.save();
                 } else {
-                    wallet.balance += amount;
+
+                    wallet.balance += parseFloat(amount, 2);
                     wallet.transactions.push(transaction);
                     await wallet.save();
                 }

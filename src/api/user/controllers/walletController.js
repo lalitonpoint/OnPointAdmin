@@ -84,10 +84,10 @@ const walletVerify = async (req, res) => {
         });
     }
 
-    amount = parseFloat(amount);
-    if (isNaN(amount)) {
-        return res.status(200).json({ success: false, message: 'Amount must be a valid number' });
-    }
+    // amount = parseFloat(amount);
+    // if (isNaN(amount)) {
+    //     return res.status(200).json({ success: false, message: 'Amount must be a valid number' });
+    // }
 
     const generatedSignature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -106,7 +106,7 @@ const walletVerify = async (req, res) => {
 
             const transaction = {
                 type: "credit",
-                amount: amount,
+                amount: parseFloat(amount, 2),
                 method: payment.method,
                 orderId: razorPayOrderId,
                 transactionStatus: 1
@@ -115,7 +115,7 @@ const walletVerify = async (req, res) => {
             if (!wallet) {
                 wallet = new Wallet({
                     userId,
-                    balance: amount,
+                    balance: parseFloat(amount, 2),
                     transactions: [transaction]
                 });
 
