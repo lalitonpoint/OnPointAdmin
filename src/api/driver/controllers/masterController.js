@@ -66,6 +66,7 @@ const masterDetail = async (req, res) => {
         );
 
 
+
         const headersByStep = {
             1: { top: 'Arriving', bottom: 'Way to Pickup', buttonText: 'Arriving to Pickup', message: "Driver Go For Pickup" },
             2: { top: 'Arrived', bottom: 'Arrived at Pickup Location', buttonText: 'Arrived', message: "Driver Arrived At Pickup Location" },

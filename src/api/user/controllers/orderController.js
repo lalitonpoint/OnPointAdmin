@@ -62,7 +62,7 @@ const getOrderList = async (req, res) => {
 
 
     try {
-        const orders = await Order.find({ userId }).sort({ createdAt: -1 }).lean();
+        const orders = await Order.find({ userId, transactionStatus: 1 }).sort({ createdAt: -1 }).lean();
 
         if (!orders.length) {
             return res.status(200).json({
