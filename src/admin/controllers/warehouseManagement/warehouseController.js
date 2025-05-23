@@ -195,6 +195,8 @@ const updateWarehouse = async (req, res) => {
             const warehouseAddress = fields.warehouseAddress ? fields.warehouseAddress[0] : '';
             const pincode = fields.pincode ? fields.pincode[0] : '';
             const phone = fields.phone ? fields.phone[0] : '';
+            const warehouseLatitude = fields.warehouseLatitude ? fields.warehouseLatitude[0] : '';
+            const warehouseLongitude = fields.warehouseLongitude ? fields.warehouseLongitude[0] : '';
             // const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
             // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
             // const file = files.pod ? files.pod[0] : null;
@@ -242,6 +244,8 @@ const updateWarehouse = async (req, res) => {
                     status: parseInt(status), //currentstatus
                     warehouseLocation,
                     warehouseAddress,
+                    warehouseLatitude,
+                    warehouseLongitude,
                     pincode,
                     phone,
                     deliveryStatus: updatedDeliveryStatus // ✅ save the updated object
