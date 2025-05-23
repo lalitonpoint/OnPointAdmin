@@ -36,7 +36,7 @@ const trackingList = async (req, res) => {
             query.$or = [
                 { pickupAddress: new RegExp(searchValue, 'i') },
                 { dropAddress: new RegExp(searchValue, 'i') },
-                { status: new RegExp(searchValue, 'i') }
+                { orderStatus: new RegExp(searchValue, 'i') }
                 // Add more fields to the global search if needed
             ];
         } else {
@@ -49,7 +49,7 @@ const trackingList = async (req, res) => {
 
 
             if (statusSearch) {
-                query.status = parseInt(statusSearch);
+                query.orderStatus = parseInt(statusSearch);
             }
             if (dateSearch) {
                 const searchMoment = moment(dateSearch);
@@ -97,7 +97,7 @@ const trackingList = async (req, res) => {
 
 
 
-        const totalRecords = await Tracking.countDocuments();
+        const totalRecords = await Tracking.countDocuments({ transactionStatus: 1 });
         const filteredRecords = await Tracking.countDocuments(query);
 
         res.json({
@@ -302,6 +302,11 @@ const assignDriver = async (req, res) => {
                 4: { key: 'delivered', status: 0, deliveryDateTime: '' },
                 5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
             };
+
+            console.log('pickupLatitude', pickupLatitude)
+            console.log('pickupLongitude', pickupLongitude)
+            console.log('dropLatitude', dropLatitude)
+            console.log('dropLongitude', dropLongitude)
 
             const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
                 pickupLatitude,

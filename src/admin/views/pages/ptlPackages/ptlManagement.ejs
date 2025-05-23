@@ -51,8 +51,8 @@
                     <label for="searchStatus" class="form-label">Status</label>
                     <select id="searchStatus" class="form-select">
                         <option value="">All</option>
-                        <option value="1">In Progress</option>
-                        <option value="2">Pickup</option>
+                        <option value="1">Pickup</option>
+                        <option value="2">In Transit</option>
                         <option value="3">Out for Delivery</option>
                         <option value="4">Delivered</option>
                         <option value="5">Cancelled</option>
@@ -437,7 +437,7 @@
 
             // Reset Button
             $('#resetBtn').click(function () {
-                $('#searchTrackingId, #pickUpLocation, #toLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
+                $('#searchTrackingId, #pickUpLocation, #dropUpLocation, #searchStatus, #searchDate').val(''); // Included fromLocation and toLocation in reset
                 trackingTable.ajax.reload();
             });
 
@@ -724,7 +724,8 @@
             // Trimmed values
 
 
-            const driver = $('#driverId').val();
+            // const driver = $('#driverId').val();
+            const driver = $('#driverlist').val();
             const assignType = $('#assignType').val();
             const warehouseid = $('#warehouselist').val();
             const status = $('#deliveryStatus').val();
@@ -734,6 +735,22 @@
             const formData = new FormData(formElement);
             formData.append('packageId', packageId)
             formData.append('userId', userId)
+
+            if (!driver) {
+                toastr.error("Please Select Driver", 'Error');
+                return;
+            }
+            if (!assignType) {
+                toastr.error("Please Select Assign Type", 'Error');
+                return;
+
+            }
+            if (assignType == 1 && !warehouseid) {
+                toastr.error("Please Select Warehouse", 'Error');
+                return;
+
+            }
+
 
 
             const actionUrl = `/ptlPackages/assignDriver`;

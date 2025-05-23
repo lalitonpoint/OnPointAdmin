@@ -2,11 +2,11 @@ const axios = require('axios');
 
 const getDistanceAndDuration = async (pickupLatitude, pickupLongitude, dropLatitude, dropLongitude) => {
     try {
-        const origin = `28.628177771489916,77.37401796388887`;
-        const destination = `28.740181365930166,76.57085135674956`;
+        // const origin = `28.628177771489916,77.37401796388887`;
+        // const destination = `28.740181365930166,76.57085135674956`;
 
-        // const origin = `${pickupLatitude},${pickupLongitude}`;
-        // const destination = `${dropLatitude},${dropLongitude}`;
+        const origin = `${pickupLatitude},${pickupLongitude}`;
+        const destination = `${dropLatitude},${dropLongitude}`;
 
         const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
             params: {
