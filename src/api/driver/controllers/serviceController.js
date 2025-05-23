@@ -839,7 +839,8 @@ const updateOrderStatus = async (req, res) => {
             const user = order.userId;
             let topHeader = '', bottomHeader = '', buttonText = '', message = '';
 
-            const packageDetail = Package.findById(order.packageId);
+            const packageDetail = await Package.findById(order.packageId);
+            console.log('pppppaaaaakkk', packageDetail)
 
 
             switch (orderStatus) {
