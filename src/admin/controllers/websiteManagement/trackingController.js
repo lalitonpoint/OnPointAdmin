@@ -121,7 +121,7 @@ const addTracking = async (req, res) => {
             const consigneeName = fields.consigneeName ? fields.consigneeName[0] : '';
             const mobile = fields.mobile ? fields.mobile[0] : '';
             const consignorPincode = fields.consignorPincode ? fields.consignorPincode[0] : '';
-            const lrNo = fields.lrNo ? fields.lrNo[0] : '';
+            // const lrNo = fields.lrNo ? fields.lrNo[0] : '';
             const referenceNo = fields.referenceNo ? fields.referenceNo[0] : '';
             const invoiceNumber = fields.invoiceNumber ? fields.invoiceNumber[0] : '';
             const invoiceValue = fields.invoiceValue ? parseFloat(fields.invoiceValue[0]) : 0;
@@ -195,7 +195,7 @@ const addTracking = async (req, res) => {
                 consigneeName,
                 mobile,
                 consignorPincode,
-                lrNo,
+                // lrNo,
                 referenceNo,
                 invoiceNumber,
                 invoiceValue: parseFloat(invoiceValue) || 0,
@@ -266,7 +266,7 @@ const updateTracking = async (req, res) => {
             const consigneeName = fields.consigneeName ? fields.consigneeName[0] : '';
             const mobile = fields.mobile ? fields.mobile[0] : '';
             const consignorPincode = fields.consignorPincode ? fields.consignorPincode[0] : '';
-            const lrNo = fields.lrNo ? fields.lrNo[0] : '';
+            // const lrNo = fields.lrNo ? fields.lrNo[0] : '';
             const referenceNo = fields.referenceNo ? fields.referenceNo[0] : '';
             const invoiceNumber = fields.invoiceNumber ? fields.invoiceNumber[0] : '';
             const invoiceValue = fields.invoiceValue ? parseFloat(fields.invoiceValue[0]) : 0;
@@ -361,7 +361,7 @@ const updateTracking = async (req, res) => {
                     consigneeName,
                     mobile,
                     consignorPincode,
-                    lrNo,
+                    // lrNo,
                     referenceNo,
                     invoiceNumber,
                     invoiceValue: parseFloat(invoiceValue) || 0,
@@ -457,7 +457,7 @@ const downloadTrackingCsv = async (req, res) => {
             "Consignee Name",
             "Mobile",
             "Consignor Pincode",
-            "LR No",
+            // "LR No",
             "Reference No",
             "Invoice Number",
             "Invoice Value",
@@ -491,7 +491,7 @@ const downloadTrackingCsv = async (req, res) => {
             tracking.consigneeName || '',
             tracking.mobile || '',
             tracking.consignorPincode || '',
-            tracking.lrNo || '',
+            // tracking.lrNo || '',
             tracking.referenceNo || '',
             tracking.invoiceNumber || '',
             tracking.invoiceValue || '',
@@ -569,7 +569,7 @@ const UploadCsv = async (req, res) => {
                             consigneeName,
                             mobile,
                             consignorPincode,
-                            lrNo,
+                            // lrNo,
                             referenceNo,
                             invoiceNumber,
                             invoiceValue,
@@ -633,7 +633,7 @@ const UploadCsv = async (req, res) => {
                             consigneeName,
                             mobile,
                             consignorPincode,
-                            lrNo,
+                            // lrNo,
                             referenceNo,
                             invoiceNumber,
                             invoiceValue,

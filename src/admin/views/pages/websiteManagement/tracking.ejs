@@ -108,20 +108,27 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="pickUpLocation" class="form-label">Pickup Location</label>
+                            <label for="pickUpLocation" class="form-label">Pickup Location<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="pickUpLocation"
                                 placeholder="Enter Pickup Location" name="pickUpLocation">
                         </div>
                         <div class="col-md-6">
-                            <label for="dropLocation" class="form-label">Drop Location</label>
+                            <label for="dropLocation" class="form-label">Drop Location<strong
+                                    class="text-danger">*</strong> </label>
                             <input type="text" class="form-control" id="dropLocation" placeholder="Enter Drop Location"
                                 name="dropLocation">
                         </div>
                         <div class="col-md-6">
                             <label for="transportMode" class="form-label">Transport Mode <strong
                                     class="text-danger">*</strong></label>
-                            <input type="text" class="form-control" id="transportMode" name="transportMode"
-                                placeholder="Enter Transport Mode">
+
+                            <select class="form-select" id="transportMode" name="transportMode">
+                                <option value="">Select Status</option>
+                                <option value="By Train">By Train</option>
+                                <option value="By Surface">By Surface</option>
+                                <option value="By Air">By Air</option>
+                            </select>
                         </div>
 
                         <div class="col-md-6">
@@ -220,10 +227,10 @@
                                 placeholder="Enter Consignor Pin Code">
                         </div>
 
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="lrNo" class="form-label">Lr NO. </label>
                             <input type="text" class="form-control" id="lrNo" name="lrNo" placeholder="Enter Lr No.">
-                        </div>
+                        </div> -->
                         <div class="col-md-6">
                             <label for="referenceNo" class="form-label">Reference Lr. No</label>
                             <input type="text" class="form-control" id="referenceNo" name="referenceNo"
@@ -503,7 +510,7 @@
                 return;
             }
             if (!transportMode) {
-                toastr.error('Please enter transport mode', 'Error');
+                toastr.error('Please Select transport mode', 'Error');
                 return;
             }
             if (!noOfPacking) {
@@ -545,7 +552,7 @@
             formData.append('consigneeName', $('#consigneeName').val().trim());
             formData.append('mobile', $('#mobile').val().trim());
             formData.append('consignorPincode', $('#consignorPincode').val().trim());
-            formData.append('lrNo', $('#lrNo').val().trim());
+            // formData.append('lrNo', $('#lrNo').val().trim());
             formData.append('referenceNo', $('#referenceNo').val().trim());
             formData.append('invoiceNumber', $('#invoiceNumber').val().trim());
             formData.append('invoiceValue', $('#invoiceValue').val().trim());
@@ -685,7 +692,7 @@
                     $('#consigneeName').val(data.consigneeName);
                     $('#mobile').val(data.mobile);
                     $('#consignorPincode').val(data.consignorPincode);
-                    $('#lrNo').val(data.lrNo);
+                    // $('#lrNo').val(data.lrNo);
                     $('#referenceNo').val(data.referenceNo);
                     $('#invoiceNumber').val(data.invoiceNumber);
                     $('#invoiceValue').val(data.invoiceValue);
