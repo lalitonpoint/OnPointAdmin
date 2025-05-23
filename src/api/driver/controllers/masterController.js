@@ -54,10 +54,17 @@ const masterDetail = async (req, res) => {
         }
 
         const { lat, long } = driverLocation;
-        const { pickupLatitude, pickupLongitude, dropLatitude = '', dropLongitude = '', pickupAddress = '', userId, assignType, step = 0 } = pendingRequest;
+        const { pickupLatitude, pickupLongitude, dropLatitude, dropLongitude, pickupAddress = '', userId, assignType, step = 0 } = pendingRequest;
 
         const { distanceInKm: pickupDistance, duration: pickupDuration } =
             await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
+
+        const { distanceInKm: dropDistance, duration: dropDuration } = await getDistanceAndDuration(
+            pickupLatitude, pickupLongitude,
+            dropLatitude, dropLongitude
+
+        );
+
 
         const headersByStep = {
             1: { top: 'Arriving', bottom: 'Way to Pickup', buttonText: 'Arriving to Pickup', message: "Driver Go For Pickup" },
@@ -75,6 +82,8 @@ const masterDetail = async (req, res) => {
             buttonText: headerData.buttonText,
             pickupDistance,
             pickupDuration,
+            dropDistance,
+            dropDuration,
             userName: userId?.fullName || 'N/A',
             pickupAddress: pendingRequest.pickupAddress,
             dropAddress: pendingRequest.dropAddress,
