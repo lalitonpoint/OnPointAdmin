@@ -106,6 +106,11 @@ const orderAssign = async (req, res) => {
                     request.dropLatitude,
                     request.dropLongitude
                 ));
+
+                console.log('iuygf', request.pickupLatitude)
+                console.log('8765', request.pickupLongitude)
+                console.log('8765ss', request.dropLatitude)
+                console.log('wwwww', request.dropLongitude)
             } catch (e) {
                 console.error(`Error in drop distance for request ${request._id}:`, e.message);
             }
@@ -825,6 +830,12 @@ const updateOrderStatus = async (req, res) => {
                 lat, long, order.pickupLatitude, order.pickupLongitude
             );
 
+            const { distanceInKm: dropDistance, duration: dropDuration } = await getDistanceAndDuration(
+                order.pickupLatitude, order.pickupLongitude,
+                order.dropLatitude, order.dropLongitude
+
+            );
+
             const user = order.userId;
             let topHeader = '', bottomHeader = '', buttonText = '', message = '';
 
@@ -872,6 +883,8 @@ const updateOrderStatus = async (req, res) => {
                     buttonText,
                     pickupDistance,
                     pickupDuration,
+                    dropDistance,
+                    dropDuration,
                     userName: user.fullName,
                     pickupAddress: order.pickupAddress,
                     dropAddress: order.dropAddress,
