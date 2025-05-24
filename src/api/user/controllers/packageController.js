@@ -6,7 +6,6 @@ const packageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude,
     try {
         const origin = `${pickupLatitude},${pickupLongitude}`;
         const destination = `${dropLatitude},${dropLongitude}`;
-
         const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
             params: {
                 origins: origin,
@@ -16,50 +15,81 @@ const packageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude,
         });
 
         const data = response.data;
-
-        if (data.status !== 'OK') {
-            return res.status(200).json({ success: false, message: 'Google Maps API error. Please try again.' });
+        if (data.status !== 'OK' || data.rows?.[0]?.elements?.[0]?.status !== 'OK') {
+            return res.status(200).json({ success: false, error: 'Unable to calculate distance.' });
         }
 
-        const element = data.rows?.[0]?.elements?.[0];
-
-        if (!element || element.status !== 'OK') {
-            let errorMessage = 'Unable to calculate distance.';
-
-            if (element?.status === 'NOT_FOUND') {
-                errorMessage = 'Please enter valid coordinates.';
-            } else if (element?.status === 'ZERO_RESULTS') {
-                errorMessage = 'No route could be found between the given points.';
-            }
-
-            return res.status(200).json({ success: false, error: errorMessage });
-        }
-
-        const distanceInMeters = element.distance.value;
-        const distanceInKm = distanceInMeters / 1000;
+        const element = data.rows[0].elements[0];
+        const distanceInKm = element.distance.value / 1000;
         const duration = element.duration.text;
 
-        const { totalAreaInSqFt } = calculateTotalAreaInSqFt(packages);
+        // ======================
+        // PTL Calculation Begins
+        // ======================
 
-        const ratePerKm = 5;
-        const ratePerSqFt = 2;
+        const RATE_PER_KG = 12;
+        const DOCKET_CHARGE = 100;
+        const FOV_PERCENT = 0.1;
+        const FUEL_SURCHARGE_PERCENT = 10;
+        const MINIMUM_CHARGE = 500;
+        const ODA_CHARGE_MINIMUM = 750;
 
-        const deliveryCharge = (distanceInKm * ratePerKm) + (totalAreaInSqFt * ratePerSqFt);
-        const subTotal = parseFloat(deliveryCharge.toFixed(2));
+        let totalEffectiveWeight = 0;
 
+        for (const pkg of packages) {
+            const volumetricWeight = (pkg.length * pkg.width * pkg.height * 7) / 1728;
+            const effectiveWeightPerPkg = Math.max(pkg.totalWeight, volumetricWeight);
+            totalEffectiveWeight += effectiveWeightPerPkg * pkg.numberOfPackages;
+        }
+
+        totalEffectiveWeight = parseFloat(totalEffectiveWeight.toFixed(2));
+
+        // Base price
+        let basePrice = totalEffectiveWeight * RATE_PER_KG;
+
+        // Extra Charges
+        let fov = Math.max((basePrice * FOV_PERCENT) / 100, 100);
+        if (fov < 100)
+            fov = 100;
+        const fuelCharge = (basePrice * FUEL_SURCHARGE_PERCENT) / 100;
+        const otherCharges = DOCKET_CHARGE;
+
+        let subTotal = basePrice + fov + fuelCharge + otherCharges;
+
+        // GST
         const { shippingCost, specialHandling, gst } = await fetchPaymentDetail();
-        const gstAmount = parseFloat(((subTotal * gst) / 100).toFixed(2));
-        const totalPayment = parseFloat((subTotal + shippingCost + specialHandling + gstAmount).toFixed(2));
+        const gstAmount = (subTotal * gst) / 100;
 
-        // console.log('subTotal12345678', shippingCost);
+        let totalPayment = subTotal + gstAmount + shippingCost + specialHandling;
+
+        // // Apply minimum charge rule
+        // if (totalPayment < MINIMUM_CHARGE) {
+        //     totalPayment = MINIMUM_CHARGE;
+        // }
+
+        // Apply ODA logic (example logic, you can replace with your actual ODA check)
+        const isODA = false; // replace with actual ODA check if needed
+        let odaCharge = 0;
+
+        if (isODA) {
+            odaCharge = Math.max(totalEffectiveWeight * 5, ODA_CHARGE_MINIMUM);
+            totalPayment += odaCharge;
+        }
+
+        totalPayment = parseFloat(totalPayment.toFixed(2));
+        subTotal = parseFloat(subTotal.toFixed(2));
+        const gstFinal = parseFloat(gstAmount.toFixed(2));
+
         return {
             subTotal,
             shippingCost,
             specialHandling,
-            gstAmount,
+            gstAmount: gstFinal,
             totalPayment,
             distance: distanceInKm.toFixed(2),
-            duration
+            duration,
+            totalEffectiveWeight: totalEffectiveWeight.toFixed(2),
+            odaCharge: isODA ? odaCharge : 0,
         };
     } catch (err) {
         console.error('Distance Matrix Error:', err.message);
@@ -71,10 +101,9 @@ const calculateTotalAreaInSqFt = (packages) => {
     let totalAreaInSqInches = 0;
 
     for (const pkg of packages) {
-        const { numberOfPackages, dimensions } = pkg;
-        if (!dimensions || dimensions.length === 0) continue;
+        const { numberOfPackages, totalWeight, length, width, height } = pkg;
 
-        const { length, width } = dimensions[0]; // assumes only one dimension per package type
+        // const { length, width } = dimensions[0]; // assumes only one dimension per package type
         const areaPerPackage = length * width;
         const totalAreaForType = areaPerPackage * numberOfPackages;
 
