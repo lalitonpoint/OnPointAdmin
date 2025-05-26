@@ -108,18 +108,59 @@
         <div class="tab-pane fade" id="payment" role="tabpanel">
             <form id="paymentForm">
                 <input type="hidden" name="payment">
-                <div class="mb-3">
-                    <label class="form-label">Shiping Cost</label>
-                    <input type="number" class="form-control" name='shippingCost' id="shippingCost" required>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">RATE PER KG</label>
+                        <input type="text" class="form-control" name='ratePerKG' id="ratePerKG"
+                            placeholder="Enter RATE PER KG" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Docket Charge</label>
+                        <input type="text" class="form-control" name="docketCharge" id="docketCharge"
+                            placeholder="Enter Docket Charge" required>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Special Handling</label>
-                    <input type="number" class="form-control" name="specialHandling" id="specialHandling" required>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Fov Percentage</label>
+                        <input type="text" class="form-control" name='fovPercentage' id="fovPercentage"
+                            placeholder="Enter Fov Percentage" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fuel Surcharge Percentage</label>
+                        <input type="text" class="form-control" name="fuelSurChargePercentage"
+                            id="fuelSurChargePercentage" placeholder="Enter Fuel Surcharge Percentage" required>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">GST %</label>
-                    <input type="number" class="form-control" name="gst" id="gst" required>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">ODA Charge Minimum</label>
+                        <input type="text" class="form-control" name='odaChargeMinimum' id="odaChargeMinimum"
+                            placeholder="Enter ODA Charge Minimum" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">GST %</label>
+                        <input type="text" class="form-control" name="gst" id="gst" placeholder="Enter GST %" required>
+                    </div>
                 </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Shiping Cost</label>
+                        <input type="text" class="form-control" name='shippingCost' id="shippingCost"
+                            placeholder="Enter Shiping Cost" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Special Handling</label>
+                        <input type="text" class="form-control" name="specialHandling" id="specialHandling"
+                            placeholder="Enter Special Handling" required>
+                    </div>
+                </div>
+
+
                 <button type="submit" class="btn btn-primary">Save</button>
             </form>
         </div>
@@ -401,6 +442,11 @@
                     $('#shippingCost').val(data.data?.paymentDetails?.shippingCost); // Corrected ID
                     $('#specialHandling').val(data.data?.paymentDetails?.specialHandling); // Corrected ID
                     $('#gst').val(data.data?.paymentDetails?.gst); // Corrected ID
+                    $('#odaChargeMinimum').val(data.data?.paymentDetails?.odaChargeMinimum); // Corrected ID
+                    $('#fuelSurChargePercentage').val(data.data?.paymentDetails?.fuelSurChargePercentage); // Corrected ID
+                    $('#fovPercentage').val(data.data?.paymentDetails?.fovPercentage); // Corrected ID
+                    $('#docketCharge').val(data.data?.paymentDetails?.docketCharge); // Corrected ID
+                    $('#ratePerKG').val(data.data?.paymentDetails?.ratePerKG); // Corrected ID
 
                     $('#type').val(data.data?.firebase?.type);
                     $('#project_id').val(data.data?.firebase?.project_id);

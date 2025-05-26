@@ -41,9 +41,14 @@ const SettingsSchema = new mongoose.Schema({
         s3SecretKey: { type: String, default: "" },
         s3BucketKey: { type: String, default: "" },
     }, paymentDetails: {
-        shippingCost: { type: String, default: "" },
-        specialHandling: { type: String, default: "" },
-        gst: { type: String, default: "" },
+        shippingCost: { type: Number, default: "" },
+        specialHandling: { type: Number, default: "" },
+        gst: { type: Number, default: "" },
+        ratePerKG: { type: Number, default: "" },
+        docketCharge: { type: Number, default: "" },
+        fovPercentage: { type: Number, default: "" },
+        fuelSurChargePercentage: { type: Number, default: "" },
+        odaChargeMinimum: { type: Number, default: "" },
     },
     firebase: {
         type: { type: String, default: "" },

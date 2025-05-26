@@ -303,10 +303,10 @@ const assignDriver = async (req, res) => {
                 5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
             };
 
-            console.log('pickupLatitude', pickupLatitude)
-            console.log('pickupLongitude', pickupLongitude)
-            console.log('dropLatitude', dropLatitude)
-            console.log('dropLongitude', dropLongitude)
+            // console.log('pickupLatitude', pickupLatitude)
+            // console.log('pickupLongitude', pickupLongitude)
+            // console.log('dropLatitude', dropLatitude)
+            // console.log('dropLongitude', dropLongitude)
 
             const { distanceInKm: pickupDistance, duration: pickupDuration } = await getDistanceAndDuration(
                 pickupLatitude,
@@ -337,9 +337,9 @@ const assignDriver = async (req, res) => {
             const assignData = await newTracking.save();
             await generateLogs(req, 'Add', newTracking);
 
-            console.log('DriverID', driverId)
-            console.log('packageId', packageId)
-            console.log('assignId', assignData._id.toString())
+            // console.log('DriverID', driverId)
+            // console.log('packageId', packageId)
+            // console.log('assignId', assignData._id.toString())
 
             const notificationSend = await assignOrderToDriver(driverId, packageId, assignData._id.toString());
             await new Notification({
@@ -526,6 +526,7 @@ const orderAssignList = async (req, res) => {
 
         // Mapping delivery status keys to their labels
         const deliveryStageMap = {
+            0: 'Pickup',
             1: 'Pickup',
             2: 'In Transit',
             3: 'Out for Delivery',
@@ -551,12 +552,12 @@ const orderAssignList = async (req, res) => {
 
             // Tooltip generation
             let infoHTML = '';
-            if (deliveryStatus && typeof deliveryStatus === 'object') {
+            if (deliveryStatus && typeof deliveryStatus == 'object') {
                 let tooltipContent = '<strong>Delivery Date:</strong><br>';
 
                 for (const key in deliveryStatus) {
                     const entry = deliveryStatus[key];
-                    if (entry.status === 1) {
+                    if (entry.status == 1) {
                         const stageLabel = deliveryStageMap[key] || `Stage ${key}`;
                         const formattedDate = new Date(entry.deliveryDateTime).toISOString().replace('T', ' ').slice(0, 19);
                         tooltipContent += `${stageLabel} - ${formattedDate}<br>`;

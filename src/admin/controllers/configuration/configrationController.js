@@ -74,9 +74,14 @@ const saveSettings = async (req, res) => {
         }
         if (req.body.payment) {
             settings.paymentDetails = {
-                shippingCost: req.body.payment.shippingCost,
-                specialHandling: req.body.payment.specialHandling,
-                gst: req.body.payment.gst
+                shippingCost: parseFloat(req.body.payment.shippingCost),
+                specialHandling: parseFloat(req.body.payment.specialHandling),
+                gst: parseFloat(req.body.payment.gst),
+                odaChargeMinimum: parseFloat(req.body.payment.odaChargeMinimum),
+                fuelSurChargePercentage: parseFloat(req.body.payment.fuelSurChargePercentage),
+                fovPercentage: parseFloat(req.body.payment.fovPercentage),
+                docketCharge: parseFloat(req.body.payment.docketCharge),
+                ratePerKG: parseFloat(req.body.payment.ratePerKG),
             };
         }
 
