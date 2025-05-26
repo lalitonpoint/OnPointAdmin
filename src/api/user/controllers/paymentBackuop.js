@@ -29,19 +29,19 @@ const packageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude,
 
         const { shippingCost, specialHandling, gst, odaChargeMinimum, fuelSurChargePercentage, fovPercentage, docketCharge, ratePerKG } = await fetchPaymentDetail();
 
-        // const RATE_PER_KG = 12;
-        // const DOCKET_CHARGE = 100;
-        // const FOV_PERCENT = 0.1;
-        // const FUEL_SURCHARGE_PERCENT = 10;
-        // const MINIMUM_CHARGE = 500;
-        // const ODA_CHARGE_MINIMUM = 750;
-
-        const RATE_PER_KG = ratePerKG;
-        const DOCKET_CHARGE = docketCharge;
-        const FOV_PERCENT = fovPercentage;
-        const FUEL_SURCHARGE_PERCENT = fuelSurChargePercentage;
+        const RATE_PER_KG = 12;
+        const DOCKET_CHARGE = 100;
+        const FOV_PERCENT = 0.1;
+        const FUEL_SURCHARGE_PERCENT = 10;
         const MINIMUM_CHARGE = 500;
-        const ODA_CHARGE_MINIMUM = odaChargeMinimum;
+        const ODA_CHARGE_MINIMUM = 750;
+
+        // const RATE_PER_KG = ratePerKG;
+        // const DOCKET_CHARGE = docketCharge;
+        // const FOV_PERCENT = fovPercentage;
+        // const FUEL_SURCHARGE_PERCENT = fuelSurChargePercentage;
+        // const MINIMUM_CHARGE = 500;
+        // const ODA_CHARGE_MINIMUM = odaChargeMinimum;
 
 
         let totalEffectiveWeight = 0;
