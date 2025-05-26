@@ -9,24 +9,27 @@ const masterDetail = async (req, res) => {
     try {
         const driverId = req.header('driverid');
         if (!driverId) {
-            return res.status(400).json({ success: false, message: "Driver ID is required in headers." });
+            return res.status(200).json({ success: false, message: "Driver ID is required in headers." });
         }
+
+        // Find latest active request
+        const pendingRequest = await DriverAssign.findOne({
+            driverId,
+            pickupStatus: { $ne: 0 },
+            status: { $nin: [4, 5] }
+        }).sort({ createdAt: -1 })
+            .populate({ path: 'userId', select: 'fullName' });
+
+        const tripHistory = await DriverAssign.find({ driverId, status: { $in: [4, 5] } });
+
+        const completedCount = tripHistory.filter(trip => trip.status === 4).length;
+        const cancelledCount = tripHistory.filter(trip => trip.status === 5).length;
 
         const driverData = await DriverModal.findOne({ _id: driverId, status: 1 }).lean();
         const approvalStatus = driverData?.approvalStatus || 0;
 
-        // Get all active/pending requests
-        const pendingRequests = await DriverAssign.find({
-            driverId,
-            pickupStatus: { $ne: 0 },
-            status: { $nin: [4, 5] }
-        }).sort({ createdAt: -1 }).populate({ path: 'userId', select: 'fullName' });
 
-        const tripHistory = await DriverAssign.find({ driverId, status: { $in: [4, 5] } });
-        const completedCount = tripHistory.filter(trip => trip.status === 4).length;
-        const cancelledCount = tripHistory.filter(trip => trip.status === 5).length;
-
-        if (!pendingRequests.length) {
+        if (!pendingRequest) {
             return res.status(200).json({
                 success: true,
                 message: 'No pending requests',
@@ -36,68 +39,75 @@ const masterDetail = async (req, res) => {
                     assignId: '',
                     isPtl,
                     isWallet: 0,
-                    request: [],
-                    tripCount: { completedCount, cancelledCount }
+                    request: {},
+                    tripCount: {
+                        completedCount,
+                        cancelledCount
+                    }
                 }
             });
         }
 
-        // Get driver's live location
         const driverLocation = await getDriverLocation(driverId);
         if (!driverLocation.success) {
             return res.status(200).json({ success: false, message: "Please update driver's current location" });
         }
+
         const { lat, long } = driverLocation;
+        const { pickupLatitude, pickupLongitude, dropLatitude, dropLongitude, pickupAddress = '', userId, assignType, step = 0 } = pendingRequest;
+
+        const { distanceInKm: pickupDistance, duration: pickupDuration } =
+            await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
+
+        const { distanceInKm: dropDistance, duration: dropDuration } = await getDistanceAndDuration(
+            pickupLatitude, pickupLongitude,
+            dropLatitude, dropLongitude
+
+        );
+
+
 
         const headersByStep = {
             1: { top: 'Arriving', bottom: 'Way to Pickup', buttonText: 'Arriving to Pickup', message: "Driver Go For Pickup" },
             2: { top: 'Arrived', bottom: 'Arrived at Pickup Location', buttonText: 'Arrived', message: "Driver Arrived At Pickup Location" },
-            3: { top: 'Start', bottom: 'Way To Destination', buttonText: 'Go Now', message: "Order In Transit" },
-            4: { top: 'Arriving', bottom: 'Arriving to Drop-off', buttonText: 'Arriving', message: "Order Out For Delivery" },
-            5: { top: 'Delivered', bottom: 'Delivered', buttonText: 'Delivered', message: "Order Delivered" }
+            3: { top: 'Start', bottom: assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off', buttonText: 'Go Now', message: "Order In Transit" },
+            4: { top: 'Arriving', bottom: assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location', buttonText: assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location', message: "Order Out For Delivery" },
+            5: { top: 'Delivered', bottom: assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User', buttonText: 'Delivered', message: assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location' }
         };
 
-        const driverRequestData = await Promise.all(pendingRequests.map(async (request) => {
-            const {
-                pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
-                pickupAddress = '', dropAddress = '', assignType, step = 0, userId, _id
-            } = request;
+        const headerData = headersByStep[step] || { top: '', bottom: '', message: '' };
 
-            const pickup = await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
-            const drop = await getDistanceAndDuration(pickupLatitude, pickupLongitude, dropLatitude, dropLongitude);
+        const driverRequestData = {
+            topHeader: headerData.top,
+            bottomHeader: headerData.bottom,
+            buttonText: headerData.buttonText,
+            pickupDistance,
+            pickupDuration,
+            dropDistance,
+            dropDuration,
+            userName: userId?.fullName || 'N/A',
+            pickupAddress: pendingRequest.pickupAddress,
+            dropAddress: pendingRequest.dropAddress,
+            pickupLatitude,
+            pickupLongitude,
+            dropLatitude,
+            dropLongitude,
+            step,
+            assignType: pendingRequest.assignType,
 
-            const headerData = headersByStep[step] || { top: '', bottom: '', buttonText: '', message: '' };
+        };
 
-            return {
-                assignId: _id,
-                topHeader: headerData.top,
-                bottomHeader: headerData.bottom,
-                buttonText: headerData.buttonText,
-                pickupDistance: pickup.distanceInKm,
-                pickupDuration: pickup.duration,
-                dropDistance: drop.distanceInKm,
-                dropDuration: drop.duration,
-                userName: userId?.fullName || 'N/A',
-                pickupAddress,
-                dropAddress,
-                pickupLatitude,
-                pickupLongitude,
-                dropLatitude,
-                dropLongitude,
-                step,
-                assignType
-            };
-        }));
 
         res.status(200).json({
             success: true,
             message: 'Master Data',
             data: {
                 driverApprovalStatus: approvalStatus,
-                pendingRequest: driverRequestData.length,
-                assignId: driverRequestData[0]?.assignId || '',
+                pendingRequest: 1,
+                assignId: pendingRequest._id,
                 isPtl,
                 isWallet: 0,
+
                 request: driverRequestData,
                 tripCount: {
                     completedCount,
