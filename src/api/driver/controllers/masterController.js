@@ -50,59 +50,62 @@ const masterDetail = async (req, res) => {
         }
         const { lat, long } = driverLocation;
 
-        const headersByStep = {
-            1: { top: 'Arriving', bottom: 'Way to Pickup', buttonText: 'Arriving to Pickup', message: "Driver Go For Pickup" },
-            2: { top: 'Arrived', bottom: 'Arrived at Pickup Location', buttonText: 'Arrived', message: "Driver Arrived At Pickup Location" },
-            3: { top: 'Start Trip', bottom: 'Way To Destination', buttonText: 'Go Now', message: "Order In Transit" },
-            4: { top: 'Arriving', bottom: 'Arriving to Drop-off', buttonText: 'Arriving', message: "Order Out For Delivery" },
-            5: { top: 'Delivered', bottom: 'Delivered', buttonText: 'Delivered', message: "Order Delivered" }
-        };
 
-        let topHeader = '', bottomHeader = '', buttonText = '', message = '';
+
+        // let topHeader = '', bottomHeader = '', buttonText = '', message = '';
 
         const driverRequestData = await Promise.all(pendingRequests.map(async (request) => {
+
+
             const {
                 pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
                 pickupAddress = '', dropAddress = '', assignType, step = 0, userId, _id, status
             } = request;
 
 
+            const headersByStep = {
+                1: { top: 'Arriving', bottom: 'Way to Pickup', buttonText: 'Arriving to Pickup', message: "Driver Go For Pickup" },
+                2: { top: 'Arrived', bottom: 'Arrived at Pickup Location', buttonText: 'Arrived', message: "Driver Arrived At Pickup Location" },
+                3: { top: 'Start Trip', bottom: assignType == 1 ? 'Way To Warehouse' : 'Way To User Location', buttonText: 'Go Now', message: "Order In Transit" },
+                4: { top: 'Arriving', bottom: assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to Drop-off', buttonText: 'Arriving', message: "Order Out For Delivery" },
+                5: { top: 'Delivered', bottom: 'Delivered', buttonText: 'Delivered', message: "Order Delivered" }
+            };
 
-            switch (status) {
-                case 0:
-                    topHeader = 'Start Trip';
-                    bottomHeader = 'Way To Pick Up';
-                    buttonText = 'Go Now'
-                    message = "Way To Pick Up";
-                    break;
-                case 1:
-                    topHeader = 'Arriving';
-                    bottomHeader = 'Way To Pick Up';
-                    buttonText = 'Arriving to Pick Up'
-                    message = "Arriving to Pickup";
-                    break;
-                case 2:
-                    topHeader = 'Start Trip';
-                    bottomHeader = request.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off';
-                    buttonText = 'Go Now'
-                    message = "Order In Transit";
-                    break;
-                case 3:
-                    topHeader = 'Arriving';
-                    bottomHeader = request.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
-                    buttonText = request.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
-                    message = "Order Out For Delivery";
+            // switch (status) {
+            //     case 0:
+            //         topHeader = 'Start Trip';
+            //         bottomHeader = 'Way To Pick Up';
+            //         buttonText = 'Go Now'
+            //         message = "Way To Pick Up";
+            //         break;
+            //     case 1:
+            //         topHeader = 'Arriving';
+            //         bottomHeader = 'Way To Pick Up';
+            //         buttonText = 'Arriving to Pick Up'
+            //         message = "Arriving to Pickup";
+            //         break;
+            //     case 2:
+            //         topHeader = 'Start Trip';
+            //         bottomHeader = request.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off';
+            //         buttonText = 'Go Now'
+            //         message = "Order In Transit";
+            //         break;
+            //     case 3:
+            //         topHeader = 'Arriving';
+            //         bottomHeader = request.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
+            //         buttonText = request.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
+            //         message = "Order Out For Delivery";
 
-                    break;
-                case 4:
-                    topHeader = 'Deliver';
-                    bottomHeader = request.assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User';
-                    buttonText = 'Delivered';
-                    message = request.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
-                    break;
-                default:
-                    message = 'Order status updated successfully';
-            }
+            //         break;
+            //     case 4:
+            //         topHeader = 'Deliver';
+            //         bottomHeader = request.assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User';
+            //         buttonText = 'Delivered';
+            //         message = request.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
+            //         break;
+            //     default:
+            //         message = 'Order status updated successfully';
+            // }
 
 
             const pickup = await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
@@ -112,9 +115,9 @@ const masterDetail = async (req, res) => {
 
             return {
                 assignId: _id,
-                topHeader: topHeader,
-                bottomHeader: bottomHeader,
-                buttonText: buttonText,
+                topHeader: headerData.top,
+                bottomHeader: headerData.bottom,
+                buttonText: headerData.buttonText,
                 pickupDistance: pickup.distanceInKm,
                 pickupDuration: pickup.duration,
                 dropDistance: drop.distanceInKm,
