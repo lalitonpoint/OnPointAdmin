@@ -20,7 +20,8 @@ const masterDetail = async (req, res) => {
             driverId,
             pickupStatus: { $ne: 0 },
             status: { $nin: [4, 5] }
-        }).sort({ createdAt: -1 }).populate({ path: 'userId', select: 'fullName' });
+        }).sort({ createdAt: -1 }).populate({ path: 'userId', select: 'fullName' })
+            .populate({ path: 'packageId', select: 'packages' });;
 
         const tripHistory = await DriverAssign.find({ driverId, status: { $in: [4, 5] } });
         const completedCount = tripHistory.filter(trip => trip.status === 4).length;
@@ -60,7 +61,7 @@ const masterDetail = async (req, res) => {
         const driverRequestData = await Promise.all(pendingRequests.map(async (request) => {
             const {
                 pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
-                pickupAddress = '', dropAddress = '', assignType, step = 0, userId, _id
+                pickupAddress = '', dropAddress = '', assignType, step = 0, userId, _id, status, packages
             } = request;
 
             const pickup = await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
@@ -85,7 +86,13 @@ const masterDetail = async (req, res) => {
                 dropLatitude,
                 dropLongitude,
                 step,
-                assignType
+                assignType,
+                status,
+                packageName: await request.packageId?.packages
+                    ?.map(p => p.packageName)
+                    ?.filter(Boolean)
+                    ?.join(', ') || ''
+
             };
         }));
 

@@ -307,7 +307,7 @@ const pickupOrder = async (req, res) => {
             return res.status(200).json({ success: false, message: 'Invaild Step' });
         }
 
-        const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' });
+        const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' }).populate({ path: 'packageId', select: 'packages status' });
         if (!order) {
             return res.status(200).json({ success: false, message: 'Order not found' });
         }
@@ -378,7 +378,12 @@ const pickupOrder = async (req, res) => {
                 dropLatitude: order.dropLatitude,
                 dropLongitude: order.dropLongitude,
                 assignType: order.assignType,
-                step: step
+                step: step,
+                status: order.status,
+                packageName: await order.packageId?.packages
+                    ?.map(p => p.packageName)
+                    ?.filter(Boolean)
+                    ?.join(', ') || ''
             },
             message
         });
@@ -760,7 +765,7 @@ const updateOrderStatus = async (req, res) => {
                 return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
             }
 
-            const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' });
+            const order = await PTL.findById(id).populate({ path: 'userId', select: 'fullName' }).populate({ path: 'packageId', select: 'packages status' });
             if (!order) {
                 return res.status(200).json({ success: false, message: 'Order not found' });
             }
@@ -894,7 +899,12 @@ const updateOrderStatus = async (req, res) => {
                     dropLatitude: order.dropLatitude,
                     dropLongitude: order.dropLongitude,
                     assignType: order.assignType,
-                    step: step
+                    step: step,
+                    status: order.status,
+                    packageName: await order.packageId?.packages
+                        ?.map(p => p.packageName)
+                        ?.filter(Boolean)
+                        ?.join(', ') || ''
                 }
             });
         });
