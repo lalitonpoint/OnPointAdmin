@@ -900,7 +900,7 @@ const updateOrderStatus = async (req, res) => {
                     dropLongitude: order.dropLongitude,
                     assignType: order.assignType,
                     step: step,
-                    status: order.status,
+                    status: orderStatus,
                     packageName: await order.packageId?.packages
                         ?.map(p => p.packageName)
                         ?.filter(Boolean)
