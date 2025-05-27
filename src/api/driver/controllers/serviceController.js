@@ -371,6 +371,8 @@ const pickupOrder = async (req, res) => {
                 pickupDistance,
                 pickupDuration,
                 userName: user.fullName,
+                userId: user._id || 'N/A',
+
                 pickupAddress: order.pickupAddress,
                 dropAddress: order.dropAddress,
                 pickupLatitude: order.pickupLatitude,
@@ -892,6 +894,7 @@ const updateOrderStatus = async (req, res) => {
                     dropDistance,
                     dropDuration,
                     userName: user.fullName,
+                    userId: user._id || 'N/A',
                     pickupAddress: order.pickupAddress,
                     dropAddress: order.dropAddress,
                     pickupLatitude: order.pickupLatitude,

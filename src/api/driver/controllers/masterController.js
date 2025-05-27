@@ -104,6 +104,7 @@ const masterDetail = async (req, res) => {
                 dropDistance: drop.distanceInKm,
                 dropDuration: drop.duration,
                 userName: userId?.fullName || 'N/A',
+                userId: userId?._id || 'N/A',
                 pickupAddress,
                 dropAddress,
                 pickupLatitude,
