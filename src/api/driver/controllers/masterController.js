@@ -53,7 +53,7 @@ const masterDetail = async (req, res) => {
         const headersByStep = {
             1: { top: 'Arriving', bottom: 'Way to Pickup', buttonText: 'Arriving to Pickup', message: "Driver Go For Pickup" },
             2: { top: 'Arrived', bottom: 'Arrived at Pickup Location', buttonText: 'Arrived', message: "Driver Arrived At Pickup Location" },
-            3: { top: 'Start', bottom: 'Way To Destination', buttonText: 'Go Now', message: "Order In Transit" },
+            3: { top: 'Start Trip', bottom: 'Way To Destination', buttonText: 'Go Now', message: "Order In Transit" },
             4: { top: 'Arriving', bottom: 'Arriving to Drop-off', buttonText: 'Arriving', message: "Order Out For Delivery" },
             5: { top: 'Delivered', bottom: 'Delivered', buttonText: 'Delivered', message: "Order Delivered" }
         };
@@ -69,8 +69,20 @@ const masterDetail = async (req, res) => {
 
 
             switch (status) {
+                case 0:
+                    topHeader = 'Start Trip';
+                    bottomHeader = 'Way To Pick Up';
+                    buttonText = 'Go Now'
+                    message = "Way To Pick Up";
+                    break;
+                case 1:
+                    topHeader = 'Arriving';
+                    bottomHeader = 'Way To Pick Up';
+                    buttonText = 'Arriving to Pick Up'
+                    message = "Arriving to Pickup";
+                    break;
                 case 2:
-                    topHeader = 'Start';
+                    topHeader = 'Start Trip';
                     bottomHeader = request.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off';
                     buttonText = 'Go Now'
                     message = "Order In Transit";
