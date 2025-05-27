@@ -61,8 +61,33 @@ const masterDetail = async (req, res) => {
         const driverRequestData = await Promise.all(pendingRequests.map(async (request) => {
             const {
                 pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
-                pickupAddress = '', dropAddress = '', assignType, step = 0, userId, _id, status, packages
+                pickupAddress = '', dropAddress = '', assignType, step = 0, userId, _id, status
             } = request;
+
+            switch (status) {
+                case 2:
+                    topHeader = 'Start';
+                    bottomHeader = request.assignType == 1 ? 'Way To Warehouse' : 'Way to Drop-off';
+                    buttonText = 'Go Now'
+                    message = "Order In Transit";
+                    break;
+                case 3:
+                    topHeader = 'Arriving';
+                    bottomHeader = request.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
+                    buttonText = request.assignType == 1 ? 'Arriving to Warehouse' : 'Arriving to User Location';
+                    message = "Order Out For Delivery";
+
+                    break;
+                case 4:
+                    topHeader = 'Deliver';
+                    bottomHeader = request.assignType == 1 ? 'Delivered to Warehouse' : 'Delivered to User';
+                    buttonText = 'Delivered';
+                    message = request.assignType == 1 ? 'Order Delivered To Warehouse' : 'Order Delivered To User Location';
+                    break;
+                default:
+                    message = 'Order status updated successfully';
+            }
+
 
             const pickup = await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
             const drop = await getDistanceAndDuration(pickupLatitude, pickupLongitude, dropLatitude, dropLongitude);
@@ -71,9 +96,9 @@ const masterDetail = async (req, res) => {
 
             return {
                 assignId: _id,
-                topHeader: headerData.top,
-                bottomHeader: headerData.bottom,
-                buttonText: headerData.buttonText,
+                topHeader: topHeader,
+                bottomHeader: bottomHeader,
+                buttonText: buttonText,
                 pickupDistance: pickup.distanceInKm,
                 pickupDuration: pickup.duration,
                 dropDistance: drop.distanceInKm,
