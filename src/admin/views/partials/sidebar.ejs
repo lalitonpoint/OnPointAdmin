@@ -63,21 +63,11 @@
                 </ul>
             </li>
 
-            <!-- Configuration -->
-            <li class="nav-item mb-2 <%= session?.sidebar?.configuration ? '' : 'd-none' %>">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
-                    href="#configuration" role="button">
-                    <span><i class="bi bi-gear me-2"></i> Configuration</span>
-                    <i class="bi bi-chevron-down"></i>
-                </a>
-                <ul class="collapse list-unstyled ps-3" id="configuration">
-                    <li class="sub-item <%= session?.sidebar?.appSetting ? '' : 'd-none' %>">
-                        <a href="/configuration/appSetting" class="nav-link sub-link"><i
-                                class="bi bi-sliders me-2"></i>App
-                            Setting</a>
-                    </li>
-                </ul>
+            <li class="nav-item mb-2 <%= session?.sidebar?.ptlManagement ? '' : 'd-none' %>">
+                <a href="/ptlPackages/ptlPackages" class="nav-link"><i class="bi bi-shop me-2"></i>PTL Management</a>
             </li>
+
+
 
             <!-- Website Management -->
             <li class="nav-item mb-2 <%= session?.sidebar?.websiteManagement ? '' : 'd-none' %>">
@@ -159,10 +149,22 @@
                 <a href="/faq/faqManagement" class="nav-link"><i class="bi bi-patch-question me-2"></i>Faq
                     Management</a>
             </li>
-
-            <li class="nav-item mb-2 <%= session?.sidebar?.ptlManagement ? '' : 'd-none' %>">
-                <a href="/ptlPackages/ptlPackages" class="nav-link"><i class="bi bi-shop me-2"></i>PTL Management</a>
+            <!-- Configuration -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.configuration ? '' : 'd-none' %>">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#configuration" role="button">
+                    <span><i class="bi bi-gear me-2"></i> Configuration</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <ul class="collapse list-unstyled ps-3" id="configuration">
+                    <li class="sub-item <%= session?.sidebar?.appSetting ? '' : 'd-none' %>">
+                        <a href="/configuration/appSetting" class="nav-link sub-link"><i
+                                class="bi bi-sliders me-2"></i>App
+                            Setting</a>
+                    </li>
+                </ul>
             </li>
+
 
         </ul>
 </div>

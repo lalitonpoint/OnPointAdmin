@@ -168,14 +168,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Transit Date</label>
-                                    <input type="datetime-local" class="form-control" name="transitDate[]">
+                                    <input type="date" class="form-control" name="transitDate[]">
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-md-6 delDiv d-none ">
                             <label for="deliveryDate" class="form-label deliveryDate ">Delivery Date</label>
-                            <input type="datetime-local" class="form-control" id="deliveryDate" name="deliveryDate">
+                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate">
                         </div>
 
                         <div class="col-md-6">
@@ -188,7 +188,7 @@
                         <div class="col-md-6">
                             <label for="estimateDate" class="form-label">Estimate Delivery Date <strong
                                     class="text-danger">*</strong></label>
-                            <input type="datetime-local" class="form-control" id="estimateDate" name="estimateDate">
+                            <input type="date" class="form-control" id="estimateDate" name="estimateDate">
                         </div>
 
                         <div class="col-md-6 pod d-none">
@@ -203,12 +203,12 @@
 
                         <div class="col-md-6">
                             <label for="invoiceDate" class="form-label">Invoice Date </label>
-                            <input type="datetime-local" class="form-control" id="invoiceDate" name="invoiceDate">
+                            <input type="date" class="form-control" id="invoiceDate" name="invoiceDate">
                         </div>
 
                         <div class="col-md-6">
                             <label for="connectionDate" class="form-label">Connection Date </label>
-                            <input type="datetime-local" class="form-control" id="connectionDate" name="connectionDate">
+                            <input type="date" class="form-control" id="connectionDate" name="connectionDate">
                         </div>
                         <div class="col-md-6">
                             <label for="consigneeName" class="form-label">Consignee Name</label>
@@ -282,10 +282,10 @@
                             <label for="tat" class="form-label">TAT</label>
                             <input type="text" class="form-control" id="tat" name="tat" placeholder="Enter TAT">
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="edd" class="form-label">EDD</label>
                             <input type="text" class="form-control" id="edd" name="edd" placeholder="Enter EDD">
-                        </div>
+                        </div> -->
                         <div class="col-md-6">
                             <label for="add" class="form-label">ADD</label>
                             <input type="text" class="form-control" id="add" name="add" placeholder="Enter ADD">
@@ -563,7 +563,7 @@
             formData.append('actualWeight', $('#actualWeight').val().trim());
             formData.append('chargedWeight', $('#chargedWeight').val().trim());
             formData.append('tat', $('#tat').val().trim());
-            formData.append('edd', $('#edd').val().trim());
+            // formData.append('edd', $('#edd').val().trim());
             formData.append('add', $('#add').val().trim());
             formData.append('remarks', $('#remarks').val().trim());
             const id = $('#trackingId').val();
@@ -615,7 +615,7 @@
         </div>
         <div class="col-md-6">
             <label class="form-label">Transit Date</label>
-            <input type="datetime-local" class="form-control" name="transitDate[]">
+            <input type="date" class="form-control" name="transitDate[]">
         </div>
     </div>
 `;
@@ -703,7 +703,7 @@
                     $('#actualWeight').val(data.actualWeight);
                     $('#chargedWeight').val(data.chargedWeight);
                     $('#tat').val(data.tat);
-                    $('#edd').val(data.edd);
+                    // $('#edd').val(data.edd);
                     $('#add').val(data.add);
                     $('#remarks').val(data.remarks);
 
@@ -737,7 +737,7 @@
                             data.deliveryStatus[2].transitData.forEach(item => {
                                 // console.log('xxx', item);
 
-                                // Convert date to the required format for datetime-local input (YYYY-MM-DDTHH:mm)
+                                // Convert date to the required format for date input (YYYY-MM-DDTHH:mm)
                                 let formattedDateTime = moment(item.date, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
 
                                 // Append transit data HTML
@@ -749,7 +749,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Transit Date</label>
-                        <input type="datetime-local" class="form-control" name="transitDate[]" value="${formattedDateTime}">
+                        <input type="date" class="form-control" name="transitDate[]" value="${formattedDateTime}">
                     </div>
                 </div>
             `);
@@ -853,7 +853,7 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label">Transit Date</label>
-                <input type="datetime-local" class="form-control" name="transitDate[]">
+                <input type="date" class="form-control" name="transitDate[]">
             </div>
         </div>`;
 

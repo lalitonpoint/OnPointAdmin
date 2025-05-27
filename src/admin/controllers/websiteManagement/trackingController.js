@@ -134,7 +134,7 @@ const addTracking = async (req, res) => {
             const chargedWeight = fields.chargedWeight ? parseFloat(fields.chargedWeight[0]) : 0;
             const connectionDate = fields.connectionDate ? new Date(fields.connectionDate[0]) : null;
             const tat = fields.tat ? fields.tat[0] : '';
-            const edd = fields.edd ? fields.edd[0] : '';
+            // const edd = fields.edd ? fields.edd[0] : '';
             const add = fields.add ? fields.add[0] : '';
             const remarks = fields.remarks ? fields.remarks[0] : '';
 
@@ -208,7 +208,7 @@ const addTracking = async (req, res) => {
                 chargedWeight: parseFloat(chargedWeight) || 0,
                 connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
                 tat,
-                edd,
+                // edd,
                 add,
                 remarks,
 
@@ -279,7 +279,7 @@ const updateTracking = async (req, res) => {
             const chargedWeight = fields.chargedWeight ? parseFloat(fields.chargedWeight[0]) : 0;
             const connectionDate = fields.connectionDate ? new Date(fields.connectionDate[0]) : null;
             const tat = fields.tat ? fields.tat[0] : '';
-            const edd = fields.edd ? fields.edd[0] : '';
+            // const edd = fields.edd ? fields.edd[0] : '';
             const add = fields.add ? fields.add[0] : '';
             const remarks = fields.remarks ? fields.remarks[0] : '';
 
@@ -374,7 +374,7 @@ const updateTracking = async (req, res) => {
                     chargedWeight: parseFloat(chargedWeight) || 0,
                     connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
                     tat,
-                    edd,
+                    // edd,
                     add,
                     remarks,
                 },
@@ -470,7 +470,7 @@ const downloadTrackingCsv = async (req, res) => {
             "Charged Weight",
             "Connection Date",
             "TAT",
-            "EDD",
+            // "EDD",
             "ADD",
             "Remarks"
         ];
@@ -504,7 +504,7 @@ const downloadTrackingCsv = async (req, res) => {
             tracking.chargedWeight || '',
             moment(tracking.connectionDate).format('YYYY-MM-DD HH:mm:ss'),
             tracking.tat || '',
-            tracking.edd || '',
+            // tracking.edd || '',
             tracking.add || '',
             tracking.remarks || ''
         ]);
@@ -582,7 +582,7 @@ const UploadCsv = async (req, res) => {
                             chargedWeight,
                             connectionDate,
                             tat,
-                            edd,
+                            // edd,
                             add,
                             remarks
                         } = row;
@@ -646,7 +646,7 @@ const UploadCsv = async (req, res) => {
                             chargedWeight,
                             connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
                             tat,
-                            edd,
+                            // edd,
                             add,
                             remarks
                         });
