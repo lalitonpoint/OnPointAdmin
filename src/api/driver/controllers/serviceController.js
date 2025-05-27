@@ -65,7 +65,7 @@ const orderAssign = async (req, res) => {
             return res.status(200).json({ success: false, message: "Driver ID is required" });
         }
 
-        const driverRequest = await PTL.find({ driverId, status: 0 }).sort({ createdAt: -1 })
+        const driverRequest = await PTL.find({ driverId, pickupStatus: 0 }).sort({ createdAt: -1 })
             .populate({ path: 'userId', select: 'fullName' })
             .populate({ path: 'packageId', select: 'packages' });
 
