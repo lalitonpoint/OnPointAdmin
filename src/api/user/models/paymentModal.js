@@ -28,6 +28,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     totalPayment: { type: Number, required: true },
     paymentMethod: { type: String },
     paymentGateway: { type: String },
+    transportMode: { type: String },
     distance: { type: Number },
     duration: { type: String },
     orderStatus: { type: Number, enum: [0, 1, 2, 3, 4, 5], default: 0 }, // 0 => InProgress , 1 => Pickup, 2 => In Transit , 3 => Out for Delivery , 4 => Delivered , 5 => Cancelled

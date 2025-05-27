@@ -19,6 +19,7 @@ const addPaymentDetail = async (req, res) => {
             dropAddress,
             pickupNote,
             packages,
+            transportMode,
         } = req.body;
 
         const userId = req.headers['userid'];
@@ -28,7 +29,7 @@ const addPaymentDetail = async (req, res) => {
             pickupLatitude, pickupLongitude,
             dropLatitude, dropLongitude,
             // pickupPincode, dropPincode,
-            pickupAddress, dropAddress
+            pickupAddress, dropAddress, transportMode
         };
 
         for (const [key, value] of Object.entries(requiredFields)) {
@@ -100,6 +101,7 @@ const addPaymentDetail = async (req, res) => {
             totalPayment,
             userId,
             orderId,
+            transportMode,
             preTransactionId: razorpayOrderId,
             transactionDate: new Date()
         });
