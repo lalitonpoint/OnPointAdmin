@@ -58,11 +58,15 @@ const masterDetail = async (req, res) => {
             5: { top: 'Delivered', bottom: 'Delivered', buttonText: 'Delivered', message: "Order Delivered" }
         };
 
+        let topHeader = '', bottomHeader = '', buttonText = '', message = '';
+
         const driverRequestData = await Promise.all(pendingRequests.map(async (request) => {
             const {
                 pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
                 pickupAddress = '', dropAddress = '', assignType, step = 0, userId, _id, status
             } = request;
+
+
 
             switch (status) {
                 case 2:
