@@ -24,6 +24,10 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold">📦 Ptl Package Management</h3>
         <div>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#multiAssignModal">
+                <i class="fas fa-plus me-2"></i>Multi Assign
+            </button>
+
             <button class="btn btn-success me-2" id="downloadAllTrackingCsv">
                 <i class="fas fa-download me-2"></i> Download CSV
             </button>
@@ -80,7 +84,7 @@
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
-                            <!-- <th>Tracking ID</th> -->
+                            <th>Selection</th>
                             <th>From Location</th>
                             <th>Drop Location</th>
                             <th>orderId</th>
@@ -95,6 +99,40 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="multiAssignModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Multi Assign Driver</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="multiAssignForm">
+                    <!-- <input type="hidden" id="packageId">
+                    <input type="hidden" id="userId"> -->
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="driver" class="form-label">Driver<strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="driver" id="driverlist2">
+
+                            </select>
+                        </div>
+                        <div class="col-md-6 warehouse2Div">
+                            <label for="warehouse" class="form-label">Warehouse <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="warehouse" id="warehouselist2">
+                                <option value="">Select Warehouse</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-pink w-100">Save</button>
+                </form>
+
             </div>
         </div>
     </div>
@@ -263,8 +301,6 @@
                                     class="text-danger">*</strong></label>
                             <select class="form-select" name="warehouse" id="warehouselist">
                                 <option value="">Select Warehouse</option>
-                                <option value="1">Warehouse 1</option>
-                                <option value="2">Warehouse 2</option>
                             </select>
                         </div>
 
@@ -301,6 +337,8 @@
             </div>
         </div>
     </div>
+
+
     <script>
         let trackingTable;
         // This ensures the script runs after the DOM is fully loaded
@@ -332,6 +370,13 @@
                         render: (data, type, row, meta) => meta.row + meta.settings?._iDisplayStart + 1
                     },
 
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return '<input type="checkbox" class="multi-assign-checkbox" data-id="' + row._id + '" data-userid="' + row.userId._id + '">';
+                        }
+                    },
                     {
                         data: 'pickupAddress',
                         orderable: false,
@@ -417,6 +462,42 @@
                     }
                 ]
             });
+
+            $.ajax({
+                url: '/ptlPackages/warehouseData',
+                type: 'GET',
+                success: function (response) {
+                    if (response.status) {
+                        const drivers = response.drivers || []; // ✅ FIX: access the 'drivers' array
+                        const dropdown = $('#driverlist2');
+                        dropdown.empty(); // Clear existing options
+                        dropdown.append('<option value="" selected readonly>Select Driver</option>');
+
+                        // Append driver options
+                        drivers.forEach(driver => {
+                            const name = driver.personalInfo?.name || 'No Name';
+                            const id = driver?._id;
+                            dropdown.append(`<option value="${id}">${name}</option>`);
+                        });
+
+                        const warehouseList = response.warehouse || [];
+
+                        const $warehouseDrop = $('#warehouselist2');
+                        $warehouseDrop.empty(); // Clear existing options
+                        $warehouseDrop.append('<option value="">Select Warehouse</option>');
+
+                        warehouseList.forEach(item => {
+                            const name = item.Warehousename || 'No Name';
+                            const id = item?._id || '';
+                            $warehouseDrop.append(`<option value="${id}">${name}</option>`);
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching warehouse data:", error);
+                }
+            });
+
 
             // Search Button
             $('#searchBtn').click(function () {
@@ -671,6 +752,8 @@
 
 
             });
+
+
 
             $('#trackingTable').on('click', '.editBtn', function () {
                 const trackingId = $(this).data('id');
@@ -966,6 +1049,73 @@
 
         });
 
+
+        $('#multiAssignForm').submit(function (e) {
+            e.preventDefault();
+
+            const formElement = document.getElementById('multiAssignForm');
+            const driver = $('#driverlist2').val();
+            const warehouseId = $('#warehouselist2').val();
+            const selectedPackages = $('.multi-assign-checkbox:checked');
+
+            // Validation
+            if (!driver) {
+                toastr.error("Please Select Driver", 'Error');
+                return;
+            }
+
+            if (!warehouseId) {
+                toastr.error("Please Select Warehouse", 'Error');
+                return;
+            }
+
+            if (selectedPackages.length === 0) {
+                toastr.error("Please select at least one package", 'Error');
+                return;
+            }
+
+            const actionUrl = `/ptlPackages/assignDriver`;
+            let completedRequests = 0;
+
+            selectedPackages.each(function () {
+                const packageId = $(this).data('id');
+                const userId = $(this).data('userid');
+
+                const formData = new FormData(formElement);
+                formData.append('packageId', packageId);
+                formData.append('userId', userId);
+                formData.append('warehouseid', warehouseId);
+                formData.append('driver', driver);
+                formData.append('assignType', 1);
+
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            // Success for individual item
+                            completedRequests++;
+                            if (completedRequests === selectedPackages.length) {
+                                $('#multiAssignModal').modal('hide');
+                                $('#multiAssignForm')[0].reset();
+                                trackingTable.ajax.reload();
+                                toastr.success('All packages assigned successfully!', 'Success');
+                            }
+                        } else {
+                            toastr.error(response.message || 'An error occurred.', 'Error');
+                        }
+                    },
+                    error: function (xhr) {
+                        const errorMsg = xhr.responseJSON?.message || 'Failed to assign package.';
+                        toastr.error(errorMsg, 'Error');
+                    }
+                });
+            });
+        });
 
 
 

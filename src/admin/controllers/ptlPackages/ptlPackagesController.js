@@ -662,6 +662,30 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+const warehouseData = async (req, res) => {
+    try {
+        const warehouse = await Warehouse.find(); // Add filter if needed
+        const drivers = await Driver.find({ approvalStatus: 1 });
+
+
+        return res.status(200).json({
+            status: true,
+            warehouse,
+            drivers
+        });
+    } catch (error) {
+        console.error("Error fetching warehouse data:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+const multiAssignDriver = async () => {
+
+}
+
 module.exports = {
     trackingPage,
     trackingList,
@@ -672,5 +696,7 @@ module.exports = {
     downloadTrackingCsv,
     getDriverWarehouseData,
     orderAssignList,
-    updateOrderStatus
+    updateOrderStatus,
+    warehouseData
+
 };

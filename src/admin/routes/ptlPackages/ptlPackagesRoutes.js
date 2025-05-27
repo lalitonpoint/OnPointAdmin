@@ -14,9 +14,11 @@ router.get('/getData/:id', checkCrudPermission('edit'), PtlCtrl.getDriverWarehou
 
 router.post('/assignDriver', checkCrudPermission('edit'), PtlCtrl.assignDriver); // Using POST for update
 router.post('/updateOrderStatus', checkCrudPermission('edit'), PtlCtrl.updateOrderStatus); // Using POST for update
+// router.post('/multiAssignDriver', checkCrudPermission('edit'), PtlCtrl.multiAssignDriver); // Using POST for update
 
 
 router.get('/ptlPackages', checkCrudPermission(), PtlCtrl.trackingPage);
+router.get('/warehouseData', checkCrudPermission(), PtlCtrl.warehouseData);
 
 
 
