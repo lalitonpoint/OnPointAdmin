@@ -4,7 +4,7 @@ const { getDriverLocation } = require('./serviceController');
 const { getDistanceAndDuration } = require('../utils/distanceCalculate');
 
 const masterDetail = async (req, res) => {
-    const isPtl = 1;
+    const serviceType = 1;
 
     try {
         const driverId = req.header('driverid');
@@ -34,7 +34,7 @@ const masterDetail = async (req, res) => {
                     driverApprovalStatus: approvalStatus,
                     pendingRequest: 0,
                     assignId: '',
-                    isPtl,
+                    serviceType,
                     isWallet: 0,
                     request: [],
                     tripCount: { completedCount, cancelledCount }
@@ -96,7 +96,7 @@ const masterDetail = async (req, res) => {
                 driverApprovalStatus: approvalStatus,
                 pendingRequest: driverRequestData.length,
                 assignId: driverRequestData[0]?.assignId || '',
-                isPtl,
+                serviceType,
                 isWallet: 0,
                 request: driverRequestData,
                 tripCount: {

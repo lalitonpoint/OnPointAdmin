@@ -5,7 +5,7 @@
 // const Banner = require('../../../admin/models/websiteManagement/bannerModel');
 
 // const masterDetail = async (req, res) => {
-//     const isPtl = 1;
+//     const serviceType = 1;
 //     try {
 //         //for Banner
 //         const [banners] = await Promise.all([
@@ -100,8 +100,8 @@
 //             success: true, data: {
 //                 banners: banners,
 //                 currentShipment: packagesWithDistance,
-//                 isPtl,
-//                 isWallet: isPtl == 1 ? 0 : 0,
+//                 serviceType,
+//                 isWallet: serviceType == 1 ? 0 : 0,
 
 //             },
 //             message: 'Master Data Fetch Successfully'
@@ -121,7 +121,7 @@ const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAss
 const Banner = require('../../../admin/models/websiteManagement/bannerModel');
 
 const masterDetail = async (req, res) => {
-    const isPtl = 1;
+    const serviceType = 1;
 
     try {
         const userId = req.header('userid');
@@ -236,7 +236,7 @@ const masterDetail = async (req, res) => {
             data: {
                 banners,
                 currentShipment: packagesWithDistance,
-                isPtl,
+                serviceType,
                 isWallet: 0
             },
             message: 'Master Data Fetch Successfully'

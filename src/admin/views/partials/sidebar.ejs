@@ -120,19 +120,25 @@
                     </li>
                 </ul>
             </li>
+            <!-- service management -->
+
 
             <!-- Vehicle Management -->
+            <li class="nav-item mb-2 <%= session?.sidebar?.serviceManagement ? '' : 'd-none' %>">
+                <a href="/service/serviceManagement" class="nav-link sub-link"><i class="bi bi-tools me-2"></i>Service
+                    Management</a>
+            </li>
+
+
             <li class="nav-item mb-2 <%= session?.sidebar?.vehicleManagement ? '' : 'd-none' %>">
+
                 <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
                     href="#vehicleManagement" role="button">
                     <span><i class="bi bi-truck me-2"></i> Vehicle Management</span>
                     <i class="bi bi-chevron-down"></i>
                 </a>
                 <ul class="collapse list-unstyled ps-3" id="vehicleManagement">
-                    <li class="sub-item <%= session?.sidebar?.manageServices ? '' : 'd-none' %>">
-                        <a href="/service/serviceManagement" class="nav-link sub-link"><i
-                                class="bi bi-tools me-2"></i>Service Management</a>
-                    </li>
+
                     <li class="sub-item <%= session?.sidebar?.manageVehicles ? '' : 'd-none' %>">
                         <a href="/vehicle/vehicleManagement" class="nav-link sub-link"><i
                                 class="bi bi-car-front me-2"></i>Manage Vehicle</a>

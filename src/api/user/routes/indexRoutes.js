@@ -13,18 +13,19 @@ const orderRoutes = require('./orderRoutes');
 const razorpayRoutes = require('./razorpayRoutes');
 const walletRoutes = require('./walletRoutes');
 const masterRoutes = require('./masterRoutes');
+const driverRoutes = require('./driverRoutes');
 
 
 const { verifyToken, headerAuth } = require('../middleware/authentication');
 router.use('/otp', sendOtpRoutes);
 router.use('/razorpay', razorpayRoutes);
+router.use('/service', servicesRoutes);
 
 router.use(headerAuth);
 router.use('/user', userRoutes);
 router.use('/setting', configurationRoutes);
 
 router.use(verifyToken);
-router.use('/service', servicesRoutes);
 router.use('/payment', paymentRoutes);
 // router.use('/faq', faqRoutes);
 // router.use('/parcel', parcelRoutes);
@@ -33,5 +34,6 @@ router.use('/rating', ratingRoutes);
 router.use('/order', orderRoutes);
 router.use('/wallet', walletRoutes);
 router.use('/master', masterRoutes);
+router.use('/driver', driverRoutes);
 
 module.exports = router;
