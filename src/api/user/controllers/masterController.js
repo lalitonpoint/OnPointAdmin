@@ -119,9 +119,14 @@ const Packages = require('../models/paymentModal');
 const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate');
 const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 const Banner = require('../../../admin/models/websiteManagement/bannerModel');
+const Service = require('../../../admin/models/vehcileManagement/serviceManagementModel');
 
 const masterDetail = async (req, res) => {
-    const serviceType = 1;
+    // const serviceType = 1;
+    const serviceId = req.header('serviceid');
+
+    const serviceType = await Service.findById(serviceId).select('value');
+
 
     try {
         const userId = req.header('userid');
