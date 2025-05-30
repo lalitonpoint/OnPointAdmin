@@ -1,5 +1,6 @@
 const InitiatePayment = require('../models/paymentModal');
-const { packageCalculation } = require('../controllers/packageController');
+const FtlPayment = require('../models/ftlPaymentModal');
+const { packageCalculation, ftlPackageCalculation } = require('../controllers/packageController');
 const generateOrderId = require('../utils/generateOrderId');
 const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 
@@ -241,4 +242,115 @@ const estimatePriceCalculation = async (req, res) => {
 };
 
 
-module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation };
+//////////////////////////////FTL Order Initiate///////////////////////////////////
+
+const ftlOrderInitiate = async (req, res) => {
+    try {
+        const {
+            pickupLatitude,
+            pickupLongitude,
+            dropLatitude,
+            dropLongitude,
+            pickupPincode,
+            dropPincode,
+            pickupAddress,
+            dropAddress,
+            isBidding
+        } = req.body;
+
+        const userId = req.headers['userid'];
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID is required in headers." });
+        }
+
+        const requiredFields = {
+            pickupLatitude,
+            pickupLongitude,
+            dropLatitude,
+            dropLongitude,
+            pickupAddress,
+            dropAddress,
+            isBidding
+        };
+
+        for (const [field, value] of Object.entries(requiredFields)) {
+            if (!value || typeof value !== 'string') {
+                return res.status(400).json({
+                    success: false,
+                    message: `${field} is required and must be a string.`
+                });
+            }
+        }
+
+        const orderId = await generateOrderId();
+
+        const costResult = await ftlPackageCalculation(
+            pickupLatitude,
+            pickupLongitude,
+            dropLatitude,
+            dropLongitude,
+            res
+        );
+
+        if (!costResult) {
+            return res.status(400).json({
+                success: false,
+                message: costResult?.message || 'Failed to calculate delivery charges.'
+            });
+        }
+
+        const {
+            subTotal,
+            shippingCost,
+            specialHandling,
+            gstAmount,
+            totalPayment,
+            distance,
+            duration
+        } = costResult;
+
+        const paymentPayload = new FtlPayment({
+            pickupLatitude,
+            pickupLongitude,
+            dropLatitude,
+            dropLongitude,
+            pickupPincode,
+            dropPincode,
+            pickupAddress,
+            dropAddress,
+            distance,
+            duration,
+            isBidding: parseInt(isBidding),
+            subTotal,
+            shippingCost,
+            specialHandling,
+            gst: gstAmount,
+            totalPayment,
+            userId,
+            orderId,
+            transactionDate: new Date()
+        });
+
+        await paymentPayload.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Payment details saved successfully.",
+            data: paymentPayload
+        });
+
+    } catch (error) {
+        console.error("Error in ftlOrderInitiate:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+            error: error.message
+        });
+    }
+};
+
+
+
+//////////////////////////////FTL Order Initiate///////////////////////////////////
+
+module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate };

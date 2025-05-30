@@ -134,4 +134,61 @@ const fetchPaymentDetail = async () => {
     }
 };
 
-module.exports = { packageCalculation, calculateTotalAreaInSqFt };
+
+const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude, dropLongitude, res) => {
+    try {
+        const origin = `${pickupLatitude},${pickupLongitude}`;
+        const destination = `${dropLatitude},${dropLongitude}`;
+
+        const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
+            params: {
+                origins: origin,
+                destinations: destination,
+                key: process.env.GOOGLE_MAPS_API_KEY,
+            },
+        });
+
+        const data = response.data;
+        if (data.status !== 'OK' || data.rows?.[0]?.elements?.[0]?.status !== 'OK') {
+            return res.status(200).json({ success: false, error: 'Unable to calculate distance.' });
+        }
+
+        const element = data.rows[0].elements[0];
+        const distanceInKm = element.distance.value / 1000;
+        const duration = element.duration.text;
+
+        // Fetch shipping and pricing settings
+        const {
+            shippingCost = 0,
+            specialHandling = 0,
+            gst = 18,
+        } = await fetchPaymentDetail();
+
+        let basePrice = 2000;
+
+        // Charges
+        const subTotal = parseFloat((basePrice).toFixed(2));
+        const gstAmount = parseFloat(((subTotal * gst) / 100).toFixed(2));
+
+        // Final total
+        let totalPayment = subTotal + gstAmount + shippingCost + specialHandling;
+
+
+        return {
+            subTotal,
+            shippingCost,
+            specialHandling,
+            gstAmount,
+            totalPayment: parseFloat(totalPayment.toFixed(2)),
+            distance: distanceInKm.toFixed(2),
+            duration,
+        };
+
+    } catch (err) {
+        console.error('Distance Matrix Error:', err.message);
+        return res.status(500).json({ success: false, error: 'Something went wrong. Please try again later.' });
+    }
+};
+
+
+module.exports = { packageCalculation, calculateTotalAreaInSqFt, ftlPackageCalculation };
