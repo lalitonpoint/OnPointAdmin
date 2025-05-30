@@ -1,6 +1,8 @@
 const InitiatePayment = require('../models/paymentModal');
 const { packageCalculation } = require('../controllers/packageController');
 const generateOrderId = require('../utils/generateOrderId');
+const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+
 
 const razorpay = require('../utils/razorpay');
 const crypto = require('crypto');
@@ -204,6 +206,39 @@ const verifyPayment = async (req, res) => {
     }
 };
 
+const estimatePriceCalculation = async (req, res) => {
+    const { pickupLatitude, pickupLongitude, dropLatitude, dropLongitude } = req.body;
+    if (!pickupLatitude || !pickupLongitude || !dropLatitude || !dropLongitude) {
+        return res.status(200).json({
+            success: false,
+            message: 'Pick & Drop Lat Long Are Required',
+        });
+
+    }
+
+    try {
+        const { distanceInKm, duration } = await getDistanceAndDuration(
+            pickupLatitude,
+            pickupLongitude,
+            dropLatitude,
+            dropLongitude
+        );
+
+        const estimatePrice = parseFloat((distanceInKm * 10).toFixed(2));
+        return res.status(200).json({
+            success: true,
+            message: 'Estimated Payment',
+            data: { price: estimatePrice }
+        });
+    } catch (e) {
+        console.error(`Error calculating distance and duration:`, e.message);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to calculate estimated price',
+            error: e.message
+        });
+    }
+};
 
 
-module.exports = { addPaymentDetail, verifyPayment };
+module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation };

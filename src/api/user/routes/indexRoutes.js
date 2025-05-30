@@ -14,6 +14,7 @@ const razorpayRoutes = require('./razorpayRoutes');
 const walletRoutes = require('./walletRoutes');
 const masterRoutes = require('./masterRoutes');
 const driverRoutes = require('./driverRoutes');
+const truckRoutes = require('./truckRoutes');
 
 
 const { verifyToken, headerAuth } = require('../middleware/authentication');
@@ -35,5 +36,6 @@ router.use('/order', orderRoutes);
 router.use('/wallet', walletRoutes);
 router.use('/master', masterRoutes);
 router.use('/driver', driverRoutes);
+router.use('/truck', truckRoutes);
 
 module.exports = router;
