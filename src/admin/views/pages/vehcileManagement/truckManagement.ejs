@@ -66,6 +66,7 @@
                             <th>#</th>
                             <th>Vehicle Name</th>
                             <th>Vehicle Body</th>
+                            <th>Service Type</th>
                             <th>Vehcile Image</th>
                             <th>Status</th>
                             <th>Created At</th>
@@ -110,6 +111,13 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
+                            <label for="serviceType" class="form-label">Service Type <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" name="serviceType" id="serviceType">
+                                <option value="">Select Service Type</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Vehcile Image <strong class="text-danger">*</strong></label>
                             <input type="file" class="form-control image_view" name="vechileImage" id="vechileImage"
                                 accept="image/*">
@@ -138,6 +146,32 @@
 </div>
 <script>
     $(document).ready(function () {
+
+        $.ajax({
+            url: '/vehicle/getServiceData',
+            type: 'GET',
+            success: function (response) {
+                if (response.status) {
+                    const services = response.serviceData || []; // ✅ FIX: access the 'services' array
+                    const dropdown = $('#serviceType');
+                    dropdown.empty(); // Clear existing options
+                    dropdown.append('<option value="" selected readonly>Select Service Type</option>');
+
+                    // Append driver options
+                    services.forEach(service => {
+                        const name = service.serviceName || 'No Name';
+                        const id = service._id;
+                        dropdown.append(`<option value="${id}">${name}</option>`);
+                    });
+
+
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching warehouse data:", error);
+            }
+        });
+
         // Initially hide the search vehicle card using jQuery
         const searchvehiclesCard = $('#searchvehiclesCard');
         searchvehiclesCard.hide();
@@ -206,6 +240,10 @@
                 data: 'bodyType'
             },
             {
+                orderable: false, // Disable ordering for the Profile Image column
+                data: 'serviceType.serviceName'
+            },
+            {
                 data: 'vechileImage',
                 orderable: false, // Disable ordering for the Profile Image column
                 render: (data) => `<img src="${data}" class="rounded-circle" width="50" height="50">`
@@ -251,6 +289,13 @@
                 const bodyType = $('#bodyType').val().trim();
                 if (!bodyType) {
                     toastr.error(' Body Type is required.', 'Error');
+                    return;
+                }
+
+
+                const serviceType = $('#serviceType').val();
+                if (!serviceType) {
+                    toastr.error(' Service Type is required.', 'Error');
                     return;
                 }
 

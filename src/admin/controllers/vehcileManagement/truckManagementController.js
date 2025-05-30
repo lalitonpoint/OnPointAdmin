@@ -1,5 +1,6 @@
 
 const Vehcile = require('../../models/vehcileManagement/truckManagementModel'); // Assuming you have a Vehicle model
+const Service = require('../../models/vehcileManagement/serviceManagementModel'); // Assuming you have a Vehicle model
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 const { generateLogs } = require('../../utils/logsHelper');
@@ -19,8 +20,9 @@ const saveVehicle = async (req, res) => {
             }
 
             const name = fields.name ? fields.name[0] : '';
-            const status = fields.status ? fields.status[0] : ''; // Assuming 'gender' in form maps to 'status' in model
-            const bodyType = fields.bodyType ? fields.bodyType[0] : ''; // Assuming 'gender' in form maps to 'status' in model
+            const status = fields.status ? fields.status[0] : '';
+            const bodyType = fields.bodyType ? fields.bodyType[0] : '';
+            const serviceType = fields.serviceType ? fields.serviceType[0] : '';
 
             if (!name) {
                 return res.status(400).json({ error: "Truck Name is required" });
@@ -45,6 +47,7 @@ const saveVehicle = async (req, res) => {
                 name,
                 status,
                 bodyType,
+                serviceType,
                 vechileImage: vechileImageUrl
             };
 
@@ -99,9 +102,11 @@ const vehicleList = async (req, res) => {
 
         // 5. Fetch the paginated and sorted Vehcile data
         const vehicles = await Vehcile.find(filter)
+            .populate({ path: 'serviceType', select: 'serviceName' })
             .sort(sort)
-            .skip(parseInt(start)) // Ensure start is an integer
-            .limit(parseInt(length)); // Ensure length is an integer
+            .skip(parseInt(start))  // Make sure 'start' is a valid integer
+            .limit(parseInt(length));  // Make sure 'length' is a valid integer
+
 
         // 6. Construct the JSON response for DataTables
         res.json({
@@ -151,8 +156,10 @@ const updateVehicle = async (req, res) => {
                 return res.status(400).json({ error: "Failed to parse form data" }); // Changed status code to 400
             }
             const name = fields.name ? fields.name[0] : '';
-            const status = fields.status ? fields.status[0] : ''; // Assuming 'gender' in form maps to 'status' in model
-            const bodyType = fields.bodyType ? fields.bodyType[0] : ''; // Assuming 'gender' in form maps to 'status' in model
+            const status = fields.status ? fields.status[0] : '';
+            const bodyType = fields.bodyType ? fields.bodyType[0] : '';
+            const serviceType = fields.serviceType ? fields.serviceType[0] : '';
+
 
             if (!name) {
                 return res.status(400).json({ error: "Truck Name is required" });
@@ -177,6 +184,7 @@ const updateVehicle = async (req, res) => {
                 name,
                 status,
                 bodyType,
+                serviceType,
                 vechileImage: vechileImageUrl
             };
 
@@ -194,6 +202,25 @@ const updateVehicle = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
+const getServiceData = async (req, res) => {
+
+    try {
+        const serviceData = await Service.find({ status: 1 }); // Add filter if needed
+
+        return res.status(200).json({
+            status: true,
+            serviceData,
+        });
+    } catch (error) {
+        console.error("Error fetching service data:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error"
+        });
+    }
+
+}
 module.exports = {
-    vechiclePage, saveVehicle, vehicleList, singleVehcile, deleteVehicle, updateVehicle
+    vechiclePage, saveVehicle, vehicleList, singleVehcile, deleteVehicle, updateVehicle, getServiceData
 }

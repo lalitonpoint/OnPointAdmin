@@ -32,6 +32,7 @@ const headerAuth = (req, res, next) => {
     const deviceType = req.headers['devicetype']; // headers are lowercase
     const deviceId = req.headers['deviceid']; // headers are lowercase
     const deviceToken = req.headers['devicetoken']; // headers are lowercase
+    const serviceId = req.headers['serviceid']; // headers are lowercase
 
     if (!deviceType) {
         return res.status(200).json({ success: false, message: 'DeviceType is missing' });
@@ -39,6 +40,8 @@ const headerAuth = (req, res, next) => {
         return res.status(200).json({ success: false, message: 'Device Id is missing' });
     } else if (!deviceToken) {
         return res.status(200).json({ success: false, message: 'Device Token is missing' });
+    } else if (!serviceId) {
+        return res.status(200).json({ success: false, message: 'Service Id Is Missing' });
     } else {
         next();
     }

@@ -35,6 +35,9 @@ const serviceList = async (req, res) => {
                     query.status = parseInt(statusSearch); // Ensure status is an integer for comparison
                 }
             }
+            else {
+                query.status = { $in: [1, 2] };
+            }
             if (createdAtSearch) {
                 const startDate = moment(createdAtSearch).startOf('day');
                 const endDate = moment(createdAtSearch).endOf('day');
@@ -76,7 +79,7 @@ const serviceList = async (req, res) => {
             .limit(Number(length))
             .sort(sort); // Apply the sort order
 
-        const totalRecords = await Service.countDocuments();
+        const totalRecords = await Service.countDocuments({ status: { $in: [1, 2] } });
         const filteredRecords = await Service.countDocuments(query);
 
         res.json({
@@ -219,19 +222,27 @@ const editService = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+const mongoose = require('mongoose');
 
-// Delete service
 const deleteService = async (req, res) => {
     try {
         const { id } = req.params;
-        await Service.findByIdAndDelete(id);
-        await generateLogs(req, 'Delete', { id: id });
+
+        const service = await Service.findByIdAndUpdate(id, { status: 3 });
+
+        if (!service) {
+            return res.status(404).json({ success: false, message: 'Service not found' });
+        }
+
+        await generateLogs(req, 'Delete', { id });
 
         res.json({ success: true, message: 'Service deleted successfully' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error deleting service:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 };
+
 
 //Change Status
 const changeServiceStatus = async (req, res) => {

@@ -12,5 +12,6 @@ router.post('/addvehicle', checkCrudPermission('add'), truckCtrl.saveVehicle);
 router.get('/getVehicle/:id', checkCrudPermission('edit'), truckCtrl.singleVehcile);
 router.post('/updateVehicle/:id', checkCrudPermission('edit'), truckCtrl.updateVehicle);
 router.delete('/deleteVehicle/:id', checkCrudPermission('delete'), truckCtrl.deleteVehicle);
+router.get('/getServiceData', checkCrudPermission(), truckCtrl.getServiceData);
 
 module.exports = router;
