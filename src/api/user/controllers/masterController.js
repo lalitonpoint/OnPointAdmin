@@ -125,8 +125,9 @@ const masterDetail = async (req, res) => {
     // const serviceType = 1;
     const serviceId = req.header('serviceid');
 
-    const serviceType = await Service.findById(serviceId).select('value');
+    let serviceType = await Service.findById(serviceId).select('value');
 
+    serviceType = serviceType.value;
 
     try {
         const userId = req.header('userid');

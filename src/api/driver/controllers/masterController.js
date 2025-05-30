@@ -8,7 +8,9 @@ const masterDetail = async (req, res) => {
 
     const serviceId = req.header('serviceid');
 
-    const serviceType = await Service.findById(serviceId).select('value');
+    let serviceType = await Service.findById(serviceId).select('value');
+
+    serviceType = serviceType.value;
 
     try {
         const driverId = req.header('driverid');
