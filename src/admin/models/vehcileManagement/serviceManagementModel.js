@@ -9,4 +9,4 @@ const serviceSchema = new mongoose.Schema({
     value: { type: Number, enum: [0, 1, 2, 3, 4], bydefault: 0 } // 1 => PTL , 2 => FTL Intercity , 3 => FTL Outer Station , 4 => Two Wheeler
 });
 
-module.exports = mongoose.model('truckservices', serviceSchema);
+module.exports = mongoose.model('services', serviceSchema);

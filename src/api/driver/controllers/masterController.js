@@ -1,10 +1,14 @@
 const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
+const Service = require('../../../admin/models/vehcileManagement/serviceManagementModel');
 const DriverModal = require('../modals/driverModal');
 const { getDriverLocation } = require('./serviceController');
 const { getDistanceAndDuration } = require('../utils/distanceCalculate');
 
 const masterDetail = async (req, res) => {
-    const serviceType = 1;
+
+    const serviceId = req.header('serviceid');
+
+    const serviceType = await Service.findById(serviceId).select('value');
 
     try {
         const driverId = req.header('driverid');
