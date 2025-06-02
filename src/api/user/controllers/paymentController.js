@@ -303,7 +303,7 @@ const ftlOrderInitiate = async (req, res) => {
             });
         }
 
-        const orderId = isBiddingNum === 0 ? await generateOrderId() : null;
+        const orderId = await generateOrderId();
 
         const costResult = await ftlPackageCalculation(
             pickupLatitude,
@@ -320,6 +320,17 @@ const ftlOrderInitiate = async (req, res) => {
                 message: costResult?.message || 'Failed to calculate delivery charges.'
             });
         }
+
+        let razorpayOrderId = 0;
+
+        if (isBidding == 0) {
+            let razorpayOrderIdResponse = await initiateRazorpayOrderId(req, costResult.totalPayment);
+
+            if (razorpayOrderIdResponse && razorpayOrderIdResponse.success === true) {
+                razorpayOrderId = razorpayOrderIdResponse.orderId;
+            }
+        }
+
 
         const {
             subTotal,
@@ -357,7 +368,9 @@ const ftlOrderInitiate = async (req, res) => {
 
             subTotal,
             gst: gstAmount,
-            totalPayment
+            totalPayment,
+            preTransactionId: razorpayOrderId,
+
         });
 
         await paymentPayload.save();
