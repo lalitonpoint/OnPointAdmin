@@ -3,6 +3,7 @@ const FtlPayment = require('../models/ftlPaymentModal');
 const { packageCalculation, ftlPackageCalculation } = require('../controllers/packageController');
 const generateOrderId = require('../utils/generateOrderId');
 const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+const Vehicle = require('../../../admin/models/vehcileManagement/truckManagementModel');
 
 
 const razorpay = require('../utils/razorpay');
@@ -243,7 +244,6 @@ const estimatePriceCalculation = async (req, res) => {
 
 
 //////////////////////////////FTL Order Initiate///////////////////////////////////
-
 const ftlOrderInitiate = async (req, res) => {
     try {
         const {
@@ -255,14 +255,19 @@ const ftlOrderInitiate = async (req, res) => {
             dropPincode,
             pickupAddress,
             dropAddress,
-            isBidding
+            isBidding,
+            vehcileId // Typo retained as per your code; corrected below
         } = req.body;
 
         const userId = req.headers['userid'];
         if (!userId) {
-            return res.status(400).json({ success: false, message: "User ID is required in headers." });
+            return res.status(400).json({
+                success: false,
+                message: "User ID is required in headers."
+            });
         }
 
+        // Validate required string fields
         const requiredFields = {
             pickupLatitude,
             pickupLongitude,
@@ -270,7 +275,7 @@ const ftlOrderInitiate = async (req, res) => {
             dropLongitude,
             pickupAddress,
             dropAddress,
-            isBidding
+            vehcileId
         };
 
         for (const [field, value] of Object.entries(requiredFields)) {
@@ -282,17 +287,34 @@ const ftlOrderInitiate = async (req, res) => {
             }
         }
 
-        const orderId = await generateOrderId();
+        const isBiddingNum = parseInt(isBidding, 10);
+        if (![0, 1].includes(isBiddingNum)) {
+            return res.status(400).json({
+                success: false,
+                message: "isBidding must be 0 or 1."
+            });
+        }
+
+        const vehicleDetail = await Vehicle.findById(vehcileId).lean();
+        if (!vehicleDetail) {
+            return res.status(404).json({
+                success: false,
+                message: "Vehicle not found."
+            });
+        }
+
+        const orderId = isBiddingNum === 0 ? await generateOrderId() : null;
 
         const costResult = await ftlPackageCalculation(
             pickupLatitude,
             pickupLongitude,
             dropLatitude,
             dropLongitude,
-            res
+            res,
+            isBiddingNum
         );
 
-        if (!costResult) {
+        if (!costResult || !costResult.totalPayment) {
             return res.status(400).json({
                 success: false,
                 message: costResult?.message || 'Failed to calculate delivery charges.'
@@ -320,15 +342,22 @@ const ftlOrderInitiate = async (req, res) => {
             dropAddress,
             distance,
             duration,
-            isBidding: parseInt(isBidding),
-            subTotal,
-            shippingCost,
-            specialHandling,
-            gst: gstAmount,
-            totalPayment,
+            isBidding: isBiddingNum,
             userId,
             orderId,
-            transactionDate: new Date()
+            shippingCost,
+            specialHandling,
+            transactionDate: new Date(),
+
+            vehcileName: vehicleDetail.name,
+            vechileImage: vehicleDetail.vechileImage,
+            vehcileBodyType: vehicleDetail.bodyType,
+            vehcileCapacity: vehicleDetail.capacity,
+            vehcileTireType: vehicleDetail.tireType,
+
+            subTotal,
+            gst: gstAmount,
+            totalPayment
         });
 
         await paymentPayload.save();
@@ -348,7 +377,6 @@ const ftlOrderInitiate = async (req, res) => {
         });
     }
 };
-
 
 
 //////////////////////////////FTL Order Initiate///////////////////////////////////

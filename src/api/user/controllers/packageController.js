@@ -135,7 +135,7 @@ const fetchPaymentDetail = async () => {
 };
 
 
-const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude, dropLongitude, res) => {
+const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude, dropLongitude, res, isBidding) => {
     try {
         const origin = `${pickupLatitude},${pickupLongitude}`;
         const destination = `${dropLatitude},${dropLongitude}`;
@@ -164,7 +164,7 @@ const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitu
             gst = 18,
         } = await fetchPaymentDetail();
 
-        let basePrice = 2000;
+        let basePrice = isBidding == 0 ? 2000 : 0;
 
         // Charges
         const subTotal = parseFloat((basePrice).toFixed(2));

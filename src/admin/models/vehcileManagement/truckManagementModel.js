@@ -8,6 +8,8 @@ const vehicleSchema = new Schema({
     vechileImage: { type: String, trim: true }, // Vehicle Image URL/Path
     serviceType: { type: mongoose.Schema.Types.ObjectId, ref: 'services' },
     bodyType: { type: String, trim: true },
+    tireType: { type: String, trim: true },
+    capacity: { type: String, trim: true },
 }, { timestamps: true }); // Enable automatic createdAt and updatedAt
 
 const Vehicle = mongoose.model('vehicles', vehicleSchema);

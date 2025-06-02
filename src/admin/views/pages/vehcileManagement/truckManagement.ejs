@@ -118,6 +118,48 @@
                             </select>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Status <strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="status" id="status">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="2">Inactive</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-3">
+
+
+                        <div class="col-md-6">
+                            <label class="form-label">Tire Type <strong class="text-danger">*</strong></label>
+                            <select class="form-select" name="tireType" id="tireType">
+                                <option value="">Select Tire Type</option>
+                                <option value="2">2 Tire</option>
+                                <option value="4">4 Tire</option>
+                                <option value="6">6 Tire</option>
+                                <option value="8">8 Tire</option>
+                                <option value="10">10 Tire</option>
+                                <option value="12">12 Tire</option>
+                                <option value="14">14 Tire</option>
+                                <option value="16">16 Tire</option>
+                                <option value="18">18 Tire</option>
+                                <option value="22">22 Tire</option>
+                                <option value="24">24 Tire</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="capacity" class="form-label">Vehicle Capacity <strong
+                                    class="text-danger">*</strong></label>
+                            <input type="number" class="form-control" id="capacity" name="capacity"
+                                placeholder="Enter Vehcile Capacity">
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
                             <label class="form-label">Vehcile Image <strong class="text-danger">*</strong></label>
                             <input type="file" class="form-control image_view" name="vechileImage" id="vechileImage"
                                 accept="image/*">
@@ -125,14 +167,6 @@
                                 <img id="imagePreview" src="#" alt="Profile Image Preview"
                                     style="max-width: 100px; max-height: 100px;">
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Status <strong class="text-danger">*</strong></label>
-                            <select class="form-select" name="status" id="status">
-                                <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                            </select>
                         </div>
                     </div>
 
@@ -298,6 +332,23 @@
                     toastr.error(' Service Type is required.', 'Error');
                     return;
                 }
+                const status = $('#status').val();
+                if (!status) {
+                    toastr.error('Status is required.', 'Error');
+                    return;
+                }
+
+
+                const tireType = $('#tireType').val();
+                if (!tireType) {
+                    toastr.error('tireType is required.', 'Error');
+                    return;
+                }
+                const capacity = $('#capacity').val();
+                if (!capacity) {
+                    toastr.error('Capacity is required.', 'Error');
+                    return;
+                }
 
                 const vechileImage = $('#vechileImage')[0].files[0];
                 if (!vechileImage && !$('#vehicleId').val()) { // Required on add
@@ -305,11 +356,8 @@
                     return;
                 }
 
-                const status = $('#status').val();
-                if (!status) {
-                    toastr.error('Status is required.', 'Error');
-                    return;
-                }
+
+
 
                 const formData = new FormData(formElement);
                 const id = $('#vehicleId').val();
@@ -376,6 +424,8 @@
                         // console.log(data.data.name);
                         $('#name').val(data.data.name);
                         $('#bodyType').val(data.data.bodyType);
+                        $('#capacity').val(data.data.capacity);
+                        $('#tireType').val(data.data.tireType);
                         if (data.data.vechileImage) {
                             imagePreview.attr('src', data.data.vechileImage);
                             imagePreviewContainer.show();

@@ -23,6 +23,8 @@ const saveVehicle = async (req, res) => {
             const status = fields.status ? fields.status[0] : '';
             const bodyType = fields.bodyType ? fields.bodyType[0] : '';
             const serviceType = fields.serviceType ? fields.serviceType[0] : '';
+            const capacity = fields.capacity ? fields.capacity[0] : '';
+            const tireType = fields.tireType ? fields.tireType[0] : '';
 
             if (!name) {
                 return res.status(400).json({ error: "Truck Name is required" });
@@ -48,12 +50,14 @@ const saveVehicle = async (req, res) => {
                 status,
                 bodyType,
                 serviceType,
-                vechileImage: vechileImageUrl
+                vechileImage: vechileImageUrl,
+                tireType,
+                capacity
+
             };
 
 
             const vehicle = new Vehcile(vehicleData);
-
             await vehicle.save();
             await generateLogs(req, 'Add', vehicle);
 
@@ -159,6 +163,9 @@ const updateVehicle = async (req, res) => {
             const status = fields.status ? fields.status[0] : '';
             const bodyType = fields.bodyType ? fields.bodyType[0] : '';
             const serviceType = fields.serviceType ? fields.serviceType[0] : '';
+            const capacity = fields.capacity ? fields.capacity[0] : '';
+            const tireType = fields.tireType ? fields.tireType[0] : '';
+
 
 
             if (!name) {
@@ -185,7 +192,9 @@ const updateVehicle = async (req, res) => {
                 status,
                 bodyType,
                 serviceType,
-                vechileImage: vechileImageUrl
+                vechileImage: vechileImageUrl,
+                tireType,
+                capacity
             };
 
 

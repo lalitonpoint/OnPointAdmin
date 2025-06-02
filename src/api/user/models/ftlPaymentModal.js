@@ -31,7 +31,13 @@ const InitiatePaymentSchema = new mongoose.Schema({
     orderId: { type: String },
     paymentId: { type: String },
     paymentResponse: { type: mongoose.Schema.Types.Mixed },
-    transactionDate: { type: Date }
+    transactionDate: { type: Date },
+    vehcileName: { type: String },
+    vechileImage: { type: String },
+    vehcileBodyType: { type: String },
+    vehcileCapacity: { type: String },
+    vehcileTireType: { type: String },
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('FTLPayment', InitiatePaymentSchema);
