@@ -287,7 +287,7 @@ const ftlOrderInitiate = async (req, res) => {
             }
         }
 
-        const isBiddingNum = parseInt(isBidding, 10);
+        const isBiddingNum = parseInt(isBidding);
         if (![0, 1].includes(isBiddingNum)) {
             return res.status(400).json({
                 success: false,
@@ -392,6 +392,58 @@ const ftlOrderInitiate = async (req, res) => {
 };
 
 
+
+const ftlVerifyPayment = async (req, res) => {
+    const { razorPayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+
+    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature) {
+        return res.status(200).json({ success: false, message: 'Missing required fields' });
+    }
+
+    const generatedSignature = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .update(`${razorPayOrderId}|${razorpayPaymentId}`)
+        .digest('hex');
+
+    if (generatedSignature !== razorpaySignature) {
+        return res.status(200).json({ success: false, message: 'Invalid Signature' });
+    }
+
+    try {
+        const payment = await razorpay.payments.fetch(razorpayPaymentId);
+        // return res.status(200).json({ success: true, message: 'Is', payment: payment });
+
+
+
+        if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
+
+            const paymentRecord = await FtlPayment.findOne({ preTransactionId: razorPayOrderId });
+
+            if (!paymentRecord) {
+                return res.status(200).json({ success: false, message: 'Payment order not found' });
+            }
+
+            // if (paymentRecord.transactionStatus === 1) {
+            //     return res.status(200).json({ success: true, message: 'Payment is Already Verified' });
+            // }
+
+            paymentRecord.transactionStatus = 1;
+            paymentRecord.postTransactionId = payment.order_id;
+            paymentRecord.paymentId = payment.id;
+
+            await paymentRecord.save();
+
+            return res.status(200).json({ success: true, message: 'Payment Done Successfully', payment });
+        } else {
+            return res.status(200).json({ success: false, message: 'Payment not captured or mismatched order ID' });
+        }
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Error verifying payment', error: error.message });
+    }
+};
+
+
+
 //////////////////////////////FTL Order Initiate///////////////////////////////////
 
-module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate };
+module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment };
