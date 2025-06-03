@@ -1140,6 +1140,10 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 totalPayment: order.totalPayment,
                 step,
                 orderStatus: updateFields.orderStatus,
+                vehcileName: order.vehcileName,
+                vechileImage: order.vechileImage,
+                vehcileBodyType: order.vehcileBodyType,
+
             }
         });
 
@@ -1165,5 +1169,6 @@ module.exports = {
     pickupVerifyOtp,
     getDriverLocation,
     ftlOrderAssign,
-    ftlUpdateOrderStatus
+    ftlUpdateOrderStatus,
+
 };
