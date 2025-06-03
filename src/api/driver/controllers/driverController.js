@@ -2,6 +2,7 @@ const multiparty = require("multiparty");
 const fs = require("fs/promises");
 const jwt = require("jsonwebtoken");
 const DriverProfile = require("../modals/driverModal");
+const Services = require("../../../admin/models/vehcileManagement/serviceManagementModel");
 const { uploadImage } = require("../../../admin/utils/uploadHelper");
 const secretKey = process.env.JWT_SECRET || "your_jwt_secret"; // Move to .env in production
 
@@ -42,10 +43,16 @@ const createDriver = async (req, res) => {
         const step = parseInt(getField("step"), 10);
         // const driverId = getField("driverId");
         const driverId = req.header("driverid");
-        const serviceType = req.header("serviceid");
+        const serviceId = req.header("serviceid");
+        const serviceDetail = await Services.findById(serviceId);
 
-        if (!serviceType) {
-            return res.status(200).json({ success: false, message: 'ServiceType is Required.' });
+        if (!serviceDetail) {
+            return res.status(404).json({ message: "Service not found" });
+        }
+
+
+        if (!serviceId) {
+            return res.status(200).json({ success: false, message: 'Service ID is Required.' });
         }
 
         let update = {};
@@ -219,7 +226,8 @@ const createDriver = async (req, res) => {
                 update.deviceType = req.header('devicetype');
                 update.deviceToken = req.header('devicetoken');
                 update.deviceId = req.header('deviceid');
-                update.serviceType = serviceType;
+                update.serviceId = serviceId;
+                update.serviceType = serviceDetail.value;
 
                 driver = new DriverProfile(update);
                 await driver.save();

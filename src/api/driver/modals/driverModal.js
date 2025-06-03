@@ -73,7 +73,8 @@ const driverProfileSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    serviceType: { type: mongoose.Schema.Types.ObjectId, ref: 'services', required: true },
+    serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'services', required: true },
+    serviceType: { type: Number, enum: [0, 1, 2, 3, 4], default: 0 }, // 1 = PTL, 2 = FTL(Intercity) , 3 => FTL(Outerstation) , 4 => Two Weeler
 
 
 }, { timestamps: true });
