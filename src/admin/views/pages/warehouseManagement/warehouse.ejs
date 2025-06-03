@@ -151,6 +151,18 @@
 
                             </select>
                         </div>
+                        <div class="col-md-6">
+                            <label for="warehouseMessage" class="form-label">Warehouse Message <strong
+                                    class="text-danger">*</strong></label>
+                            <select class="form-select" id="warehouseMessage" name="warehouseMessage">
+                                <option value="">Select Message</option>
+                                <option value="Standard Delivery/Regular">Standard Delivery/Regular</option>
+                                <option value="ODA 1">ODA 1</option>
+                                <option value="ODA 2">ODA 2</option>
+                                <option value="Not Serviceable">Not Serviceable</option>
+
+                            </select>
+                        </div>
 
 
                     </div>
@@ -311,6 +323,7 @@
             const phone = $('#phone').val();
 
             const trackingStatus = $('#trackingStatus').val();
+            const warehouseMessage = $('#warehouseMessage').val();
 
             if (!Warehousename) {
                 toastr.error('Please Enter Warehouse Name', 'Error');
@@ -343,6 +356,11 @@
             }
             if (!trackingStatus) {
                 toastr.error('Please Select Status', 'Error');
+                return;
+            }
+
+            if (!warehouseMessage) {
+                toastr.error('Please Select Warehouse Message', 'Error');
                 return;
             }
 
@@ -392,6 +410,7 @@
                     $('#pincode').val(data.pincode); // Added transport mode
                     $('#phone').val(data.phone); // Added no of packing
                     $('#trackingStatus').val(data.status);
+                    $('#warehouseMessage').val(data.warehouseMessage);
 
 
                     $('#trackingModal').modal('show');
