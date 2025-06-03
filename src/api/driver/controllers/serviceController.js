@@ -1017,6 +1017,143 @@ const ftlOrderAssign = async (req, res) => {
     }
 };
 
+const ftlUpdateOrderStatus = async (req, res) => {
+    try {
+        let { status, step, requestId, isAccepted } = req.body;
+        const driverId = req.header('driverid');
+
+        // Parse input
+        const orderStatus = parseInt(status, 10);
+        step = parseInt(step, 10);
+
+        // Validate required fields
+        if (!requestId) {
+            return res.status(400).json({ success: false, message: 'Request Id is required' });
+        }
+        if (isAccepted === undefined || isAccepted === null) {
+            return res.status(400).json({ success: false, message: 'isAccepted is required' });
+        }
+        if (!driverId) {
+            return res.status(400).json({ success: false, message: 'Missing driverId in headers' });
+        }
+
+        // Step-specific check for acceptance
+        if (step === 0) {
+            if (![1, 2, 3].includes(isAccepted)) {
+                return res.status(400).json({ success: false, message: 'Invalid isAccepted Value' });
+            }
+            await FTL.updateOne({ _id: requestId }, { $set: { isAccepted } });
+        }
+
+        // Validate status and step
+        if (isNaN(orderStatus) || ![0, 1, 2, 3, 4, 5].includes(orderStatus)) {
+            return res.status(400).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
+        }
+        if (isNaN(step) || ![0, 1, 2, 3, 4, 5].includes(step)) {
+            return res.status(400).json({ success: false, message: 'Invalid step. Must be between 0 and 5.' });
+        }
+
+        // Step-specific expected status mapping
+        const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 3, 4: 4 };
+        if (stepStatusMap.hasOwnProperty(step) && orderStatus !== stepStatusMap[step]) {
+            return res.status(400).json({ success: false, message: 'Order Status is not aligned with Step' });
+        }
+
+        const order = await FTL.findById(requestId).populate('userId', 'fullName mobileNumber countryCode');
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        if (order.isAccepted === 0) {
+            return res.status(400).json({ success: false, message: 'Please accept the order first' });
+        }
+
+        const now = new Date();
+        const updateFields = {
+            orderStatus,
+            step
+        };
+
+        // Mark delivery status steps complete up to current
+        for (let i = order.orderStatus + 1; i <= orderStatus; i++) {
+            if (order.deliveryStatus?.[i]?.status !== 1 || !order.deliveryStatus[i]?.deliveryDateTime) {
+                updateFields[`deliveryStatus.${i}.status`] = 1;
+                updateFields[`deliveryStatus.${i}.deliveryDateTime`] = now;
+            }
+        }
+
+        // Adjust orderStatus based on step logic
+        const stepUpdates = { 1: 1, 2: 3, 3: 4 };
+        if (step in stepUpdates) {
+            updateFields.orderStatus = stepUpdates[step];
+        }
+
+        // Apply update to DB
+        await FTL.updateOne({ _id: requestId }, { $set: updateFields });
+
+        // Get driver location
+        const driverLocation = await getDriverLocation(driverId);
+        if (!driverLocation || !driverLocation.lat || !driverLocation.long) {
+            return res.status(500).json({ success: false, message: 'Unable to retrieve driver location' });
+        }
+
+        const { lat, long } = driverLocation;
+
+        // Get distance & duration
+        const pickupResult = await getDistanceAndDuration(lat, long, order.pickupLatitude, order.pickupLongitude);
+        const dropResult = await getDistanceAndDuration(order.pickupLatitude, order.pickupLongitude, order.dropLatitude, order.dropLongitude);
+
+        const user = order.userId;
+        const userContact = user?.countryCode + user?.mobileNumber;
+
+        // UI map
+        const uiMap = {
+            0: { topHeader: 'Start Trip', bottomHeader: 'Way To Pickup', buttonText: 'Go Now', message: 'Order Accepted' },
+            1: { topHeader: 'Arrived', bottomHeader: 'Arrived', buttonText: 'Arrived to Pickup Location', message: 'Arrived At Pickup Location' },
+            2: { topHeader: 'Start Trip', bottomHeader: 'Way To Drop Location', buttonText: 'Go Now', message: 'Way to Drop Location' },
+            3: { topHeader: 'Arrived', bottomHeader: 'Arrived', buttonText: 'Arrived at Drop Location', message: 'Arrived at Drop Location' },
+            4: { topHeader: 'Delivered', bottomHeader: 'Delivered', buttonText: 'Delivered at User Location', message: 'Delivered at User Location' },
+        };
+
+        const ui = uiMap[step] || { message: 'Order status updated successfully' };
+
+        return res.status(200).json({
+            success: true,
+            message: ui.message,
+            data: {
+                topHeader: ui.topHeader,
+                bottomHeader: ui.bottomHeader,
+                buttonText: ui.buttonText,
+                pickupDistance: pickupResult?.distanceInKm || 0,
+                pickupDuration: pickupResult?.duration || 'N/A',
+                dropDistance: dropResult?.distanceInKm || 0,
+                dropDuration: dropResult?.duration || 'N/A',
+                userName: user?.fullName || '',
+                userId: user?._id || '',
+                userContact,
+                pickupAddress: order.pickupAddress,
+                dropAddress: order.dropAddress,
+                pickupLatitude: order.pickupLatitude,
+                pickupLongitude: order.pickupLongitude,
+                dropLatitude: order.dropLatitude,
+                dropLongitude: order.dropLongitude,
+                totalPayment: order.totalPayment,
+                step,
+                orderStatus: updateFields.orderStatus,
+            }
+        });
+
+    } catch (error) {
+        console.error("Internal error:", error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
+    }
+};
+
+
 module.exports = {
     saveDriverLocation,
     orderAssign,
@@ -1027,5 +1164,6 @@ module.exports = {
     pickupSendOtp,
     pickupVerifyOtp,
     getDriverLocation,
-    ftlOrderAssign
+    ftlOrderAssign,
+    ftlUpdateOrderStatus
 };
