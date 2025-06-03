@@ -30,26 +30,33 @@ const getWebsiteData = async (req, res) => {
     }
 };
 
-const getWareHouseList = async (req, res) => {
+const getWareHouseAvailablity = async (req, res) => {
     try {
-        const warehouses = await Warehouse.find({});
+        const { pincode } = req.body;
 
-        if (!warehouses.length) {
-            return res.status(200).json({
+        if (!pincode) {
+            return res.status(400).json({
                 success: false,
-                message: 'No Warehouses Found',
+                message: 'Pincode is required',
                 data: []
             });
         }
 
+        const warehouses = await Warehouse.find({ pincode });
+
         res.status(200).json({
             success: true,
-            data: { warehouses }
+            message: warehouses.length ? warehouses.warehouseMessage : 'No warehouses found',
+            data: warehouses
         });
-    } catch (err) {
-        console.error('Error fetching warehouse data:', err);
-        res.status(500).json({ success: false, message: 'Server Error', error: err.message });
+    } catch (error) {
+        console.error('Error fetching warehouse data:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error',
+            error: error.message
+        });
     }
 };
 
-module.exports = { getWebsiteData, getWareHouseList };
+module.exports = { getWebsiteData, getWareHouseAvailablity };
