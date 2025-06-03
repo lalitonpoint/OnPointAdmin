@@ -10,6 +10,7 @@ const { uploadImage } = require("../../../admin/utils/uploadHelper"); // Import 
 const multiparty = require('multiparty');
 const DriverModal = require('../../../api/driver/modals/driverModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 const FTL = require('../../../api/user/models/ftlPaymentModal'); // Assuming the common function is located in '../utils/distanceCalculate'
+const Bidding = require('../../../api/driver/modals/biddingModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 
 const Package = require('../../user/models/paymentModal'); // Adjust the model path as needed
 
@@ -1158,6 +1159,60 @@ const ftlUpdateOrderStatus = async (req, res) => {
 };
 
 
+const bidding = async (req, res) => {
+    try {
+        const { requestId, biddingAmount } = req.body;
+        const driverId = req.header('driverid');
+
+        // Validate required fields
+        if (!requestId) {
+            return res.status(200).json({ success: false, message: 'Request Id is required' });
+        }
+        if (!driverId) {
+            return res.status(200).json({ success: false, message: 'Missing driverId in headers' });
+        }
+        if (!biddingAmount || isNaN(biddingAmount)) {
+            return res.status(200).json({ success: false, message: 'Valid bidding amount is required' });
+        }
+
+        // Check if bid already exists
+        const existingBid = await Bidding.findOne({ requestId, driverId }).lean();
+
+        if (existingBid) {
+            return res.status(200).json({
+                success: true,
+                message: 'You have already placed a bid for this request',
+                data: existingBid
+            });
+        }
+
+        // Create new bid
+        const newBid = new Bidding({
+            requestId,
+            driverId,
+            biddingAmount
+        });
+
+        await newBid.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Bid placed successfully',
+            data: newBid
+        });
+
+    } catch (error) {
+        console.error("Internal error:", error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
+    }
+};
+
+
+
 module.exports = {
     saveDriverLocation,
     orderAssign,
@@ -1170,5 +1225,6 @@ module.exports = {
     getDriverLocation,
     ftlOrderAssign,
     ftlUpdateOrderStatus,
+    bidding
 
 };

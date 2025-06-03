@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { orderAssign, saveDriverLocation, tripHistory, tripHistoryCount, updateOrderStatus, pickupOrder, pickupSendOtp, pickupVerifyOtp, ftlOrderAssign, ftlUpdateOrderStatus } = require('../controllers/serviceController')
+const { orderAssign, saveDriverLocation, tripHistory, tripHistoryCount, updateOrderStatus, pickupOrder, pickupSendOtp, pickupVerifyOtp, ftlOrderAssign, ftlUpdateOrderStatus, bidding } = require('../controllers/serviceController')
 
 router.post('/orderAssign', orderAssign);
 router.post('/currentLocation', saveDriverLocation);
@@ -14,5 +14,6 @@ router.post('/pickupSendOtp', pickupSendOtp);
 router.post('/pickupVerifyOtp', pickupVerifyOtp);
 router.post('/ftlOrderAssign', ftlOrderAssign);
 router.post('/ftlUpdateOrderStatus', ftlUpdateOrderStatus);
+router.post('/bidding', bidding);
 
 module.exports = router;
