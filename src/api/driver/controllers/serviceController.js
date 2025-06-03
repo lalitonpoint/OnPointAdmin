@@ -9,6 +9,7 @@ const { isValidPhoneNumber, parsePhoneNumber } = require('libphonenumber-js');
 const { uploadImage } = require("../../../admin/utils/uploadHelper"); // Import helper for file upload
 const multiparty = require('multiparty');
 const DriverModal = require('../../../api/driver/modals/driverModal'); // Assuming the common function is located in '../utils/distanceCalculate'
+const FTL = require('../../../api/user/models/ftlPaymentModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 
 const Package = require('../../user/models/paymentModal'); // Adjust the model path as needed
 
@@ -926,7 +927,95 @@ const updateOrderStatus = async (req, res) => {
         });
     }
 };
+const ftlOrderAssign = async (req, res) => {
+    try {
+        const driverId = req.headers['driverid'];
+        if (!driverId) {
+            return res.status(200).json({ success: false, message: "Driver ID is required" });
+        }
 
+        const driverCurrentLocation = await getDriverLocation(driverId);
+        if (!driverCurrentLocation.success) {
+            return res.status(200).json({ success: false, message: "Please update driver's current location" });
+        }
+
+        // Correct MongoDB query syntax
+        const incomingRequests = await FTL.find({ isAccepted: 0, transactionStatus: 1 })
+            .sort({ createdAt: -1 })
+            .populate('userId', 'fullName')
+            .lean();
+
+        if (!incomingRequests.length) {
+            return res.status(200).json({ success: true, message: "No requests found", data: [] });
+        }
+
+        const { lat: driverLat, long: driverLong } = driverCurrentLocation;
+
+        const enrichedRequests = await Promise.all(incomingRequests.map(async (req) => {
+            const {
+                _id,
+                pickupLatitude,
+                pickupLongitude,
+                dropLatitude,
+                dropLongitude,
+                userId,
+                vehicleName,
+                vehicleImage,
+                isBidding,
+                isAccepted,
+                totalPayment
+            } = req;
+
+            let pickupDistance = 0, pickupDuration = 0;
+            let dropDistance = 0, dropDuration = 0;
+
+            try {
+                const pickupResult = await getDistanceAndDuration(driverLat, driverLong, pickupLatitude, pickupLongitude);
+                pickupDistance = pickupResult.distanceInKm;
+                pickupDuration = pickupResult.duration;
+            } catch (err) {
+                console.error(`Pickup distance error for ${_id}:`, err.message);
+            }
+
+            try {
+                const dropResult = await getDistanceAndDuration(pickupLatitude, pickupLongitude, dropLatitude, dropLongitude);
+                dropDistance = dropResult.distanceInKm;
+                dropDuration = dropResult.duration;
+            } catch (err) {
+                console.error(`Drop distance error for ${_id}:`, err.message);
+            }
+
+            return {
+                requestId: _id,
+                vehicleName,
+                vehicleImage,
+                isBidding,
+                isAccepted,
+                totalPayment,
+                pickupLatitude,
+                pickupLongitude,
+                dropLatitude,
+                dropLongitude,
+                pickupDistance,
+                pickupDuration,
+                dropDistance,
+                dropDuration,
+                arrivalTime: getArrivalTime(pickupDuration),
+                userName: userId?.fullName || '',
+            };
+        }));
+
+        return res.json({
+            success: true,
+            message: `${enrichedRequests.length} Request(s) Incoming`,
+            data: enrichedRequests
+        });
+
+    } catch (error) {
+        console.error('Error in /order-assign:', error);
+        return res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    }
+};
 
 module.exports = {
     saveDriverLocation,
@@ -938,4 +1027,5 @@ module.exports = {
     pickupSendOtp,
     pickupVerifyOtp,
     getDriverLocation,
+    ftlOrderAssign
 };

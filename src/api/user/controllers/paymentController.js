@@ -359,6 +359,7 @@ const ftlOrderInitiate = async (req, res) => {
             shippingCost,
             specialHandling,
             transactionDate: new Date(),
+            isAccepted: 0,
 
             vehcileName: vehicleDetail.name,
             vechileImage: vehicleDetail.vechileImage,
