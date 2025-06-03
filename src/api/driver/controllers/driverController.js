@@ -42,6 +42,12 @@ const createDriver = async (req, res) => {
         const step = parseInt(getField("step"), 10);
         // const driverId = getField("driverId");
         const driverId = req.header("driverid");
+        const serviceType = req.header("serviceid");
+
+        if (!serviceType) {
+            return res.status(200).json({ success: false, message: 'ServiceType is Required.' });
+        }
+
         let update = {};
         let existingDriver = null;
 
@@ -210,9 +216,10 @@ const createDriver = async (req, res) => {
                 update.status = 1;
                 update.step = 1;
 
-                update.deviceType = req.header('devicetype')
-                update.deviceToken = req.header('devicetoken')
-                update.deviceId = req.header('deviceid')
+                update.deviceType = req.header('devicetype');
+                update.deviceToken = req.header('devicetoken');
+                update.deviceId = req.header('deviceid');
+                update.serviceType = serviceType;
 
                 driver = new DriverProfile(update);
                 await driver.save();

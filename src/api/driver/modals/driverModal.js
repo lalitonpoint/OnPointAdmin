@@ -72,7 +72,9 @@ const driverProfileSchema = new mongoose.Schema({
     }, deviceId: {
         type: String,
         default: ''
-    }
+    },
+    serviceType: { type: mongoose.Schema.Types.ObjectId, ref: 'services', required: true },
+
 
 }, { timestamps: true });
 
