@@ -1028,35 +1028,35 @@ const ftlUpdateOrderStatus = async (req, res) => {
 
         // Validate required fields
         if (!requestId) {
-            return res.status(400).json({ success: false, message: 'Request Id is required' });
+            return res.status(200).json({ success: false, message: 'Request Id is required' });
         }
         if (isAccepted === undefined || isAccepted === null) {
-            return res.status(400).json({ success: false, message: 'isAccepted is required' });
+            return res.status(200).json({ success: false, message: 'isAccepted is required' });
         }
         if (!driverId) {
-            return res.status(400).json({ success: false, message: 'Missing driverId in headers' });
+            return res.status(200).json({ success: false, message: 'Missing driverId in headers' });
         }
 
         // Step-specific check for acceptance
         if (step === 0) {
             if (![1, 2, 3].includes(isAccepted)) {
-                return res.status(400).json({ success: false, message: 'Invalid isAccepted Value' });
+                return res.status(200).json({ success: false, message: 'Invalid isAccepted Value' });
             }
             await FTL.updateOne({ _id: requestId }, { $set: { isAccepted } });
         }
 
         // Validate status and step
         if (isNaN(orderStatus) || ![0, 1, 2, 3, 4, 5].includes(orderStatus)) {
-            return res.status(400).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
+            return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
         }
         if (isNaN(step) || ![0, 1, 2, 3, 4, 5].includes(step)) {
-            return res.status(400).json({ success: false, message: 'Invalid step. Must be between 0 and 5.' });
+            return res.status(200).json({ success: false, message: 'Invalid step. Must be between 0 and 5.' });
         }
 
         // Step-specific expected status mapping
         const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 3, 4: 4 };
         if (stepStatusMap.hasOwnProperty(step) && orderStatus !== stepStatusMap[step]) {
-            return res.status(400).json({ success: false, message: 'Order Status is not aligned with Step' });
+            return res.status(200).json({ success: false, message: 'Order Status is not aligned with Step' });
         }
 
         const order = await FTL.findById(requestId).populate('userId', 'fullName mobileNumber countryCode');
@@ -1065,7 +1065,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
         }
 
         if (order.isAccepted === 0) {
-            return res.status(400).json({ success: false, message: 'Please accept the order first' });
+            return res.status(200).json({ success: false, message: 'Please accept the order first' });
         }
 
         const now = new Date();
