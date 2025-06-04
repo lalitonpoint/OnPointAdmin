@@ -18,9 +18,7 @@ const shipmentSchema = new mongoose.Schema({
     warehouseAddress: {
         type: String
     },
-    warehouseMessage: {
-        type: String
-    },
+
     pincode: {
         type: Number
     },

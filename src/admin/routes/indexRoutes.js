@@ -26,6 +26,7 @@ const faqRoutes = require('./faqManagement/faqRoutes'); // Ensure correct path
 const vendorRoutes = require('./vendorManagement/vendorRoutes'); // Ensure correct path
 const trackingRoutes = require('./websiteManagement/trackingRoutes'); // Ensure correct path
 const ptlPackagesRoutes = require('./ptlPackages/ptlPackagesRoutes'); // Ensure correct path
+const webWarehouseRoutes = require('./websiteManagement/warehouseRoutes'); // Ensure correct path
 
 // Use a base path for login routes
 
@@ -47,6 +48,7 @@ router.use('/blogs', blogsRoutes);
 router.use('/gallery', galleryRoutes);
 router.use('/contactUs', contactRoutes);
 router.use('/testimonial', testimonialRoutes);
+router.use('/webWarehouse', webWarehouseRoutes);
 
 router.use('/document', documentRoutes);
 router.use('/driver', driverRoutes);

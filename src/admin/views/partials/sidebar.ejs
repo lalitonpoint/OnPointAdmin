@@ -97,7 +97,13 @@
                     </li>
                     <li class="sub-item <%= session?.sidebar?.manageTracking ? '' : 'd-none' %>">
                         <a href="/tracking/trackingPage" class="nav-link sub-link"><i
-                                class="bi bi-chat-quote me-2"></i>Tracking Management</a>
+                                class="bi bi-building-gear me-2"></i>Tracking Management</a>
+                    </li>
+                    <li class="sub-item <%= session?.sidebar?.webWarehouse ? '' : 'd-none' %>">
+                        <a href="/webWarehouse/warehouseManagement" class="nav-link sub-link"><i
+                                class="bi bi-house-door-fill"></i>
+                            </i>Warehouse
+                            Management</a>
                     </li>
                 </ul>
             </li>

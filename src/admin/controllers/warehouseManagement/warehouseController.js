@@ -113,7 +113,6 @@ const addWarehouse = async (req, res) => {
                 warehouseAddress = [''],
                 warehouseLatitude = [''],
                 warehouseLongitude = [''],
-                warehouseMessage = [''],
                 pincode = [''],
                 phone = ['']
             } = fields;
@@ -124,7 +123,6 @@ const addWarehouse = async (req, res) => {
             const address = warehouseAddress[0]?.trim() || null;
             const latitude = warehouseLatitude[0] || null;
             const longitude = warehouseLongitude[0] || null;
-            const message = warehouseMessage[0] || null;
             const zip = pincode[0].trim();
             const contact = phone[0]?.trim() || null;
 
@@ -148,7 +146,6 @@ const addWarehouse = async (req, res) => {
                 pincode: zip,
                 phone: contact,
                 createdAt: new Date(),
-                warehouseMessage: message
             });
 
             await newWarehouse.save();
@@ -200,7 +197,6 @@ const updateWarehouse = async (req, res) => {
             const phone = fields.phone ? fields.phone[0] : '';
             const warehouseLatitude = fields.warehouseLatitude ? fields.warehouseLatitude[0] : '';
             const warehouseLongitude = fields.warehouseLongitude ? fields.warehouseLongitude[0] : '';
-            const warehouseMessage = fields.warehouseMessage ? fields.warehouseMessage[0] : '';
             // const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
             // const deliveryTime = fields.deliveryTime ? fields.deliveryTime[0] : '';
             // const file = files.pod ? files.pod[0] : null;
@@ -250,7 +246,6 @@ const updateWarehouse = async (req, res) => {
                     warehouseAddress,
                     warehouseLatitude,
                     warehouseLongitude,
-                    warehouseMessage,
                     pincode,
                     phone,
                     deliveryStatus: updatedDeliveryStatus // ✅ save the updated object

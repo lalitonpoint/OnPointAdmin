@@ -1,7 +1,7 @@
 const Testimonial = require('../../../admin/models/websiteManagement/testimonialModel');
 const Blog = require('../../../admin/models/websiteManagement/blogModel');
 const Banner = require('../../../admin/models/websiteManagement/bannerModel');
-const Warehouse = require('../../../admin/models/warehouseManagemnet/warehouseModal');
+const Warehouse = require('../../../admin/models/websiteManagement/warehouseModal');
 
 // Fetch Testimonials, Blogs & Contact Us Data
 const getWebsiteData = async (req, res) => {
