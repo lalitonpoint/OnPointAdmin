@@ -960,11 +960,13 @@ const ftlOrderAssign = async (req, res) => {
                 dropLatitude,
                 dropLongitude,
                 userId,
-                vehicleName,
-                vehicleImage,
+                vechileImage,
+                vehcileName,
                 isBidding,
                 isAccepted,
-                totalPayment
+                totalPayment,
+                dropAddress,
+                pickupAddress
             } = req;
 
             let pickupDistance = 0, pickupDuration = 0;
@@ -988,15 +990,17 @@ const ftlOrderAssign = async (req, res) => {
 
             return {
                 requestId: _id,
-                vehicleName,
-                vehicleImage,
+                vehcileName,
+                vechileImage,
                 isBidding,
                 isAccepted,
                 totalPayment,
                 pickupLatitude,
                 pickupLongitude,
+                pickupAddress,
                 dropLatitude,
                 dropLongitude,
+                dropAddress,
                 pickupDistance,
                 pickupDuration,
                 dropDistance,
