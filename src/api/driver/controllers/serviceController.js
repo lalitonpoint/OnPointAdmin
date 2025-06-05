@@ -1028,7 +1028,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
         form.parse(req, async (err, fields, files) => {
             if (err) {
                 console.error("Error parsing form data:", err);
-                return res.status(400).json({ success: false, message: "Failed to parse form data" });
+                return res.status(200).json({ success: false, message: "Failed to parse form data" });
             }
 
             const id = fields.assignId?.[0] || '';
@@ -1039,34 +1039,34 @@ const ftlUpdateOrderStatus = async (req, res) => {
             const driverId = req.header('driverid');
 
             // Basic validations
-            if (!requestId) return res.status(400).json({ success: false, message: 'Request Id is required' });
-            if (isAccepted === undefined || isAccepted === null) return res.status(400).json({ success: false, message: 'isAccepted is required' });
-            if (!driverId) return res.status(400).json({ success: false, message: 'Missing driverId in headers' });
+            if (!requestId) return res.status(200).json({ success: false, message: 'Request Id is required' });
+            if (isAccepted === undefined || isAccepted === null) return res.status(200).json({ success: false, message: 'isAccepted is required' });
+            if (!driverId) return res.status(200).json({ success: false, message: 'Missing driverId in headers' });
 
             // Step 0 specific acceptance validation
             if (step === 0) {
                 if (![1, 2, 3].includes(isAccepted)) {
-                    return res.status(400).json({ success: false, message: 'Invalid isAccepted value' });
+                    return res.status(200).json({ success: false, message: 'Invalid isAccepted value' });
                 }
                 await FTL.updateOne({ _id: requestId }, { $set: { isAccepted } });
             }
 
             if (![0, 1, 2, 3, 4, 5].includes(orderStatus)) {
-                return res.status(400).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
+                return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
             }
 
             if (![0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(step)) {
-                return res.status(400).json({ success: false, message: 'Invalid step. Must be between 0 and 9.' });
+                return res.status(200).json({ success: false, message: 'Invalid step. Must be between 0 and 9.' });
             }
 
             const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 3, 8: 4, 9: 4 };
             if (stepStatusMap[step] !== orderStatus) {
-                return res.status(400).json({ success: false, message: 'Order status is not aligned with step' });
+                return res.status(200).json({ success: false, message: 'Order status is not aligned with step' });
             }
 
             const order = await FTL.findById(requestId).populate('userId', 'fullName mobileNumber countryCode');
             if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
-            if (order.isAccepted === 0) return res.status(400).json({ success: false, message: 'Please accept the order first' });
+            if (order.isAccepted === 0) return res.status(200).json({ success: false, message: 'Please accept the order first' });
 
             const now = new Date();
             const updateFields = { orderStatus: stepStatusMap[step], step };
@@ -1106,7 +1106,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 const pod = files.pod?.[0];
 
                 if (!recipientName || !confirmNumber || !pod) {
-                    return res.status(400).json({ success: false, message: 'recipientName, confirmNumber, and pod are required.' });
+                    return res.status(200).json({ success: false, message: 'recipientName, confirmNumber, and pod are required.' });
                 }
 
                 const result = await uploadImage(pod);
