@@ -38,6 +38,11 @@ const InitiatePaymentSchema = new mongoose.Schema({
     vehcileBodyType: { type: String },
     vehcileCapacity: { type: String },
     vehcileTireType: { type: String },
+    recipientName: { type: String },
+    confirmNumber: { type: String },
+    pod: { type: String },
+    loadingTime: { type: String },
+    unloadingTime: { type: String },
 
 }, { timestamps: true });
 

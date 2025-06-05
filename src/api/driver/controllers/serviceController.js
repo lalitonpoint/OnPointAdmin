@@ -1021,137 +1021,164 @@ const ftlOrderAssign = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server Error", error: error.message });
     }
 };
-
 const ftlUpdateOrderStatus = async (req, res) => {
+    const form = new multiparty.Form({ maxFilesSize: 100 * 1024 * 1024 });
+
     try {
-        let { status, step, requestId, isAccepted } = req.body;
-        const driverId = req.header('driverid');
-
-        // Parse input
-        const orderStatus = parseInt(status, 10);
-        step = parseInt(step, 10);
-
-        // Validate required fields
-        if (!requestId) {
-            return res.status(200).json({ success: false, message: 'Request Id is required' });
-        }
-        if (isAccepted === undefined || isAccepted === null) {
-            return res.status(200).json({ success: false, message: 'isAccepted is required' });
-        }
-        if (!driverId) {
-            return res.status(200).json({ success: false, message: 'Missing driverId in headers' });
-        }
-
-        // Step-specific check for acceptance
-        if (step === 0) {
-            if (![1, 2, 3].includes(isAccepted)) {
-                return res.status(200).json({ success: false, message: 'Invalid isAccepted Value' });
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                console.error("Error parsing form data:", err);
+                return res.status(400).json({ success: false, message: "Failed to parse form data" });
             }
-            await FTL.updateOne({ _id: requestId }, { $set: { isAccepted } });
-        }
 
-        // Validate status and step
-        if (isNaN(orderStatus) || ![0, 1, 2, 3, 4, 5].includes(orderStatus)) {
-            return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
-        }
-        if (isNaN(step) || ![0, 1, 2, 3, 4, 5].includes(step)) {
-            return res.status(200).json({ success: false, message: 'Invalid step. Must be between 0 and 5.' });
-        }
+            const id = fields.assignId?.[0] || '';
+            const orderStatus = parseInt(fields.status?.[0], 10);
+            const step = parseInt(fields.step?.[0], 10);
+            const requestId = fields.requestId?.[0];
+            const isAccepted = parseInt(fields.isAccepted?.[0], 10);
+            const driverId = req.header('driverid');
 
-        // Step-specific expected status mapping
-        const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 3, 4: 4 };
-        if (stepStatusMap.hasOwnProperty(step) && orderStatus !== stepStatusMap[step]) {
-            return res.status(200).json({ success: false, message: 'Order Status is not aligned with Step' });
-        }
+            // Basic validations
+            if (!requestId) return res.status(400).json({ success: false, message: 'Request Id is required' });
+            if (isAccepted === undefined || isAccepted === null) return res.status(400).json({ success: false, message: 'isAccepted is required' });
+            if (!driverId) return res.status(400).json({ success: false, message: 'Missing driverId in headers' });
 
-        const order = await FTL.findById(requestId).populate('userId', 'fullName mobileNumber countryCode');
-        if (!order) {
-            return res.status(404).json({ success: false, message: 'Order not found' });
-        }
-
-        if (order.isAccepted === 0) {
-            return res.status(200).json({ success: false, message: 'Please accept the order first' });
-        }
-
-        const now = new Date();
-        const updateFields = {
-            orderStatus,
-            step
-        };
-
-        // Mark delivery status steps complete up to current
-        for (let i = order.orderStatus + 1; i <= orderStatus; i++) {
-            if (order.deliveryStatus?.[i]?.status !== 1 || !order.deliveryStatus[i]?.deliveryDateTime) {
-                updateFields[`deliveryStatus.${i}.status`] = 1;
-                updateFields[`deliveryStatus.${i}.deliveryDateTime`] = now;
+            // Step 0 specific acceptance validation
+            if (step === 0) {
+                if (![1, 2, 3].includes(isAccepted)) {
+                    return res.status(400).json({ success: false, message: 'Invalid isAccepted value' });
+                }
+                await FTL.updateOne({ _id: requestId }, { $set: { isAccepted } });
             }
-        }
 
-        // Adjust orderStatus based on step logic
-        const stepUpdates = { 1: 1, 2: 3, 3: 4 };
-        if (step in stepUpdates) {
-            updateFields.orderStatus = stepUpdates[step];
-        }
-
-        // Apply update to DB
-        await FTL.updateOne({ _id: requestId }, { $set: updateFields });
-
-        // Get driver location
-        const driverLocation = await getDriverLocation(driverId);
-        if (!driverLocation || !driverLocation.lat || !driverLocation.long) {
-            return res.status(500).json({ success: false, message: 'Unable to retrieve driver location' });
-        }
-
-        const { lat, long } = driverLocation;
-
-        // Get distance & duration
-        const pickupResult = await getDistanceAndDuration(lat, long, order.pickupLatitude, order.pickupLongitude);
-        const dropResult = await getDistanceAndDuration(order.pickupLatitude, order.pickupLongitude, order.dropLatitude, order.dropLongitude);
-
-        const user = order.userId;
-        const userContact = user?.countryCode + user?.mobileNumber;
-
-        // UI map
-        const uiMap = {
-            0: { topHeader: 'Start Trip', bottomHeader: 'Way To Pickup', buttonText: 'Go Now', message: 'Order Accepted' },
-            1: { topHeader: 'Arrived', bottomHeader: 'Arrived', buttonText: 'Arrived to Pickup Location', message: 'Arrived At Pickup Location' },
-            2: { topHeader: 'Start Trip', bottomHeader: 'Way To Drop Location', buttonText: 'Go Now', message: 'Way to Drop Location' },
-            3: { topHeader: 'Arrived', bottomHeader: 'Arrived', buttonText: 'Arrived at Drop Location', message: 'Arrived at Drop Location' },
-            4: { topHeader: 'Delivered', bottomHeader: 'Delivered', buttonText: 'Delivered at User Location', message: 'Delivered at User Location' },
-        };
-
-        const ui = uiMap[step] || { message: 'Order status updated successfully' };
-
-        return res.status(200).json({
-            success: true,
-            message: ui.message,
-            data: {
-                topHeader: ui.topHeader,
-                bottomHeader: ui.bottomHeader,
-                buttonText: ui.buttonText,
-                pickupDistance: pickupResult?.distanceInKm || 0,
-                pickupDuration: pickupResult?.duration || 'N/A',
-                dropDistance: dropResult?.distanceInKm || 0,
-                dropDuration: dropResult?.duration || 'N/A',
-                userName: user?.fullName || '',
-                userId: user?._id || '',
-                userContact,
-                pickupAddress: order.pickupAddress,
-                dropAddress: order.dropAddress,
-                pickupLatitude: order.pickupLatitude,
-                pickupLongitude: order.pickupLongitude,
-                dropLatitude: order.dropLatitude,
-                dropLongitude: order.dropLongitude,
-                totalPayment: order.totalPayment,
-                step,
-                orderStatus: updateFields.orderStatus,
-                vehcileName: order.vehcileName,
-                vechileImage: order.vechileImage,
-                vehcileBodyType: order.vehcileBodyType,
-
+            if (![0, 1, 2, 3, 4, 5].includes(orderStatus)) {
+                return res.status(400).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
             }
+
+            if (![0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(step)) {
+                return res.status(400).json({ success: false, message: 'Invalid step. Must be between 0 and 9.' });
+            }
+
+            const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 3, 8: 4, 9: 4 };
+            if (stepStatusMap[step] !== orderStatus) {
+                return res.status(400).json({ success: false, message: 'Order status is not aligned with step' });
+            }
+
+            const order = await FTL.findById(requestId).populate('userId', 'fullName mobileNumber countryCode');
+            if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+            if (order.isAccepted === 0) return res.status(400).json({ success: false, message: 'Please accept the order first' });
+
+            const now = new Date();
+            const updateFields = { orderStatus: stepStatusMap[step], step };
+
+            // Mark delivery steps as complete
+            for (let i = order.orderStatus + 1; i <= orderStatus; i++) {
+                if (!order.deliveryStatus?.[i]?.status || !order.deliveryStatus[i]?.deliveryDateTime) {
+                    updateFields[`deliveryStatus.${i}.status`] = 1;
+                    updateFields[`deliveryStatus.${i}.deliveryDateTime`] = now;
+                }
+            }
+
+            // Step-specific data
+            if (step === 4) {
+                const loadingTime = parseInt(fields.loadingTime?.[0], 10);
+
+                if (!loadingTime) {
+                    return res.status(200).json({ success: false, message: 'loadingTime are required.' });
+                }
+
+                updateFields.loadingTime = loadingTime; // Assign loadingTime
+            }
+
+            if (step === 8) {
+                const unloadingTime = parseInt(fields.unloadingTime?.[0], 10);
+
+                if (!unloadingTime) {
+                    return res.status(200).json({ success: false, message: 'unloadingTime are required.' });
+                }
+
+                updateFields.unloadingTime = unloadingTime; // Assign unloadingTime
+            }
+
+            if (step === 9) {
+                const recipientName = fields.recipientName?.[0] || null;
+                const confirmNumber = fields.confirmNumber?.[0] || null;
+                const pod = files.pod?.[0];
+
+                if (!recipientName || !confirmNumber || !pod) {
+                    return res.status(400).json({ success: false, message: 'recipientName, confirmNumber, and pod are required.' });
+                }
+
+                const result = await uploadImage(pod);
+                if (!result.success) {
+                    console.error("Error uploading image:", result.error || result.message);
+                    return res.status(500).json({ success: false, message: "Failed to upload POD image" });
+                }
+
+                updateFields.recipientName = recipientName;
+                updateFields.confirmNumber = confirmNumber;
+                updateFields.pod = result.url;
+            }
+
+            await FTL.updateOne({ _id: requestId }, { $set: updateFields });
+
+            // Driver location
+            const driverLocation = await getDriverLocation(driverId);
+            if (!driverLocation?.lat || !driverLocation?.long) {
+                return res.status(500).json({ success: false, message: 'Unable to retrieve driver location' });
+            }
+
+            const pickupResult = await getDistanceAndDuration(driverLocation.lat, driverLocation.long, order.pickupLatitude, order.pickupLongitude);
+            const dropResult = await getDistanceAndDuration(order.pickupLatitude, order.pickupLongitude, order.dropLatitude, order.dropLongitude);
+
+            const user = order.userId;
+            const userContact = user ? `${user.countryCode}${user.mobileNumber}` : '';
+
+            const uiMap = {
+                0: { topHeader: 'Start Trip', bottomHeader: 'Way To Pickup', buttonText: 'Go Now', message: 'Order Accepted' },
+                1: { topHeader: 'Arriving', bottomHeader: 'Arriving', buttonText: 'Arrived to Pickup Location', message: 'Arriving At Pickup Location' },
+                2: { topHeader: 'Arrived', bottomHeader: 'Arrived', buttonText: 'Start Loading', message: 'Arrived At Pickup Location' },
+                3: { topHeader: 'Start Loading', bottomHeader: 'Loading... ', buttonText: 'Loading Complete', message: 'Start Loading' },
+                4: { topHeader: 'Start Trip', bottomHeader: 'Way To Drop Location', buttonText: 'Go Now', message: 'Way to Drop Location' },
+                5: { topHeader: 'Arriving', bottomHeader: 'Arriving', buttonText: 'Arrived at Drop Location', message: 'Arrived at Drop Location' },
+                6: { topHeader: 'Start Unloading', bottomHeader: 'Unload', buttonText: 'Start Unloading', message: 'Start Unloading' },
+                7: { topHeader: 'Unloading', bottomHeader: 'Unloading', buttonText: 'Mark Delivered', message: 'Unloading Complete' },
+                8: { topHeader: 'Confirm Delivery', bottomHeader: 'POD', buttonText: 'Submit', message: 'Accepting Pod' },
+                9: { topHeader: 'Delivered', bottomHeader: 'Delivered', buttonText: 'Delivered at User Location', message: 'Delivered at User Location' },
+            };
+
+            const ui = uiMap[step] || { message: 'Order status updated successfully' };
+
+            return res.status(200).json({
+                success: true,
+                message: ui.message,
+                data: {
+                    topHeader: ui.topHeader,
+                    bottomHeader: ui.bottomHeader,
+                    buttonText: ui.buttonText,
+                    pickupDistance: pickupResult?.distanceInKm || 0,
+                    pickupDuration: pickupResult?.duration || 'N/A',
+                    dropDistance: dropResult?.distanceInKm || 0,
+                    dropDuration: dropResult?.duration || 'N/A',
+                    userName: user?.fullName || '',
+                    userId: user?._id || '',
+                    userContact,
+                    pickupAddress: order.pickupAddress,
+                    dropAddress: order.dropAddress,
+                    pickupLatitude: order.pickupLatitude,
+                    pickupLongitude: order.pickupLongitude,
+                    dropLatitude: order.dropLatitude,
+                    dropLongitude: order.dropLongitude,
+                    totalPayment: order.totalPayment,
+                    step,
+                    orderStatus: updateFields.orderStatus,
+                    vehcileName: order.vehcileName,
+                    vechileImage: order.vechileImage,
+                    vehcileBodyType: order.vehcileBodyType,
+                }
+            });
+
         });
-
     } catch (error) {
         console.error("Internal error:", error);
         return res.status(500).json({
@@ -1161,6 +1188,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
         });
     }
 };
+
 
 
 const bidding = async (req, res) => {
