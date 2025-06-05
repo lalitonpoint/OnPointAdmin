@@ -41,8 +41,8 @@ const InitiatePaymentSchema = new mongoose.Schema({
     recipientName: { type: String },
     confirmNumber: { type: String },
     pod: { type: String },
-    loadingTime: { type: String },
-    unloadingTime: { type: String },
+    loadingTime: { type: String }, // time in minutes
+    unloadingTime: { type: String },  // time in minutes
 
 }, { timestamps: true });
 
