@@ -514,7 +514,7 @@ const biddingDetail = async (req, res) => {
         });
 
         // Step 6: Construct final output
-        const result = [{
+        const result = {
             pickupAddress: ftlData.pickupAddress,
             dropAddress: ftlData.dropAddress,
             pickupLatitude: ftlData.pickupLatitude,
@@ -529,7 +529,7 @@ const biddingDetail = async (req, res) => {
             dropDistance: drop.distanceInKm,
             dropDuration: drop.duration,
             bidding: bidding
-        }];
+        };
 
         return res.status(200).json({
             success: true,
