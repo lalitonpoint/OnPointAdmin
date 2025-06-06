@@ -16,7 +16,7 @@ const masterDetail = async (req, res) => {
     try {
         const driverId = req.header('driverid');
         if (!driverId) {
-            return res.status(400).json({ success: false, message: "Driver ID is required in headers." });
+            return res.status(200).json({ success: false, message: "Driver ID is required in headers." });
         }
 
         const driverData = await DriverModal.findOne({ _id: driverId, status: 1 }).lean();

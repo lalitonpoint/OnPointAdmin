@@ -258,12 +258,13 @@ const ftlOrderInitiate = async (req, res) => {
             pickupAddress,
             dropAddress,
             isBidding,
-            vehcileId // Typo retained as per your code; corrected below
+            vehcileId,
+            estimatePrice
         } = req.body;
 
         const userId = req.headers['userid'];
         if (!userId) {
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "User ID is required in headers."
             });
@@ -277,12 +278,13 @@ const ftlOrderInitiate = async (req, res) => {
             dropLongitude,
             pickupAddress,
             dropAddress,
-            vehcileId
+            vehcileId,
+            estimatePrice
         };
 
         for (const [field, value] of Object.entries(requiredFields)) {
             if (!value || typeof value !== 'string') {
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `${field} is required and must be a string.`
                 });
@@ -291,7 +293,7 @@ const ftlOrderInitiate = async (req, res) => {
 
         const isBiddingNum = parseInt(isBidding);
         if (![0, 1].includes(isBiddingNum)) {
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "isBidding must be 0 or 1."
             });
@@ -317,7 +319,7 @@ const ftlOrderInitiate = async (req, res) => {
         );
 
         if (!costResult || !costResult.totalPayment) {
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: costResult?.message || 'Failed to calculate delivery charges.'
             });
@@ -362,6 +364,7 @@ const ftlOrderInitiate = async (req, res) => {
             specialHandling,
             transactionDate: new Date(),
             isAccepted: 0,
+            estimatePrice,
 
             vehcileName: vehicleDetail.name,
             vechileImage: vehicleDetail.vechileImage,
@@ -449,7 +452,7 @@ const biddingDetail = async (req, res) => {
     const { requestId } = req.body;
 
     if (!requestId) {
-        return res.status(400).json({ success: false, message: 'requestId is required' });
+        return res.status(200).json({ success: false, message: 'requestId is required' });
     }
 
     try {
@@ -523,6 +526,7 @@ const biddingDetail = async (req, res) => {
             orderStatus: ftlData.orderStatus,
             vehcileName: ftlData.vehcileName,
             vechileImage: ftlData.vechileImage,
+            estimatePrice: ftlData.estimatePrice || 0,
             userId: ftlData.userId,
             orderId: ftlData._id,
             createdAt: ftlData.createdAt,
@@ -552,7 +556,7 @@ const acceptingRequest = async (req, res) => {
 
     // Validate required fields
     if (!requestId || !driverId || !isAccepted) {
-        return res.status(400).json({
+        return res.status(200).json({
             success: false,
             message: 'requestId , isAccepted and driverId are required',
         });
