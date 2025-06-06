@@ -241,6 +241,7 @@ const ftlOrderCancel = async (req, res) => {
                 order,
                 ftlPayment: result,
             },
+            message: "Order Cancel Successfully"
         });
     } catch (err) {
         console.error('Error processing order cancel:', err);
