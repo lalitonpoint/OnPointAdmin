@@ -1,6 +1,8 @@
 const Order = require('../../../api/user/models/paymentModal');
 const driverPackageAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 const driverModal = require('../../driver/modals/driverModal');
+const FTL = require('../models/ftlPaymentModal');
+
 
 // const getOrderList = async (req, res) => {
 //     const userId = req.headers['userid'];
@@ -204,5 +206,52 @@ const singleOrderDetail = async (req, res) => {
     }
 };
 
+const ftlOrderCancel = async (req, res) => {
+    const { status, requestId } = req.body;
 
-module.exports = { getOrderList, singleOrderDetail };
+    // Validate inputs
+    if (status != 5 || !requestId) {
+        return res.status(200).json({
+            success: false,
+            message: 'requestId is required and status must be 5',
+        });
+    }
+
+    try {
+        // Find the latest order by requestId (assuming orderId === requestId or adjust accordingly)
+        const order = await FTL.findOne({ _id: requestId }).sort({ createdAt: -1 });
+
+        if (!order) {
+            return res.status(200).json({
+                success: false,
+                message: 'Order not found',
+            });
+        }
+
+        // Update the FtlPayment status to 5 (cancelled)
+        const result = await FTL.findOneAndUpdate(
+            { _id: requestId },
+            { $set: { orderStatus: 5 } },
+            { new: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                order,
+                ftlPayment: result,
+            },
+        });
+    } catch (err) {
+        console.error('Error processing order cancel:', err);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: err.message,
+        });
+    }
+};
+
+
+
+module.exports = { getOrderList, singleOrderDetail, ftlOrderCancel };
