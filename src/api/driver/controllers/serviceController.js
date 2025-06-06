@@ -941,7 +941,7 @@ const ftlOrderAssign = async (req, res) => {
         }
 
         // Correct MongoDB query syntax
-        const incomingRequests = await FTL.find({ isAccepted: 0, transactionStatus: 1 })
+        const incomingRequests = await FTL.find({ isAccepted: 0 })
             .sort({ createdAt: -1 })
             .populate('userId', 'fullName')
             .lean();
