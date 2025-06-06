@@ -2,9 +2,7 @@ const Rating = require('../models/ratingModal')
 
 const driverRating = async (req, res) => {
     try {
-        const { rating, comment } = req.body;
-
-        const driverId = req.header('driverid')
+        const { driverId, rating, comment } = req.body;
 
         const userId = req.headers['userid'];
 

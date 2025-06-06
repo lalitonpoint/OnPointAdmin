@@ -6,6 +6,7 @@ const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate
 const Vehicle = require('../../../admin/models/vehcileManagement/truckManagementModel');
 const Rating = require('../../user/models/ratingModal'); // Adjust path as per your project
 const Bidding = require('../../driver/modals/biddingModal'); // Adjust path as per your project
+const mongoose = require('mongoose');
 
 const razorpay = require('../utils/razorpay');
 const crypto = require('crypto');
@@ -443,7 +444,6 @@ const ftlVerifyPayment = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error verifying payment', error: error.message });
     }
 };
-const mongoose = require('mongoose');
 
 const biddingDetail = async (req, res) => {
     const { requestId } = req.body;
@@ -547,7 +547,46 @@ const biddingDetail = async (req, res) => {
 };
 
 
+const acceptingRequest = async (req, res) => {
+    const { requestId, driverId, isAccepted } = req.body;
+
+    // Validate required fields
+    if (!requestId || !driverId || !isAccepted) {
+        return res.status(400).json({
+            success: false,
+            message: 'requestId , isAccepted and driverId are required',
+        });
+    }
+
+    try {
+        let result = null;
+
+        // Only update if the request is accepted
+        if (isAccepted == 1) {
+            result = await FtlPayment.findOneAndUpdate(
+                { _id: requestId },
+                { $set: { isAccepted: 1, driverId } },
+                { new: true }
+            );
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: result,
+            message: isAccepted == 1 ? 'Request accepted successfully' : 'No update performed',
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message,
+        });
+    }
+};
+
+
 
 //////////////////////////////FTL Order Initiate///////////////////////////////////
 
-module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment, biddingDetail };
+module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment, biddingDetail, acceptingRequest };
