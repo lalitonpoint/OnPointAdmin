@@ -533,7 +533,8 @@ const biddingDetail = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            data: result
+            data: result,
+            message: "Bidding Fetch Successfully"
         });
 
     } catch (error) {
