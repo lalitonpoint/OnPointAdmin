@@ -6,6 +6,7 @@ const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate
 const Vehicle = require('../../../admin/models/vehcileManagement/truckManagementModel');
 const Rating = require('../../user/models/ratingModal'); // Adjust path as per your project
 const Bidding = require('../../driver/modals/biddingModal'); // Adjust path as per your project
+// const Rating = require('../models/ratingModal'); // Adjust path as per your project
 const mongoose = require('mongoose');
 
 const razorpay = require('../utils/razorpay');
@@ -589,8 +590,83 @@ const acceptingRequest = async (req, res) => {
     }
 };
 
+const ftlIntiatePayment = async (req, res) => {
+    try {
+        const { requestId } = req.body;
+
+        if (!requestId) {
+            return res.status(200).json({
+                success: false,
+                message: 'requestId is required',
+            });
+        }
+
+        const result = await FtlPayment.findOne({ _id: requestId })
+            .populate({ path: 'driverId', select: 'personalInfo vehicleDetail' })
+            .lean();
+        // console.log(result);
+        // process.exit()
+
+        if (!result) {
+            return res.status(404).json({
+                success: false,
+                message: 'FTL Payment data not found',
+            });
+        }
+
+        const driverId = result.driverId?._id;
+
+        // Aggregate to calculate average rating
+        const ratingData = await Rating.aggregate([
+            { $match: { driverId } },
+            {
+                $group: {
+                    _id: '$driverId',
+                    avgRating: { $avg: '$rating' },
+                    totalReviews: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const averageRating = ratingData[0]?.avgRating || 0;
+        const totalReviews = ratingData[0]?.totalReviews || 0;
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                vehicleName: result.vehcileName || '',
+                vehicleImage: result.vechileImage || '',
+                vehicleBodyType: result.vehcileBodyType || '',
+                vehicleCapacity: result.vehcileCapacity || '',
+                numberPlate: result.driverId?.vehicleDetail?.plateNumber || '',
+                pickupAddress: result.pickupAddress || '',
+                dropAddress: result.dropAddress || '',
+                driverName: result.driverId?.personalInfo?.name || '',
+                preTransactionId: result.preTransactionId || '',
+                averageRating: parseFloat(averageRating.toFixed(1)),
+                // totalReviews,
+                subtotal: result.subTotal || 0,
+                shippingCost: result.shippingCost || 0,
+                specialHandling: result.specialHandling || 0,
+                gst: result.gst || 0,
+                gstPercentage: 18,
+                paymentPercentage: 80,
+                totalPayment: result.totalPayment || 0,
+                initialPayment: 5678,
+                postPayment: 197,
+            },
+            message: 'FTL Payment details fetched successfully',
+        });
+    } catch (error) {
+        console.error('Error in ftlIntiatePayment:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
+};
 
 
 //////////////////////////////FTL Order Initiate///////////////////////////////////
 
-module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment, biddingDetail, acceptingRequest };
+module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment, biddingDetail, acceptingRequest, ftlIntiatePayment };

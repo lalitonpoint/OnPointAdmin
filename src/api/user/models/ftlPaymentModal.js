@@ -44,7 +44,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     loadingTime: { type: String }, // time in minutes
     unloadingTime: { type: String },  // time in minutes
     driverId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'driverprofiles'  // corrected 'byFault' to 'default'
+        type: mongoose.Schema.Types.ObjectId, ref: 'DriverProfile'  // corrected 'byFault' to 'default'
     },
 
 }, { timestamps: true });
