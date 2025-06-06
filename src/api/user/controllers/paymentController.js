@@ -4,7 +4,8 @@ const { packageCalculation, ftlPackageCalculation } = require('../controllers/pa
 const generateOrderId = require('../utils/generateOrderId');
 const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 const Vehicle = require('../../../admin/models/vehcileManagement/truckManagementModel');
-
+const Rating = require('../../user/models/ratingModal'); // Adjust path as per your project
+const Bidding = require('../../driver/modals/biddingModal'); // Adjust path as per your project
 
 const razorpay = require('../utils/razorpay');
 const crypto = require('crypto');
@@ -442,9 +443,110 @@ const ftlVerifyPayment = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error verifying payment', error: error.message });
     }
 };
+const mongoose = require('mongoose');
+
+const biddingDetail = async (req, res) => {
+    const { requestId } = req.body;
+
+    if (!requestId) {
+        return res.status(400).json({ success: false, message: 'requestId is required' });
+    }
+
+    try {
+        // Step 1: Fetch FTL data
+        const ftlData = await FtlPayment.findById(requestId).lean();
+        if (!ftlData) {
+            return res.status(404).json({ success: false, message: 'FTL request not found' });
+        }
+
+        // Step 2: Fetch all biddings with driver info
+        const allBidding = await Bidding.find({ requestId })
+            .populate({ path: 'driverId', select: 'personalInfo' })
+            .select('driverId biddingAmount')
+            .lean();
+
+        const driverIds = allBidding.map(bid => bid.driverId?._id).filter(Boolean);
+
+        // Step 3: Get average ratings
+        const ratingAggregation = await Rating.aggregate([
+            {
+                $match: {
+                    driverId: { $in: driverIds.map(id => new mongoose.Types.ObjectId(id)) }
+                }
+            },
+            {
+                $group: {
+                    _id: '$driverId',
+                    averageRating: { $avg: '$rating' },
+                    totalRatings: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const ratingMap = {};
+        ratingAggregation.forEach(r => {
+            ratingMap[r._id.toString()] = {
+                averageRating: r.averageRating.toFixed(2),
+                totalRatings: r.totalRatings
+            };
+        });
+
+        // Step 4: Distance & Duration
+        const drop = await getDistanceAndDuration(
+            ftlData.pickupLatitude,
+            ftlData.pickupLongitude,
+            ftlData.dropLatitude,
+            ftlData.dropLongitude
+        );
+
+        // Step 5: Format bidding array
+        const bidding = allBidding.map(bid => {
+            const driverIdStr = bid.driverId?._id?.toString();
+            const rating = ratingMap[driverIdStr] || { averageRating: null };
+
+            return {
+                averageRating: rating.averageRating,
+                biddingAmount: bid.biddingAmount,
+                driverName: bid.driverId?.personalInfo?.name || 'N/A',
+                driverProfile: bid.driverId?.personalInfo?.profilePicture || null,
+                driverId: driverIdStr || null
+            };
+        });
+
+        // Step 6: Construct final output
+        const result = [{
+            pickupAddress: ftlData.pickupAddress,
+            dropAddress: ftlData.dropAddress,
+            pickupLatitude: ftlData.pickupLatitude,
+            pickupLongitude: ftlData.pickupLongitude,
+            dropLatitude: ftlData.dropLatitude,
+            orderStatus: ftlData.orderStatus,
+            vehcileName: ftlData.vehcileName,
+            vechileImage: ftlData.vechileImage,
+            userId: ftlData.userId,
+            orderId: ftlData._id,
+            createdAt: ftlData.createdAt,
+            dropDistance: drop.distanceInKm,
+            dropDuration: drop.duration,
+            bidding: bidding
+        }];
+
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching bidding details',
+            error: error.message
+        });
+    }
+};
 
 
 
 //////////////////////////////FTL Order Initiate///////////////////////////////////
 
-module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment };
+module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment, biddingDetail };
