@@ -401,10 +401,14 @@ const ftlOrderInitiate = async (req, res) => {
 
 
 const ftlVerifyPayment = async (req, res) => {
-    const { razorPayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+    const { razorPayOrderId, razorpayPaymentId, razorpaySignature, isPartialPayment } = req.body;
 
-    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature || !isPartialPayment) {
         return res.status(200).json({ success: false, message: 'Missing required fields' });
+    }
+
+    if (![0, 1, 2].includes(isPartialPayment)) {
+        return res.status(200).json({ success: false, message: 'Invaild isPartialPayment Value' });
     }
 
     const generatedSignature = crypto
@@ -437,6 +441,8 @@ const ftlVerifyPayment = async (req, res) => {
             paymentRecord.transactionStatus = 1;
             paymentRecord.postTransactionId = payment.order_id;
             paymentRecord.paymentId = payment.id;
+            paymentRecord.isPartialPayment = isPartialPayment;
+
 
             await paymentRecord.save();
 
