@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const razorpay = require('../utils/razorpay');
 const Wallet = require('../models/walletModal');
 const Payment = require('../models/paymentModal');
+const FTL = require('../models/ftlPaymentModal');
 require('dotenv').config();
 
 
@@ -148,22 +149,49 @@ const walletVerify = async (req, res) => {
 };
 
 const walletUse = async (req, res) => {
-    const { packageId, amount } = req.body;
+    const { packageId, amount, isPartialPayment } = req.body;
 
     if (typeof amount !== 'number') {
         return res.status(200).json({ success: false, message: 'Amount must be a number' });
     }
 
+    if (!packageId || !isPartialPayment) {
+        return res.status(200).json({ success: false, message: 'packageId , isPartialPayment is required' });
+
+    }
+
     const userId = req.headers['userid'];
+    const serviceType = req.headers['servicetype'];
+
     if (!userId) {
         return res.status(200).json({ success: false, message: 'User ID missing in headers' });
     }
 
+
+    if (!serviceType) {
+        return res.status(200).json({ success: false, message: 'Service Type missing in headers' });
+    }
+
+
     try {
-        const packageDetail = await Payment.findById(packageId);
-        if (!packageDetail) {
-            return res.status(200).json({ success: false, message: 'Package not found' });
+
+        let packageDetail = null;
+        let ftlDetail = null;
+
+        if (serviceType == 1) {
+            packageDetail = await Payment.findById(packageId);
+            if (!packageDetail) {
+                return res.status(200).json({ success: false, message: 'Package not found' });
+            }
+        } else if (serviceType == 2 || serviceType == 3) {
+            ftlDetail = await FTL.findById(packageId);
+            if (!ftlDetail) {
+                return res.status(200).json({ success: false, message: 'FTL Package not found' });
+            }
         }
+
+        console.log('sre', serviceType);
+
 
         const wallet = await Wallet.findOne({ userId: userId });
         if (!wallet) {
@@ -189,13 +217,27 @@ const walletUse = async (req, res) => {
         await wallet.save();
 
         // Update package/payment details
-        packageDetail.transactionStatus = 1;
-        packageDetail.preTransactionId = order_id;
-        packageDetail.postTransactionId = order_id;
-        packageDetail.paymentId = order_id;
-        packageDetail.isWalletPay = 1;
-        await packageDetail.save();
+        if (serviceType == 1) {
+            // console.log('hj')
+            packageDetail.transactionStatus = 1;
+            packageDetail.preTransactionId = order_id;
+            packageDetail.postTransactionId = order_id;
+            packageDetail.paymentId = order_id;
+            packageDetail.isWalletPay = 1;
+            await packageDetail.save();
+        }
+        else if (serviceType == 2 || serviceType == 3) {
+            // console.log('jjj')
 
+            ftlDetail.transactionStatus = 1;
+            ftlDetail.preTransactionId = order_id;
+            ftlDetail.postTransactionId = order_id;
+            ftlDetail.isWalletPay = 1;
+            ftlDetail.isPartialPayment = 1;
+            ftlDetail.paymentId = order_id;
+
+            await ftlDetail.save();
+        }
         return res.json({
             success: true,
             message: 'Wallet amount applied successfully',
