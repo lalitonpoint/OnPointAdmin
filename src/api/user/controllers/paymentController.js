@@ -341,11 +341,20 @@ const ftlOrderInitiate = async (req, res) => {
             subTotal,
             shippingCost,
             specialHandling,
+            gstPercentage,
+            prePaymentPercentage,
             gstAmount,
             totalPayment,
             distance,
             duration
         } = costResult;
+
+        let prePayment = 0, postPayment = 0;
+
+        if (isBidding && typeof totalPayment === 'number' && typeof prePaymentPercentage === 'number') {
+            prePayment = (totalPayment * prePaymentPercentage) / 100;
+            postPayment = totalPayment - prePayment;
+        }
 
         const paymentPayload = new FtlPayment({
             pickupLatitude,
@@ -366,6 +375,12 @@ const ftlOrderInitiate = async (req, res) => {
             transactionDate: new Date(),
             isAccepted: 0,
             estimatePrice,
+            gstPercentage: costResult.gstPercentage,
+            loadingTime: costResult.loadingTime,
+            unloadingTime: costResult.unloadingTime,
+            prePaymentPercentage: isBidding == 1 ? costResult.prePaymentPercentage : 0,
+            prePayment: isBidding == 1 ? prePayment : 0,
+            postPayment: isBidding == 1 ? postPayment : 0,
 
             vehcileName: vehicleDetail.name,
             vechileImage: vehicleDetail.vechileImage,

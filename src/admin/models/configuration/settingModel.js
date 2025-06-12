@@ -49,6 +49,9 @@ const SettingsSchema = new mongoose.Schema({
         fovPercentage: { type: Number, default: "" },
         fuelSurChargePercentage: { type: Number, default: "" },
         odaChargeMinimum: { type: Number, default: "" },
+        prePaymentPercentage: { type: Number, default: "" },
+        loadingTime: { type: Number, default: "" },
+        unloadingTime: { type: Number, default: "" },
     },
     firebase: {
         type: { type: String, default: "" },

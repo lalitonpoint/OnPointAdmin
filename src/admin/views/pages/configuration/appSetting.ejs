@@ -160,6 +160,29 @@
                     </div>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Pre Payment %</label>
+                        <input type="text" class="form-control" name='prePaymentPercentage' id="prePaymentPercentage"
+                            placeholder="Enter Pre Payment Percentage" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Loading Time</label>
+                        <input type="number" class="form-control" name='loadingTime' id="loadingTime"
+                            placeholder="Enter Loading Time" required>
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Unloading Time</label>
+                        <input type="number" class="form-control" name='unloadingTime' id="unloadingTime"
+                            placeholder="Enter Unloading Time" required>
+                    </div>
+
+                </div>
+
 
                 <button type="submit" class="btn btn-primary">Save</button>
             </form>
@@ -441,6 +464,9 @@
                     $('#s3Bucket').val(data.data?.s3Credentials?.s3BucketKey); // Corrected ID
                     $('#shippingCost').val(data.data?.paymentDetails?.shippingCost); // Corrected ID
                     $('#specialHandling').val(data.data?.paymentDetails?.specialHandling); // Corrected ID
+                    $('#prePaymentPercentage').val(data.data?.paymentDetails?.prePaymentPercentage); // Corrected ID
+                    $('#loadingTime').val(data.data?.paymentDetails?.loadingTime); // Corrected ID
+                    $('#unloadingTime').val(data.data?.paymentDetails?.unloadingTime); // Corrected ID
                     $('#gst').val(data.data?.paymentDetails?.gst); // Corrected ID
                     $('#odaChargeMinimum').val(data.data?.paymentDetails?.odaChargeMinimum); // Corrected ID
                     $('#fuelSurChargePercentage').val(data.data?.paymentDetails?.fuelSurChargePercentage); // Corrected ID

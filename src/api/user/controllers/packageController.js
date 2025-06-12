@@ -64,6 +64,7 @@ const packageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude,
             shippingCost,
             specialHandling,
             gstAmount,
+            gstPercentage: gst,
             totalPayment: parseFloat(totalPayment.toFixed(2)),
             distance: distanceInKm.toFixed(2),
             duration,
@@ -123,6 +124,9 @@ const fetchPaymentDetail = async () => {
                 fovPercentage: parseFloat(details.fovPercentage ?? 0.1),
                 docketCharge: parseFloat(details.docketCharge ?? 100),
                 ratePerKG: parseFloat(details.ratePerKG ?? 12),
+                prePaymentPercentage: parseFloat(details.prePaymentPercentage ?? 0),
+                loadingTime: parseInt(details.loadingTime ?? 0),
+                unloadingTime: parseInt(details.unloadingTime ?? 0)
             };
         } else {
             console.warn('No payment details found.');
@@ -162,6 +166,9 @@ const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitu
             shippingCost = 0,
             specialHandling = 0,
             gst = 18,
+            prePaymentPercentage = 0,
+            loadingTime = 0,
+            unloadingTime = 0
         } = await fetchPaymentDetail();
 
         let basePrice = isBidding == 0 ? 2000 : 0;
@@ -178,10 +185,14 @@ const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitu
             subTotal,
             shippingCost,
             specialHandling,
+            gstPercentage: gst,
             gstAmount,
             totalPayment: parseFloat(totalPayment.toFixed(2)),
             distance: distanceInKm.toFixed(2),
             duration,
+            prePaymentPercentage,
+            loadingTime,
+            unloadingTime
         };
 
     } catch (err) {

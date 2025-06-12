@@ -82,6 +82,9 @@ const saveSettings = async (req, res) => {
                 fovPercentage: parseFloat(req.body.payment.fovPercentage),
                 docketCharge: parseFloat(req.body.payment.docketCharge),
                 ratePerKG: parseFloat(req.body.payment.ratePerKG),
+                prePaymentPercentage: parseFloat(req.body.payment.prePaymentPercentage),
+                loadingTime: parseFloat(req.body.payment.loadingTime),
+                unloadingTime: parseFloat(req.body.payment.unloadingTime),
             };
         }
 
