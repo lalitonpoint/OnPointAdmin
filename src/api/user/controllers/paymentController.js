@@ -665,7 +665,6 @@ const ftlIntiatePayment = async (req, res) => {
                 driverName: result.driverId?.personalInfo?.name || '',
                 preTransactionId: result.preTransactionId || '',
                 averageRating: parseFloat(averageRating.toFixed(1)),
-                // totalReviews,
                 subtotal: result.subTotal || 0,
                 shippingCost: result.shippingCost || 0,
                 specialHandling: result.specialHandling || 0,
