@@ -165,6 +165,7 @@ const updateVehicle = async (req, res) => {
             const serviceType = fields.serviceType ? fields.serviceType[0] : '';
             const capacity = fields.capacity ? fields.capacity[0] : '';
             const tireType = fields.tireType ? fields.tireType[0] : '';
+            const { id } = req.params;
 
 
 
