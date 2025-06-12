@@ -418,7 +418,7 @@ const ftlOrderInitiate = async (req, res) => {
 const ftlVerifyPayment = async (req, res) => {
     const { razorPayOrderId, razorpayPaymentId, razorpaySignature, isPartialPayment } = req.body;
 
-    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature || !isPartialPayment) {
+    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature || isPartialPayment == undefined) {
         return res.status(200).json({ success: false, message: 'Missing required fields' });
     }
 
