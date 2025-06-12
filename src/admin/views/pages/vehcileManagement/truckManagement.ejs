@@ -161,7 +161,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Vehcile Image <strong class="text-danger">*</strong></label>
-                            <input type="file" class="form-control image_view" name="vechileImage" id="vechileImage"
+                            <input type="file" class="form-control image_view" name="vehicleImage" id="vehicleImage"
                                 accept="image/*">
                             <div id="imagePreviewContainer" class="mt-2" style="display: none;">
                                 <img id="imagePreview" src="#" alt="Profile Image Preview"
@@ -278,7 +278,7 @@
                 data: 'serviceType.serviceName'
             },
             {
-                data: 'vechileImage',
+                data: 'vehicleImage',
                 orderable: false, // Disable ordering for the Profile Image column
                 render: (data) => `<img src="${data}" class="rounded-circle" width="50" height="50">`
             },
@@ -350,8 +350,8 @@
                     return;
                 }
 
-                const vechileImage = $('#vechileImage')[0].files[0];
-                if (!vechileImage && !$('#vehicleId').val()) { // Required on add
+                const vehicleImage = $('#vehicleImage')[0].files[0];
+                if (!vehicleImage && !$('#vehicleId').val()) { // Required on add
                     toastr.error('Vehcile Image is required on adding new vehicle.', 'Error');
                     return;
                 }
@@ -426,8 +426,8 @@
                         $('#bodyType').val(data.data.bodyType);
                         $('#capacity').val(data.data.capacity);
                         $('#tireType').val(data.data.tireType);
-                        if (data.data.vechileImage) {
-                            imagePreview.attr('src', data.data.vechileImage);
+                        if (data.data.vehicleImage) {
+                            imagePreview.attr('src', data.data.vehicleImage);
                             imagePreviewContainer.show();
                         }
                         $('#status').val(data.data.status);

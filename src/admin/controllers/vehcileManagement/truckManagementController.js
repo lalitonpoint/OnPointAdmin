@@ -30,19 +30,19 @@ const saveVehicle = async (req, res) => {
                 return res.status(400).json({ error: "Truck Name is required" });
             }
 
-            const file = files.vechileImage ? files.vechileImage[0] : null;
+            const file = files.vehicleImage ? files.vehicleImage[0] : null;
 
-            let vechileImageUrl = null;
+            let vehicleImageUrl = null;
             if (file) {
                 const result = await uploadImage(file);
                 if (result.success) {
-                    vechileImageUrl = result.url;
+                    vehicleImageUrl = result.url;
                 } else {
                     console.error("Error uploading image:", result.error || result.message);
                     return res.status(500).json({ error: "Failed to upload banner image" }); // Return error if image upload fails
                 }
             } else {
-                vechileImageUrl = ''; // Or handle the case where no file is uploaded based on your requirements
+                vehicleImageUrl = ''; // Or handle the case where no file is uploaded based on your requirements
             }
 
             const vehicleData = {
@@ -50,7 +50,7 @@ const saveVehicle = async (req, res) => {
                 status,
                 bodyType,
                 serviceType,
-                vechileImage: vechileImageUrl,
+                vehicleImage: vehicleImageUrl,
                 tireType,
                 capacity
 
@@ -172,19 +172,19 @@ const updateVehicle = async (req, res) => {
                 return res.status(400).json({ error: "Truck Name is required" });
             }
 
-            const file = files.vechileImage ? files.vechileImage[0] : null;
+            const file = files.vehicleImage ? files.vehicleImage[0] : null;
 
-            let vechileImageUrl = null;
+            let vehicleImageUrl = null;
             if (file) {
                 const result = await uploadImage(file);
                 if (result.success) {
-                    vechileImageUrl = result.url;
+                    vehicleImageUrl = result.url;
                 } else {
                     console.error("Error uploading image:", result.error || result.message);
                     return res.status(500).json({ error: "Failed to upload Vehicle image" }); // Return error if image upload fails
                 }
             } else {
-                vechileImageUrl = ''; // Or handle the case where no file is uploaded based on your requirements
+                vehicleImageUrl = ''; // Or handle the case where no file is uploaded based on your requirements
             }
 
             const vehicleData = {
@@ -192,7 +192,7 @@ const updateVehicle = async (req, res) => {
                 status,
                 bodyType,
                 serviceType,
-                vechileImage: vechileImageUrl,
+                vehicleImage: vehicleImageUrl,
                 tireType,
                 capacity
             };
