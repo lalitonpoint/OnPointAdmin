@@ -14,7 +14,11 @@ const InitiatePaymentSchema = new mongoose.Schema({
     shippingCost: { type: Number, required: true },
     specialHandling: { type: Number, required: true },
     gst: { type: Number, required: true },
+    gstPercentage: { type: Number, required: true },
+    prePaymentPercentage: { type: Number, required: true },
     totalPayment: { type: Number, required: true },
+    prePayment: { type: Number },
+    postPayment: { type: Number },
     paymentMethod: { type: String },
     paymentGateway: { type: String },
     distance: { type: Number },
@@ -45,7 +49,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     loadingTime: { type: String }, // time in minutes
     unloadingTime: { type: String },  // time in minutes
     driverId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'DriverProfile'  // corrected 'byFault' to 'default'
+        type: mongoose.Schema.Types.ObjectId, ref: 'DriverProfile', bydefault: null // corrected 'byFault' to 'default'
     },
 
 }, { timestamps: true });

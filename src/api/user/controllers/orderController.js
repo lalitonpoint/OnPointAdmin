@@ -58,6 +58,7 @@ const FTL = require('../models/ftlPaymentModal');
 //         res.status(500).json({ success: false, message: 'Server Error', error: err.message });
 //     }
 // };
+
 const getOrderList = async (req, res) => {
     const userId = req.headers['userid'];
 
@@ -254,5 +255,149 @@ const ftlOrderCancel = async (req, res) => {
 };
 
 
+const ftlOrderList = async (req, res) => {
+    const userId = req.headers['userid'];
 
-module.exports = { getOrderList, singleOrderDetail, ftlOrderCancel };
+    const transformOrders = (orders) => {
+        return orders.map((order) => {
+            const driver = order?.driverId || {};
+            return {
+                requestId: order._id?.toString() || '',
+                vehicleName: order.vehicleName || '',
+                vehicleImage: order.vehicleImage || '',
+                vehicleBodyType: order.vehicleBodyType || '',
+                orderId: order.orderId || '',
+
+                pickupAddress: order.pickupAddress || '',
+                dropAddress: order.dropAddress || '',
+                pickupLatitude: order.pickupLatitude || '',
+                pickupLongitude: order.pickupLongitude || '',
+                dropLatitude: order.dropLatitude || '',
+                dropLongitude: order.dropLongitude || '',
+                orderStatus: order.orderStatus || '',
+                distance: order.distance || '',
+                duration: order.duration || '',
+                orderDate: order.createdAt || '',
+
+                driverId: driver._id || '',
+                driverName: driver.personalInfo?.name || '',
+                driverContact: driver.personalInfo?.mobile || '',
+                driverProfile: driver.personalInfo?.profilePicture || '',
+                vehicleNumber: driver.vehicleDetail?.truckNumber || '',
+
+                isBidding: order.isBidding || false,
+                isPartialPayment: order.isPartialPayment || false,
+                unloadingTime: order.unloadingTime || '',
+            };
+        });
+    };
+
+    try {
+        const orders = await FTL.find({
+            userId,
+            transactionStatus: 1,
+            driverId: { $ne: null }
+        })
+            .populate({
+                path: 'driverId',
+                select: 'personalInfo vehicleDetail'
+            })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        const allOrderData = transformOrders(orders);
+        const completeOrderData = transformOrders(orders.filter(o => o.orderStatus === 4));
+        const cancelledOrderData = transformOrders(orders.filter(o => o.orderStatus === 5));
+
+        return res.status(200).json({
+            success: true,
+            message: 'My Order Fetch Successfully',
+            data: {
+                allOrderData,
+                completeOrderData,
+                cancelledOrderData
+            }
+        });
+
+    } catch (err) {
+        console.error('Error fetching Order Detail:', err);
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error',
+            error: err.message
+        });
+    }
+};
+
+
+const ftlSingleOrderDetail = async (req, res) => {
+    const { requestId } = req.body;
+
+    if (!requestId) {
+        return res.status(200).json({
+            success: false,
+            message: 'requestId is required'
+        });
+    }
+
+    try {
+        const order = await FTL.findById(requestId)
+            .populate({
+                path: 'driverId',
+                select: 'personalInfo vehicleDetail'
+            })
+            .lean();
+
+        if (!order) {
+            return res.status(200).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        const driver = order.driverId || {};
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                requestId: order._id?.toString() || '',
+                vehicleName: order.vehicleName || '',
+                vehicleImage: order.vehicleImage || '',
+                vehicleBodyType: order.vehicleBodyType || '',
+                orderId: order.orderId || '',
+
+                pickupAddress: order.pickupAddress || '',
+                dropAddress: order.dropAddress || '',
+                pickupLatitude: order.pickupLatitude || '',
+                pickupLongitude: order.pickupLongitude || '',
+                dropLatitude: order.dropLatitude || '',
+                dropLongitude: order.dropLongitude || '',
+                orderStatus: order.orderStatus || '',
+                distance: order.distance || '',
+                duration: order.duration || '',
+                orderDate: order.createdAt || '',
+
+                driverId: driver._id || '',
+                driverName: driver.personalInfo?.name || '',
+                driverContact: driver.personalInfo?.mobile || '',
+                driverProfile: driver.personalInfo?.profilePicture || '',
+                vehicleNumber: driver.vehicleDetail?.truckNumber || '',
+
+                isBidding: order.isBidding || false,
+                isPartialPayment: order.isPartialPayment || false,
+                unloadingTime: order.unloadingTime || '',
+            }
+        });
+
+    } catch (err) {
+        console.error('Error fetching Order Detail:', err);
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error',
+            error: err.message
+        });
+    }
+};
+
+
+module.exports = { getOrderList, singleOrderDetail, ftlOrderCancel, ftlOrderList, ftlSingleOrderDetail };
