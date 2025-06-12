@@ -7,7 +7,7 @@ const { getOrderList, singleOrderDetail, ftlOrderCancel, ftlOrderList, ftlSingle
 router.get('/myOrder', getOrderList);
 router.post('/orderDetail', singleOrderDetail);
 router.post('/ftlCancelOrder', ftlOrderCancel);
-router.post('/ftlOrderList', ftlOrderList);
+router.get('/ftlOrderList', ftlOrderList);
 router.post('/ftlSingleOrderDetail', ftlSingleOrderDetail);
 
 module.exports = router;
