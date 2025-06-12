@@ -1031,7 +1031,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 return res.status(200).json({ success: false, message: "Failed to parse form data" });
             }
 
-            const id = fields.assignId?.[0] || '';
+            // const id = fields.assignId?.[0] || '';
             const orderStatus = parseInt(fields.status?.[0], 10);
             const step = parseInt(fields.step?.[0], 10);
             const requestId = fields.requestId?.[0];
@@ -1048,7 +1048,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 if (![1, 2, 3].includes(isAccepted)) {
                     return res.status(200).json({ success: false, message: 'Invalid isAccepted value' });
                 }
-                await FTL.updateOne({ _id: requestId }, { $set: { isAccepted } });
+                await FTL.updateOne({ _id: requestId }, { $set: { isAccepted, driverId } });
             }
 
             if (![0, 1, 2, 3, 4, 5].includes(orderStatus)) {

@@ -49,9 +49,10 @@ const InitiatePaymentSchema = new mongoose.Schema({
     loadingTime: { type: String }, // time in minutes
     unloadingTime: { type: String },  // time in minutes
     driverId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'DriverProfile', bydefault: null // corrected 'byFault' to 'default'
-    },
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DriverProfile',
+        default: null
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('FTLPayment', InitiatePaymentSchema);
