@@ -264,8 +264,8 @@ const ftlOrderList = async (req, res) => {
             return {
                 requestId: order._id?.toString() || '',
                 vehicleName: order.vehcileName || '',
-                vehicleImage: order.vehicleImage || '',
-                vehicleBodyType: order.vehicleBodyType || '',
+                vehicleImage: order.vehcileImage || '',
+                vehicleBodyType: order.vehcileBodyType || '',
                 orderId: order.orderId || '',
 
                 pickupAddress: order.pickupAddress || '',

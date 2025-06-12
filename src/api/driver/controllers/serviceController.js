@@ -960,7 +960,7 @@ const ftlOrderAssign = async (req, res) => {
                 dropLatitude,
                 dropLongitude,
                 userId,
-                vechileImage,
+                vehicleImage,
                 vehcileName,
                 isBidding,
                 isAccepted,
@@ -991,7 +991,7 @@ const ftlOrderAssign = async (req, res) => {
             return {
                 requestId: _id,
                 vehcileName,
-                vechileImage,
+                vehicleImage,
                 isBidding,
                 isAccepted,
                 totalPayment,
@@ -1173,7 +1173,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
                     step,
                     orderStatus: updateFields.orderStatus,
                     vehcileName: order.vehcileName,
-                    vechileImage: order.vechileImage,
+                    vehicleImage: order.vehicleImage,
                     vehcileBodyType: order.vehcileBodyType,
                 }
             });

@@ -383,7 +383,7 @@ const ftlOrderInitiate = async (req, res) => {
             postPayment: isBidding == 1 ? postPayment : 0,
 
             vehcileName: vehicleDetail.name,
-            vechileImage: vehicleDetail.vechileImage,
+            vehicleImage: vehicleDetail.vehicleImage,
             vehcileBodyType: vehicleDetail.bodyType,
             vehcileCapacity: vehicleDetail.capacity,
             vehcileTireType: vehicleDetail.tireType,
@@ -547,7 +547,7 @@ const biddingDetail = async (req, res) => {
             dropLatitude: ftlData.dropLatitude,
             orderStatus: ftlData.orderStatus,
             vehcileName: ftlData.vehcileName,
-            vechileImage: ftlData.vechileImage,
+            vehicleImage: ftlData.vehicleImage,
             estimatePrice: ftlData.estimatePrice || 0,
             userId: ftlData.userId,
             orderId: ftlData._id,
@@ -656,7 +656,7 @@ const ftlIntiatePayment = async (req, res) => {
             success: true,
             data: {
                 vehicleName: result.vehcileName || '',
-                vehicleImage: result.vechileImage || '',
+                vehicleImage: result.vehicleImage || '',
                 vehicleBodyType: result.vehcileBodyType || '',
                 vehicleCapacity: result.vehcileCapacity || '',
                 numberPlate: result.driverId?.vehicleDetail?.plateNumber || '',

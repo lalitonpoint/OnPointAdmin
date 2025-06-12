@@ -39,7 +39,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     paymentResponse: { type: mongoose.Schema.Types.Mixed },
     transactionDate: { type: Date },
     vehcileName: { type: String },
-    vechileImage: { type: String },
+    vehicleImage: { type: String },
     vehcileBodyType: { type: String },
     vehcileCapacity: { type: String },
     vehcileTireType: { type: String },
