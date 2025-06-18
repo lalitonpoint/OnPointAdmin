@@ -599,8 +599,12 @@ const acceptingRequest = async (req, res) => {
         }
 
         const prePaymentPercentage = reqDetail.prePaymentPercentage || 0;
-        const prePayment = (amount * prePaymentPercentage) / 100;
-        const postPayment = amount - prePayment;
+        // const prePayment = (amount * prePaymentPercentage) / 100;
+        // const postPayment = amount - prePayment;
+
+        const prePayment = parseFloat(((amount * prePaymentPercentage) / 100).toFixed(2));
+        const postPayment = parseFloat((amount - prePayment).toFixed(2));
+
         // const gst = reqDetail.gst || 0;
         const gst = (amount * reqDetail.gstPercentage) / 100;
 
@@ -630,7 +634,8 @@ const acceptingRequest = async (req, res) => {
                         postPayment,
                         subTotal: amount,
                         gst: gst,
-                        totalPayment: finalPayment
+                        prePayment: finalPayment,
+                        postPayment: postPayment
                     }
                 },
                 { new: true }
