@@ -454,7 +454,10 @@ const ftlVerifyPayment = async (req, res) => {
             // }
 
             paymentRecord.transactionStatus = 1;
-            paymentRecord.postTransactionId = payment.order_id;
+            if (isPartialPayment == 1)
+                paymentRecord.postTransactionId = payment.order_id;
+            if (isPartialPayment == 2)
+                paymentRecord.finalPostTransactionId = payment.order_id;
             paymentRecord.paymentId = payment.id;
             paymentRecord.isPartialPayment = isPartialPayment;
 
