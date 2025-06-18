@@ -439,7 +439,7 @@ const ftlVerifyPayment = async (req, res) => {
         const payment = await razorpay.payments.fetch(razorpayPaymentId);
         // return res.status(200).json({ success: true, message: 'Is', payment: payment });
 
-        const paymentRecord = 0;
+        let paymentRecord = 0;
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
             if (isPartialPayment == 1)
