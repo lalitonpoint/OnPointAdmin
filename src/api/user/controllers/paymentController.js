@@ -596,7 +596,9 @@ const acceptingRequest = async (req, res) => {
         const prePaymentPercentage = reqDetail.prePaymentPercentage || 0;
         const prePayment = (amount * prePaymentPercentage) / 100;
         const postPayment = amount - prePayment;
-        const gst = reqDetail.gst || 0;
+        // const gst = reqDetail.gst || 0;
+        const gst = (amount * reqDetail.gstPercentage) / 100;
+
         const specialHandling = reqDetail.specialHandling || 0;
         const shippingCost = reqDetail.shippingCost || 0;
         const finalPayment = prePayment + gst + specialHandling + shippingCost;
@@ -620,7 +622,10 @@ const acceptingRequest = async (req, res) => {
                         driverId,
                         preTransactionId: razorpayOrderId,
                         finalPreTransactionId: 0,
-                        postPayment
+                        postPayment,
+                        subTotal: amount,
+                        gst: gst,
+                        totalPayment: finalPayment
                     }
                 },
                 { new: true }
