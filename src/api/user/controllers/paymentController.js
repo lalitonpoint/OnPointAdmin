@@ -574,10 +574,10 @@ const biddingDetail = async (req, res) => {
 
 
 const acceptingRequest = async (req, res) => {
-    const { requestId, driverId, isAccepted } = req.body;
+    const { requestId, driverId, isAccepted, amount } = req.body;
 
     // Validate required fields
-    if (!requestId || !driverId || !isAccepted) {
+    if (!requestId || !driverId || !isAccepted || !amount) {
         return res.status(200).json({
             success: false,
             message: 'requestId , isAccepted and driverId are required',
@@ -591,7 +591,7 @@ const acceptingRequest = async (req, res) => {
         if (isAccepted == 1) {
             result = await FtlPayment.findOneAndUpdate(
                 { _id: requestId },
-                { $set: { isAccepted: 1, driverId } },
+                { $set: { isAccepted: 1, driverId, preTransactionId: 0, finalPreTransactionId: 0, gstPercentage: 80, } },
                 { new: true }
             );
         }
@@ -687,6 +687,104 @@ const ftlIntiatePayment = async (req, res) => {
 };
 
 
+const ftlFinalPayment = async (req, res) => {
+    try {
+        const { requestId } = req.body;
+
+        if (!requestId) {
+            return res.status(400).json({
+                success: false,
+                message: 'requestId is required',
+            });
+        }
+
+        const result = await FtlPayment.findOne({ _id: requestId })
+            .populate({ path: 'driverId', select: 'personalInfo vehicleDetail' })
+            .lean();
+
+        if (!result) {
+            return res.status(404).json({
+                success: false,
+                message: 'FTL Payment data not found',
+            });
+        }
+
+        const driverId = result.driverId?._id;
+
+        // Aggregate to calculate average rating
+        const ratingData = await Rating.aggregate([
+            { $match: { driverId } },
+            {
+                $group: {
+                    _id: '$driverId',
+                    avgRating: { $avg: '$rating' },
+                    totalReviews: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const averageRating = ratingData[0]?.avgRating || 0;
+        const totalReviews = ratingData[0]?.totalReviews || 0;
+        const unloadingFee = 100;
+        const finalPaymentAmount = (result.postPayment || 0) + unloadingFee;
+
+        // Initiate Razorpay order
+        const razorpayOrderIdResponse = await initiateRazorpayOrderId(req, finalPaymentAmount);
+
+        let razorpayOrderId = '';
+
+        if (razorpayOrderIdResponse?.success) {
+            razorpayOrderId = razorpayOrderIdResponse.orderId;
+
+            await FtlPayment.findOneAndUpdate(
+                { _id: requestId },
+                {
+                    $set: {
+                        finalPreTransactionId: razorpayOrderId,
+                        totalPayment: finalPaymentAmount
+                    }
+                }
+            );
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                vehicleName: result.vehcileName || '',
+                vehicleImage: result.vehicleImage || '',
+                vehicleBodyType: result.vehcileBodyType || '',
+                vehicleCapacity: result.vehcileCapacity || '',
+                numberPlate: result.driverId?.vehicleDetail?.plateNumber || '',
+                pickupAddress: result.pickupAddress || '',
+                dropAddress: result.dropAddress || '',
+                driverName: result.driverId?.personalInfo?.name || '',
+                finalPreTransactionId: razorpayOrderId,
+                averageRating: parseFloat(averageRating.toFixed(1)),
+                totalReviews,
+                subtotal: result.subTotal || 0,
+                shippingCost: result.shippingCost || 0,
+                specialHandling: result.specialHandling || 0,
+                gst: result.gst || 0,
+                gstPercentage: 18,
+                paymentPercentage: 80,
+                prePayment: result.prePayment || 0,
+                postPayment: result.postPayment || 0,
+                unloadingFee,
+                finalPayment: finalPaymentAmount
+            },
+            message: 'FTL Payment details fetched successfully',
+        });
+
+    } catch (error) {
+        console.error('Error in ftlFinalPayment:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
+};
+
+
 //////////////////////////////FTL Order Initiate///////////////////////////////////
 
-module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment, biddingDetail, acceptingRequest, ftlIntiatePayment };
+module.exports = { addPaymentDetail, verifyPayment, estimatePriceCalculation, ftlOrderInitiate, ftlVerifyPayment, biddingDetail, acceptingRequest, ftlIntiatePayment, ftlFinalPayment };

@@ -32,6 +32,8 @@ const InitiatePaymentSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     preTransactionId: { type: String, default: "0" },
     postTransactionId: { type: String, default: "0" },
+    finalPreTransactionId: { type: String, default: "0" },
+    finalPostTransactionId: { type: String, default: "0" },
     invoiceNo: { type: String },
     invoiceUrl: { type: String },
     orderId: { type: String },

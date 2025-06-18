@@ -23,6 +23,7 @@ const permissionDenied = (req, res) => {
     res.render('pages/login/not_authorized');
 };
 
+
 const checkLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
