@@ -572,26 +572,57 @@ const biddingDetail = async (req, res) => {
     }
 };
 
-
 const acceptingRequest = async (req, res) => {
     const { requestId, driverId, isAccepted, amount } = req.body;
 
     // Validate required fields
-    if (!requestId || !driverId || !isAccepted || !amount) {
-        return res.status(200).json({
+    if (!requestId || !driverId || typeof isAccepted === 'undefined' || !amount) {
+        return res.status(400).json({
             success: false,
-            message: 'requestId , isAccepted and driverId are required',
+            message: 'requestId, isAccepted, driverId, and amount are required',
         });
     }
 
     try {
+        const reqDetail = await FtlPayment.findById(requestId);
+
+        if (!reqDetail) {
+            return res.status(404).json({
+                success: false,
+                message: 'FtlPayment request not found',
+            });
+        }
+
+        const prePaymentPercentage = reqDetail.prePaymentPercentage || 0;
+        const prePayment = (amount * prePaymentPercentage) / 100;
+        const postPayment = amount - prePayment;
+        const gst = reqDetail.gst || 0;
+        const specialHandling = reqDetail.specialHandling || 0;
+        const shippingCost = reqDetail.shippingCost || 0;
+        const finalPayment = prePayment + gst + specialHandling + shippingCost;
+
+        // Create Razorpay order
+        const razorpayOrderIdResponse = await initiateRazorpayOrderId(req, finalPayment);
+
+        let razorpayOrderId = '';
+        if (razorpayOrderIdResponse?.success) {
+            razorpayOrderId = razorpayOrderIdResponse.orderId;
+        }
+
         let result = null;
 
-        // Only update if the request is accepted
-        if (isAccepted == 1) {
+        if (Number(isAccepted) === 1) {
             result = await FtlPayment.findOneAndUpdate(
                 { _id: requestId },
-                { $set: { isAccepted: 1, driverId, preTransactionId: 0, finalPreTransactionId: 0, gstPercentage: 80, } },
+                {
+                    $set: {
+                        isAccepted: 1,
+                        driverId,
+                        preTransactionId: razorpayOrderId,
+                        finalPreTransactionId: 0,
+                        postPayment
+                    }
+                },
                 { new: true }
             );
         }
@@ -599,10 +630,11 @@ const acceptingRequest = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: result,
-            message: isAccepted == 1 ? 'Request accepted successfully' : 'No update performed',
+            message: Number(isAccepted) === 1 ? 'Request accepted successfully' : 'No update performed',
         });
 
     } catch (error) {
+        console.error('Error in acceptingRequest:', error);
         return res.status(500).json({
             success: false,
             message: 'Internal server error',
@@ -610,6 +642,7 @@ const acceptingRequest = async (req, res) => {
         });
     }
 };
+
 
 const ftlIntiatePayment = async (req, res) => {
     try {
