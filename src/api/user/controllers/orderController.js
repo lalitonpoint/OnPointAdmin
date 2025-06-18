@@ -274,7 +274,7 @@ const ftlOrderList = async (req, res) => {
                 pickupLongitude: order.pickupLongitude || '',
                 dropLatitude: order.dropLatitude || '',
                 dropLongitude: order.dropLongitude || '',
-                orderStatus: order.orderStatus || '',
+                orderStatus: order.orderStatus || 0,
                 distance: order.distance || '',
                 duration: order.duration || '',
                 orderDate: order.createdAt || '',
