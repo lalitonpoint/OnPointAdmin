@@ -439,11 +439,13 @@ const ftlVerifyPayment = async (req, res) => {
         const payment = await razorpay.payments.fetch(razorpayPaymentId);
         // return res.status(200).json({ success: true, message: 'Is', payment: payment });
 
-
+        const paymentRecord = 0;
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
-
-            const paymentRecord = await FtlPayment.findOne({ preTransactionId: razorPayOrderId });
+            if (isPartialPayment == 1)
+                paymentRecord = await FtlPayment.findOne({ preTransactionId: razorPayOrderId });
+            if (isPartialPayment == 2)
+                paymentRecord = await FtlPayment.findOne({ finalPreTransactionId: razorPayOrderId });
 
             if (!paymentRecord) {
                 return res.status(200).json({ success: false, message: 'Payment order not found' });
