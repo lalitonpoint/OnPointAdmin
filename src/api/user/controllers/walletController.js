@@ -230,8 +230,16 @@ const walletUse = async (req, res) => {
             // console.log('jjj')
 
             ftlDetail.transactionStatus = 1;
-            ftlDetail.preTransactionId = order_id;
-            ftlDetail.postTransactionId = order_id;
+            if (isPartialPayment == 0 || isPartialPayment == 1) {
+                ftlDetail.preTransactionId = order_id;
+                ftlDetail.postTransactionId = order_id;
+            }
+
+            if (isPartialPayment == 2) {
+                ftlDetail.preTransactionId = order_id;
+                ftlDetail.postTransactionId = order_id;
+            }
+
             ftlDetail.isWalletPay = 1;
             ftlDetail.isPartialPayment = 1;
             ftlDetail.paymentId = order_id;
