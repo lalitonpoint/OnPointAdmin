@@ -25,6 +25,7 @@ const masterDetail = async (req, res) => {
 
         // Fetch active packages
         let packagesWithDistance;
+        let currentBidding;
 
         if (serviceType == 1) {
             const currentPackages = await Packages.find({
@@ -126,12 +127,13 @@ const masterDetail = async (req, res) => {
             );
         }
         else {
+            packagesWithDistance = []
             const pendingFTL = await FTL.findOne({
                 userId,
                 transactionStatus: 0
             }).sort({ createdAt: -1 }).lean();
 
-            packagesWithDistance = {
+            currentBidding = {
                 requestId: pendingFTL?._id || 0,
                 isBidding: pendingFTL?.isBidding || 0
             };
@@ -145,6 +147,7 @@ const masterDetail = async (req, res) => {
             data: {
                 banners,
                 currentShipment: packagesWithDistance,
+                currentBidding: serviceType == 1 ? {} : currentBidding,
                 serviceType,
                 isWallet: 0
             },
