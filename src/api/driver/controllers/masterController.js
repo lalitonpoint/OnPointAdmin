@@ -204,7 +204,8 @@ const masterDetail = async (req, res) => {
                     orderStatus,
                     vehcileName,
                     vehicleImage,
-                    vehcileBodyType
+                    vehcileBodyType,
+                    requestId: pendingRequest?._id || 0,
                 }],
                 tripCount: { completedCount, cancelledCount }
             };
