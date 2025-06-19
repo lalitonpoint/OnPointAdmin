@@ -125,18 +125,18 @@
 
                             <select class="form-select" id="transportMode" name="transportMode">
                                 <option value="">Select Mode</option>
-                                <option value="By Train">By Train</option>
-                                <option value="By Surface">By Surface</option>
-                                <option value="By Air">By Air</option>
+                                <option value="Train">Train</option>
+                                <option value="Surface">Surface</option>
+                                <option value="Air">Air</option>
                             </select>
                         </div>
 
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="noOfPacking" class="form-label">No. of Package <strong
                                     class="text-danger">*</strong></label>
                             <input type="number" class="form-control" id="noOfPacking" name="noOfPacking"
                                 placeholder="Enter No. of Package">
-                        </div>
+                        </div> -->
 
 
                         <!-- <div class="col-md-6">
@@ -390,7 +390,7 @@
                     orderable: false,
 
                 },
-                { data: 'noOfPacking' },
+                // { data: 'noOfPacking' },
 
                 {
                     data: 'status',
@@ -473,7 +473,7 @@
             const pickUpLocation = $('#pickUpLocation').val().trim();
             const dropLocation = $('#dropLocation').val().trim();
             const transportMode = $('#transportMode').val().trim();
-            const noOfPacking = $('#noOfPacking').val().trim();
+            // const noOfPacking = $('#noOfPacking').val().trim();
             const deliveryDate = $('#deliveryDate').val().trim();
             const estimateDate = $('#estimateDate').val().trim();
             const clientName = $('#clientName').val().trim();
@@ -513,10 +513,10 @@
                 toastr.error('Please Select transport mode', 'Error');
                 return;
             }
-            if (!noOfPacking) {
-                toastr.error('Please enter number of packings', 'Error');
-                return;
-            }
+            // if (!noOfPacking) {
+            //     toastr.error('Please enter number of packings', 'Error');
+            //     return;
+            // }
 
             // if (!deliveryTime) {
             //     toastr.error('Please select delivery time.', 'Error');
@@ -541,7 +541,7 @@
             formData.append('pickUpLocation', pickUpLocation);
             formData.append('dropLocation', dropLocation);
             formData.append('transportMode', transportMode);
-            formData.append('noOfPacking', noOfPacking);
+            // formData.append('noOfPacking', noOfPacking);
             formData.append('deliveryDate', deliveryDate);
             formData.append('estimateDate', estimateDate);
             formData.append('clientName', clientName);
@@ -684,7 +684,7 @@
                     $('#pickUpLocation').val(data.pickUpLocation); // Added pickup location
                     $('#dropLocation').val(data.dropLocation); // Added drop location
                     $('#transportMode').val(data.transportMode); // Added transport mode
-                    $('#noOfPacking').val(data.noOfPacking); // Added no of packing
+                    // $('#noOfPacking').val(data.noOfPacking); // Added no of packing
                     $('#trackingStatus').val(data.status);
                     $('#clientName').val(data.clientName);
 

@@ -31,10 +31,10 @@ const shipmentSchema = new mongoose.Schema({
     transportMode: {
         type: String
     },
-    noOfPacking: {
-        type: Number,
-        required: true
-    },
+    // noOfPacking: {
+    //     type: Number,
+    //     required: true
+    // },
     pod: {
         type: String, default: ''
     },
@@ -43,10 +43,13 @@ const shipmentSchema = new mongoose.Schema({
         default: {}
     },
     invoiceDate: {
-        type: Date
+        type: Date,
+        default: null
+
     },
     connectionDate: {
-        type: Date
+        type: Date, default: null
+
     },
     consigneeName: {
         type: String

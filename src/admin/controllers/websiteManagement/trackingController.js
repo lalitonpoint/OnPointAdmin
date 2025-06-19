@@ -59,7 +59,7 @@ const trackingList = async (req, res) => {
             // Determine the field to sort by based on the column index
             switch (parseInt(columnIndex)) {
                 case 5: // No. of Mode column
-                    sort.noOfPacking = sortDirection;
+                    // sort.noOfPacking = sortDirection;
                     break;
                 case 7: // Delivery Date column (assuming this maps to estimateDate)
                     sort.deliveryDate = sortDirection;
@@ -112,7 +112,7 @@ const addTracking = async (req, res) => {
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : ''; // Default to Active
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : ''; // Default to Active
             const transportMode = fields.transportMode ? fields.transportMode[0] : ''; // Default to Active
-            const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
+            // const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : ''; // Default to Active
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : ''; // Default to Active
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
@@ -156,7 +156,7 @@ const addTracking = async (req, res) => {
                 }).filter(item => item !== null); // Remove invalid items (null)
             }
 
-            if (!trackingCode || !status || !estimateDate || !noOfPacking) {
+            if (!trackingCode || !status || !estimateDate) {
                 return res.status(200).json({ success: false, message: 'Tracking ID, Status,  No. of Packing & Estimate Date are required' });
             }
 
@@ -188,7 +188,7 @@ const addTracking = async (req, res) => {
                 pickUpLocation: pickUpLocation || null,
                 dropLocation: dropLocation || null,
                 transportMode: transportMode || null,
-                noOfPacking: parseInt(noOfPacking),
+                // noOfPacking: parseInt(noOfPacking),
                 createdAt: new Date(),// Add createdAt timestamp on creation,
                 deliveryStatus: statusMap,
 
@@ -257,7 +257,7 @@ const updateTracking = async (req, res) => {
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : '';
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : '';
             const transportMode = fields.transportMode ? fields.transportMode[0] : '';
-            const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
+            // const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : '';
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
@@ -299,8 +299,8 @@ const updateTracking = async (req, res) => {
 
             const file = files.pod ? files.pod[0] : null;
 
-            if (!trackingCode || pickUpLocation === null || status === null || dropLocation === null || transportMode === null || noOfPacking === null) { // Corrected the validation for bannerType and status
-                return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode & noOfPacking are required" });
+            if (!trackingCode || pickUpLocation === null || status === null || dropLocation === null || transportMode === null) { // Corrected the validation for bannerType and status
+                return res.status(400).json({ error: "Tracking Code, status , PickUpLocation , dropLocation , transportMode  are required" });
             }
 
             const existingTrack = await Tracking.findById(id);
@@ -354,7 +354,7 @@ const updateTracking = async (req, res) => {
                     pickUpLocation,
                     dropLocation,
                     transportMode,
-                    noOfPacking: parseInt(noOfPacking),
+                    // noOfPacking: parseInt(noOfPacking),
                     pod: imageUrl,
                     deliveryStatus: updatedDeliveryStatus,// ✅ save the updated object
 
@@ -481,10 +481,10 @@ const downloadTrackingCsv = async (req, res) => {
             tracking.pickUpLocation || '',
             tracking.dropLocation || '',
             tracking.transportMode || '',
-            tracking.noOfPacking,
+            // tracking.noOfPacking,
             getStatusText(tracking.status), // Assuming you have a function to convert status code to text
-            moment(tracking.deliveryDate).format('YYYY-MM-DD'),
-            moment(tracking.createdAt).format('YYYY-MM-DD'),
+            moment(tracking.deliveryDate).format('YYYY-MM-DD HH:mm:ss'),
+            moment(tracking.createdAt).format('YYYY-MM-DD HH:mm:ss'),
 
             tracking.invoiceDate || '',
             tracking.connectionDate || '',
@@ -497,12 +497,12 @@ const downloadTrackingCsv = async (req, res) => {
             tracking.invoiceValue || '',
             tracking.boxes || '',
             tracking.ewayBillNo || '',
-            moment(tracking.invoiceDate).format('YYYY-MM-DD'),
+            moment(tracking.invoiceDate).format('YYYY-MM-DD HH:mm:ss'),
             tracking.connectionPartner || '',
             tracking.partnerCnNumber || '',
             tracking.actualWeight || '',
             tracking.chargedWeight || '',
-            moment(tracking.connectionDate).format('YYYY-MM-DD'),
+            moment(tracking.connectionDate).format('YYYY-MM-DD HH:mm:ss'),
             tracking.tat || '',
             // tracking.edd || '',
             tracking.add || '',
@@ -563,7 +563,7 @@ const UploadCsv = async (req, res) => {
                             pickUpLocation,
                             dropLocation,
                             transportMode,
-                            noOfPacking,
+                            // noOfPacking,
                             pod,
 
                             consigneeName,
@@ -625,7 +625,7 @@ const UploadCsv = async (req, res) => {
                             pickUpLocation,
                             dropLocation,
                             transportMode,
-                            noOfPacking: parseInt(noOfPacking),
+                            // noOfPacking: parseInt(noOfPacking),
                             pod: statusNumber === 4 ? pod : '', // Only save pod if status == 4
                             createdAt: new Date(),
                             deliveryStatus: statusMap,
