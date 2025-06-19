@@ -138,7 +138,7 @@ const masterDetail = async (req, res) => {
             }).sort({ createdAt: -1 }).lean();
 
             currentBidding = {
-                requestId: pendingFTL?._id || 0,
+                requestId: pendingFTL?._id || "",
                 isBidding: pendingFTL?.isBidding || 0,
                 isAccepted: pendingFTL?.isAccepted || 0
             };
