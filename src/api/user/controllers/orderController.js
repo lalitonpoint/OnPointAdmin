@@ -285,8 +285,8 @@ const ftlOrderList = async (req, res) => {
                 driverProfile: driver.personalInfo?.profilePicture || '',
                 vehicleNumber: driver.vehicleDetail?.truckNumber || '',
 
-                isBidding: order.isBidding || false,
-                isPartialPayment: order.isPartialPayment || false,
+                isBidding: order.isBidding || 0,
+                isPartialPayment: order.isPartialPayment || 0,
                 unloadingTime: order.unloadingTime || '',
             };
         });
