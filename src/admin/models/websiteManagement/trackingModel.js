@@ -44,12 +44,11 @@ const shipmentSchema = new mongoose.Schema({
     },
     invoiceDate: {
         type: Date,
-        default: null
+        default: ''
 
     },
     connectionDate: {
-        type: Date, default: null
-
+        type: Date, default: ''
     },
     consigneeName: {
         type: String

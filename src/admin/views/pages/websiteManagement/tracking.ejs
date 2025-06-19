@@ -202,12 +202,14 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="invoiceDate" class="form-label">Invoice Date </label>
+                            <label for="invoiceDate" class="form-label">Invoice Date<strong
+                                    class="text-danger">*</strong> </label>
                             <input type="date" class="form-control" id="invoiceDate" name="invoiceDate">
                         </div>
 
                         <div class="col-md-6">
-                            <label for="connectionDate" class="form-label">Connection Date </label>
+                            <label for="connectionDate" class="form-label">Connection Date <strong
+                                    class="text-danger">*</strong></label>
                             <input type="date" class="form-control" id="connectionDate" name="connectionDate">
                         </div>
                         <div class="col-md-6">
@@ -535,6 +537,19 @@
                 return;
             }
 
+            const invoiceDate = $('#invoiceDate').val();
+            const connectionDate = $('#connectionDate').val();
+
+            if (!invoiceDate) {
+                toastr.error('Please select a Invoice Date date.', 'Error');
+                return;
+            }
+            if (!connectionDate) {
+                toastr.error('Please select a Connection Date date.', 'Error');
+                return;
+            }
+
+
             // Use FormData for file + text upload
             const formData = new FormData();
             formData.append('trackingCode', trackingCode);
@@ -708,21 +723,21 @@
                     $('#remarks').val(data.remarks);
 
                     // Ensure seconds are added if missing
-                    let formattedDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                    let formattedDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DD');
                     $('#estimateDate').val(formattedDate);
 
-                    let estiInvoiceDate = moment(data.invoiceDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                    let estiInvoiceDate = moment(data.invoiceDate, moment.ISO_8601).format('YYYY-MM-DD');
                     $('#invoiceDate').val(estiInvoiceDate);
 
 
 
-                    let formattedconnectionDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                    let formattedconnectionDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DD');
 
                     $('#connectionDate').val(formattedconnectionDate);
 
 
                     let rawDateTime = data.deliveryStatus[data.status].deliveryDateTime;
-                    let formattedDateTime = moment(rawDateTime, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                    let formattedDateTime = moment(rawDateTime, moment.ISO_8601).format('YYYY-MM-DD');
                     // console.log(formattedDateTime); // Outputs: 2025-04-23T16:28:00
 
                     if (data.status == 2) {
@@ -738,7 +753,7 @@
                                 // console.log('xxx', item);
 
                                 // Convert date to the required format for date input (YYYY-MM-DDTHH:mm)
-                                let formattedDateTime = moment(item.date, moment.ISO_8601).format('YYYY-MM-DDTHH:mm:ss');
+                                let formattedDateTime = moment(item.date, moment.ISO_8601).format('YYYY-MM-DD');
 
                                 // Append transit data HTML
                                 $('#transitDeliveryContainer').append(`
