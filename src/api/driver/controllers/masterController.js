@@ -126,7 +126,7 @@ const masterDetail = async (req, res) => {
                 driverId,
                 transactionStatus: 1,
                 isAccepted: 1,
-                orderStatus: { $nin: [0, 4, 5] }
+                orderStatus: { $nin: [4, 5] }
             }).sort({ createdAt: -1 }).populate({ path: 'userId', select: 'fullName mobileNumber countryCode' });
 
             if (!pendingRequest) {
