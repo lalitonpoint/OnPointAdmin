@@ -1120,6 +1120,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 updateFields.pod = result.url;
             }
 
+            console.log(updateFields);
             await FTL.updateOne({ _id: requestId }, { $set: updateFields });
 
             // Driver location

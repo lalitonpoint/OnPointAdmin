@@ -24,6 +24,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     distance: { type: Number },
     duration: { type: String },
     isBidding: { type: Number, enum: [0, 1], default: 0 }, // 0 => No Bid , 1 => Bidding
+    step: { type: Number, enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], default: 0 },
     isPartialPayment: { type: Number, enum: [0, 1, 2], default: 0 }, // 0 => FTL Without Bidding Payment , 1 => FTL Bidding Partial Payment , 2 => FTL Bidding Full Payment
     isAccepted: { type: Number, enum: [0, 1, 2, 3], default: 0 }, // 0 => Not Accepted , 1 => Accepted , 2 => Rejected , 3 => Bid
     orderStatus: { type: Number, enum: [0, 1, 2, 3, 4, 5], default: 0 }, // 0 => InProgress , 1 => Pickup, 2 => In Transit , 3 => Out for Delivery , 4 => Delivered , 5 => Cancelled
