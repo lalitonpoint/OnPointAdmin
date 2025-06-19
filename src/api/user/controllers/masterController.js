@@ -127,7 +127,11 @@ const masterDetail = async (req, res) => {
             );
         }
         else {
-            packagesWithDistance = []
+            packagesWithDistance = await FTL.find({
+                userId,
+                transactionStatus: 1,
+                orderStatus: { $nin: [0, 4, 5] }
+            }).sort({ createdAt: -1 }).lean();
             const pendingFTL = await FTL.findOne({
                 userId,
                 transactionStatus: 0
