@@ -1212,9 +1212,9 @@ const bidding = async (req, res) => {
 
         if (existingBid) {
             return res.status(200).json({
-                success: true,
-                message: 'You have already placed a bid for this request',
-                data: existingBid
+                success: false,
+                message: 'You have already placed a bid for this request'
+                // data: existingBid
             });
         }
 
