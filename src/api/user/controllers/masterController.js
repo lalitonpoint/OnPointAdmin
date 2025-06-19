@@ -139,7 +139,8 @@ const masterDetail = async (req, res) => {
 
             currentBidding = {
                 requestId: pendingFTL?._id || 0,
-                isBidding: pendingFTL?.isBidding || 0
+                isBidding: pendingFTL?.isBidding || 0,
+                isAccepted: pendingFTL?.isAccepted || 0
             };
 
         }
