@@ -26,7 +26,7 @@ const masterDetail = async (req, res) => {
 
         const { lat, long } = driverLocation;
         let responsePayload = {};
-
+        let completedCount = 0; let cancelledCount = 0
         if (serviceType == 1) {
             // PTL Logic
             const [pendingRequests, tripHistory] = await Promise.all([
@@ -41,8 +41,8 @@ const masterDetail = async (req, res) => {
                 DriverAssign.find({ driverId, status: { $in: [4, 5] } })
             ]);
 
-            const completedCount = tripHistory.filter(trip => trip.status === 4).length;
-            const cancelledCount = tripHistory.filter(trip => trip.status === 5).length;
+            completedCount = tripHistory.filter(trip => trip.status === 4).length;
+            cancelledCount = tripHistory.filter(trip => trip.status === 5).length;
 
             if (!pendingRequests.length) {
                 return res.status(200).json({
@@ -115,6 +115,13 @@ const masterDetail = async (req, res) => {
 
         } else {
             // FTL Logic
+            const tripHistory = await FTL.find({ driverId, orderStatus: { $in: [4, 5] } });
+
+
+            completedCount = tripHistory.filter(trip => trip.status === 4).length;
+            cancelledCount = tripHistory.filter(trip => trip.status === 5).length;
+
+
             const pendingRequest = await FTL.findOne({
                 driverId,
                 transactionStatus: 1,
@@ -133,7 +140,7 @@ const masterDetail = async (req, res) => {
                         serviceType,
                         isWallet: 0,
                         request: [],
-                        tripCount: { completedCount: 0, cancelledCount: 0 }
+                        tripCount: { completedCount, cancelledCount }
                     }
                 });
             }
@@ -193,7 +200,7 @@ const masterDetail = async (req, res) => {
                     vehicleImage,
                     vehcileBodyType
                 }],
-                tripCount: { completedCount: 0, cancelledCount: 0 }
+                tripCount: { completedCount, cancelledCount }
             };
         }
 
