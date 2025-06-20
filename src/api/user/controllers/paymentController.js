@@ -635,7 +635,8 @@ const acceptingRequest = async (req, res) => {
                         subTotal: amount,
                         gst: gst,
                         prePayment: finalPayment,
-                        postPayment: postPayment
+                        postPayment: postPayment,
+                        totalPayment: finalPayment,
                     }
                 },
                 { new: true }
@@ -717,11 +718,11 @@ const ftlIntiatePayment = async (req, res) => {
                 shippingCost: result.shippingCost || 0,
                 specialHandling: result.specialHandling || 0,
                 gst: result.gst || 0,
-                gstPercentage: 18,
-                paymentPercentage: 80,
+                gstPercentage: result.gstPercentage,
+                paymentPercentage: result.paymentPercentage,
                 totalPayment: result.totalPayment || 0,
-                initialPayment: 5678,
-                postPayment: 197,
+                initialPayment: result.prePayment,
+                postPayment: result.postPayment,
             },
             message: 'FTL Payment details fetched successfully',
         });
