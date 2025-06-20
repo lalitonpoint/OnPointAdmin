@@ -469,7 +469,8 @@ const downloadTrackingCsv = async (req, res) => {
             "TAT",
             // "EDD",
             "ADD",
-            "Remarks"
+            "Remarks",
+            "Tracking Status",
         ];
 
         const csvData = trackings.map((tracking, index) => [
@@ -501,15 +502,16 @@ const downloadTrackingCsv = async (req, res) => {
             tracking.tat || '',
             // tracking.edd || '',
             tracking.add || '',
-            tracking.remarks || ''
+            tracking.remarks || '',
+            formatDeliveryStatus(tracking.deliveryStatus)
         ]);
 
         // Helper function to convert status code to text
         function getStatusText(status) {
             switch (status) {
                 case 1: return 'Pickup';
-                case 2: return 'Out for Delivery';
-                case 3: return 'In Progress';
+                case 2: return 'In Transit';
+                case 3: return 'Out For Delivery';
                 case 4: return 'Delivered';
                 case 5: return 'Cancelled';
                 default: return 'Unknown';
@@ -672,7 +674,41 @@ const UploadCsv = async (req, res) => {
     }
 };
 
+function formatDeliveryStatus(deliveryStatus) {
+    const parts = [];
 
+    for (const key in deliveryStatus) {
+        const entry = deliveryStatus[key];
+
+        // Skip if not active
+        if (entry.status !== 1) continue;
+
+        const formattedKey = entry.key.charAt(0).toUpperCase() + entry.key.slice(1);
+
+        // If Intransit and transitData is available
+        if (
+            entry.key === 'intransit' &&
+            Array.isArray(entry.transitData) &&
+            entry.transitData.length > 0
+        ) {
+            const transitParts = entry.transitData.map((t) => {
+                const date = new Date(t.date);
+                const formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+                return `${t.city} - ${formattedDate}`;
+            });
+
+            parts.push(`${formattedKey} → ${transitParts.join(' | ')}`);
+        }
+        // For others, just use deliveryDateTime
+        else if (entry.deliveryDateTime) {
+            const date = new Date(entry.deliveryDateTime);
+            const formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+            parts.push(`${formattedKey} → ${formattedDate}`);
+        }
+    }
+
+    return parts.join(' -> ');
+}
 
 module.exports = {
     trackingPage,
