@@ -636,7 +636,7 @@ const acceptingRequest = async (req, res) => {
                         gst: gst,
                         prePayment: finalPayment,
                         postPayment: postPayment,
-                        totalPayment: finalPayment,
+                        totalPayment: finalPayment + postPayment,
                     }
                 },
                 { new: true }
