@@ -697,13 +697,13 @@ function formatDeliveryStatus(deliveryStatus) {
                 return `${t.city} - ${formattedDate}`;
             });
 
-            parts.push(`${formattedKey} → ${transitParts.join(' | ')}`);
+            parts.push(`${formattedKey} -> ${transitParts.join(' | ')}`);
         }
         // For others, just use deliveryDateTime
         else if (entry.deliveryDateTime) {
             const date = new Date(entry.deliveryDateTime);
             const formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
-            parts.push(`${formattedKey} → ${formattedDate}`);
+            parts.push(`${formattedKey} -> ${formattedDate}`);
         }
     }
 
