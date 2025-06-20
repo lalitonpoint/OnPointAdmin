@@ -55,7 +55,6 @@ const masterDetail = async (req, res) => {
                         serviceType,
                         isWallet: 0,
                         request: [],
-                        ftlRequest: [],
 
                         tripCount: { completedCount, cancelledCount }
                     }
@@ -112,7 +111,6 @@ const masterDetail = async (req, res) => {
                 serviceType,
                 isWallet: 0,
                 request: requestData,
-                ftlRequest: [],
                 tripCount: { completedCount, cancelledCount }
             };
 
@@ -143,7 +141,6 @@ const masterDetail = async (req, res) => {
                         serviceType,
                         isWallet: 0,
                         request: [],
-                        ftlRequest: [],
 
                         tripCount: { completedCount, cancelledCount }
                     }
@@ -181,8 +178,7 @@ const masterDetail = async (req, res) => {
                 assignId: pendingRequest._id,
                 serviceType,
                 isWallet: 0,
-                request: [],
-                ftlRequest: [{
+                request: [{
                     topHeader: ui.topHeader,
                     bottomHeader: ui.bottomHeader,
                     buttonText: ui.buttonText,
