@@ -19,6 +19,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     totalPayment: { type: Number, required: true },
     prePayment: { type: Number, bydefault: 0 },
     postPayment: { type: Number, bydefault: 0 },
+    estimatePrice: { type: Number, bydefault: 0 },
     paymentMethod: { type: String },
     paymentGateway: { type: String },
     distance: { type: Number },
