@@ -43,23 +43,55 @@
     <!-- Search Filters -->
     <div class="card shadow-sm mb-4" id="searchServicesCard" style="display: none;">
         <div class="card-body">
-            <h5 class="mb-3">Search Services</h5>
+            <h5 class="mb-3">FTL Search </h5>
             <div class="row g-3">
-                <div class="col-md-4">
-                    <label for="searchServiceName" class="form-label">Service Name</label>
-                    <input type="text" class="form-control" id="searchServiceName" placeholder="Enter Service Name">
+                <div class="col-md-3">
+                    <label for="searchPickup" class="form-label">Pickup Address</label>
+                    <input type="text" class="form-control" id="searchPickup" placeholder="Enter Pickup Address">
                 </div>
-                <div class="col-md-4">
-                    <label for="searchStatus" class="form-label">Status</label>
-                    <select id="searchStatus" class="form-select">
+                <div class="col-md-3">
+                    <label for="searchDrop" class="form-label">Drop Address</label>
+                    <input type="text" class="form-control" id="searchDrop" placeholder="Enter Drop Address">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchVehicle" class="form-label">Vehicle Name</label>
+                    <input type="text" class="form-control" id="searchVehicle" placeholder="Enter Vehicle Name">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchFTLType" class="form-label">FTL Type</label>
+                    <select id="searchFTLType" class="form-select">
                         <option value="">All</option>
-                        <option value="1">Active</option>
-                        <option value="2">Inactive</option>
+                        <option value="0">Intercity</option>
+                        <option value="1">OuterStation</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label for="searchCreatedAt" class="form-label">Created At</label>
-                    <input type="date" class="form-control" id="searchCreatedAt">
+                <div class="col-md-3">
+                    <label for="searchOrderId" class="form-label">Order ID</label>
+                    <input type="text" class="form-control" id="searchOrderId" placeholder="Enter Order ID">
+                </div>
+                <div class="col-md-3">
+                    <label for="searchIsAccepted" class="form-label">Is Accepted</label>
+                    <select id="searchIsAccepted" class="form-select">
+                        <option value="">All</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="searchIsPartial" class="form-label">Is Partial</label>
+                    <select id="searchIsPartial" class="form-select">
+                        <option value="">All</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="searchTxnStatus" class="form-label">Txn Status</label>
+                    <select id="searchTxnStatus" class="form-select">
+                        <option value="">All</option>
+                        <option value="true">Done</option>
+                        <option value="false">Pending</option>
+                    </select>
                 </div>
                 <div class="col-12 mt-3 d-flex gap-2">
                     <button class="btn btn-primary" id="searchBtn">Search</button>
@@ -68,6 +100,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Data Table -->
     <div class="card shadow-sm">
@@ -150,8 +183,22 @@
                     data: 'isBidding', orderable: false,
                     render: d => ({ 0: 'Intercity', 1: 'OuterStation' }[d] || 'Unknown')
                 },
-                { data: 'driverId.personalInfo.name', orderable: false },
-                { data: 'userId.fullName', orderable: false },
+
+                {
+                    data: 'driverId',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return data?.personalInfo?.name || 'N/A';
+                    }
+                },
+                {
+                    data: 'userId',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return row.userId?.fullName || 'N/A';
+                    }
+                },
+
                 { data: 'orderId', orderable: false },
                 {
                     data: 'orderStatus',
@@ -205,17 +252,7 @@
                 { data: 'gst' },
                 { data: 'gstPercentage' },
                 { data: 'prePaymentPercentage' }
-                // {
-                //     data: null,
-                //     orderable: false,
-                //     render: (data, type, row) => `
-                //         <button class="btn btn-sm btn-warning editBtn" data-id="${row._id}">
-                //             <i class="fas fa-edit"></i>
-                //         </button>
-                //         <button class="btn btn-sm btn-danger delBtn" data-id="${row._id}">
-                //             <i class="fas fa-trash"></i>
-                //         </button>`
-                // }
+
             ],
             order: [[1, 'asc']]
         });
