@@ -238,10 +238,6 @@ const ftlOrderCancel = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            data: {
-                order,
-                ftlPayment: result,
-            },
             message: "Order Cancel Successfully"
         });
     } catch (err) {
