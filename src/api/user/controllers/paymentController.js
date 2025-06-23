@@ -12,6 +12,7 @@ const mongoose = require('mongoose');
 const razorpay = require('../utils/razorpay');
 const { toFixed } = require('../utils/fixedValue');
 const crypto = require('crypto');
+const { listenerCount } = require('../../../admin/models/websiteManagement/bannerModel');
 require('dotenv').config();
 
 const addPaymentDetail = async (req, res) => {
@@ -579,7 +580,7 @@ const biddingDetail = async (req, res) => {
 };
 
 const acceptingRequest = async (req, res) => {
-    const { requestId, driverId, isAccepted, amount } = req.body;
+    let { requestId, driverId, isAccepted, amount } = req.body;
 
     // Validate required fields
     if (!requestId || !driverId || typeof isAccepted === 'undefined' || !amount) {
@@ -599,14 +600,17 @@ const acceptingRequest = async (req, res) => {
             });
         }
 
-        const prePaymentPercentage = reqDetail.prePaymentPercentage || 0.00;
+        amount = Number(amount);
+        const prePaymentPercentage = Number(reqDetail.prePaymentPercentage) || 0.00;
 
         // ✅ Validate: must be between 0 and 100
         if (prePaymentPercentage < 0 || prePaymentPercentage > 100) {
             return res.status(400).json({ error: "Invalid prePaymentPercentage. Must be between 0 and 100." });
         }
 
-        if (reqDetail.gstPercentage < 0 || reqDetail.gstPercentage > 100) {
+        const gstPercentage = Number(reqDetail.gstPercentage) || 0.00;
+
+        if (gstPercentage < 0 || gstPercentage > 100) {
             return res.status(400).json({ error: "Invalid gstPercentage. Must be between 0 and 100." });
         }
 
@@ -617,11 +621,12 @@ const acceptingRequest = async (req, res) => {
         const postPayment = parseFloat((amount - prePayment).toFixed(2));
 
         // const gst = reqDetail.gst || 0;
-        const gst = (amount * reqDetail.gstPercentage) / 100;
+        const gst = (amount * gstPercentage) / 100;
 
-        const specialHandling = reqDetail.specialHandling || 0.00;
-        const shippingCost = reqDetail.shippingCost || 0.00;
+        const specialHandling = Number(reqDetail.specialHandling) || 0.00;
+        const shippingCost = Number(reqDetail.shippingCost) || 0.00;
         const finalPayment = prePayment + gst + specialHandling + shippingCost;
+        console.log(typeof finalPayment, '-> ', finalPayment);
 
         // Create Razorpay order
         const razorpayOrderIdResponse = await initiateRazorpayOrderId(req, finalPayment);
@@ -786,7 +791,7 @@ const ftlFinalPayment = async (req, res) => {
         const averageRating = ratingData[0]?.avgRating || 0;
         const totalReviews = ratingData[0]?.totalReviews || 0;
         const unloadingFee = 100;
-        const finalPaymentAmount = (result.postPayment || 0) + unloadingFee;
+        const finalPaymentAmount = (Number(result.postPayment) || 0) + unloadingFee;
 
         // Initiate Razorpay order
         const razorpayOrderIdResponse = await initiateRazorpayOrderId(req, finalPaymentAmount);
