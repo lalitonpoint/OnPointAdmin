@@ -537,7 +537,7 @@ const biddingDetail = async (req, res) => {
 
             return {
                 averageRating: rating.averageRating,
-                biddingAmount: bid.biddingAmount,
+                biddingAmount: toFixed(bid.biddingAmount),
                 driverName: bid.driverId?.personalInfo?.name || 'N/A',
                 driverProfile: bid.driverId?.personalInfo?.profilePicture || null,
                 driverId: driverIdStr || null
@@ -554,7 +554,7 @@ const biddingDetail = async (req, res) => {
             orderStatus: ftlData.orderStatus,
             vehcileName: ftlData.vehcileName,
             vehicleImage: ftlData.vehicleImage,
-            estimatePrice: ftlData.estimatePrice || 0,
+            estimatePrice: toFixed(ftlData.estimatePrice),
             userId: ftlData.userId,
             orderId: ftlData._id,
             createdAt: ftlData.createdAt,
@@ -599,7 +599,17 @@ const acceptingRequest = async (req, res) => {
             });
         }
 
-        const prePaymentPercentage = reqDetail.prePaymentPercentage || 0;
+        const prePaymentPercentage = reqDetail.prePaymentPercentage || 0.00;
+
+        // ✅ Validate: must be between 0 and 100
+        if (prePaymentPercentage < 0 || prePaymentPercentage > 100) {
+            return res.status(400).json({ error: "Invalid prePaymentPercentage. Must be between 0 and 100." });
+        }
+
+        if (reqDetail.gstPercentage < 0 || reqDetail.gstPercentage > 100) {
+            return res.status(400).json({ error: "Invalid gstPercentage. Must be between 0 and 100." });
+        }
+
         // const prePayment = (amount * prePaymentPercentage) / 100;
         // const postPayment = amount - prePayment;
 
@@ -609,8 +619,8 @@ const acceptingRequest = async (req, res) => {
         // const gst = reqDetail.gst || 0;
         const gst = (amount * reqDetail.gstPercentage) / 100;
 
-        const specialHandling = reqDetail.specialHandling || 0;
-        const shippingCost = reqDetail.shippingCost || 0;
+        const specialHandling = reqDetail.specialHandling || 0.00;
+        const shippingCost = reqDetail.shippingCost || 0.00;
         const finalPayment = prePayment + gst + specialHandling + shippingCost;
 
         // Create Razorpay order
@@ -632,12 +642,12 @@ const acceptingRequest = async (req, res) => {
                         driverId,
                         preTransactionId: razorpayOrderId,
                         finalPreTransactionId: 0,
-                        postPayment,
-                        subTotal: amount,
-                        gst: gst,
-                        prePayment: finalPayment,
-                        postPayment: postPayment,
-                        totalPayment: finalPayment + postPayment,
+                        postPayment: toFixed(postPayment),
+                        subTotal: toFixed(amount),
+                        gst: toFixed(gst),
+                        prePayment: toFixed(finalPayment),
+                        postPayment: toFixed(postPayment),
+                        totalPayment: toFixed(finalPayment + postPayment),
                     }
                 },
                 { new: true }
@@ -715,15 +725,15 @@ const ftlIntiatePayment = async (req, res) => {
                 driverName: result.driverId?.personalInfo?.name || '',
                 preTransactionId: result.preTransactionId || '',
                 averageRating: parseFloat(averageRating.toFixed(1)),
-                subtotal: result.subTotal || 0,
-                shippingCost: result.shippingCost || 0,
-                specialHandling: result.specialHandling || 0,
-                gst: result.gst || 0,
-                gstPercentage: result.gstPercentage,
-                paymentPercentage: result.paymentPercentage,
-                totalPayment: result.totalPayment || 0,
-                initialPayment: result.prePayment,
-                postPayment: result.postPayment,
+                subtotal: toFixed(result.subTotal) || 0.00,
+                shippingCost: toFixed(result.shippingCost) || 0.00,
+                specialHandling: toFixed(result.specialHandling) || 0.00,
+                gst: toFixed(result.gst) || 0.00,
+                gstPercentage: toFixed(result.gstPercentage) || 0.00,
+                paymentPercentage: toFixed(result.paymentPercentage) || 0.00,
+                totalPayment: toFixed(result.totalPayment) || 0.00,
+                initialPayment: toFixed(result.prePayment) || 0.00,
+                postPayment: toFixed(result.postPayment) || 0.00,
             },
             message: 'FTL Payment details fetched successfully',
         });
@@ -811,16 +821,16 @@ const ftlFinalPayment = async (req, res) => {
                 finalPreTransactionId: razorpayOrderId,
                 averageRating: parseFloat(averageRating.toFixed(1)),
                 totalReviews,
-                subtotal: result.subTotal || 0,
-                shippingCost: result.shippingCost || 0,
-                specialHandling: result.specialHandling || 0,
-                gst: result.gst || 0,
-                gstPercentage: 18,
-                paymentPercentage: 80,
-                prePayment: result.prePayment || 0,
-                postPayment: result.postPayment || 0,
-                unloadingFee,
-                finalPayment: finalPaymentAmount
+                subtotal: toFixed(result.subTotal) || 0.00,
+                shippingCost: toFixed(result.shippingCost) || 0.00,
+                specialHandling: toFixed(result.specialHandling) || 0.00,
+                gst: toFixed(result.gst) || 0.00,
+                gstPercentage: toFixed(result.gstPercentage) || 0.00,
+                paymentPercentage: toFixed(result.paymentPercentage) || 0.00,
+                prePayment: toFixed(result.prePayment) || 0.00,
+                postPayment: toFixed(result.postPayment) || 0.00,
+                unloadingFee: toFixed(unloadingFee) || 0.00,
+                finalPayment: toFixed(finalPaymentAmount)
             },
             message: 'FTL Payment details fetched successfully',
         });
