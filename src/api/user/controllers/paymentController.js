@@ -10,6 +10,7 @@ const Bidding = require('../../driver/modals/biddingModal'); // Adjust path as p
 const mongoose = require('mongoose');
 
 const razorpay = require('../utils/razorpay');
+const { toFixed } = require('../utils/fixedValue');
 const crypto = require('crypto');
 require('dotenv').config();
 
@@ -356,10 +357,6 @@ const ftlOrderInitiate = async (req, res) => {
             postPayment = totalPayment - prePayment;
         }
 
-        const Decimal128 = mongoose.Types.Decimal128;
-
-        const safeDecimal = (value) => Decimal128.fromString(parseFloat(value || 0).toFixed(2));
-
         const paymentPayload = new FtlPayment({
             pickupLatitude,
             pickupLongitude,
@@ -374,17 +371,17 @@ const ftlOrderInitiate = async (req, res) => {
             isBidding: isBiddingNum,
             userId,
             orderId,
-            shippingCost: safeDecimal(shippingCost),
-            specialHandling,
+            shippingCost: toFixed(shippingCost),
+            specialHandling: toFixed(specialHandling),
             transactionDate: new Date(),
             isAccepted: 0,
-            estimatePrice: safeDecimal(estimatePrice),
-            gstPercentage: costResult.gstPercentage,
+            estimatePrice: toFixed(estimatePrice),
+            gstPercentage: toFixed(costResult.gstPercentage),
             loadingTime: costResult.loadingTime,
             unloadingTime: costResult.unloadingTime,
-            prePaymentPercentage: isBidding == 1 ? costResult.prePaymentPercentage : 0,
-            prePayment: isBidding == 1 ? safeDecimal(prePayment) : safeDecimal(0),
-            postPayment: isBidding == 1 ? safeDecimal(postPayment) : safeDecimal(0),
+            prePaymentPercentage: toFixed(isBidding == 1 ? costResult.prePaymentPercentage : 0),
+            prePayment: toFixed(isBidding == 1 ? prePayment : 0),
+            postPayment: toFixed(isBidding == 1 ? postPayment : 0),
 
             vehcileName: vehicleDetail.name,
             vehicleImage: vehicleDetail.vehicleImage,
@@ -392,9 +389,9 @@ const ftlOrderInitiate = async (req, res) => {
             vehcileCapacity: vehicleDetail.capacity,
             vehcileTireType: vehicleDetail.tireType,
 
-            subTotal: safeDecimal(subTotal),
-            gst: safeDecimal(gstAmount),
-            totalPayment: safeDecimal(totalPayment),
+            subTotal: toFixed(subTotal),
+            gst: toFixed(gstAmount),
+            totalPayment: toFixed(totalPayment),
             preTransactionId: razorpayOrderId,
         });
 
@@ -602,18 +599,9 @@ const acceptingRequest = async (req, res) => {
             });
         }
 
-
         const prePaymentPercentage = reqDetail.prePaymentPercentage || 0;
         // const prePayment = (amount * prePaymentPercentage) / 100;
         // const postPayment = amount - prePayment;
-        if (prePaymentPercentage < 0 || prePaymentPercentage > 100) {
-            return res.status(400).json({ error: "Invalid prePaymentPercentage. Must be between 0 and 100." });
-        }
-
-        if (reqDetail.gstPercentage < 0 || reqDetail.gstPercentage > 100) {
-            return res.status(400).json({ error: "Invalid gstPercentage. Must be between 0 and 100." });
-        }
-
 
         const prePayment = parseFloat(((amount * prePaymentPercentage) / 100).toFixed(2));
         const postPayment = parseFloat((amount - prePayment).toFixed(2));
@@ -634,8 +622,6 @@ const acceptingRequest = async (req, res) => {
         }
 
         let result = null;
-        const Decimal128 = mongoose.Types.Decimal128;
-
 
         if (Number(isAccepted) === 1) {
             result = await FtlPayment.findOneAndUpdate(
@@ -646,12 +632,12 @@ const acceptingRequest = async (req, res) => {
                         driverId,
                         preTransactionId: razorpayOrderId,
                         finalPreTransactionId: 0,
-                        postPayment: Decimal128.fromString(postPayment.toString()),
-                        subTotal: Decimal128.fromString(amount.toString()),
-                        gst: Decimal128.fromString(gst.toString()),
-                        prePayment: Decimal128.fromString(finalPayment.toString()),
-                        postPayment: Decimal128.fromString(postPayment.toString()),
-                        totalPayment: Decimal128.fromString((finalPayment + postPayment).toFixed(2)),
+                        postPayment,
+                        subTotal: amount,
+                        gst: gst,
+                        prePayment: finalPayment,
+                        postPayment: postPayment,
+                        totalPayment: finalPayment + postPayment,
                     }
                 },
                 { new: true }
@@ -734,7 +720,7 @@ const ftlIntiatePayment = async (req, res) => {
                 specialHandling: result.specialHandling || 0,
                 gst: result.gst || 0,
                 gstPercentage: result.gstPercentage,
-                paymentPercentage: result.prePaymentPercentage,
+                paymentPercentage: result.paymentPercentage,
                 totalPayment: result.totalPayment || 0,
                 initialPayment: result.prePayment,
                 postPayment: result.postPayment,
