@@ -149,7 +149,8 @@ const walletVerify = async (req, res) => {
 };
 
 const walletUse = async (req, res) => {
-    const { packageId, amount, isPartialPayment } = req.body;
+    let { packageId, amount, isPartialPayment } = req.body;
+    amount = Number(amount);
 
     if (typeof amount !== 'number') {
         return res.status(200).json({ success: false, message: 'Amount must be a number' });
