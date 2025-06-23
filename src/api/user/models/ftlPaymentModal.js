@@ -57,7 +57,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     driverId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'DriverProfile',
-        default: null
+        default: "null"
     }
 }, { timestamps: true });
 
