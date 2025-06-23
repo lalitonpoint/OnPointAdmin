@@ -21,11 +21,13 @@ const InitiatePaymentSchema = new mongoose.Schema({
     dropLongitude: { type: String },
     pickupNote: { type: String },
     packages: { type: [packageSchema], required: true },
-    subTotal: { type: Number, required: true },
-    shippingCost: { type: Number, required: true },
-    specialHandling: { type: Number, required: true },
-    gst: { type: Number, required: true },
-    totalPayment: { type: Number, required: true },
+
+    subTotal: { type: String, default: "0.00", required: true },
+    shippingCost: { type: String, default: "0.00", required: true },
+    specialHandling: { type: String, default: "0.00", required: true },
+    gst: { type: String, default: "0.00", required: true },
+    totalPayment: { type: String, default: "0.00", required: true },
+
     paymentMethod: { type: String },
     paymentGateway: { type: String },
     transportMode: { type: String },

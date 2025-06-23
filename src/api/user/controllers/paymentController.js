@@ -83,7 +83,7 @@ const addPaymentDetail = async (req, res) => {
 
         const { subTotal, shippingCost, specialHandling, gstAmount, totalPayment, distance, duration } = costResult;
 
-        let razorpayOrderIdResponse = await initiateRazorpayOrderId(req, totalPayment);
+        let razorpayOrderIdResponse = await initiateRazorpayOrderId(req, Number(totalPayment));
 
         let razorpayOrderId = 0;
         if (razorpayOrderIdResponse && razorpayOrderIdResponse.success === true) {
@@ -103,11 +103,11 @@ const addPaymentDetail = async (req, res) => {
             packages,
             distance,
             duration,
-            subTotal,
-            shippingCost,
-            specialHandling,
-            gst: gstAmount,
-            totalPayment,
+            subTotal: toFixed(subTotal),
+            shippingCost: toFixed(shippingCost),
+            specialHandling: toFixed(specialHandling),
+            gst: toFixed(gstAmount),
+            totalPayment: toFixed(totalPayment),
             userId,
             orderId,
             transportMode,

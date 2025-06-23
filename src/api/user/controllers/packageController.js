@@ -61,11 +61,11 @@ const packageCalculation = async (pickupLatitude, pickupLongitude, dropLatitude,
         }
 
         return {
-            subTotal,
-            shippingCost,
-            specialHandling,
-            gstAmount,
-            gstPercentage: gst,
+            subTotal: toFixed(subTotal),
+            shippingCost: toFixed(shippingCost),
+            specialHandling: toFixed(specialHandling),
+            gstAmount: toFixed(gstAmount),
+            gstPercentage: toFixed(gst),
             totalPayment: parseFloat(totalPayment.toFixed(2)),
             distance: distanceInKm.toFixed(2),
             duration,
