@@ -1,6 +1,8 @@
 const toFixed = (val) => {
     const num = parseFloat(val);
-    return isNaN(num) ? "0.00" : num.toFixed(2); // returns string like "4567.00"
+    const typeCastNumber = isNaN(num) ? "0.00" : num.toFixed(2); // <- this is string
+    console.log(typeof (typeCastNumber), ' -> ', typeCastNumber);
+    return (typeCastNumber); // <- returns string
 };
 
 module.exports = { toFixed };
