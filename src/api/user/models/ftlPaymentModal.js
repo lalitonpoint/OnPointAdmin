@@ -10,16 +10,54 @@ const InitiatePaymentSchema = new mongoose.Schema({
     pickupLongitude: { type: String },
     dropLatitude: { type: String },
     dropLongitude: { type: String },
-    subTotal: { type: Number, required: true },
-    shippingCost: { type: Number, required: true },
-    specialHandling: { type: Number, required: true },
-    gst: { type: Number, required: true },
-    gstPercentage: { type: Number, required: true },
-    prePaymentPercentage: { type: Number },
-    totalPayment: { type: Number, required: true },
-    prePayment: { type: Number, bydefault: 0 },
-    postPayment: { type: Number, bydefault: 0 },
-    estimatePrice: { type: Number, bydefault: 0 },
+    subTotal: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+        required: true
+    },
+    shippingCost: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+        required: true
+    },
+    specialHandling: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+        required: true
+    },
+    gst: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+        required: true
+    },
+    gstPercentage: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+        required: true
+    },
+    prePaymentPercentage: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+    },
+    totalPayment: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+        required: true
+    },
+    prePayment: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+    },
+    // postPayment: {
+    //     type: mongoose.Schema.Types.Decimal128,
+    //     default: mongoose.Types.Decimal128.fromString("0.00"),
+    // },
+    postPayment: { type: mongoose.Schema.Types.Decimal128, default: mongoose.Types.Decimal128.fromString("0.00") },
+
+    estimatePrice: {
+        type: mongoose.Schema.Types.Decimal128,
+        default: mongoose.Types.Decimal128.fromString("0.00"),
+    },
     paymentMethod: { type: String },
     paymentGateway: { type: String },
     distance: { type: Number },
