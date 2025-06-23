@@ -161,7 +161,7 @@ const walletUse = async (req, res) => {
     }
     const serviceType = req.headers['servicetype'];
 
-    if (serviceType != 1 && !isPartialPayment) {
+    if (serviceType != 1 && isPartialPayment == undefined) {
         return res.status(200).json({ success: false, message: 'isPartialPayment is required' });
     }
 
