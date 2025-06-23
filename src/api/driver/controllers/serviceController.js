@@ -965,6 +965,7 @@ const ftlOrderAssign = async (req, res) => {
                 isBidding,
                 isAccepted,
                 totalPayment,
+                estimatePrice,
                 dropAddress,
                 pickupAddress
             } = req;
@@ -994,7 +995,7 @@ const ftlOrderAssign = async (req, res) => {
                 vehicleImage,
                 isBidding,
                 isAccepted,
-                totalPayment,
+                totalPayment: estimatePrice,
                 pickupLatitude,
                 pickupLongitude,
                 pickupAddress,
