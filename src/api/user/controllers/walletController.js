@@ -155,13 +155,17 @@ const walletUse = async (req, res) => {
         return res.status(200).json({ success: false, message: 'Amount must be a number' });
     }
 
-    if (!packageId || !isPartialPayment) {
-        return res.status(200).json({ success: false, message: 'packageId , isPartialPayment is required' });
+    if (!packageId) {
+        return res.status(200).json({ success: false, message: 'packageId is required' });
 
+    }
+    const serviceType = req.headers['servicetype'];
+
+    if (serviceType != 1 && !isPartialPayment) {
+        return res.status(200).json({ success: false, message: 'isPartialPayment is required' });
     }
 
     const userId = req.headers['userid'];
-    const serviceType = req.headers['servicetype'];
 
     if (!userId) {
         return res.status(200).json({ success: false, message: 'User ID missing in headers' });
@@ -189,9 +193,6 @@ const walletUse = async (req, res) => {
                 return res.status(200).json({ success: false, message: 'FTL Package not found' });
             }
         }
-
-        console.log('sre', serviceType);
-
 
         const wallet = await Wallet.findOne({ userId: userId });
         if (!wallet) {

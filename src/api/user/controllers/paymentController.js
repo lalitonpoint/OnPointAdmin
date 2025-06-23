@@ -420,11 +420,17 @@ const ftlOrderInitiate = async (req, res) => {
 const ftlVerifyPayment = async (req, res) => {
     const { razorPayOrderId, razorpayPaymentId, razorpaySignature, isPartialPayment } = req.body;
 
-    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature || isPartialPayment == undefined) {
+    if (!razorPayOrderId || !razorpayPaymentId || !razorpaySignature) {
         return res.status(200).json({ success: false, message: 'Missing required fields' });
     }
 
-    if (![0, 1, 2].includes(isPartialPayment)) {
+    const serviceType = req.headers['servicetype'];
+
+    if (serviceType != 1 && !isPartialPayment) {
+        return res.status(200).json({ success: false, message: 'isPartialPayment is required' });
+    }
+
+    if (serviceType != 1 && ![0, 1, 2].includes(isPartialPayment)) {
         return res.status(200).json({ success: false, message: 'Invaild isPartialPayment Value' });
     }
 
@@ -444,10 +450,10 @@ const ftlVerifyPayment = async (req, res) => {
         let paymentRecord = 0;
 
         if (payment.status === 'captured' && payment.order_id === razorPayOrderId) {
-            if (isPartialPayment == 1 || isPartialPayment == 0)
-                paymentRecord = await FtlPayment.findOne({ preTransactionId: razorPayOrderId });
             if (isPartialPayment == 2)
                 paymentRecord = await FtlPayment.findOne({ finalPreTransactionId: razorPayOrderId });
+            else
+                paymentRecord = await FtlPayment.findOne({ preTransactionId: razorPayOrderId });
 
             if (!paymentRecord) {
                 return res.status(200).json({ success: false, message: 'Payment order not found' });
