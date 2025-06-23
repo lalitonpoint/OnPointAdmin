@@ -1,6 +1,6 @@
 const settingModel = require('../../../admin/models/configuration/settingModel');
 const FAQ = require('../../../admin/models/faqManagement/faqModel');
-const Services = require('../../../admin/models/vehicleManagement/serviceManagementModel');
+const Services = require('../../../admin/models/vehcileManagement/serviceManagementModel');
 
 
 const getSettingData = async (req, res) => {

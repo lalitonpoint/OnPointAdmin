@@ -1,6 +1,6 @@
 const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 const FTL = require('../../user/models/ftlPaymentModal');
-const Service = require('../../../admin/models/vehicleManagement/serviceManagementModel');
+const Service = require('../../../admin/models/vehcileManagement/serviceManagementModel');
 const DriverModal = require('../modals/driverModal');
 const { getDriverLocation } = require('./serviceController');
 const { getDistanceAndDuration } = require('../utils/distanceCalculate');

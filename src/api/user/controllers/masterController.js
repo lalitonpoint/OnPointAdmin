@@ -4,7 +4,7 @@ const FTL = require('../models/ftlPaymentModal');
 const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate');
 const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 const Banner = require('../../../admin/models/websiteManagement/bannerModel');
-const Service = require('../../../admin/models/vehicleManagement/serviceManagementModel');
+const Service = require('../../../admin/models/vehcileManagement/serviceManagementModel');
 
 const masterDetail = async (req, res) => {
     // const serviceType = 1;
