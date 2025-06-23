@@ -1,6 +1,6 @@
 const DriverAssign = require('../../../admin/models/ptlPackages/driverPackageAssignModel');
 const FTL = require('../../user/models/ftlPaymentModal');
-const Service = require('../../../admin/models/vehcileManagement/serviceManagementModel');
+const Service = require('../../../admin/models/vehicleManagement/serviceManagementModel');
 const DriverModal = require('../modals/driverModal');
 const { getDriverLocation } = require('./serviceController');
 const { getDistanceAndDuration } = require('../utils/distanceCalculate');
@@ -150,7 +150,7 @@ const masterDetail = async (req, res) => {
             const {
                 pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
                 pickupAddress, dropAddress, totalPayment,
-                step = 0, orderStatus, vehcileName, vehicleImage, vehcileBodyType,
+                step = 0, orderStatus, vehicleName, vehicleImage, vehicleBodyType,
                 userId
             } = pendingRequest;
 
@@ -198,9 +198,9 @@ const masterDetail = async (req, res) => {
                     totalPayment,
                     step,
                     orderStatus,
-                    vehcileName,
+                    vehicleName,
                     vehicleImage,
-                    vehcileBodyType,
+                    vehicleBodyType,
                     requestId: pendingRequest?._id || '',
                 }],
                 tripCount: { completedCount, cancelledCount }

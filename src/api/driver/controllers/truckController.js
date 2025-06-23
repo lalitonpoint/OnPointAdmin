@@ -1,4 +1,4 @@
-const Truck = require('../../../admin/models/vehcileManagement/truckManagementModel');
+const Truck = require('../../../admin/models/vehicleManagement/truckManagementModel');
 
 const getTruckData = async (req, res) => {
 

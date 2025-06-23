@@ -1,4 +1,4 @@
-const Services = require('../../../admin/models/vehcileManagement/serviceManagementModel');
+const Services = require('../../../admin/models/vehicleManagement/serviceManagementModel');
 
 // Fetch only active services
 const getServices = async (req, res) => {

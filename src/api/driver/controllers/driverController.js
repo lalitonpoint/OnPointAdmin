@@ -2,7 +2,7 @@ const multiparty = require("multiparty");
 const fs = require("fs/promises");
 const jwt = require("jsonwebtoken");
 const DriverProfile = require("../modals/driverModal");
-const Services = require("../../../admin/models/vehcileManagement/serviceManagementModel");
+const Services = require("../../../admin/models/vehicleManagement/serviceManagementModel");
 const { uploadImage } = require("../../../admin/utils/uploadHelper");
 const secretKey = process.env.JWT_SECRET || "your_jwt_secret"; // Move to .env in production
 

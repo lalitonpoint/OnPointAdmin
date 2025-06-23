@@ -3,7 +3,7 @@ const FtlPayment = require('../models/ftlPaymentModal');
 const { packageCalculation, ftlPackageCalculation } = require('../controllers/packageController');
 const generateOrderId = require('../utils/generateOrderId');
 const { getDistanceAndDuration } = require('../../driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
-const Vehicle = require('../../../admin/models/vehcileManagement/truckManagementModel');
+const Vehicle = require('../../../admin/models/vehicleManagement/truckManagementModel');
 const Rating = require('../../user/models/ratingModal'); // Adjust path as per your project
 const Bidding = require('../../driver/modals/biddingModal'); // Adjust path as per your project
 // const Rating = require('../models/ratingModal'); // Adjust path as per your project
@@ -261,7 +261,7 @@ const ftlOrderInitiate = async (req, res) => {
             pickupAddress,
             dropAddress,
             isBidding,
-            vehcileId,
+            vehicleId,
             estimatePrice
         } = req.body;
 
@@ -281,7 +281,7 @@ const ftlOrderInitiate = async (req, res) => {
             dropLongitude,
             pickupAddress,
             dropAddress,
-            vehcileId,
+            vehicleId,
             estimatePrice
         };
 
@@ -302,7 +302,7 @@ const ftlOrderInitiate = async (req, res) => {
             });
         }
 
-        const vehicleDetail = await Vehicle.findById(vehcileId).lean();
+        const vehicleDetail = await Vehicle.findById(vehicleId).lean();
         if (!vehicleDetail) {
             return res.status(404).json({
                 success: false,
@@ -386,9 +386,9 @@ const ftlOrderInitiate = async (req, res) => {
 
             vehicleName: vehicleDetail.name,
             vehicleImage: vehicleDetail.vehicleImage,
-            vehcileBodyType: vehicleDetail.bodyType,
-            vehcileCapacity: vehicleDetail.capacity,
-            vehcileTireType: vehicleDetail.tireType,
+            vehicleBodyType: vehicleDetail.bodyType,
+            vehicleCapacity: vehicleDetail.capacity,
+            vehicleTireType: vehicleDetail.tireType,
 
             subTotal: toFixed(subTotal),
             gst: toFixed(gstAmount),
@@ -728,8 +728,8 @@ const ftlIntiatePayment = async (req, res) => {
             data: {
                 vehicleName: result.vehicleName || '',
                 vehicleImage: result.vehicleImage || '',
-                vehicleBodyType: result.vehcileBodyType || '',
-                vehicleCapacity: result.vehcileCapacity || '',
+                vehicleBodyType: result.vehicleBodyType || '',
+                vehicleCapacity: result.vehicleCapacity || '',
                 numberPlate: result.driverId?.vehicleDetail?.plateNumber || '',
                 pickupAddress: result.pickupAddress || '',
                 dropAddress: result.dropAddress || '',
@@ -823,8 +823,8 @@ const ftlFinalPayment = async (req, res) => {
             data: {
                 vehicleName: result.vehicleName || '',
                 vehicleImage: result.vehicleImage || '',
-                vehicleBodyType: result.vehcileBodyType || '',
-                vehicleCapacity: result.vehcileCapacity || '',
+                vehicleBodyType: result.vehicleBodyType || '',
+                vehicleCapacity: result.vehicleCapacity || '',
                 numberPlate: result.driverId?.vehicleDetail?.plateNumber || '',
                 pickupAddress: result.pickupAddress || '',
                 dropAddress: result.dropAddress || '',
