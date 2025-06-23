@@ -134,7 +134,8 @@ const masterDetail = async (req, res) => {
             }).sort({ createdAt: -1 }).lean();
             const pendingFTL = await FTL.findOne({
                 userId,
-                transactionStatus: 0
+                transactionStatus: 0,
+                orderStatus: { $nin: [5] }
             }).sort({ createdAt: -1 }).lean();
 
             currentBidding = {
