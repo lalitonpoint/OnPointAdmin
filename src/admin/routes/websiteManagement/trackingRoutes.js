@@ -20,6 +20,8 @@ router.delete('/delete/:id', checkCrudPermission('delete'), TrackingCtrl.deleteT
 
 router.get('/downloadCsv', checkCrudPermission('export'), TrackingCtrl.downloadTrackingCsv);
 router.post('/upload-csv', checkCrudPermission('export'), upload.single('file'), TrackingCtrl.UploadCsv);
+router.get('/states', checkCrudPermission('isShow'), TrackingCtrl.states);
+router.get('/cities', checkCrudPermission('isShow'), TrackingCtrl.cities);
 
 
 module.exports = router;

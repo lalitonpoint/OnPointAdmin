@@ -4,6 +4,7 @@ const moment = require('moment'); // Ensure moment.js is installed: npm install 
 const csv = require('csv-parser');
 const multiparty = require('multiparty');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
+const statesCities = require('./states-cities.json');
 
 
 const trackingPage = (req, res) => {
@@ -162,7 +163,7 @@ const addTracking = async (req, res) => {
 
             // Convert status to number
             const statusNumber = parseInt(status);
-            if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 5) {
+            if (isNaN(statusNumber) || statusNumber < 1 || statusNumber > 6) {
                 return res.status(200).json({ success: false, message: 'Invalid status value' });
             }
             const statusMap = {
@@ -170,7 +171,8 @@ const addTracking = async (req, res) => {
                 2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [] },
                 3: { key: 'outdelivery', status: 0, deliveryDateTime: '' },
                 4: { key: 'delivered', status: 0, deliveryDateTime: '' },
-                5: { key: 'cancelled', status: 0, deliveryDateTime: '' }
+                5: { key: 'cancelled', status: 0, deliveryDateTime: '' },
+                6: { key: 'hold', status: 0, deliveryDateTime: '' },
             };
 
             statusMap[status].status = 1;
@@ -324,7 +326,7 @@ const updateTracking = async (req, res) => {
             const updatedDeliveryStatus = { ...existingTrackk.deliveryStatus };
 
             // Loop through the keys (as strings)
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const key = i;
 
                 if (key <= status) {
@@ -514,6 +516,7 @@ const downloadTrackingCsv = async (req, res) => {
                 case 3: return 'Out For Delivery';
                 case 4: return 'Delivered';
                 case 5: return 'Cancelled';
+                case 6: return 'Hold';
                 default: return 'Unknown';
             }
         }
@@ -602,7 +605,8 @@ const UploadCsv = async (req, res) => {
                             2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [], pod: '' },
                             3: { key: 'outdelivery', status: 0, deliveryDateTime: '', pod: '' },
                             4: { key: 'delivered', status: 0, deliveryDateTime: '', pod: '' },
-                            5: { key: 'cancelled', status: 0, deliveryDateTime: '', pod: '' }
+                            5: { key: 'cancelled', status: 0, deliveryDateTime: '', pod: '' },
+                            6: { key: 'hold', status: 0, deliveryDateTime: '', pod: '' }
                         };
 
                         if (statusMap[statusNumber]) {
@@ -710,6 +714,17 @@ function formatDeliveryStatus(deliveryStatus) {
     return parts.join(' -> ');
 }
 
+
+
+const states = (req, res) => {
+    res.json(Object.keys(statesCities));
+};
+
+const cities = (req, res) => {
+    const state = req.query.state;
+    res.json(statesCities[state] || []);
+};
+
 module.exports = {
     trackingPage,
     trackingList,
@@ -718,5 +733,5 @@ module.exports = {
     updateTracking,
     deleteTracking,
     downloadTrackingCsv,
-    UploadCsv
+    UploadCsv, states, cities
 };

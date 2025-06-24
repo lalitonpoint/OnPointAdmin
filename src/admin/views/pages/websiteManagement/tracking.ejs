@@ -47,6 +47,7 @@
                         <option value="3">Out for Delivery</option>
                         <option value="4">Delivered</option>
                         <option value="5">Cancelled</option>
+                        <option value="6">Hold</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -107,7 +108,7 @@
                                 autocomplete="off" placeholder="Enter Tracking ID">
                         </div>
 
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <label for="pickUpLocation" class="form-label">Pickup Location<strong
                                     class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="pickUpLocation"
@@ -118,6 +119,21 @@
                                     class="text-danger">*</strong> </label>
                             <input type="text" class="form-control" id="dropLocation" placeholder="Enter Drop Location"
                                 name="dropLocation">
+                        </div> -->
+                        <div class="col-md-6">
+                            <label for="pickUpLocation" class="form-label">Pickup Location<strong
+                                    class="text-danger">*</strong></label>
+
+                            <select class="form-select" id="pickUpLocation" name="pickUpLocation">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dropLocation" class="form-label">Drop Location<strong
+                                    class="text-danger">*</strong> </label>
+                            <select class="form-select" id="dropLocation" name="dropLocation">
+                                <option value="">Select Cities</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label for="transportMode" class="form-label">Transport Mode <strong
@@ -155,6 +171,7 @@
                                 <option value="3">Out for Delivery</option>
                                 <option value="4">Delivered</option>
                                 <option value="5">Cancelled</option>
+                                <option value="6">Hold</option>
                             </select>
                         </div>
                         <div id="transitDeliveryContainer" class="d-none">
@@ -213,87 +230,101 @@
                             <input type="date" class="form-control" id="connectionDate" name="connectionDate">
                         </div>
                         <div class="col-md-6">
-                            <label for="consigneeName" class="form-label">Consignee Name</label>
+                            <label for="consigneeName" class="form-label">Consignee Name<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="consigneeName" name="consigneeName"
                                 placeholder="Enter Consignee Name">
                         </div>
                         <div class="col-md-6">
-                            <label for="mobile" class="form-label">Phone No. </label>
+                            <label for="mobile" class="form-label">Phone No. <strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="mobile" name="mobile"
                                 placeholder="Enter Phone No.">
                         </div>
 
                         <div class="col-md-6">
-                            <label for="consignorPincode" class="form-label">Consignor Pin Code </label>
+                            <label for="consignorPincode" class="form-label">Consignor Pin Code <strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="consignorPincode" name="consignorPincode"
                                 placeholder="Enter Consignor Pin Code">
                         </div>
 
                         <!-- <div class="col-md-6">
-                            <label for="lrNo" class="form-label">Lr NO. </label>
+                            <label for="lrNo" class="form-label">Lr NO. <strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="lrNo" name="lrNo" placeholder="Enter Lr No.">
                         </div> -->
                         <div class="col-md-6">
-                            <label for="referenceNo" class="form-label">Reference Lr. No</label>
+                            <label for="referenceNo" class="form-label">Reference Lr. No<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="referenceNo" name="referenceNo"
                                 placeholder="Enter Reference Lr No.">
                         </div>
                         <div class="col-md-6">
-                            <label for="invoiceNumber" class="form-label">Invoice Number</label>
+                            <label for="invoiceNumber" class="form-label">Invoice Number<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber"
                                 placeholder="Enter Invoice Number">
                         </div>
                         <div class="col-md-6">
-                            <label for="invoiceValue" class="form-label">Invoice Value</label>
+                            <label for="invoiceValue" class="form-label">Invoice Value<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="invoiceValue" name="invoiceValue"
                                 placeholder="Enter Invoice Value">
                         </div>
                         <div class="col-md-6">
-                            <label for="boxes" class="form-label">Boxes</label>
+                            <label for="boxes" class="form-label">Boxes<strong class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="boxes" name="boxes" placeholder="Enter Boxes">
                         </div>
                         <div class="col-md-6">
-                            <label for="ewayBillNo" class="form-label">Eway bill No.</label>
+                            <label for="ewayBillNo" class="form-label">Eway bill No.<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="ewayBillNo" name="ewayBillNo"
                                 placeholder="Enter Bill No.">
                         </div>
 
                         <div class="col-md-6">
-                            <label for="connectionPartner" class="form-label">Connection Partner</label>
+                            <label for="connectionPartner" class="form-label">Connection Partner<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="connectionPartner" name="connectionPartner"
                                 placeholder="Enter Connection Partner">
                         </div>
                         <div class="col-md-6">
-                            <label for="partnerCnNumber" class="form-label">Partner CN Number</label>
+                            <label for="partnerCnNumber" class="form-label">Partner CN Number<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="partnerCnNumber" name="partnerCnNumber"
                                 placeholder="Enter Partner CN Number">
                         </div>
                         <div class="col-md-6">
-                            <label for="actualWeight" class="form-label">Actual Weight</label>
+                            <label for="actualWeight" class="form-label">Actual Weight<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="actualWeight" name="actualWeight"
                                 placeholder="Enter Actual Weight">
                         </div>
 
                         <div class="col-md-6">
-                            <label for="chargedWeight" class="form-label">Charged Weight</label>
+                            <label for="chargedWeight" class="form-label">Charged Weight<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="chargedWeight" name="chargedWeight"
                                 placeholder="Enter Charged Weight">
                         </div>
 
                         <div class="col-md-6">
-                            <label for="tat" class="form-label">TAT</label>
+                            <label for="tat" class="form-label">TAT<strong class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="tat" name="tat" placeholder="Enter TAT">
                         </div>
                         <!-- <div class="col-md-6">
-                            <label for="edd" class="form-label">EDD</label>
+                            <label for="edd" class="form-label">EDD<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="edd" name="edd" placeholder="Enter EDD">
                         </div> -->
                         <div class="col-md-6">
-                            <label for="add" class="form-label">ADD</label>
+                            <label for="add" class="form-label">ADD<strong class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="add" name="add" placeholder="Enter ADD">
                         </div>
                         <div class="col-md-6">
-                            <label for="remarks" class="form-label">Remarks</label>
+                            <label for="remarks" class="form-label">Remarks<strong
+                                    class="text-danger">*</strong></label>
                             <input type="text" class="form-control" id="remarks" name="remarks"
                                 placeholder="Enter Remarks">
                         </div>
@@ -424,6 +455,10 @@
                                 statusColor = 'badge bg-danger'; // Cancelled
                                 statusText = 'Cancelled';
                                 break;
+                            case 6:
+                                statusColor = 'badge pink-button'; // Hold
+                                statusText = 'Hold';
+                                break;
                             default:
                                 statusColor = 'badge bg-secondary'; // Unknown
                                 statusText = 'Unknown';
@@ -539,6 +574,21 @@
 
             const invoiceDate = $('#invoiceDate').val();
             const connectionDate = $('#connectionDate').val();
+            const remarks = $('#remarks').val();
+            const add = $('#add').val();
+            const tat = $('#tat').val();
+            const chargedWeight = $('#chargedWeight').val();
+            const actualWeight = $('#actualWeight').val();
+            const partnerCnNumber = $('#partnerCnNumber').val();
+            const connectionPartner = $('#connectionPartner').val();
+            const ewayBillNo = $('#ewayBillNo').val();
+            const boxes = $('#boxes').val();
+            const invoiceValue = $('#invoiceValue').val();
+            const invoiceNumber = $('#invoiceNumber').val();
+            const referenceNo = $('#referenceNo').val();
+            const consignorPincode = $('#consignorPincode').val();
+            const mobile = $('#mobile').val();
+            const consigneeName = $('#consigneeName').val();
 
             if (!invoiceDate) {
                 toastr.error('Please select a Invoice Date date.', 'Error');
@@ -546,6 +596,69 @@
             }
             if (!connectionDate) {
                 toastr.error('Please select a Connection Date date.', 'Error');
+                return;
+            }
+
+
+
+            if (!consigneeName) {
+                toastr.error('Please enter Consignee Name.', 'Error');
+                return;
+            }
+            if (!mobile || !/^\d{10}$/.test(mobile)) {
+                toastr.error('Please enter a valid 10-digit Mobile Number.', 'Error');
+                return;
+            }
+            if (!consignorPincode || !/^\d{6}$/.test(consignorPincode)) {
+                toastr.error('Please enter valid 6-digit Consignor Pincode.', 'Error');
+                return;
+            }
+            if (!referenceNo) {
+                toastr.error('Please enter Reference Number.', 'Error');
+                return;
+            }
+            if (!invoiceNumber) {
+                toastr.error('Please enter Invoice Number.', 'Error');
+                return;
+            }
+            if (!invoiceValue || isNaN(invoiceValue)) {
+                toastr.error('Please enter Invoice Value.', 'Error');
+                return;
+            }
+            if (!boxes || isNaN(boxes)) {
+                toastr.error('Please enter number of Boxes.', 'Error');
+                return;
+            }
+            if (!ewayBillNo) {
+                toastr.error('Please enter Eway Bill Number.', 'Error');
+                return;
+            }
+            if (!connectionPartner) {
+                toastr.error('Please enter Connection Partner.', 'Error');
+                return;
+            }
+            if (!partnerCnNumber) {
+                toastr.error('Please enter Partner CN Number.', 'Error');
+                return;
+            }
+            if (!actualWeight || isNaN(actualWeight)) {
+                toastr.error('Please enter a valid Actual Weight.', 'Error');
+                return;
+            }
+            if (!chargedWeight || isNaN(chargedWeight)) {
+                toastr.error('Please enter a valid Charged Weight.', 'Error');
+                return;
+            }
+            if (!tat) {
+                toastr.error('Please enter TAT.', 'Error');
+                return;
+            }
+            if (!add) {
+                toastr.error('Please enter Address.', 'Error');
+                return;
+            }
+            if (!remarks) {
+                toastr.error('Please enter Remarks.', 'Error');
                 return;
             }
 
@@ -938,5 +1051,42 @@
                 }
             });
         });
+
+
+
+        $.ajax({
+            url: '/tracking/states',
+            type: 'GET',
+            success: function (states) {
+                states.forEach(state => {
+                    $('#pickUpLocation').append(`<option value="${state}">${state}</option>`);
+                });
+            }
+        });
+
+
+
+        $('#pickUpLocation').on('change', function () {
+            const state = $(this).val();
+
+            if (state) {
+                $.ajax({
+                    url: '/tracking/cities',
+                    method: 'get',
+                    contentType: 'application/json',
+                    data: { state },
+                    success: function (cities) {
+                        $('#dropLocation').empty().append('<option value="">Select City</option>');
+                        cities.forEach(city => {
+                            $('#dropLocation').append(`<option value="${city}">${city}</option>`);
+                        });
+                    }
+                });
+            } else {
+                $('#dropLocation').empty().append('<option value="">Select City</option>');
+            }
+        });
+
+
     });
 </script>

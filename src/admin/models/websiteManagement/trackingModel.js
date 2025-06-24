@@ -12,7 +12,8 @@ const shipmentSchema = new mongoose.Schema({
     },
     status: {
         type: Number,
-        enum: [1, 2, 3, 4, 5], // 1: Pickup, 2: In Transit, 3: In Progress, 4: Delivered, 5: Cancelled
+        enum: [0, 1, 2, 3, 4, 5, 6], // 1: Pickup, 2: In Transit, 3: In Progress, 4: Delivered, 5: Cancelled , 6: Hold
+        bydefault: 0,
         required: true
     },
     deliveryDate: { // Renamed 'date' to 'estimateDate' to align with the table header
