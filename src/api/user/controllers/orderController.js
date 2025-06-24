@@ -360,7 +360,7 @@ const ftlSingleOrderDetail = async (req, res) => {
                 vehicleName: order.vehicleName || '',
                 vehicleImage: order.vehicleImage || '',
                 vehicleBodyType: order.vehicleBodyType || '',
-                orderId: order.orderId || '',
+                orderId: order.orderId || 0,
 
                 pickupAddress: order.pickupAddress || '',
                 dropAddress: order.dropAddress || '',
@@ -379,8 +379,8 @@ const ftlSingleOrderDetail = async (req, res) => {
                 driverProfile: driver.personalInfo?.profilePicture || '',
                 vehicleNumber: driver.vehicleDetail?.truckNumber || '',
 
-                isBidding: order.isBidding || false,
-                isPartialPayment: order.isPartialPayment || false,
+                isBidding: order.isBidding || 0,
+                isPartialPayment: order.isPartialPayment || 0,
                 unloadingTime: order.unloadingTime || '',
             }
         });
@@ -394,6 +394,7 @@ const ftlSingleOrderDetail = async (req, res) => {
         });
     }
 };
+
 
 
 module.exports = { getOrderList, singleOrderDetail, ftlOrderCancel, ftlOrderList, ftlSingleOrderDetail };
