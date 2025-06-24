@@ -599,6 +599,7 @@ const UploadCsv = async (req, res) => {
 
                         const existing = await Tracking.findOne({ trackingId });
 
+                        // If already exists, update deliveryStatus if trackingStatus is present
                         if (existing) {
                             if (trackingStatus) {
                                 const modifyTrackingStatus = trackingStatusFormat(trackingStatus);
@@ -624,6 +625,11 @@ const UploadCsv = async (req, res) => {
                             }
                         }
 
+                        // Override with full trackingStatus if available
+                        const finalDeliveryStatus = trackingStatus
+                            ? trackingStatusFormat(trackingStatus)
+                            : deliveryStatus;
+
                         const newTracking = new Tracking({
                             trackingId: trackingId?.trim(),
                             clientName: clientName?.trim(),
@@ -634,7 +640,7 @@ const UploadCsv = async (req, res) => {
                             transportMode,
                             pod: statusNumber === 4 ? pod : '',
                             createdAt: new Date(),
-                            deliveryStatus,
+                            deliveryStatus: finalDeliveryStatus,
 
                             consigneeName,
                             mobile,
@@ -681,17 +687,13 @@ const UploadCsv = async (req, res) => {
     }
 };
 
-
 function trackingStatusFormat(trackingStatus) {
-
-    // Convert dd-mm-yyyy to yyyy-mm-dd
     function formatDate(dateStr) {
         const [day, month, year] = dateStr.trim().split('-');
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
 
     const segments = trackingStatus.split('->').map(s => s.trim());
-
     const deliveryStatus = {};
     let step = 1;
     let i = 0;
@@ -741,15 +743,13 @@ function trackingStatusFormat(trackingStatus) {
         }
     }
 
-    // Add cancelled by default
     deliveryStatus[step++] = {
         key: "cancelled",
         status: 0,
         deliveryDateTime: ""
     };
 
-    return (JSON.stringify(deliveryStatus, null, 2));
-
+    return deliveryStatus;
 }
 
 function formatDeliveryStatus(deliveryStatus) {
