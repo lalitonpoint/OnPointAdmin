@@ -631,8 +631,8 @@ const UploadCsv = async (req, res) => {
                             : deliveryStatus;
 
                         const newTracking = new Tracking({
-                            trackingId: trackingId?.trim(),
-                            clientName: clientName?.trim(),
+                            trackingId: trackingId,
+                            clientName: clientName,
                             status: statusNumber,
                             estimateDate: estimateDate ? moment(estimateDate).toDate() : null,
                             pickUpLocation,
@@ -689,11 +689,11 @@ const UploadCsv = async (req, res) => {
 
 function trackingStatusFormat(trackingStatus) {
     function formatDate(dateStr) {
-        const [day, month, year] = dateStr.trim().split('-');
+        const [day, month, year] = dateStr.split('-');
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
 
-    const segments = trackingStatus.split('->').map(s => s.trim());
+    const segments = trackingStatus.split('->').map(s => s);
     const deliveryStatus = {};
     let step = 1;
     let i = 0;
@@ -701,19 +701,19 @@ function trackingStatusFormat(trackingStatus) {
     while (i < segments.length) {
         const key = segments[i].toLowerCase();
 
-        if (key === 'pickup') {
+        if (key == 'pickup') {
             deliveryStatus[step++] = {
                 key: "pickup",
                 status: 1,
                 deliveryDateTime: formatDate(segments[i + 1])
             };
             i += 2;
-        } else if (key === 'intransit') {
+        } else if (key == 'intransit') {
             const transitList = segments[i + 1].split('|').map(item => {
-                const [city, date] = item.trim().split(' - ');
+                const [city, date] = item.split(' - ');
                 return {
-                    city: city.trim(),
-                    date: formatDate(date.trim())
+                    city: city,
+                    date: formatDate(date)
                 };
             });
 
@@ -724,7 +724,7 @@ function trackingStatusFormat(trackingStatus) {
                 transitData: transitList
             };
             i += 2;
-        } else if (key === 'outdelivery') {
+        } else if (key == 'outdelivery') {
             deliveryStatus[step++] = {
                 key: "outdelivery",
                 status: 1,
