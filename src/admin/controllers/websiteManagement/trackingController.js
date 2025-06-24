@@ -546,32 +546,24 @@ const UploadCsv = async (req, res) => {
         const duplicates = [];
         const saved = [];
 
-        const statusMapTemplate = {
-            1: { key: 'pickup', status: 0, deliveryDateTime: '', pod: '' },
-            2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [], pod: '' },
-            3: { key: 'outdelivery', status: 0, deliveryDateTime: '', pod: '' },
-            4: { key: 'delivered', status: 0, deliveryDateTime: '', pod: '' },
-            5: { key: 'cancelled', status: 0, deliveryDateTime: '', pod: '' },
-            6: { key: 'hold', status: 0, deliveryDateTime: '', pod: '' }
-        };
-
         fs.createReadStream(filePath)
             .pipe(csv())
-            .on('data', (row) => {
-                results.push(row);
-            })
+            .on('data', (row) => results.push(row))
             .on('end', async () => {
                 for (const row of results) {
                     try {
                         const {
                             trackingId,
-                            clientName,
-                            status,
-                            estimateDate,
                             pickUpLocation,
                             dropLocation,
                             transportMode,
+                            status,
+                            deliveryDate,
+                            clientName,
+                            estimateDate,
                             pod,
+                            invoiceDate,
+                            connectionDate,
                             consigneeName,
                             mobile,
                             consignorPincode,
@@ -580,12 +572,10 @@ const UploadCsv = async (req, res) => {
                             invoiceValue,
                             boxes,
                             ewayBillNo,
-                            invoiceDate,
                             connectionPartner,
                             partnerCnNumber,
                             actualWeight,
                             chargedWeight,
-                            connectionDate,
                             tat,
                             add,
                             remarks,
@@ -593,55 +583,59 @@ const UploadCsv = async (req, res) => {
                         } = row;
 
                         if (!trackingId) {
-                            console.log("Skipping row due to missing trackingId");
+                            console.warn("Skipping row due to missing trackingId");
                             continue;
                         }
 
                         const existing = await Tracking.findOne({ trackingId });
-
-                        // If already exists, update deliveryStatus if trackingStatus is present
                         if (existing) {
                             if (trackingStatus) {
-                                const modifyTrackingStatus = trackingStatusFormat(trackingStatus);
+                                const modifiedStatus = trackingStatusFormat(trackingStatus);
                                 await Tracking.updateOne(
                                     { trackingId },
-                                    { $set: { deliveryStatus: modifyTrackingStatus } }
+                                    { $set: { deliveryStatus: modifiedStatus } }
                                 );
                             }
-
-                            console.log(`Tracking ID ${trackingId} already exists. Skipping.`);
                             duplicates.push({ trackingId, reason: 'Already exists' });
                             continue;
                         }
 
-                        const statusNumber = parseInt(status);
-                        const deliveryStatus = JSON.parse(JSON.stringify(statusMapTemplate));
+                        const statusNumber = parseInt(status) || 0;
+                        let deliveryStatus;
 
-                        if (deliveryStatus[statusNumber]) {
-                            deliveryStatus[statusNumber].status = 1;
-                            deliveryStatus[statusNumber].deliveryDateTime = new Date();
-                            if (statusNumber === 4) {
-                                deliveryStatus[statusNumber].pod = pod;
+                        if (trackingStatus) {
+                            deliveryStatus = trackingStatusFormat(trackingStatus);
+                        } else {
+                            deliveryStatus = {
+                                1: { key: 'pickup', status: 0, deliveryDateTime: '', pod: '' },
+                                2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [], pod: '' },
+                                3: { key: 'outdelivery', status: 0, deliveryDateTime: '', pod: '' },
+                                4: { key: 'delivered', status: 0, deliveryDateTime: '', pod: '' },
+                                5: { key: 'cancelled', status: 0, deliveryDateTime: '', pod: '' },
+                                6: { key: 'hold', status: 0, deliveryDateTime: '', pod: '' }
+                            };
+
+                            if (deliveryStatus[statusNumber]) {
+                                deliveryStatus[statusNumber].status = 1;
+                                deliveryStatus[statusNumber].deliveryDateTime = new Date();
+                                if (statusNumber === 4) {
+                                    deliveryStatus[statusNumber].pod = pod || '';
+                                }
                             }
                         }
 
-                        // Override with full trackingStatus if available
-                        const finalDeliveryStatus = trackingStatus
-                            ? trackingStatusFormat(trackingStatus)
-                            : deliveryStatus;
-
                         const newTracking = new Tracking({
-                            trackingId: trackingId,
-                            clientName: clientName,
-                            status: statusNumber,
-                            estimateDate: estimateDate ? moment(estimateDate).toDate() : null,
+                            trackingId,
                             pickUpLocation,
                             dropLocation,
                             transportMode,
+                            status: statusNumber,
+                            deliveryDate,
+                            clientName,
+                            estimateDate: estimateDate ? moment(estimateDate, 'DD-MM-YYYY').toDate() : null,
                             pod: statusNumber === 4 ? pod : '',
-                            createdAt: new Date(),
-                            deliveryStatus: finalDeliveryStatus,
-
+                            invoiceDate: invoiceDate ? moment(invoiceDate, 'DD-MM-YYYY').toDate() : null,
+                            connectionDate: connectionDate ? moment(connectionDate, 'DD-MM-YYYY').toDate() : null,
                             consigneeName,
                             mobile,
                             consignorPincode,
@@ -650,21 +644,21 @@ const UploadCsv = async (req, res) => {
                             invoiceValue,
                             boxes,
                             ewayBillNo,
-                            invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : null,
                             connectionPartner,
                             partnerCnNumber,
                             actualWeight,
                             chargedWeight,
-                            connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
                             tat,
                             add,
-                            remarks
+                            remarks,
+                            trackingStatus,
+                            deliveryStatus
                         });
 
                         await newTracking.save();
                         saved.push(trackingId);
                     } catch (err) {
-                        console.error(`Error saving row with trackingId ${row.trackingId || 'Unknown'}:`, err.message);
+                        console.error(`Error saving trackingId ${row.trackingId || 'Unknown'}:`, err.message);
                         duplicates.push({ trackingId: row.trackingId || 'Unknown', reason: err.message });
                     }
                 }
@@ -687,63 +681,73 @@ const UploadCsv = async (req, res) => {
     }
 };
 
+// Format trackingStatus string into structured deliveryStatus
 function trackingStatusFormat(trackingStatus) {
     function formatDate(dateStr) {
+        if (!dateStr) return '';
         const [day, month, year] = dateStr.split('-');
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
 
-    const segments = trackingStatus.split('->').map(s => s);
     const deliveryStatus = {};
-    let step = 1;
+    const segments = trackingStatus.split('->');
     let i = 0;
 
     while (i < segments.length) {
-        const key = segments[i].toLowerCase();
+        const key = segments[i].trim().toLowerCase();
 
-        if (key == 'pickup') {
-            deliveryStatus[step++] = {
-                key: "pickup",
-                status: 1,
-                deliveryDateTime: formatDate(segments[i + 1])
-            };
-            i += 2;
-        } else if (key == 'intransit') {
-            const transitList = segments[i + 1].split('|').map(item => {
-                const [city, date] = item.split(' - ');
-                return {
-                    city: city,
-                    date: formatDate(date)
+        switch (key) {
+            case 'pickup':
+                deliveryStatus[1] = {
+                    key: "pickup",
+                    status: 1,
+                    deliveryDateTime: formatDate(segments[i + 1])
                 };
-            });
+                i += 2;
+                break;
 
-            deliveryStatus[step++] = {
-                key: "intransit",
-                status: 1,
-                deliveryDateTime: "",
-                transitData: transitList
-            };
-            i += 2;
-        } else if (key == 'outdelivery') {
-            deliveryStatus[step++] = {
-                key: "outdelivery",
-                status: 1,
-                deliveryDateTime: formatDate(segments[i + 1])
-            };
-            i += 2;
-        } else if (key === 'delivered') {
-            deliveryStatus[step++] = {
-                key: "delivered",
-                status: 1,
-                deliveryDateTime: formatDate(segments[i + 1])
-            };
-            i += 2;
-        } else {
-            i++;
+            case 'intransit':
+                const transitItems = (segments[i + 1] || '').split('|').map(item => {
+                    const [city, date] = item.split(' : ');
+                    return {
+                        city: city?.trim() || '',
+                        date: formatDate(date?.trim())
+                    };
+                });
+                deliveryStatus[2] = {
+                    key: "intransit",
+                    status: 1,
+                    deliveryDateTime: '',
+                    transitData: transitItems
+                };
+                i += 2;
+                break;
+
+            case 'outdelivery':
+                deliveryStatus[3] = {
+                    key: "outdelivery",
+                    status: 1,
+                    deliveryDateTime: formatDate(segments[i + 1])
+                };
+                i += 2;
+                break;
+
+            case 'delivered':
+                deliveryStatus[4] = {
+                    key: "delivered",
+                    status: 1,
+                    deliveryDateTime: formatDate(segments[i + 1])
+                };
+                i += 2;
+                break;
+
+            default:
+                i++;
         }
     }
 
-    deliveryStatus[step++] = {
+    // Always include cancelled (optional, default as inactive)
+    deliveryStatus[5] = {
         key: "cancelled",
         status: 0,
         deliveryDateTime: ""
