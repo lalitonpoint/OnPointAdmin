@@ -17,8 +17,8 @@ router.post('/updateOrderStatus', checkCrudPermission('edit'), PtlCtrl.updateOrd
 // router.post('/multiAssignDriver', checkCrudPermission('edit'), PtlCtrl.multiAssignDriver); // Using POST for update
 
 
-router.get('/ptlPackages', checkCrudPermission(), PtlCtrl.trackingPage);
-router.get('/warehouseData', checkCrudPermission(), PtlCtrl.warehouseData);
+router.get('/ptlPackages', checkCrudPermission('isShow'), PtlCtrl.trackingPage);
+router.get('/warehouseData', checkCrudPermission('isShow'), PtlCtrl.warehouseData);
 
 
 

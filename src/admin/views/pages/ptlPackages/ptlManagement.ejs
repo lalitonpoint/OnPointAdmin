@@ -381,7 +381,7 @@
                         data: null,
                         orderable: false,
                         render: function (data, type, row) {
-                            return '<input type="checkbox" class="multi-assign-checkbox" data-id="' + row._id + '" data-userid="' + row.userId._id + '">';
+                            return '<input type="checkbox" class="multi-assign-checkbox" data-id="' + row?._id + '" data-userid="' + row.userId?._id + '">';
                         }
                     },
                     {
