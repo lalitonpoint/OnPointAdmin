@@ -417,6 +417,123 @@ const deleteTracking = async (req, res) => {
     }
 };
 
+// const downloadTrackingCsv = async (req, res) => {
+//     try {
+//         const { trackingCode, status, date } = req.query;
+//         let query = {};
+
+//         if (trackingCode) {
+//             query.trackingId = new RegExp(trackingCode, 'i');
+//         }
+//         if (status) {
+//             query.status = parseInt(status);
+//         }
+//         if (date) {
+//             const startDate = moment(date).startOf('day');
+//             const endDate = moment(date).endOf('day');
+//             query.estimateDate = {
+//                 $gte: startDate.toDate(),
+//                 $lte: endDate.toDate()
+//             };
+//         }
+
+//         const trackings = await Tracking.find(query).sort({ createdAt: -1 });
+
+//         if (trackings.length === 0) {
+//             return res.status(200).send("No tracking data found for the current filters.");
+//         }
+
+//         const csvHeaders = [
+//             "#",
+//             "Tracking ID",
+//             "Pickup Location",
+//             "Drop Location",
+//             "Transport Mode",
+//             "Status",
+//             "Delivery Date",
+//             "Created At",
+
+//             "Invoice Date",
+//             "Connection Date",
+//             "Consignee Name",
+//             "Mobile",
+//             "Consignor Pincode",
+//             // "LR No",
+//             "Reference No",
+//             "Invoice Number",
+//             "Invoice Value",
+//             "Boxes",
+//             "Eway Bill No",
+//             "Connection Partner",
+//             "Partner CN Number",
+//             "Actual Weight",
+//             "Charged Weight",
+//             "TAT",
+//             // "EDD",
+//             "ADD",
+//             "Remarks",
+//             "Tracking Status",
+//         ];
+
+//         const csvData = trackings.map((tracking, index) => [
+//             index + 1,
+//             tracking.trackingId,
+//             tracking.pickUpLocation || '',
+//             tracking.dropLocation || '',
+//             tracking.transportMode || '',
+//             // tracking.noOfPacking,
+//             getStatusText(tracking.status), // Assuming you have a function to convert status code to text
+//             moment(tracking.deliveryDate).format('YYYY-MM-DD'),
+//             moment(tracking.createdAt).format('YYYY-MM-DD'),
+//             moment(tracking.invoiceDate).format('YYYY-MM-DD'),
+//             moment(tracking.connectionDate).format('YYYY-MM-DD'),
+
+//             tracking.consigneeName || '',
+//             tracking.mobile || '',
+//             tracking.consignorPincode || '',
+//             // tracking.lrNo || '',
+//             tracking.referenceNo || '',
+//             tracking.invoiceNumber || '',
+//             tracking.invoiceValue || '',
+//             tracking.boxes || '',
+//             tracking.ewayBillNo || '',
+//             tracking.connectionPartner || '',
+//             tracking.partnerCnNumber || '',
+//             tracking.actualWeight || '',
+//             tracking.chargedWeight || '',
+//             tracking.tat || '',
+//             // tracking.edd || '',
+//             tracking.add || '',
+//             tracking.remarks || '',
+//             formatDeliveryStatus(tracking.deliveryStatus)
+//         ]);
+
+//         // Helper function to convert status code to text
+//         function getStatusText(status) {
+//             switch (status) {
+//                 case 1: return 'Pickup';
+//                 case 2: return 'In Transit';
+//                 case 3: return 'Out For Delivery';
+//                 case 4: return 'Delivered';
+//                 case 5: return 'Cancelled';
+//                 case 6: return 'Hold';
+//                 default: return 'Unknown';
+//             }
+//         }
+
+//         // Format the CSV data
+//         const csvRows = [csvHeaders, ...csvData].map(row => row.join(',')).join('\n');
+
+//         res.setHeader('Content-Type', 'text/csv');
+//         res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
+//         res.status(200).send(csvRows);
+
+//     } catch (error) {
+//         console.error('Error downloading tracking CSV:', error);
+//         res.status(500).send("Error generating CSV file.");
+//     }
+// };
+
 const downloadTrackingCsv = async (req, res) => {
     try {
         const { trackingCode, status, date } = req.query;
@@ -444,72 +561,55 @@ const downloadTrackingCsv = async (req, res) => {
         }
 
         const csvHeaders = [
-            "#",
-            "Tracking ID",
-            "Pickup Location",
-            "Drop Location",
-            "Transport Mode",
-            "Status",
-            "Delivery Date",
-            "Created At",
-
-            "Invoice Date",
-            "Connection Date",
-            "Consignee Name",
-            "Mobile",
-            "Consignor Pincode",
-            // "LR No",
-            "Reference No",
-            "Invoice Number",
-            "Invoice Value",
-            "Boxes",
-            "Eway Bill No",
-            "Connection Partner",
-            "Partner CN Number",
-            "Actual Weight",
-            "Charged Weight",
-            "TAT",
-            // "EDD",
-            "ADD",
-            "Remarks",
-            "Tracking Status",
+            "trackingId",
+            "pickUpLocation",
+            "dropLocation",
+            "transportMode",
+            "status",
+            "deliveryDate",
+            "clientName",
+            "estimateDate",
+            "pod",
+            "invoiceDate",
+            "connectionDate",
+            "consigneeName",
+            "mobile",
+            "consignorPincode",
+            "referenceNo",
+            "invoiceNumber",
+            "invoiceValue",
+            "boxes",
+            "ewayBillNo",
+            "connectionPartner",
+            "partnerCnNumber",
+            "actualWeight",
+            "chargedWeight",
+            "tat",
+            "add",
+            "remarks",
+            "trackingStatus"
         ];
 
-        const csvData = trackings.map((tracking, index) => [
-            index + 1,
-            tracking.trackingId,
-            tracking.pickUpLocation || '',
-            tracking.dropLocation || '',
-            tracking.transportMode || '',
-            // tracking.noOfPacking,
-            getStatusText(tracking.status), // Assuming you have a function to convert status code to text
-            moment(tracking.deliveryDate).format('YYYY-MM-DD'),
-            moment(tracking.createdAt).format('YYYY-MM-DD'),
-            moment(tracking.invoiceDate).format('YYYY-MM-DD'),
-            moment(tracking.connectionDate).format('YYYY-MM-DD'),
+        const csvData = trackings.map(tracking =>
+            csvHeaders.map(key => {
+                let value = tracking[key];
 
-            tracking.consigneeName || '',
-            tracking.mobile || '',
-            tracking.consignorPincode || '',
-            // tracking.lrNo || '',
-            tracking.referenceNo || '',
-            tracking.invoiceNumber || '',
-            tracking.invoiceValue || '',
-            tracking.boxes || '',
-            tracking.ewayBillNo || '',
-            tracking.connectionPartner || '',
-            tracking.partnerCnNumber || '',
-            tracking.actualWeight || '',
-            tracking.chargedWeight || '',
-            tracking.tat || '',
-            // tracking.edd || '',
-            tracking.add || '',
-            tracking.remarks || '',
-            formatDeliveryStatus(tracking.deliveryStatus)
-        ]);
+                // Format date fields
+                if (value instanceof Date) {
+                    return moment(value).format('YYYY-MM-DD');
+                }
 
-        // Helper function to convert status code to text
-        function getStatusText(status) {
+                // Format trackingStatus
+                if (key === 'trackingStatus') {
+                    return trackingStatusToString(tracking.deliveryStatus);
+                }
+
+                // Handle undefined/null
+                return value !== undefined ? String(value).replace(/"/g, '""') : '';
+            })
+        );
+
+        function formatTrackingStatus(status) {
             switch (status) {
                 case 1: return 'Pickup';
                 case 2: return 'In Transit';
@@ -521,8 +621,9 @@ const downloadTrackingCsv = async (req, res) => {
             }
         }
 
-        // Format the CSV data
-        const csvRows = [csvHeaders, ...csvData].map(row => row.join(',')).join('\n');
+        const csvRows = [csvHeaders, ...csvData].map(row =>
+            row.map(val => `"${val}"`).join(',')
+        ).join('\n');
 
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
@@ -533,6 +634,7 @@ const downloadTrackingCsv = async (req, res) => {
         res.status(500).send("Error generating CSV file.");
     }
 };
+
 const UploadCsv = async (req, res) => {
     try {
         const csvFile = req.file;
@@ -588,10 +690,10 @@ const UploadCsv = async (req, res) => {
                             trackingStatus
                         } = row;
 
-                        // if (!trackingId) {
-                        //     console.warn("Skipping row due to missing trackingId");
-                        //     continue;
-                        // }
+                        if (!trackingId) {
+                            console.warn("Skipping row due to missing trackingId");
+                            continue;
+                        }
 
                         const trimmedTrackingId = trackingId.trim();
                         const existing = await Tracking.findOne({ trackingId: trimmedTrackingId });
@@ -607,6 +709,14 @@ const UploadCsv = async (req, res) => {
                             duplicates.push({ trackingId: trimmedTrackingId, reason: 'Already exists' });
                             continue;
                         }
+                        // else {
+                        //     if (trackingStatus) {
+                        //         const modifiedStatus = trackingStatusFormat(trackingStatus);
+
+                        //     }
+
+                        // }
+
                         console.log('status', status)
                         const statusNumber = parseInt(status) || 0;
                         console.log('Delivery', statusNumber)
@@ -690,6 +800,51 @@ const UploadCsv = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+function trackingStatusToString(deliveryStatus) {
+    if (!deliveryStatus || typeof deliveryStatus !== 'object') return '';
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const [year, month, day] = dateStr.trim().split('-');
+        return `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year}`;
+    }
+
+    const segments = [];
+    const steps = Object.keys(deliveryStatus).sort((a, b) => Number(a) - Number(b));
+
+    for (const step of steps) {
+        const entry = deliveryStatus[step];
+        const key = entry.key.toLowerCase();
+
+        switch (key) {
+            case 'pickup':
+            case 'outdelivery':
+            case 'delivered':
+                segments.push(key);
+                segments.push(formatDate(entry.deliveryDateTime));
+                break;
+
+            case 'intransit':
+                segments.push('intransit');
+                if (Array.isArray(entry.transitData)) {
+                    const transitStr = entry.transitData.map(item => {
+                        return `${item.city} : ${formatDate(item.date)}`;
+                    }).join(' | ');
+                    segments.push(transitStr);
+                } else {
+                    segments.push('');
+                }
+                break;
+
+            case 'cancelled':
+                segments.push('cancelled');
+                break;
+        }
+    }
+
+    return segments.join(' -> ');
+}
 
 // Convert trackingStatus string into JSON deliveryStatus
 function trackingStatusFormat(trackingStatus) {
