@@ -1,2 +1,0 @@
-trackingId ,pickUpLocation,dropLocation ,transportMode ,status ,deliveryDate ,clientName ,estimateDate ,pod,invoiceDate ,connectionDate ,consigneeName ,mobile ,consignorPincode ,referenceNo ,invoiceNumber ,invoiceValue ,boxes ,ewayBillNo ,connectionPartner ,partnerCnNumber ,actualWeight ,chargedWeight,tat ,add ,remarks 
-564355,Delhi,Agra,Train,1,2025-05-30T16:11:00Z,Ramesh,2025-05-30T16:11:00Z,,2025-05-30T16:11:00Z,2025-05-30T16:11:00Z,Ramu,9988776655,201001,63787656,HGJH66HH&78,587655,20,456786543,KartiK,56787654,79.02,10,6,6,Check Only

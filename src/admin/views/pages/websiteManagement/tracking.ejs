@@ -807,6 +807,23 @@
                 url: '/tracking/get/' + id,
                 type: 'GET',
                 success: function (data) {
+                    if (data.pickUpLocation) {
+
+                        $.ajax({
+                            url: '/tracking/cities',
+                            method: 'get',
+                            contentType: 'application/json',
+                            data: { state: data?.pickUpLocation },
+                            success: function (cities) {
+                                $('#dropLocation').empty().append('<option value="">Select City</option>');
+                                cities.forEach(city => {
+                                    $('#dropLocation').append(`<option value="${city}">${city}</option>`);
+                                });
+                            }
+                        });
+                    }
+
+
                     $('#trackingId').val(data._id);
                     $('#trackingCode').val(data.trackingId);
                     $('#pickUpLocation').val(data.pickUpLocation); // Added pickup location
@@ -832,6 +849,7 @@
                     $('#chargedWeight').val(data.chargedWeight);
                     $('#tat').val(data.tat);
                     // $('#edd').val(data.edd);
+
                     $('#add').val(data.add);
                     $('#remarks').val(data.remarks);
 

@@ -533,7 +533,6 @@ const downloadTrackingCsv = async (req, res) => {
         res.status(500).send("Error generating CSV file.");
     }
 };
-
 const UploadCsv = async (req, res) => {
     try {
         const csvFile = req.file;
@@ -548,11 +547,18 @@ const UploadCsv = async (req, res) => {
 
         fs.createReadStream(filePath)
             .pipe(csv())
-            .on('data', (row) => results.push(row))
+            .on('data', (row) => {
+                const cleanedRow = {};
+                for (const key in row) {
+                    cleanedRow[key.trim()] = typeof row[key] === 'string' ? row[key].trim() : row[key];
+                }
+                results.push(cleanedRow);
+            })
             .on('end', async () => {
                 for (const row of results) {
+                    console.log('rt67890', row)
                     try {
-                        const {
+                        let {
                             trackingId,
                             pickUpLocation,
                             dropLocation,
@@ -582,25 +588,29 @@ const UploadCsv = async (req, res) => {
                             trackingStatus
                         } = row;
 
-                        if (!trackingId) {
-                            console.warn("Skipping row due to missing trackingId");
-                            continue;
-                        }
+                        // if (!trackingId) {
+                        //     console.warn("Skipping row due to missing trackingId");
+                        //     continue;
+                        // }
 
-                        const existing = await Tracking.findOne({ trackingId });
+                        const trimmedTrackingId = trackingId.trim();
+                        const existing = await Tracking.findOne({ trackingId: trimmedTrackingId });
+
                         if (existing) {
                             if (trackingStatus) {
                                 const modifiedStatus = trackingStatusFormat(trackingStatus);
                                 await Tracking.updateOne(
-                                    { trackingId },
+                                    { trackingId: trimmedTrackingId },
                                     { $set: { deliveryStatus: modifiedStatus } }
                                 );
                             }
-                            duplicates.push({ trackingId, reason: 'Already exists' });
+                            duplicates.push({ trackingId: trimmedTrackingId, reason: 'Already exists' });
                             continue;
                         }
-
+                        console.log('status', status)
                         const statusNumber = parseInt(status) || 0;
+                        console.log('Delivery', statusNumber)
+
                         let deliveryStatus;
 
                         if (trackingStatus) {
@@ -625,7 +635,7 @@ const UploadCsv = async (req, res) => {
                         }
 
                         const newTracking = new Tracking({
-                            trackingId,
+                            trackingId: trimmedTrackingId,
                             pickUpLocation,
                             dropLocation,
                             transportMode,
@@ -651,12 +661,12 @@ const UploadCsv = async (req, res) => {
                             tat,
                             add,
                             remarks,
-                            trackingStatus,
-                            deliveryStatus
+                            deliveryStatus // ✅ final structured deliveryStatus
                         });
 
                         await newTracking.save();
-                        saved.push(trackingId);
+                        console.log('newTracking', newTracking)
+                        saved.push(trimmedTrackingId);
                     } catch (err) {
                         console.error(`Error saving trackingId ${row.trackingId || 'Unknown'}:`, err.message);
                         duplicates.push({ trackingId: row.trackingId || 'Unknown', reason: err.message });
@@ -681,7 +691,7 @@ const UploadCsv = async (req, res) => {
     }
 };
 
-// Format trackingStatus string into structured deliveryStatus
+// Convert trackingStatus string into JSON deliveryStatus
 function trackingStatusFormat(trackingStatus) {
     function formatDate(dateStr) {
         if (!dateStr) return '';
@@ -692,13 +702,14 @@ function trackingStatusFormat(trackingStatus) {
     const deliveryStatus = {};
     const segments = trackingStatus.split('->');
     let i = 0;
+    let step = 1;
 
     while (i < segments.length) {
         const key = segments[i].trim().toLowerCase();
 
         switch (key) {
             case 'pickup':
-                deliveryStatus[1] = {
+                deliveryStatus[step++] = {
                     key: "pickup",
                     status: 1,
                     deliveryDateTime: formatDate(segments[i + 1])
@@ -708,13 +719,13 @@ function trackingStatusFormat(trackingStatus) {
 
             case 'intransit':
                 const transitItems = (segments[i + 1] || '').split('|').map(item => {
-                    const [city, date] = item.split(' : ');
+                    const [city, date] = item.split(" : ");
                     return {
                         city: city?.trim() || '',
                         date: formatDate(date?.trim())
                     };
                 });
-                deliveryStatus[2] = {
+                deliveryStatus[step++] = {
                     key: "intransit",
                     status: 1,
                     deliveryDateTime: '',
@@ -724,7 +735,7 @@ function trackingStatusFormat(trackingStatus) {
                 break;
 
             case 'outdelivery':
-                deliveryStatus[3] = {
+                deliveryStatus[step++] = {
                     key: "outdelivery",
                     status: 1,
                     deliveryDateTime: formatDate(segments[i + 1])
@@ -733,7 +744,7 @@ function trackingStatusFormat(trackingStatus) {
                 break;
 
             case 'delivered':
-                deliveryStatus[4] = {
+                deliveryStatus[step++] = {
                     key: "delivered",
                     status: 1,
                     deliveryDateTime: formatDate(segments[i + 1])
@@ -746,8 +757,7 @@ function trackingStatusFormat(trackingStatus) {
         }
     }
 
-    // Always include cancelled (optional, default as inactive)
-    deliveryStatus[5] = {
+    deliveryStatus[step++] = {
         key: "cancelled",
         status: 0,
         deliveryDateTime: ""
