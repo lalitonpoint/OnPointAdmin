@@ -7,7 +7,7 @@ const shipmentSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    clientName: {
+    consignerName: {
         type: String
     },
     status: {

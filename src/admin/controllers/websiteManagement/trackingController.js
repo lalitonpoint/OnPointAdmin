@@ -108,7 +108,7 @@ const addTracking = async (req, res) => {
             }
 
             const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
-            const clientName = fields.clientName ? fields.clientName[0] : '';
+            const consignerName = fields.consignerName ? fields.consignerName[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : ''; // Default to Active
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : ''; // Default to Active
@@ -184,7 +184,7 @@ const addTracking = async (req, res) => {
 
             const newTracking = new Tracking({
                 trackingId: trackingCode,
-                clientName,
+                consignerName,
                 status: statusNumber,
                 estimateDate: moment(estimateDate).toDate(), // Convert string to Date object using moment for consistency
                 pickUpLocation: pickUpLocation || null,
@@ -254,7 +254,7 @@ const updateTracking = async (req, res) => {
 
 
             const trackingCode = fields.trackingCode ? fields.trackingCode[0] : '';
-            const clientName = fields.clientName ? fields.clientName[0] : '';
+            const consignerName = fields.consignerName ? fields.consignerName[0] : '';
             const status = fields.status ? parseInt(fields.status[0]) : null;
             const pickUpLocation = fields.pickUpLocation ? fields.pickUpLocation[0] : '';
             const dropLocation = fields.dropLocation ? fields.dropLocation[0] : '';
@@ -350,7 +350,7 @@ const updateTracking = async (req, res) => {
                 id,
                 {
                     trackingId: trackingCode,
-                    clientName,
+                    consignerName,
                     status: parseInt(status), //currentstatus
                     estimateDate,
                     pickUpLocation,
@@ -567,7 +567,7 @@ const downloadTrackingCsv = async (req, res) => {
             "transportMode",
             "status",
             "deliveryDate",
-            "clientName",
+            "consignerName",
             "estimateDate",
             "pod",
             "invoiceDate",
@@ -602,6 +602,9 @@ const downloadTrackingCsv = async (req, res) => {
                 // Format trackingStatus
                 if (key === 'trackingStatus') {
                     return trackingStatusToString(tracking.deliveryStatus);
+                }
+                if (key === 'status') {
+                    return formatTrackingStatus(tracking.status);
                 }
 
                 // Handle undefined/null
@@ -667,7 +670,7 @@ const UploadCsv = async (req, res) => {
                             transportMode,
                             status,
                             deliveryDate,
-                            clientName,
+                            consignerName,
                             estimateDate,
                             pod,
                             invoiceDate,
@@ -751,7 +754,7 @@ const UploadCsv = async (req, res) => {
                             transportMode,
                             status: statusNumber,
                             deliveryDate,
-                            clientName,
+                            consignerName,
                             estimateDate: estimateDate ? moment(estimateDate, 'DD-MM-YYYY').toDate() : null,
                             pod: statusNumber === 4 ? pod : '',
                             invoiceDate: invoiceDate ? moment(invoiceDate, 'DD-MM-YYYY').toDate() : null,

@@ -170,7 +170,7 @@ const createDriver = async (req, res) => {
                     const vehicleRequiredFields = [
                         'vehicleName', 'vehicleModel', 'yearOfManufacture',
                         'plateNumber', 'vin', 'capacity',
-                        'fuelType', 'odometerReading', 'serviceType', 'vehicleId'
+                        'fuelType', 'odometerReading', 'servicetype', 'vehicleId'
                     ];
 
                     for (const field of vehicleRequiredFields) {
