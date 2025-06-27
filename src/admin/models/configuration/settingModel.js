@@ -52,6 +52,7 @@ const SettingsSchema = new mongoose.Schema({
         prePaymentPercentage: { type: Number, default: "" },
         loadingTime: { type: Number, default: "" },
         unloadingTime: { type: Number, default: "" },
+        driverPercentageCut: { type: Number, default: "" },
     },
     firebase: {
         type: { type: String, default: "" },

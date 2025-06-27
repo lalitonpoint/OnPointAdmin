@@ -126,6 +126,7 @@ const fetchPaymentDetail = async () => {
                 docketCharge: parseFloat(details.docketCharge ?? 100),
                 ratePerKG: parseFloat(details.ratePerKG ?? 12),
                 prePaymentPercentage: parseFloat(details.prePaymentPercentage ?? 0),
+                driverPercentageCut: parseFloat(details.driverPercentageCut ?? 0),
                 loadingTime: parseInt(details.loadingTime ?? 0),
                 unloadingTime: parseInt(details.unloadingTime ?? 0)
             };
@@ -168,6 +169,7 @@ const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitu
             specialHandling = 0,
             gst = 18,
             prePaymentPercentage = 0,
+            driverPercentageCut = 0,
             loadingTime = 0,
             unloadingTime = 0
         } = await fetchPaymentDetail();
@@ -192,6 +194,7 @@ const ftlPackageCalculation = async (pickupLatitude, pickupLongitude, dropLatitu
             distance: toFixed(distanceInKm),
             duration,                            // keep as-is (string like "48 mins")
             prePaymentPercentage: toFixed(prePaymentPercentage),
+            driverPercentageCut: toFixed(driverPercentageCut) || 0,
             loadingTime,                         // keep as-is if it's already a number or string
             unloadingTime
         };

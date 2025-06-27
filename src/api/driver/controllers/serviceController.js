@@ -951,7 +951,7 @@ const ftlOrderAssign = async (req, res) => {
                 .populate('userId', 'fullName')
                 .lean();
         else {
-            incomingRequests = await FTL.find({ isAccepted: 0, serviceType })
+            incomingRequests = await FTL.find({ isAccepted: 0, serviceType, vehicleId: vehicleId })
                 .sort({ createdAt: -1 })
                 .populate('userId', 'fullName')
                 .lean();
@@ -1130,6 +1130,11 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 updateFields.recipientName = recipientName;
                 updateFields.confirmNumber = confirmNumber;
                 updateFields.pod = result.url;
+
+                driverPercentageCut = result.driverPercentageCut;
+                updateFields.driverEarning = (order.totalPayment * driverPercentageCut) / 100;
+
+
             }
 
             console.log(updateFields);

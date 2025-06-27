@@ -85,6 +85,7 @@ const saveSettings = async (req, res) => {
                 prePaymentPercentage: parseFloat(req.body.payment.prePaymentPercentage),
                 loadingTime: parseFloat(req.body.payment.loadingTime),
                 unloadingTime: parseFloat(req.body.payment.unloadingTime),
+                driverPercentageCut: parseFloat(req.body.payment.driverPercentageCut),
             };
         }
 

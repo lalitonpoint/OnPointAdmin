@@ -181,6 +181,12 @@
                             placeholder="Enter Unloading Time" required>
                     </div>
 
+                    <div class="col-md-6">
+                        <label class="form-label">Driver Percentage Cut</label>
+                        <input type="text" class="form-control" name="driverPercentageCut" id="driverPercentageCut"
+                            min="0" max="100" placeholder="Enter Driver Percentage Cut" required>
+                    </div>
+
                 </div>
 
 
@@ -466,6 +472,7 @@
                     $('#specialHandling').val(data.data?.paymentDetails?.specialHandling); // Corrected ID
                     $('#prePaymentPercentage').val(data.data?.paymentDetails?.prePaymentPercentage); // Corrected ID
                     $('#loadingTime').val(data.data?.paymentDetails?.loadingTime); // Corrected ID
+                    $('#driverPercentageCut').val(data.data?.paymentDetails?.driverPercentageCut); // Corrected ID
                     $('#unloadingTime').val(data.data?.paymentDetails?.unloadingTime); // Corrected ID
                     $('#gst').val(data.data?.paymentDetails?.gst); // Corrected ID
                     $('#odaChargeMinimum').val(data.data?.paymentDetails?.odaChargeMinimum); // Corrected ID
@@ -493,6 +500,20 @@
             });
         }
         setData();
+    });
+
+    $(document).ready(function () {
+        $('#driverPercentageCut, #gst ,#fuelSurChargePercentage').on('input', function () {
+            let value = parseFloat($(this).val());
+
+            if (isNaN(value)) return;
+
+            // Clamp the value between 0 and 100
+            if (value < 0) $(this).val(0);
+            if (value > 100) $(this).val(100);
+        });
+
+
     });
 
 </script>
