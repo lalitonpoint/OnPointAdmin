@@ -128,12 +128,12 @@ const addTracking = async (req, res) => {
             const invoiceValue = fields.invoiceValue ? parseFloat(fields.invoiceValue[0]) : 0;
             const boxes = fields.boxes ? parseInt(fields.boxes[0]) : 0;
             const ewayBillNo = fields.ewayBillNo ? fields.ewayBillNo[0] : '';
-            const invoiceDate = fields.invoiceDate ? new Date(fields.invoiceDate[0]) : null;
+            const invoiceDate = fields.invoiceDate ? fields.invoiceDate[0] : '';
             const connectionPartner = fields.connectionPartner ? fields.connectionPartner[0] : '';
             const partnerCnNumber = fields.partnerCnNumber ? fields.partnerCnNumber[0] : '';
             const actualWeight = fields.actualWeight ? parseFloat(fields.actualWeight[0]) : 0;
             const chargedWeight = fields.chargedWeight ? parseFloat(fields.chargedWeight[0]) : 0;
-            const connectionDate = fields.connectionDate ? new Date(fields.connectionDate[0]) : null;
+            const connectionDate = fields.connectionDate ? fields.connectionDate[0] : null;
             const tat = fields.tat ? fields.tat[0] : '';
             // const edd = fields.edd ? fields.edd[0] : '';
             const add = fields.add ? fields.add[0] : '';
@@ -144,7 +144,8 @@ const addTracking = async (req, res) => {
             if (!checkExistingTrackingCode) {
                 return res.status(200).json({ success: false, message: 'Track Id Already Registered' });
             }
-
+            console.log('Invoice Date -> ', invoiceDate)
+            console.log('Estimate Date -> ', estimateDate)
             let parsedTransitTracking = [];
             if (transitTracking.length > 0) {
                 parsedTransitTracking = transitTracking.map(item => {
@@ -157,7 +158,7 @@ const addTracking = async (req, res) => {
                 }).filter(item => item !== null); // Remove invalid items (null)
             }
 
-            if (!trackingCode || !status || !estimateDate) {
+            if (!trackingCode || !status) {
                 return res.status(200).json({ success: false, message: 'Tracking ID, Status,  No. of Packing & Estimate Date are required' });
             }
 
@@ -186,7 +187,7 @@ const addTracking = async (req, res) => {
                 trackingId: trackingCode,
                 consignerName,
                 status: statusNumber,
-                estimateDate: moment(estimateDate).toDate(), // Convert string to Date object using moment for consistency
+                estimateDate: estimateDate ? moment(estimateDate).toDate() : '', // Convert string to Date object using moment for consistency
                 pickUpLocation: pickUpLocation || null,
                 dropLocation: dropLocation || null,
                 transportMode: transportMode || null,
@@ -203,7 +204,7 @@ const addTracking = async (req, res) => {
                 invoiceValue: parseFloat(invoiceValue) || 0,
                 boxes: parseInt(boxes) || 0,
                 ewayBillNo,
-                invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : null,
+                invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : '',
                 connectionPartner,
                 partnerCnNumber,
                 actualWeight: parseFloat(actualWeight) || 0,
@@ -612,17 +613,6 @@ const downloadTrackingCsv = async (req, res) => {
             })
         );
 
-        function formatTrackingStatus(status) {
-            switch (status) {
-                case 1: return 'Pickup';
-                case 2: return 'In Transit';
-                case 3: return 'Out For Delivery';
-                case 4: return 'Delivered';
-                case 5: return 'Cancelled';
-                case 6: return 'Hold';
-                default: return 'Unknown';
-            }
-        }
 
         const csvRows = [csvHeaders, ...csvData].map(row =>
             row.map(val => `"${val}"`).join(',')
@@ -701,24 +691,75 @@ const UploadCsv = async (req, res) => {
                         const trimmedTrackingId = trackingId.trim();
                         const existing = await Tracking.findOne({ trackingId: trimmedTrackingId });
 
-                        if (existing) {
-                            if (trackingStatus) {
-                                const modifiedStatus = trackingStatusFormat(trackingStatus);
-                                await Tracking.updateOne(
-                                    { trackingId: trimmedTrackingId },
-                                    { $set: { deliveryStatus: modifiedStatus } }
-                                );
-                            }
-                            duplicates.push({ trackingId: trimmedTrackingId, reason: 'Already exists' });
-                            continue;
-                        }
-                        // else {
+                        // if (existing) {
                         //     if (trackingStatus) {
                         //         const modifiedStatus = trackingStatusFormat(trackingStatus);
-
+                        //         await Tracking.updateOne(
+                        //             { trackingId: trimmedTrackingId },
+                        //             { $set: { deliveryStatus: modifiedStatus } }
+                        //         );
                         //     }
-
+                        //     duplicates.push({ trackingId: trimmedTrackingId, reason: 'Already exists' });
+                        //     continue;
                         // }
+
+                        if (existing) {
+                            const updateFields = {};
+
+                            // Format trackingStatus
+                            if (trackingStatus) {
+                                const modifiedStatus = trackingStatusFormat(trackingStatus);
+                                if (JSON.stringify(existing.deliveryStatus) !== JSON.stringify(modifiedStatus)) {
+                                    updateFields.deliveryStatus = modifiedStatus;
+                                }
+                            }
+
+                            // Add more field comparisons as needed
+                            if (existing.pickUpLocation !== pickUpLocation) updateFields.pickUpLocation = pickUpLocation;
+                            if (existing.dropLocation !== dropLocation) updateFields.dropLocation = dropLocation;
+                            if (existing.transportMode !== transportMode) updateFields.transportMode = transportMode;
+                            if (existing.status !== statusMapping(status)) updateFields.status = statusMapping(status);
+                            if (existing.consignerName !== consignerName) updateFields.consignerName = consignerName;
+                            if (existing.consigneeName !== consigneeName) updateFields.consigneeName = consigneeName;
+                            if (existing.mobile !== mobile) updateFields.mobile = mobile;
+                            if (existing.consignorPincode !== consignorPincode) updateFields.consignorPincode = consignorPincode;
+                            if (existing.referenceNo !== referenceNo) updateFields.referenceNo = referenceNo;
+                            if (existing.invoiceNumber !== invoiceNumber) updateFields.invoiceNumber = invoiceNumber;
+                            if (existing.invoiceValue !== invoiceValue) updateFields.invoiceValue = invoiceValue;
+                            if (existing.boxes !== boxes) updateFields.boxes = boxes;
+                            if (existing.ewayBillNo !== ewayBillNo) updateFields.ewayBillNo = ewayBillNo;
+                            if (existing.connectionPartner !== connectionPartner) updateFields.connectionPartner = connectionPartner;
+                            if (existing.partnerCnNumber !== partnerCnNumber) updateFields.partnerCnNumber = partnerCnNumber;
+                            if (existing.actualWeight !== actualWeight) updateFields.actualWeight = actualWeight;
+                            if (existing.chargedWeight !== chargedWeight) updateFields.chargedWeight = chargedWeight;
+                            if (existing.tat !== tat) updateFields.tat = tat;
+                            if (existing.add !== add) updateFields.add = add;
+                            if (existing.remarks !== remarks) updateFields.remarks = remarks;
+
+                            // Dates: convert both sides to string for accurate comparison
+                            const formatDate = (date) => date ? moment(date).format("YYYY-MM-DD") : null;
+
+                            if (formatDate(existing.deliveryDate) !== formatDate(deliveryDate)) updateFields.deliveryDate = deliveryDate;
+                            if (formatDate(existing.estimateDate) !== formatDate(estimateDate)) updateFields.estimateDate = estimateDate;
+                            if (formatDate(existing.invoiceDate) !== formatDate(invoiceDate)) updateFields.invoiceDate = invoiceDate;
+                            if (formatDate(existing.connectionDate) !== formatDate(connectionDate)) updateFields.connectionDate = connectionDate;
+
+                            // If at least one field changed, update
+                            if (Object.keys(updateFields).length > 0) {
+                                await Tracking.updateOne(
+                                    { trackingId: trimmedTrackingId },
+                                    { $set: updateFields }
+                                );
+                                duplicates.push({ trackingId: trimmedTrackingId, reason: 'Updated existing record' });
+                            } else {
+                                duplicates.push({ trackingId: trimmedTrackingId, reason: 'Already exists with same data' });
+                            }
+
+                            continue;
+                        }
+
+
+
 
                         console.log('status', status)
                         const statusNumber = parseInt(status) || 0;
@@ -752,7 +793,7 @@ const UploadCsv = async (req, res) => {
                             pickUpLocation,
                             dropLocation,
                             transportMode,
-                            status: statusNumber,
+                            status: status ? statusMapping(status.replace(/\b\w/g, c => c.toUpperCase())) : '',
                             deliveryDate,
                             consignerName,
                             estimateDate: estimateDate ? moment(estimateDate, 'DD-MM-YYYY').toDate() : null,
@@ -803,6 +844,31 @@ const UploadCsv = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+function formatTrackingStatus(status) {
+    switch (status) {
+        case 1: return 'Pickup';
+        case 2: return 'In Transit';
+        case 3: return 'Out For Delivery';
+        case 4: return 'Delivered';
+        case 5: return 'Cancelled';
+        case 6: return 'Hold';
+        default: return 'Unknown';
+    }
+}
+
+
+function statusMapping(status) {
+    switch (status) {
+        case 'Pickup': return 1;
+        case 'In Transit': return 2;
+        case 'Out For Delivery': return 3;
+        case 'Delivered': return 4;
+        case 'Cancelled': return 5;
+        case 'Hold': return 6;
+        default: return 'Unknown';
+    }
+}
 
 function trackingStatusToString(deliveryStatus) {
     if (!deliveryStatus || typeof deliveryStatus !== 'object') return '';

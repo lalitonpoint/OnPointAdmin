@@ -21,7 +21,8 @@ const shipmentSchema = new mongoose.Schema({
     },
     estimateDate: { // Renamed 'date' to 'estimateDate' to align with the table header
         type: Date,
-        required: true
+        default: ''
+
     },
     pickUpLocation: {
         type: String
