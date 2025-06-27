@@ -936,6 +936,9 @@ const ftlOrderAssign = async (req, res) => {
             return res.status(200).json({ success: false, message: "Driver ID is required" });
         }
 
+        let driver = await DriverModal.findById(driverId).select('vehicleDetail.vehicleId');
+        let vehicleId = driver?.vehicleDetail?.vehicleId;
+
         const driverCurrentLocation = await getDriverLocation(driverId);
         if (!driverCurrentLocation.success) {
             return res.status(200).json({ success: false, message: "Please update driver's current location" });
@@ -943,7 +946,7 @@ const ftlOrderAssign = async (req, res) => {
         let incomingRequests;
         // Correct MongoDB query syntax
         if (serviceType == 2)
-            incomingRequests = await FTL.find({ isAccepted: 0, serviceType, transactionStatus: 1 })
+            incomingRequests = await FTL.find({ isAccepted: 0, serviceType, transactionStatus: 1, vehicleId: vehicleId })
                 .sort({ createdAt: -1 })
                 .populate('userId', 'fullName')
                 .lean();

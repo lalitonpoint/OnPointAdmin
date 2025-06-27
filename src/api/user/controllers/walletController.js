@@ -162,7 +162,7 @@ const walletUse = async (req, res) => {
     }
     const serviceType = req.headers['servicetype'];
 
-    if (serviceType != 1 && isPartialPayment == undefined) {
+    if (serviceType == 3 && isPartialPayment == undefined) {
         return res.status(200).json({ success: false, message: 'isPartialPayment is required' });
     }
 
@@ -243,7 +243,7 @@ const walletUse = async (req, res) => {
             }
 
             ftlDetail.isWalletPay = 1;
-            ftlDetail.isPartialPayment = 1;
+            ftlDetail.isPartialPayment = isPartialPayment;
             ftlDetail.paymentId = order_id;
 
             await ftlDetail.save();

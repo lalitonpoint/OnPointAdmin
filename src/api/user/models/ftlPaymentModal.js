@@ -17,6 +17,9 @@ const InitiatePaymentSchema = new mongoose.Schema({
     gst: { type: String, default: "0.00", required: true },
     gstPercentage: { type: String, default: "0.00", required: true },
     prePaymentPercentage: { type: String, default: "0.00" },
+    driverPercentageCut: { type: String, default: "0.00" },
+    driverEarning: { type: String, default: "0.00" },
+    isDriverAmountPayout: { type: Number, enum: [0, 1, 2, 3,], default: 0 }, // 0 => Payout Pending , 1 => Payout Success , 2 => Payout Failed , 3 => Payout Hold
     totalPayment: { type: String, default: "0.00", required: true },
     prePayment: { type: String, default: "0.00" },
     postPayment: { type: String, default: "0.00" },
@@ -45,6 +48,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     paymentResponse: { type: mongoose.Schema.Types.Mixed },
     transactionDate: { type: Date },
     vehicleName: { type: String },
+    vehicleId: { type: String, required: true },
     vehicleImage: { type: String },
     vehicleBodyType: { type: String },
     vehicleCapacity: { type: String },

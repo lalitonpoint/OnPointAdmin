@@ -386,6 +386,7 @@ const ftlOrderInitiate = async (req, res) => {
             postPayment: toFixed(isBidding == 1 ? postPayment : 0),
 
             vehicleName: vehicleDetail.name,
+            vehicleId: vehicleId,
             vehicleImage: vehicleDetail.vehicleImage,
             vehicleBodyType: vehicleDetail.bodyType,
             vehicleCapacity: vehicleDetail.capacity,
@@ -428,11 +429,11 @@ const ftlVerifyPayment = async (req, res) => {
 
     const serviceType = req.headers['servicetype'];
 
-    if (serviceType != 1 && isPartialPayment == undefined) {
+    if (serviceType == 3 && isPartialPayment == undefined) {
         return res.status(200).json({ success: false, message: 'isPartialPayment is required' });
     }
 
-    if (serviceType != 1 && ![0, 1, 2].includes(isPartialPayment)) {
+    if (serviceType == 3 && ![0, 1, 2].includes(isPartialPayment)) {
         return res.status(200).json({ success: false, message: 'Invaild isPartialPayment Value' });
     }
 
