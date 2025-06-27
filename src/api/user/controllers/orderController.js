@@ -292,7 +292,7 @@ const ftlOrderList = async (req, res) => {
         const orders = await FTL.find({
             userId,
             transactionStatus: 1,
-            driverId: { $ne: null }
+            // driverId: { $ne: null }
         })
             .populate({
                 path: 'driverId',
