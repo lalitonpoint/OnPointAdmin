@@ -931,7 +931,7 @@ const updateOrderStatus = async (req, res) => {
 const ftlOrderAssign = async (req, res) => {
     try {
         const driverId = req.headers['driverid'];
-        const serviceType = req.headers['serviceType'];
+        const serviceType = req.headers['servicetype'];
         if (!driverId) {
             return res.status(200).json({ success: false, message: "Driver ID is required" });
         }
