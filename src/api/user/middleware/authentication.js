@@ -10,6 +10,7 @@ const verifyToken = (req, res, next) => {
     const userId = req.headers['userid'];
 
     const serviceId = req.headers['serviceid'];
+    const serviceType = req.headers['servicetype'];
     // console.log(userId);
 
     if (!token) {
@@ -21,7 +22,9 @@ const verifyToken = (req, res, next) => {
     if (!serviceId) {
         return res.status(200).json({ success: false, message: 'Service ID is missing' });
     }
-
+    if (!serviceType) {
+        return res.status(200).json({ success: false, message: 'Service Type Is Missing' });
+    }
 
     try {
         const decoded = jwt.verify(token, secretKey);

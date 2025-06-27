@@ -931,6 +931,7 @@ const updateOrderStatus = async (req, res) => {
 const ftlOrderAssign = async (req, res) => {
     try {
         const driverId = req.headers['driverid'];
+        const serviceType = req.headers['serviceType'];
         if (!driverId) {
             return res.status(200).json({ success: false, message: "Driver ID is required" });
         }
@@ -941,7 +942,7 @@ const ftlOrderAssign = async (req, res) => {
         }
 
         // Correct MongoDB query syntax
-        const incomingRequests = await FTL.find({ isAccepted: 0 })
+        const incomingRequests = await FTL.find({ isAccepted: 0, serviceType })
             .sort({ createdAt: -1 })
             .populate('userId', 'fullName')
             .lean();
