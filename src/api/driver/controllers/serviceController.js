@@ -940,12 +940,19 @@ const ftlOrderAssign = async (req, res) => {
         if (!driverCurrentLocation.success) {
             return res.status(200).json({ success: false, message: "Please update driver's current location" });
         }
-
+        let incomingRequests;
         // Correct MongoDB query syntax
-        const incomingRequests = await FTL.find({ isAccepted: 0, serviceType })
-            .sort({ createdAt: -1 })
-            .populate('userId', 'fullName')
-            .lean();
+        if (serviceType == 2)
+            incomingRequests = await FTL.find({ isAccepted: 0, serviceType, transactionStatus: 1 })
+                .sort({ createdAt: -1 })
+                .populate('userId', 'fullName')
+                .lean();
+        else {
+            incomingRequests = await FTL.find({ isAccepted: 0, serviceType })
+                .sort({ createdAt: -1 })
+                .populate('userId', 'fullName')
+                .lean();
+        }
 
         if (!incomingRequests.length) {
             return res.status(200).json({ success: true, message: "No requests found", data: [] });
