@@ -266,7 +266,6 @@ const ftlOrderInitiate = async (req, res) => {
         } = req.body;
 
         const userId = req.headers['userid'];
-        const serviceType = req.headers['serviceType'];
         if (!userId) {
             return res.status(200).json({
                 success: false,
@@ -358,6 +357,7 @@ const ftlOrderInitiate = async (req, res) => {
             prePayment = (totalPayment * prePaymentPercentage) / 100;
             postPayment = totalPayment - prePayment;
         }
+        const serviceType = req.headers['servicetype'];
 
         const paymentPayload = new FtlPayment({
             pickupLatitude,
@@ -395,7 +395,7 @@ const ftlOrderInitiate = async (req, res) => {
             gst: toFixed(gstAmount),
             totalPayment: toFixed(totalPayment),
             preTransactionId: razorpayOrderId,
-            serviceType
+            serviceType: serviceType
         });
 
 
