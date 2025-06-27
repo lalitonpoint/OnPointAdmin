@@ -1131,8 +1131,8 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 updateFields.confirmNumber = confirmNumber;
                 updateFields.pod = result.url;
 
-                driverPercentageCut = result.driverPercentageCut;
-                updateFields.driverEarning = (order.totalPayment * driverPercentageCut) / 100;
+                driverPercentageCut = Number(result.driverPercentageCut) || 0;
+                updateFields.driverEarning = (Number(order.totalPayment) * driverPercentageCut) / 100;
 
 
             }
