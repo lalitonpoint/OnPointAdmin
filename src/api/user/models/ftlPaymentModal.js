@@ -54,7 +54,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     pod: { type: String },
     loadingTime: { type: String }, // time in minutes
     unloadingTime: { type: String },  // time in minutes
-    serviceType: { type: Number, enum: [1, 2, 3, 4], default: 1 }, // 1 => PTL , 2 => FTL Intercity , 3 => FTL Outstation , 4 => Refunded , 5 => Partial Payment
+    serviceType: { type: Number, enum: [0, 1, 2, 3, 4], default: 0 }, // 1 => PTL , 2 => FTL Intercity , 3 => FTL Outstation , 4 => Refunded , 5 => Partial Payment
 
     driverId: {
         type: mongoose.Schema.Types.ObjectId,
