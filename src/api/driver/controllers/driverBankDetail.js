@@ -74,7 +74,9 @@ const getBankDetails = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: bankDetails
+            data: bankDetails,
+            message: 'Bank details Fetch successfully',
+
         });
 
     } catch (error) {
