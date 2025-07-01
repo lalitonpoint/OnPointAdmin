@@ -46,4 +46,40 @@ const addBankDetails = async (req, res) => {
     }
 };
 
-module.exports = { addBankDetails };
+
+const getBankDetails = async (req, res) => {
+    try {
+        const driverId = req.header('driverid');
+
+        if (!driverId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Driver ID is required'
+            });
+        }
+
+        const bankDetails = await DriverBankDetails.findOne({ driverId });
+
+        if (!bankDetails) {
+            return res.status(404).json({
+                success: false,
+                message: 'No bank details found for this driver'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: bankDetails
+        });
+
+    } catch (error) {
+        console.error('Error fetching bank details:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+
+
+module.exports = { addBankDetails, getBankDetails };
