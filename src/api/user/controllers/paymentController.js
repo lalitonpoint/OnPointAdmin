@@ -331,7 +331,7 @@ const ftlOrderInitiate = async (req, res) => {
         let razorpayOrderId = 0;
 
         if (isBidding == 0) {
-            let razorpayOrderIdResponse = await initiateRazorpayOrderId(req, costResult.totalPayment);
+            let razorpayOrderIdResponse = await initiateRazorpayOrderId(req, Number(costResult.totalPayment));
 
             if (razorpayOrderIdResponse && razorpayOrderIdResponse.success === true) {
                 razorpayOrderId = razorpayOrderIdResponse.orderId;
@@ -398,7 +398,7 @@ const ftlOrderInitiate = async (req, res) => {
             gst: toFixed(gstAmount),
             totalPayment: toFixed(totalPayment),
             preTransactionId: razorpayOrderId,
-            serviceType: serviceType
+            serviceType: serviceType,
         });
 
 
@@ -407,7 +407,10 @@ const ftlOrderInitiate = async (req, res) => {
         return res.status(201).json({
             success: true,
             message: "Payment details saved successfully.",
-            data: paymentPayload
+            data: {
+                ...paymentPayload.toObject(),
+                finalPayment: totalPayment
+            }
         });
 
     } catch (error) {
