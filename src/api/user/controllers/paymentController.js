@@ -398,7 +398,7 @@ const ftlOrderInitiate = async (req, res) => {
             gst: toFixed(gstAmount),
             totalPayment: toFixed(totalPayment),
             preTransactionId: razorpayOrderId,
-            serviceType: serviceType,
+            serviceType: serviceType
         });
 
 
@@ -409,7 +409,7 @@ const ftlOrderInitiate = async (req, res) => {
             message: "Payment details saved successfully.",
             data: {
                 ...paymentPayload.toObject(),
-                finalPayment: toFixed(totalPayment)
+                finalPayment: totalPayment
             }
         });
 
@@ -757,16 +757,16 @@ const ftlIntiatePayment = async (req, res) => {
                 driverName: result.driverId?.personalInfo?.name || '',
                 preTransactionId: result.preTransactionId || '',
                 averageRating: parseFloat(averageRating.toFixed(1)),
-                subtotal: toFixed(result.subTotal) || 0.00,
-                shippingCost: toFixed(result.shippingCost) || 0.00,
-                specialHandling: toFixed(result.specialHandling) || 0.00,
-                gst: toFixed(result.gst) || 0.00,
-                gstPercentage: toFixed(result.gstPercentage) || 0.00,
-                paymentPercentage: toFixed(result.prePaymentPercentage) || 0.00,
-                totalPayment: toFixed(result.totalPayment) || 0.00,
-                initialPayment: toFixed(result.prePayment) || 0.00,
-                postPayment: toFixed(result.postPayment) || 0.00,
-                finalPayment: toFixed(result.prePayment)
+                subtotal: toFixed(result.subTotal) || '0.00',
+                shippingCost: toFixed(result.shippingCost) || '0.00',
+                specialHandling: toFixed(result.specialHandling) || '0.00',
+                gst: toFixed(result.gst) || '0.00',
+                gstPercentage: toFixed(result.gstPercentage) || '0.00',
+                paymentPercentage: toFixed(result.prePaymentPercentage) || '0.00',
+                totalPayment: toFixed(result.totalPayment) || '0.00',
+                initialPayment: toFixed(result.prePayment) || '0.00',
+                postPayment: toFixed(result.postPayment) || '0.00',
+                finalPayment: result?.totalPayment || '0.00'
 
 
             },
