@@ -9,7 +9,7 @@ const addBankDetails = async (req, res) => {
 
         // 1️⃣ Validate required fields
         if (!driverId || !accountHolderName || !accountNumber || !ifscCode || !bankName || !branchName) {
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: 'All fields are required: driverId, accountHolderName, accountNumber, ifscCode, bankName, branchName'
             });
@@ -57,7 +57,7 @@ const getBankDetails = async (req, res) => {
         const driverId = req.header('driverid');
 
         if (!driverId) {
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: 'Driver ID is required'
             });
@@ -66,7 +66,7 @@ const getBankDetails = async (req, res) => {
         const bankDetails = await DriverBankDetails.findOne({ driverId });
 
         if (!bankDetails) {
-            return res.status(404).json({
+            return res.status(200).json({
                 success: false,
                 message: 'No bank details found for this driver'
             });
