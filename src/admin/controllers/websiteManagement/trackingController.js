@@ -5,6 +5,7 @@ const csv = require('csv-parser');
 const multiparty = require('multiparty');
 const { uploadImage } = require("../../utils/uploadHelper"); // Import helper for file upload
 const statesCities = require('./states-cities.json');
+const City = require('../../models/websiteManagement/cityModal');
 
 
 const trackingPage = (req, res) => {
@@ -628,6 +629,23 @@ const downloadTrackingCsv = async (req, res) => {
     }
 };
 
+
+const checkAndInsertCity = async (cityName) => {
+    if (!cityName) return;
+
+    const trimmed = cityName.trim();
+    const exists = await City.findOne({
+        name: { $regex: `^${trimmed}$`, $options: 'i' }
+    });
+
+    if (!exists) {
+        const newCity = new City({ name: trimmed });
+        await newCity.save();
+        console.log(`Inserted new city: ${trimmed}`);
+    }
+};
+
+
 const UploadCsv = async (req, res) => {
     try {
         const csvFile = req.file;
@@ -653,6 +671,8 @@ const UploadCsv = async (req, res) => {
                 for (const row of results) {
                     console.log('rt67890', row)
                     try {
+
+
                         let {
                             trackingId,
                             pickUpLocation,
@@ -682,6 +702,13 @@ const UploadCsv = async (req, res) => {
                             remarks,
                             trackingStatus
                         } = row;
+
+
+                        // ✅ Ensure pickup & drop cities exist
+                        await Promise.all([
+                            checkAndInsertCity(pickUpLocation),
+                            checkAndInsertCity(dropLocation)
+                        ]);
 
                         estimateDate = estimateDate.replace(/\s+/g, '');
                         invoiceDate = invoiceDate.replace(/\s+/g, '');
