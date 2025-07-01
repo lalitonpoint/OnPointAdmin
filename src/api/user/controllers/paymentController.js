@@ -746,10 +746,13 @@ const ftlIntiatePayment = async (req, res) => {
                 specialHandling: toFixed(result.specialHandling) || 0.00,
                 gst: toFixed(result.gst) || 0.00,
                 gstPercentage: toFixed(result.gstPercentage) || 0.00,
-                paymentPercentage: toFixed(result.paymentPercentage) || 0.00,
+                paymentPercentage: toFixed(result.prePaymentPercentage) || 0.00,
                 totalPayment: toFixed(result.totalPayment) || 0.00,
                 initialPayment: toFixed(result.prePayment) || 0.00,
                 postPayment: toFixed(result.postPayment) || 0.00,
+                finalPayment: toFixed(result.prePayment)
+
+
             },
             message: 'FTL Payment details fetched successfully',
         });
