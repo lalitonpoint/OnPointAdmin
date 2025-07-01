@@ -12,7 +12,7 @@ const masterDetail = async (req, res) => {
         if (!driverId) return res.status(200).json({ success: false, message: "Driver ID is required in headers." });
 
         const [serviceDoc, driverData] = await Promise.all([
-            Service.findById(serviceId).select('value'),
+            Service.findById(serviceId).select('serviceType'),
             DriverModal.findOne({ _id: driverId, status: 1 }).lean()
         ]);
 
