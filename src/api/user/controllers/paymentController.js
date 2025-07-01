@@ -409,7 +409,7 @@ const ftlOrderInitiate = async (req, res) => {
             message: "Payment details saved successfully.",
             data: {
                 ...paymentPayload.toObject(),
-                finalPayment: totalPayment
+                finalPayment: toFixed(totalPayment)
             }
         });
 
