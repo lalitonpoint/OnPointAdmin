@@ -28,6 +28,7 @@ const trackingRoutes = require('./websiteManagement/trackingRoutes'); // Ensure 
 const ptlPackagesRoutes = require('./ptlPackages/ptlPackagesRoutes'); // Ensure correct path
 const webWarehouseRoutes = require('./websiteManagement/warehouseRoutes'); // Ensure correct path
 const ftlRoutes = require('./ftlManagement/ftlRoutes'); // Ensure correct path
+const cityRoutes = require('./websiteManagement/cityRoutes'); // Ensure correct path
 
 // Use a base path for login routes
 
@@ -62,6 +63,7 @@ router.use('/tracking', trackingRoutes);
 router.use('/vehicle', truckRoutes);
 router.use('/ptlPackages', ptlPackagesRoutes);
 router.use('/ftl', ftlRoutes);
+router.use('/city', cityRoutes);
 
 
 

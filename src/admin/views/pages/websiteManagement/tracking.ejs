@@ -2,6 +2,7 @@
 <style>
     .trackingHeadding {
         color: #252223;
+        width: 88%;
     }
 
     .btn-close-white {
@@ -94,6 +95,9 @@
         <div class="modal-content border-0 rounded-3">
             <div class="modal-header bg-pink text-white">
                 <h5 class="modal-title trackingHeadding" id="trackingModalLabel">Add Tracking</h5>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#citiesModal">
+                    Add Cities
+                </button>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -126,6 +130,8 @@
                             <select class="form-select" id="pickUpLocation" name="pickUpLocation">
                                 <option value="">Select Pickup Location</option>
                             </select>
+                            <!-- Open Modal Button -->
+
                         </div>
                         <div class="col-md-6">
                             <label for="dropLocation" class="form-label">Drop Location<strong
@@ -347,6 +353,34 @@
         </div>
     </div>
 </div>
+<!-- Add City Modal -->
+<div class="modal fade" id="citiesModal" tabindex="-1" aria-labelledby="citiesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="cityForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="citiesModalLabel">Add City</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="cityName" class="form-label">City Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="cityName" name="cityName"
+                            placeholder="Enter City Name" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
 
 <script>
     let trackingTable;
@@ -1006,7 +1040,7 @@
 
 
 </script>
-
+<!-- 
 <script>
 
     $(document).ready(function () {
@@ -1054,40 +1088,181 @@
         });
 
 
+    });
+    function cityFun() {
 
         $.ajax({
-            url: '/tracking/states',
+            url: '/city/cities',
             type: 'GET',
-            success: function (states) {
-                states.forEach(state => {
-                    $('#pickUpLocation, #dropLocation').append(`<option value="${state}">${state}</option>`);
-                });
+            success: function (response) {
+                if (response.success) {
+                    response.data.forEach(city => {
+                        $('#pickUpLocation, #dropLocation').append(
+                            `<option value="${city.name}">${city.name}</option>`
+                        );
+                    });
+                } else {
+                    console.error("Failed to fetch cities:", response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", error);
             }
         });
+    }
+    // Function to handle Add City form submission
+    $('#cityForm').submit(function (e) {
+        e.preventDefault();
 
+        const cityName = $('#cityName').val().trim(); // Make sure input has id="cityName"
 
+        if (cityName === '') {
+            alert('Please enter a city name.');
+            return;
+        }
 
-        // $('#pickUpLocation').on('change', function () {
-        //     const state = $(this).val();
+        $.ajax({
+            url: '/city/addcities', // API endpoint to add city
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ name: cityName }),
 
-        //     if (state) {
-        //         $.ajax({
-        //             url: '/tracking/cities',
-        //             method: 'get',
-        //             contentType: 'application/json',
-        //             data: { state },
-        //             success: function (cities) {
-        //                 $('#dropLocation').empty().append('<option value="">Select City</option>');
-        //                 cities.forEach(city => {
-        //                     $('#dropLocation').append(`<option value="${city}">${city}</option>`);
-        //                 });
-        //             }
-        //         });
-        //     } else {
-        //         $('#dropLocation').empty().append('<option value="">Select City</option>');
-        //     }
-        // });
+            success: function (res) {
+                if (res.success) {
+                    alert(res.message);
 
+                    $('#citiesModal').modal('hide');      // Hide Add City modal
+                    $('#trackingModal').modal('show');     // Show another modal (optional)
+                    $('#cityForm')[0].reset();             // Clear form input
 
+                    cityFun(); // Refresh city list (dropdown, table, etc.)
+                } else {
+                    alert(res.message || "City add failed.");
+                }
+            },
+
+            error: function (xhr) {
+                const errMsg = xhr.responseJSON?.message || "Something went wrong";
+                alert("Error: " + errMsg);
+            }
+        });
     });
+
+    cityFun(); // Refresh city list (dropdown, table, etc.)
+
+
+</script> -->
+
+<script>
+    $(document).ready(function () {
+
+        // ⬇️ Refresh city dropdowns on page load
+        cityFun();
+
+        // ⬇️ Handle CSV upload form
+        $('#uploadCsvForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            $.ajax({
+                url: '/tracking/upload-csv',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    let msg = `<strong>${response.message}</strong><br/>`;
+                    msg += `Saved Entries: ${response.savedCount}<br/>`;
+                    msg += `Duplicate Entries: ${response.duplicateCount}<br/>`;
+
+                    if (response.duplicates?.length > 0) {
+                        msg += '<ul>';
+                        response.duplicates.forEach(d => {
+                            msg += `<li>Tracking ID: ${d.trackingId}, Reason: ${d.reason}</li>`;
+                        });
+                        msg += '</ul>';
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Upload Result',
+                        html: msg
+                    });
+
+                    $('#uploadModal').modal('hide');
+                    $('#uploadCsvForm')[0].reset(); // ✅ Use correct form ID
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Something went wrong'
+                    });
+                }
+            });
+        });
+
+        // ⬇️ Handle Add City form submission
+        $('#cityForm').submit(function (e) {
+            e.preventDefault();
+
+            const cityName = $('#cityName').val().trim();
+
+            if (cityName === '') {
+                alert('Please enter a city name.');
+                return;
+            }
+
+            $.ajax({
+                url: '/city/addcities',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: cityName }),
+                success: function (res) {
+                    if (res.success) {
+                        alert(res.message);
+                        $('#citiesModal').modal('hide');
+                        $('#trackingModal').modal('show');
+                        $('#cityForm')[0].reset();
+                        cityFun();
+                    } else {
+                        alert(res.message || "City add failed.");
+                    }
+                },
+                error: function (xhr) {
+                    const errMsg = xhr.responseJSON?.message || "Something went wrong";
+                    alert("Error: " + errMsg);
+                }
+            });
+        });
+    });
+
+    // ⬇️ Load city dropdown options
+    function cityFun() {
+        $.ajax({
+            url: '/city/cities',
+            type: 'GET',
+            success: function (response) {
+                if (response.success) {
+                    const $pickup = $('#pickUpLocation');
+                    const $drop = $('#dropLocation');
+
+                    $pickup.empty().append('<option value="">Select City</option>');
+                    $drop.empty().append('<option value="">Select City</option>');
+
+                    response.data.forEach(city => {
+                        const option = `<option value="${city.name}">${city.name}</option>`;
+                        $pickup.append(option);
+                        $drop.append(option);
+                    });
+                } else {
+                    console.error("Failed to fetch cities:", response.message);
+                }
+            },
+            error: function (xhr) {
+                console.error("AJAX error:", xhr.responseText);
+            }
+        });
+    }
 </script>
