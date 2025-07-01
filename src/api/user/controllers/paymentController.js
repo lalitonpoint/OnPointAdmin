@@ -817,7 +817,7 @@ const ftlFinalPayment = async (req, res) => {
                 {
                     $set: {
                         finalPreTransactionId: razorpayOrderId,
-                        totalPayment: Number(result?.prePayment) + Number(finalPaymentAmount),
+                        totalPayment: toFixed(Number(result?.prePayment) + Number(finalPaymentAmount)),
                         unloadingFee: unloadingFee,
                     }
                 }
