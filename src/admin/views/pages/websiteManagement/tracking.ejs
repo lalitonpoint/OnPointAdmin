@@ -124,14 +124,14 @@
                                     class="text-danger">*</strong></label>
 
                             <select class="form-select" id="pickUpLocation" name="pickUpLocation">
-                                <option value="">Select State</option>
+                                <option value="">Select Pickup Location</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label for="dropLocation" class="form-label">Drop Location<strong
                                     class="text-danger">*</strong></label>
                             <select class="form-select" id="dropLocation" name="dropLocation">
-                                <option value="">Select Cities</option>
+                                <option value="">Select Drop Location</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -457,7 +457,7 @@
                 {
                     data: 'estimateDate', // Assuming your server returns the combined date and time in 'Estimate Date'
                     render: function (data) {
-                        return moment(data).format('YYYY-MM-DD'); // Format the date and time as needed
+                        return data ? moment(data).format('YYYY-MM-DD') : '-'; // Format the date and time as needed
                     }
                 },
                 {
@@ -790,21 +790,21 @@
                 url: '/tracking/get/' + id,
                 type: 'GET',
                 success: function (data) {
-                    if (data.pickUpLocation) {
+                    // if (data.pickUpLocation) {
 
-                        $.ajax({
-                            url: '/tracking/cities',
-                            method: 'get',
-                            contentType: 'application/json',
-                            data: { state: data?.pickUpLocation },
-                            success: function (cities) {
-                                $('#dropLocation').empty().append('<option value="">Select City</option>');
-                                cities.forEach(city => {
-                                    $('#dropLocation').append(`<option value="${city}">${city}</option>`);
-                                });
-                            }
-                        });
-                    }
+                    //     $.ajax({
+                    //         url: '/tracking/cities',
+                    //         method: 'get',
+                    //         contentType: 'application/json',
+                    //         data: { state: data?.pickUpLocation },
+                    //         success: function (cities) {
+                    //             $('#dropLocation').empty().append('<option value="">Select City</option>');
+                    //             cities.forEach(city => {
+                    //                 $('#dropLocation').append(`<option value="${city}">${city}</option>`);
+                    //             });
+                    //         }
+                    //     });
+                    // }
 
 
                     $('#trackingId').val(data._id);
@@ -1060,33 +1060,33 @@
             type: 'GET',
             success: function (states) {
                 states.forEach(state => {
-                    $('#pickUpLocation').append(`<option value="${state}">${state}</option>`);
+                    $('#pickUpLocation, #dropLocation').append(`<option value="${state}">${state}</option>`);
                 });
             }
         });
 
 
 
-        $('#pickUpLocation').on('change', function () {
-            const state = $(this).val();
+        // $('#pickUpLocation').on('change', function () {
+        //     const state = $(this).val();
 
-            if (state) {
-                $.ajax({
-                    url: '/tracking/cities',
-                    method: 'get',
-                    contentType: 'application/json',
-                    data: { state },
-                    success: function (cities) {
-                        $('#dropLocation').empty().append('<option value="">Select City</option>');
-                        cities.forEach(city => {
-                            $('#dropLocation').append(`<option value="${city}">${city}</option>`);
-                        });
-                    }
-                });
-            } else {
-                $('#dropLocation').empty().append('<option value="">Select City</option>');
-            }
-        });
+        //     if (state) {
+        //         $.ajax({
+        //             url: '/tracking/cities',
+        //             method: 'get',
+        //             contentType: 'application/json',
+        //             data: { state },
+        //             success: function (cities) {
+        //                 $('#dropLocation').empty().append('<option value="">Select City</option>');
+        //                 cities.forEach(city => {
+        //                     $('#dropLocation').append(`<option value="${city}">${city}</option>`);
+        //                 });
+        //             }
+        //         });
+        //     } else {
+        //         $('#dropLocation').empty().append('<option value="">Select City</option>');
+        //     }
+        // });
 
 
     });

@@ -683,6 +683,12 @@ const UploadCsv = async (req, res) => {
                             trackingStatus
                         } = row;
 
+                        estimateDate = estimateDate.replace(/\s+/g, '');
+                        invoiceDate = invoiceDate.replace(/\s+/g, '');
+                        deliveryDate = deliveryDate.replace(/\s+/g, '');
+                        connectionDate = connectionDate.replace(/\s+/g, '');
+
+
                         if (!trackingId) {
                             console.warn("Skipping row due to missing trackingId");
                             continue;
