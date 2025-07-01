@@ -89,4 +89,5 @@ const getBankDetails = async (req, res) => {
 };
 
 
+
 module.exports = { addBankDetails, getBankDetails };

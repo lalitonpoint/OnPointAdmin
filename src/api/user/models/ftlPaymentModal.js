@@ -26,6 +26,7 @@ const InitiatePaymentSchema = new mongoose.Schema({
     prePayment: { type: String, default: "0.00" },
     postPayment: { type: String, default: "0.00" },
     estimatePrice: { type: String, default: "0.00" },
+    unloadingFee: { type: String, default: "0.00" },
 
     paymentMethod: { type: String },
     paymentGateway: { type: String },
