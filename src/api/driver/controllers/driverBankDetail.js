@@ -1,48 +1,53 @@
 const DriverBankDetails = require('../modals/bankDetailModal');
 
-// Add or update driver's bank details
+// Add or update driver's bank detailsconst DriverBankDetails = require('../modals/bankDetailModal');
+
 const addBankDetails = async (req, res) => {
     try {
         const driverId = req.header('driverid');
         const { accountHolderName, accountNumber, ifscCode, bankName, branchName } = req.body;
 
-        // Check for missing fields
+        // 1️⃣ Validate required fields
         if (!driverId || !accountHolderName || !accountNumber || !ifscCode || !bankName || !branchName) {
-            return res.status(200).json({
+            return res.status(400).json({
                 success: false,
                 message: 'All fields are required: driverId, accountHolderName, accountNumber, ifscCode, bankName, branchName'
             });
         }
 
-        // ✅ Check if driver already has bank details
-        const existingDetails = await DriverBankDetails.findOne({ driverId });
+        // 2️⃣ Prepare update payload
+        const payload = { accountHolderName, accountNumber, ifscCode, bankName, branchName };
 
-        if (existingDetails) {
+        // 3️⃣ Find existing details
+        const existing = await DriverBankDetails.findOne({ driverId });
+
+        let result;
+        if (existing) {
+            // 🔄 Update path
+            result = await DriverBankDetails.findByIdAndUpdate(
+                existing._id,
+                { $set: payload },
+                { new: true }
+            );
             return res.status(200).json({
-                success: false,
-                message: 'Bank details already exist for this driver'
+                success: true,
+                message: 'Bank details updated successfully',
+                data: result
+            });
+        } else {
+            // ➕ Create path
+            const bankDetails = new DriverBankDetails({ driverId, ...payload });
+            result = await bankDetails.save();
+            return res.status(201).json({
+                success: true,
+                message: 'Bank details added successfully',
+                data: result
             });
         }
 
-        const bankDetails = new DriverBankDetails({
-            driverId,
-            accountHolderName,
-            accountNumber,
-            ifscCode,
-            bankName,
-            branchName
-        });
-
-        await bankDetails.save();
-
-        res.status(201).json({
-            success: true,
-            message: 'Bank details added successfully',
-            data: bankDetails
-        });
     } catch (error) {
-        console.error('Error saving bank details:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        console.error('Error in addOrUpdateBankDetails:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
 
