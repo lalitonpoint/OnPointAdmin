@@ -102,8 +102,9 @@ const createDriver = async (req, res) => {
                         });
                     }
 
-                    const profilePicture = await uploadDocument(files, 'profilePicture');
-                    if (!profilePicture) return res.status(200).json({ success: false, message: "Profile picture is required." }); // Changed status code to 200
+                    let profilePicture = '';
+                    if (!getField('profilePicture'))
+                        profilePicture = await uploadDocument(files, 'profilePicture');
 
                     update.personalInfo = {
                         name: getField('name'),
