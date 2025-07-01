@@ -246,6 +246,19 @@ const walletUse = async (req, res) => {
             ftlDetail.isPartialPayment = isPartialPayment;
             ftlDetail.paymentId = order_id;
 
+            if ((ftlDetail.isBidding == 0) && (isPartialPayment == 0)) {
+
+                driverPercentageCut = Number(ftlDetail.driverPercentageCut) || 0;
+                ftlDetail.driverEarning = Number((Number(ftlDetail.totalPayment) * driverPercentageCut) / 100);
+            }
+
+            if ((ftlDetail.isBidding == 1) && (isPartialPayment == 2)) {
+
+                driverPercentageCut = Number(ftlDetail.driverPercentageCut) || 0;
+                ftlDetail.driverEarning = Number((Number(ftlDetail.totalPayment) * driverPercentageCut) / 100);
+            }
+
+
             await ftlDetail.save();
         }
         return res.json({
