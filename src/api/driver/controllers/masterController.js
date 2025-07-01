@@ -16,7 +16,7 @@ const masterDetail = async (req, res) => {
             DriverModal.findOne({ _id: driverId, status: 1 }).lean()
         ]);
 
-        const serviceType = serviceDoc?.value;
+        const serviceType = serviceDoc?.serviceType;
         const approvalStatus = driverData?.approvalStatus || 0;
 
         const driverLocation = await getDriverLocation(driverId);

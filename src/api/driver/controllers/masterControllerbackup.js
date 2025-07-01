@@ -11,7 +11,7 @@ const masterDetail = async (req, res) => {
 
     let serviceType = await Service.findById(serviceId).select('value');
 
-    serviceType = serviceType.value;
+    serviceType = serviceType.serviceType;
 
     try {
         const driverId = req.header('driverid');

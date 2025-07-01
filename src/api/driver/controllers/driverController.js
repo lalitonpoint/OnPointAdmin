@@ -227,7 +227,7 @@ const createDriver = async (req, res) => {
                 update.deviceToken = req.header('devicetoken');
                 update.deviceId = req.header('deviceid');
                 update.serviceId = serviceId;
-                update.serviceType = serviceDetail.value;
+                update.serviceType = serviceDetail.serviceType;
 
                 driver = new DriverProfile(update);
                 await driver.save();
