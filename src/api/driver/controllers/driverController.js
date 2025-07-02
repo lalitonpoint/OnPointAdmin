@@ -149,7 +149,7 @@ const createDriver = async (req, res) => {
                 case 3: {
                     const fieldsToUpload = [
                         'aadhaarFront', 'aadhaarBack', 'panCard', 'drivingLicense',
-                        'vehicleRC', 'insuranceCopy', 'bankPassbook'
+                        'vehicleRC', 'insuranceCopy'
                     ];
                     const documents = {};
 

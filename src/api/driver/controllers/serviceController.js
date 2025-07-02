@@ -182,6 +182,7 @@ const getDriverLocation = async (driverId) => {
 const tripHistory = async (req, res) => {
     try {
         const driverId = req.header('driverid');
+        const serviceType = req.header('servicetype');
 
         if (!driverId) {
             return res.status(200).json({
@@ -189,14 +190,23 @@ const tripHistory = async (req, res) => {
                 message: "Driver ID is required"
             });
         }
+        let trips;
+        if (serviceType == 1) {
+            trips = await PTL.find({
+                driverId,
+                status: { $in: [0, 1, 2, 3, 4, 5] }
+            })
+                .populate({ path: 'userId', select: 'fullName' })
+                .populate({ path: 'packageId', select: 'orderId' });
 
-        const trips = await PTL.find({
-            driverId,
-            status: { $in: [0, 1, 2, 3, 4, 5] }
-        })
-            .populate({ path: 'userId', select: 'fullName' })
-            .populate({ path: 'packageId', select: 'orderId' });
-
+        }
+        if (serviceType == 2 || serviceType == 3) {
+            trips = await FTL.find({
+                driverId,
+                status: { $in: [0, 1, 2, 3, 4, 5] }
+            })
+                .populate({ path: 'userId', select: 'fullName' })
+        }
         const groupedTrips = {
             All: [],
             Completed: [],
@@ -204,7 +214,8 @@ const tripHistory = async (req, res) => {
         };
 
         for (const trip of trips) {
-            const tripData = {
+            let tripData;
+            tripData = {
                 userName: trip?.userId?.fullName || '',
                 status: trip.status,
                 orderId: trip?.packageId?.orderId || '',
@@ -214,6 +225,20 @@ const tripHistory = async (req, res) => {
                 totalDuration: trip.totalDuration || '',
                 createdAt: trip.createdAt
             };
+
+            if (serviceType == 2 || serviceType == 3) {
+                tripData = {
+                    userName: trip?.userId?.fullName || '',
+                    status: trip.orderStatus,
+                    orderId: trip?.orderId || '',
+                    pickAddress: trip.pickupAddress || '',
+                    dropAddress: trip.dropAddress || '',
+                    totalDistance: trip.totalDistance || '',
+                    totalDuration: trip.totalDuration || '',
+                    createdAt: trip.createdAt
+                };
+
+            }
 
             // Push all trips to "All"
             groupedTrips.All.push(tripData);
