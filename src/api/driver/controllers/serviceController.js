@@ -1040,7 +1040,7 @@ const ftlOrderAssign = async (req, res) => {
                 vehicleImage,
                 isBidding,
                 isAccepted,
-                totalPayment: estimatePrice,
+                totalPayment,
                 pickupLatitude,
                 pickupLongitude,
                 pickupAddress,
