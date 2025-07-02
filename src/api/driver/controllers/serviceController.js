@@ -1001,7 +1001,7 @@ const ftlOrderAssign = async (req, res) => {
 
         const { lat: driverLat, long: driverLong } = driverCurrentLocation;
 
-        const enrichedRequests = await Promise.all(incomingRequests.map(async (req) => {
+        let enrichedRequests = await Promise.all(incomingRequests.map(async (req) => {
             const {
                 _id,
                 pickupLatitude,
@@ -1020,7 +1020,7 @@ const ftlOrderAssign = async (req, res) => {
             } = req;
 
             if (serviceType == 2 && checkRadius(pickupLatitude, pickupLongitude, driverLat, driverLong)) {
-                return null; // Skip this request
+                return null; // ✅ skip this request and move to next
             }
 
 
@@ -1064,6 +1064,7 @@ const ftlOrderAssign = async (req, res) => {
                 userName: userId?.fullName || '',
             };
         }));
+        enrichedRequests = enrichedRequests.filter(r => r !== null);
 
         return res.json({
             success: true,
