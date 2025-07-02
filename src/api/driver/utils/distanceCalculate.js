@@ -47,42 +47,29 @@ const getDistanceAndDuration = async (pickupLatitude, pickupLongitude, dropLatit
         throw new Error('Failed to fetch distance from Google Maps API');
     }
 };
-
-const checkRadius = async (pickupLat, pickupLng, driverLat, driverLng) => {
-
-    const distance = getDistanceFromLatLonInKm(pickupLat, pickupLng, driverLat, driverLng);
-    const radiusInKm = 100;
-
-    if (Number(distance) <= radiusInKm) {
-        // Driver is in the pickup radius
-        console.log("Show request to driver");
-        return false;
-
-    } else {
-        // Driver is outside the radius
-        console.log("Don't show request");
-        return true;
-
-    }
-
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
 }
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const dLat = deg2rad(lat2 - lat1);
     const dLon = deg2rad(lon2 - lon1);
     const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) *
-        Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in km
+    return R * c;
 }
 
-function deg2rad(deg) {
-    return deg * (Math.PI / 180);
+/**
+ * Returns TRUE if driver is OUTSIDE the radius.
+ * Returns FALSE if driver is WITHIN the radius.
+ */
+function checkRadius(pickupLat, pickupLng, driverLat, driverLng, radiusInKm = 100) {
+    const distance = getDistanceFromLatLonInKm(pickupLat, pickupLng, driverLat, driverLng);
+    return distance > radiusInKm;
 }
 
 
