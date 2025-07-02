@@ -3,6 +3,7 @@ const razorpay = require('../utils/razorpay');
 const Wallet = require('../models/walletModal');
 const Payment = require('../models/paymentModal');
 const FTL = require('../models/ftlPaymentModal');
+const { toFixed } = require('../utils/fixedValue');
 require('dotenv').config();
 
 
@@ -249,13 +250,13 @@ const walletUse = async (req, res) => {
             if ((ftlDetail.isBidding == 0) && (isPartialPayment == 0)) {
 
                 driverPercentageCut = Number(ftlDetail.driverPercentageCut) || 0;
-                ftlDetail.driverEarning = Number((Number(ftlDetail.totalPayment) * driverPercentageCut) / 100);
+                ftlDetail.driverEarning = toFixed((Number(ftlDetail.totalPayment) * driverPercentageCut) / 100);
             }
 
             if ((ftlDetail.isBidding == 1) && (isPartialPayment == 2)) {
 
                 driverPercentageCut = Number(ftlDetail.driverPercentageCut) || 0;
-                ftlDetail.driverEarning = Number((Number(ftlDetail.totalPayment) * driverPercentageCut) / 100);
+                ftlDetail.driverEarning = toFixed((Number(ftlDetail.totalPayment) * driverPercentageCut) / 100);
             }
 
 

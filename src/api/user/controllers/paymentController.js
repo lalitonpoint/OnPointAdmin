@@ -472,7 +472,7 @@ const ftlVerifyPayment = async (req, res) => {
             // }
 
             paymentRecord.transactionStatus = 1;
-            if (isPartialPayment == 1)
+            if (isPartialPayment == 0 || isPartialPayment == 1)
                 paymentRecord.postTransactionId = payment.order_id;
 
             if (isPartialPayment == 2)
@@ -483,13 +483,13 @@ const ftlVerifyPayment = async (req, res) => {
             if ((paymentRecord.isBidding == 0) && (isPartialPayment == 0)) {
 
                 driverPercentageCut = Number(paymentRecord.driverPercentageCut) || 0;
-                paymentRecord.driverEarning = Number((Number(paymentRecord.totalPayment) * driverPercentageCut) / 100);
+                paymentRecord.driverEarning = toFixed((Number(paymentRecord.totalPayment) * driverPercentageCut) / 100);
             }
 
             if ((paymentRecord.isBidding == 1) && (isPartialPayment == 2)) {
 
                 driverPercentageCut = Number(paymentRecord.driverPercentageCut) || 0;
-                paymentRecord.driverEarning = Number((Number(paymentRecord.totalPayment) * driverPercentageCut) / 100);
+                paymentRecord.driverEarning = toFixed((Number(paymentRecord.totalPayment) * driverPercentageCut) / 100);
             }
 
 
