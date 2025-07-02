@@ -1090,13 +1090,6 @@ const ftlUpdateOrderStatus = async (req, res) => {
             if (!driverId) return res.status(200).json({ success: false, message: 'Missing driverId in headers' });
 
             // Step 0 specific acceptance validation
-            if (step === 0) {
-                if (![1, 2, 3].includes(isAccepted)) {
-                    return res.status(200).json({ success: false, message: 'Invalid isAccepted value' });
-                }
-                await FTL.updateOne({ _id: requestId }, { $set: { isAccepted, driverId } });
-            }
-
             if (![0, 1, 2, 3, 4, 5].includes(orderStatus)) {
                 return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
             }
@@ -1109,6 +1102,37 @@ const ftlUpdateOrderStatus = async (req, res) => {
             if (stepStatusMap[step] !== orderStatus) {
                 return res.status(200).json({ success: false, message: 'Order status is not aligned with step' });
             }
+
+            if (step === 0) {
+                if (![1, 2, 3].includes(isAccepted)) {
+                    return res.status(200).json({ success: false, message: 'Invalid isAccepted value' });
+                }
+                // await FTL.updateOne({ _id: requestId }, { $set: { isAccepted, driverId } });
+                await FTL.updateOne(
+                    { _id: requestId },
+                    {
+                        $set: {
+                            isAccepted,
+                            driverId,
+                            orderStatus: isAccepted == 2 ? orderStatus : 5
+                        }
+                    }
+                );
+
+            }
+
+            // if (![0, 1, 2, 3, 4, 5].includes(orderStatus)) {
+            //     return res.status(200).json({ success: false, message: 'Invalid status. Must be between 0 and 5.' });
+            // }
+
+            // if (![0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(step)) {
+            //     return res.status(200).json({ success: false, message: 'Invalid step. Must be between 0 and 9.' });
+            // }
+
+            // const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 3, 8: 4, 9: 4 };
+            // if (stepStatusMap[step] !== orderStatus) {
+            //     return res.status(200).json({ success: false, message: 'Order status is not aligned with step' });
+            // }
 
             const order = await FTL.findById(requestId).populate('userId', 'fullName mobileNumber countryCode');
             if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
