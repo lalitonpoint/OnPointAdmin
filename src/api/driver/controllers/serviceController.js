@@ -1108,16 +1108,22 @@ const ftlUpdateOrderStatus = async (req, res) => {
                     return res.status(200).json({ success: false, message: 'Invalid isAccepted value' });
                 }
                 // await FTL.updateOne({ _id: requestId }, { $set: { isAccepted, driverId } });
+                const updatePayload = {
+                    isAccepted,
+                    driverId
+                };
+
+                if (isAccepted == 2) {
+                    updatePayload.orderStatus = 5;
+                }
+
                 await FTL.updateOne(
                     { _id: requestId },
-                    {
-                        $set: {
-                            isAccepted,
-                            driverId,
-                            orderStatus: isAccepted == 2 ? 5 : orderStatus
-                        }
-                    }
+                    { $set: updatePayload }
                 );
+
+                return res.status(200).json({ success: true, message: isAccepted == 1 ? 'Order Accepted Successfully' : 'Order Rejected Successfully' });
+
 
             }
 
