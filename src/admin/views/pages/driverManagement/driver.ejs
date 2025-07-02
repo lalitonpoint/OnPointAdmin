@@ -575,7 +575,8 @@
                     // Personal Detail Tab
                     $('#editName').val(driver.personalInfo.name);
                     $('#editEmail').val(driver.personalInfo.email);
-                    $('#editDateOfBirth').val(driver.personalInfo.dob);
+                    driver.personalInfo.dob ? $('#editDateOfBirth').val(moment(driver.personalInfo.dob).format('YYYY-MM-DD')) : '';
+
                     // $('#editDateOfBirth').val(driver.personalInfo.dob ? `${driver.personalInfo.dob.split('/')[2]}-${driver.personalInfo.dob.split('/')[1]}-${driver.personalInfo.dob.split('/')[0]}` : '');
                     $('#editGender').val(driver.personalInfo.gender);
                     $('#editMobileNo').val(driver.personalInfo.mobile);

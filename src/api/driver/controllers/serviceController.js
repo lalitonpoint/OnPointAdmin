@@ -203,7 +203,7 @@ const tripHistory = async (req, res) => {
         if (serviceType == 2 || serviceType == 3) {
             trips = await FTL.find({
                 driverId,
-                status: { $in: [0, 1, 2, 3, 4, 5] }
+                orderStatus: { $in: [0, 1, 2, 3, 4, 5] }
             })
                 .populate({ path: 'userId', select: 'fullName' })
         }

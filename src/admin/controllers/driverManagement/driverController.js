@@ -114,22 +114,24 @@ const driverList = async (req, res) => {
 
         // 3. Determine the sorting order
         const sort = {};
+        sort.createdAt = -1; // Default sort by creation date descending
+
         if (order?.[0]?.column !== undefined && order?.[0]?.dir) {
             const orderColumnIndex = order[0].column;
             const orderDirection = order[0].dir;
             const columnName = columns[orderColumnIndex]?.data;
             if (columnName) {
-                sort[columnName] = orderDirection === 'asc' ? 1 : -1;
-            }
-        } else {
-            sort.createdAt = -1; // Default sort by creation date descending
-        }
+                // sort[columnName] = orderDirection === 'asc' ? 1 : -1;
+                sort.createdAt = -1; // Default sort by creation date descending
 
+            }
+        }
         // 4. Fetch total and filtered record counts
         const totalRecords = await Driver.countDocuments();
         const filteredRecords = await Driver.countDocuments(filter);
 
         // 5. Fetch the paginated and sorted driver data
+        console.log(sort);
         const drivers = await Driver.find(filter)
             .sort(sort)
             .skip(parseInt(start)) // Ensure start is an integer
