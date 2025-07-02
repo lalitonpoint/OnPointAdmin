@@ -325,7 +325,9 @@ const updateTracking = async (req, res) => {
             }
 
             // Clone current deliveryStatus
-            const updatedDeliveryStatus = { ...existingTrackk.deliveryStatus };
+            let updatedDeliveryStatus = { ...existingTrackk.deliveryStatus };
+            console.log(existingTrackk.deliveryStatus[4]);
+            console.log('status', status);
 
             // Loop through the keys (as strings)
             for (let i = 1; i <= 6; i++) {
@@ -339,10 +341,11 @@ const updateTracking = async (req, res) => {
                     if (deliveryDate) {
                         updatedDeliveryStatus[status].deliveryDateTime = deliveryDate;
                     }
-                } else {
-                    updatedDeliveryStatus[key].status = 0;
-                    updatedDeliveryStatus[key].deliveryDateTime = '';
                 }
+                // else {
+                //     updatedDeliveryStatus[key].status = 0;
+                //     updatedDeliveryStatus[key].deliveryDateTime = '';
+                // }
             }
 
             if (status == 2 && Array.isArray(transitTracking) && transitTracking.length > 0)
