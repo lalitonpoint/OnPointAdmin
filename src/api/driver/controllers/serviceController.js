@@ -221,8 +221,8 @@ const tripHistory = async (req, res) => {
                 orderId: trip?.packageId?.orderId || '',
                 pickAddress: trip.pickupAddress || '',
                 dropAddress: trip.dropAddress || '',
-                totalDistance: trip.totalDistance || '',
-                totalDuration: trip.totalDuration || '',
+                totalDistance: trip.distance || '',
+                totalDuration: trip.duration || '',
                 createdAt: trip.createdAt
             };
 
