@@ -1,4 +1,6 @@
 const InitiatePayment = require('../models/paymentModal');
+const { checkRadius } = require('../../driver/utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+
 const FtlPayment = require('../models/ftlPaymentModal');
 const { packageCalculation, ftlPackageCalculation } = require('../controllers/packageController');
 const generateOrderId = require('../utils/generateOrderId');
