@@ -233,7 +233,7 @@ const tripHistory = async (req, res) => {
                     orderId: trip?.orderId || '',
                     pickAddress: trip.pickupAddress || '',
                     dropAddress: trip.dropAddress || '',
-                    totalDistance: trip.distance || '',
+                    totalDistance: trip.distance?.toString() || '',
                     totalDuration: trip.duration || '',
                     createdAt: trip.createdAt
                 };
