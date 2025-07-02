@@ -223,7 +223,7 @@ const masterDetail = async (req, res) => {
             ]);
 
             completedCount = tripHistory.filter(trip => trip.orderStatus === 4).length;
-            cancelledCount = tripHistory.filter(trip => trip.isAccepted === 2).length;
+            cancelledCount = tripHistory.filter(trip => trip.orderStatus === 5).length;
 
             if (!pendingRequests || pendingRequests.length === 0) {
                 return res.status(200).json({

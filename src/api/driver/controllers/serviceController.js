@@ -1114,7 +1114,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
                         $set: {
                             isAccepted,
                             driverId,
-                            orderStatus: isAccepted == 2 ? orderStatus : 5
+                            orderStatus: isAccepted == 2 ? 5 : orderStatus
                         }
                     }
                 );
