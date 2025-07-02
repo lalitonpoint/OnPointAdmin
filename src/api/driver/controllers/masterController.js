@@ -119,8 +119,8 @@ const masterDetail = async (req, res) => {
             const tripHistory = await FTL.find({ driverId, orderStatus: { $in: [4, 5] } });
 
 
-            completedCount = tripHistory.filter(trip => trip.status === 4).length;
-            cancelledCount = tripHistory.filter(trip => trip.status === 5).length;
+            completedCount = tripHistory.filter(trip => trip.orderStatus === 4).length;
+            cancelledCount = tripHistory.filter(trip => trip.orderStatus === 5).length;
 
 
             const pendingRequest = await FTL.findOne({
