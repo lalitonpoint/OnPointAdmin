@@ -53,7 +53,7 @@ const masterDetail = async (req, res) => {
                         pendingRequest: 0,
                         assignId: '',
                         serviceType,
-                        isWallet: 0,
+                        isWallet: serviceType == 1 ? 0 : 1,
                         request: [],
 
                         tripCount: { completedCount, cancelledCount }
@@ -109,28 +109,123 @@ const masterDetail = async (req, res) => {
                 pendingRequest: requestData.length,
                 assignId: requestData[0]?.assignId || '',
                 serviceType,
-                isWallet: 0,
+                isWallet: serviceType == 1 ? 0 : 1,
                 request: requestData,
                 tripCount: { completedCount, cancelledCount }
             };
 
         } else {
             // FTL Logic
-            const tripHistory = await FTL.find({ driverId, orderStatus: { $in: [4, 5] } });
+            // const tripHistory = await FTL.find({ driverId, orderStatus: { $in: [4, 5] } });
 
+
+            // completedCount = tripHistory.filter(trip => trip.orderStatus === 4).length;
+            // cancelledCount = tripHistory.filter(trip => trip.orderStatus === 5).length;
+
+
+            // const pendingRequest = await FTL.find({
+            //     driverId,
+            //     transactionStatus: 1,
+            //     isAccepted: 1,
+            //     orderStatus: { $nin: [4, 5] }
+            // }).sort({ createdAt: -1 }).populate({ path: 'userId', select: 'fullName mobileNumber countryCode' });
+
+            // if (!pendingRequest) {
+            //     return res.status(200).json({
+            //         success: true,
+            //         message: 'No pending requests',
+            //         data: {
+            //             driverApprovalStatus: approvalStatus,
+            //             pendingRequest: 0,
+            //             assignId: '',
+            //             serviceType,
+            //             isWallet: 0,
+            //             request: [],
+
+            //             tripCount: { completedCount, cancelledCount }
+            //         }
+            //     });
+            // }
+
+            // const {
+            //     pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
+            //     pickupAddress, dropAddress, totalPayment,
+            //     step = 0, orderStatus, vehicleName, vehicleImage, vehicleBodyType,
+            //     userId
+            // } = pendingRequest;
+
+            // const pickupResult = await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
+            // const dropResult = await getDistanceAndDuration(pickupLatitude, pickupLongitude, dropLatitude, dropLongitude);
+
+            // const uiMap = {
+            //     0: { topHeader: 'Start Trip', bottomHeader: 'Way To Pickup', buttonText: 'Go Now' },
+            //     1: { topHeader: 'Arriving', bottomHeader: 'Arriving', buttonText: 'Arrived to Pickup Location' },
+            //     2: { topHeader: 'Arrived', bottomHeader: 'Arrived', buttonText: 'Start Loading' },
+            //     3: { topHeader: 'Start Loading', bottomHeader: 'Loading... ', buttonText: 'Loading Complete' },
+            //     4: { topHeader: 'Start Trip', bottomHeader: 'Way To Drop Location', buttonText: 'Go Now' },
+            //     5: { topHeader: 'Arriving', bottomHeader: 'Arriving', buttonText: 'Arrived at Drop Location' },
+            //     6: { topHeader: 'Start Unloading', bottomHeader: 'Unload', buttonText: 'Start Unloading' },
+            //     7: { topHeader: 'Unloading', bottomHeader: 'Unloading', buttonText: 'Mark Delivered' },
+            //     8: { topHeader: 'Confirm Delivery', bottomHeader: 'POD', buttonText: 'Submit' },
+            //     9: { topHeader: 'Delivered', bottomHeader: 'Delivered', buttonText: 'Delivered at User Location' },
+            // };
+
+            // const ui = uiMap[step] || {};
+
+            // responsePayload = {
+            //     driverApprovalStatus: approvalStatus,
+            //     pendingRequest: 1,
+            //     assignId: pendingRequest._id,
+            //     serviceType,
+            //     isWallet: 0,
+            //     request: [{
+            //         topHeader: ui.topHeader,
+            //         bottomHeader: ui.bottomHeader,
+            //         buttonText: ui.buttonText,
+            //         pickupDistance: pickupResult?.distanceInKm || 0,
+            //         pickupDuration: pickupResult?.duration || 'N/A',
+            //         dropDistance: dropResult?.distanceInKm || 0,
+            //         dropDuration: dropResult?.duration || 'N/A',
+            //         userName: userId?.fullName || '',
+            //         userId: userId?._id || '',
+            //         userContact: `${userId?.countryCode || ''}${userId?.mobileNumber || ''}`,
+            //         pickupAddress,
+            //         dropAddress,
+            //         pickupLatitude,
+            //         pickupLongitude,
+            //         dropLatitude,
+            //         dropLongitude,
+            //         totalPayment,
+            //         step,
+            //         orderStatus,
+            //         vehicleName,
+            //         vehicleImage,
+            //         vehicleBodyType,
+            //         requestId: pendingRequest?._id || '',
+            //     }],
+            //     tripCount: { completedCount, cancelledCount }
+            // };
+
+            const [pendingRequests, tripHistory] = await Promise.all([
+                FTL.find({
+                    driverId,
+                    transactionStatus: 1,
+                    isAccepted: 1,
+                    orderStatus: { $nin: [4, 5] }
+                }).sort({ createdAt: -1 }).populate({
+                    path: 'userId',
+                    select: 'fullName mobileNumber countryCode'
+                }),
+                FTL.find({
+                    driverId,
+                    orderStatus: { $in: [4, 5] }
+                })
+            ]);
 
             completedCount = tripHistory.filter(trip => trip.orderStatus === 4).length;
             cancelledCount = tripHistory.filter(trip => trip.orderStatus === 5).length;
 
-
-            const pendingRequest = await FTL.find({
-                driverId,
-                transactionStatus: 1,
-                isAccepted: 1,
-                orderStatus: { $nin: [4, 5] }
-            }).sort({ createdAt: -1 }).populate({ path: 'userId', select: 'fullName mobileNumber countryCode' });
-
-            if (!pendingRequest) {
+            if (!pendingRequests || pendingRequests.length === 0) {
                 return res.status(200).json({
                     success: true,
                     message: 'No pending requests',
@@ -139,46 +234,45 @@ const masterDetail = async (req, res) => {
                         pendingRequest: 0,
                         assignId: '',
                         serviceType,
-                        isWallet: 0,
+                        isWallet: serviceType == 1 ? 0 : 1,
                         request: [],
-
                         tripCount: { completedCount, cancelledCount }
                     }
                 });
             }
 
-            const {
-                pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
-                pickupAddress, dropAddress, totalPayment,
-                step = 0, orderStatus, vehicleName, vehicleImage, vehicleBodyType,
-                userId
-            } = pendingRequest;
-
-            const pickupResult = await getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude);
-            const dropResult = await getDistanceAndDuration(pickupLatitude, pickupLongitude, dropLatitude, dropLongitude);
-
+            // UI Map per step
             const uiMap = {
                 0: { topHeader: 'Start Trip', bottomHeader: 'Way To Pickup', buttonText: 'Go Now' },
                 1: { topHeader: 'Arriving', bottomHeader: 'Arriving', buttonText: 'Arrived to Pickup Location' },
                 2: { topHeader: 'Arrived', bottomHeader: 'Arrived', buttonText: 'Start Loading' },
-                3: { topHeader: 'Start Loading', bottomHeader: 'Loading... ', buttonText: 'Loading Complete' },
+                3: { topHeader: 'Start Loading', bottomHeader: 'Loading...', buttonText: 'Loading Complete' },
                 4: { topHeader: 'Start Trip', bottomHeader: 'Way To Drop Location', buttonText: 'Go Now' },
                 5: { topHeader: 'Arriving', bottomHeader: 'Arriving', buttonText: 'Arrived at Drop Location' },
                 6: { topHeader: 'Start Unloading', bottomHeader: 'Unload', buttonText: 'Start Unloading' },
                 7: { topHeader: 'Unloading', bottomHeader: 'Unloading', buttonText: 'Mark Delivered' },
                 8: { topHeader: 'Confirm Delivery', bottomHeader: 'POD', buttonText: 'Submit' },
-                9: { topHeader: 'Delivered', bottomHeader: 'Delivered', buttonText: 'Delivered at User Location' },
+                9: { topHeader: 'Delivered', bottomHeader: 'Delivered', buttonText: 'Delivered at User Location' }
             };
 
-            const ui = uiMap[step] || {};
+            // Map each request and calculate distances
+            const requestData = await Promise.all(pendingRequests.map(async (request) => {
+                const {
+                    pickupLatitude, pickupLongitude, dropLatitude, dropLongitude,
+                    pickupAddress = '', dropAddress = '', totalPayment = 0,
+                    step = 0, orderStatus = 0, vehicleName, vehicleImage, vehicleBodyType,
+                    userId = {}, _id
+                } = request;
 
-            responsePayload = {
-                driverApprovalStatus: approvalStatus,
-                pendingRequest: 1,
-                assignId: pendingRequest._id,
-                serviceType,
-                isWallet: 0,
-                request: [{
+                const [pickupResult, dropResult] = await Promise.all([
+                    getDistanceAndDuration(lat, long, pickupLatitude, pickupLongitude),
+                    getDistanceAndDuration(pickupLatitude, pickupLongitude, dropLatitude, dropLongitude)
+                ]);
+
+                const ui = uiMap[step] || {};
+
+                return {
+                    requestId: _id,
                     topHeader: ui.topHeader,
                     bottomHeader: ui.bottomHeader,
                     buttonText: ui.buttonText,
@@ -186,9 +280,9 @@ const masterDetail = async (req, res) => {
                     pickupDuration: pickupResult?.duration || 'N/A',
                     dropDistance: dropResult?.distanceInKm || 0,
                     dropDuration: dropResult?.duration || 'N/A',
-                    userName: userId?.fullName || '',
-                    userId: userId?._id || '',
-                    userContact: `${userId?.countryCode || ''}${userId?.mobileNumber || ''}`,
+                    userName: userId.fullName || '',
+                    userId: userId._id || '',
+                    userContact: `${userId.countryCode || ''}${userId.mobileNumber || ''}`,
                     pickupAddress,
                     dropAddress,
                     pickupLatitude,
@@ -200,9 +294,17 @@ const masterDetail = async (req, res) => {
                     orderStatus,
                     vehicleName,
                     vehicleImage,
-                    vehicleBodyType,
-                    requestId: pendingRequest?._id || '',
-                }],
+                    vehicleBodyType
+                };
+            }));
+
+            responsePayload = {
+                driverApprovalStatus: approvalStatus,
+                pendingRequest: requestData.length,
+                assignId: requestData[0]?._id || '', // Optional: can be first one
+                serviceType,
+                isWallet: serviceType == 1 ? 0 : 1,
+                request: requestData,
                 tripCount: { completedCount, cancelledCount }
             };
         }
