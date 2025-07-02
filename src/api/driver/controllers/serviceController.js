@@ -1,6 +1,6 @@
 const admin = require('../../../../config/firebaseConnection');
 const PTL = require('../../../admin/models/ptlPackages/driverPackageAssignModel'); // Adjust the model path as needed
-const { getDistanceAndDuration } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
+const { getDistanceAndDuration, checkRadius } = require('../utils/distanceCalculate'); // Assuming the common function is located in '../utils/distanceCalculate'
 const DriverLocation = require('../modals/driverLocModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 const PaymentDetail = require('../../../api/user/models/paymentModal'); // Assuming the common function is located in '../utils/distanceCalculate'
 const mongoose = require('mongoose');
@@ -979,11 +979,15 @@ const ftlOrderAssign = async (req, res) => {
         }
         let incomingRequests;
         // Correct MongoDB query syntax
-        if (serviceType == 2)
+        if (serviceType == 2) {
+
             incomingRequests = await FTL.find({ isAccepted: 0, serviceType, transactionStatus: 1, vehicleId: vehicleId })
                 .sort({ createdAt: -1 })
                 .populate('userId', 'fullName')
                 .lean();
+
+        }
+
         else {
             incomingRequests = await FTL.find({ isAccepted: 0, serviceType, vehicleId: vehicleId })
                 .sort({ createdAt: -1 })
@@ -1015,6 +1019,9 @@ const ftlOrderAssign = async (req, res) => {
                 pickupAddress
             } = req;
 
+            if (checkRadius(pickupLatitude, pickupLongitude, driverLat, driverLat))
+                return;
+
             let pickupDistance = 0, pickupDuration = 0;
             let dropDistance = 0, dropDuration = 0;
 
@@ -1033,6 +1040,7 @@ const ftlOrderAssign = async (req, res) => {
             } catch (err) {
                 console.error(`Drop distance error for ${_id}:`, err.message);
             }
+
 
             return {
                 requestId: _id,
