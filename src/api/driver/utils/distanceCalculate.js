@@ -56,12 +56,12 @@ const checkRadius = async (pickupLat, pickupLng, driverLat, driverLng) => {
     if (Number(distance) <= radiusInKm) {
         // Driver is in the pickup radius
         console.log("Show request to driver");
-        return true;
+        return false;
 
     } else {
         // Driver is outside the radius
         console.log("Don't show request");
-        return false;
+        return true;
 
     }
 
