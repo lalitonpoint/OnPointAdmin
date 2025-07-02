@@ -1019,8 +1019,10 @@ const ftlOrderAssign = async (req, res) => {
                 pickupAddress
             } = req;
 
-            if (checkRadius(pickupLatitude, pickupLongitude, driverLat, driverLat))
-                return;
+            if (serviceType == 2 && checkRadius(pickupLatitude, pickupLongitude, driverLat, driverLong)) {
+                return null; // Skip this request
+            }
+
 
             let pickupDistance = 0, pickupDuration = 0;
             let dropDistance = 0, dropDuration = 0;
@@ -1040,7 +1042,6 @@ const ftlOrderAssign = async (req, res) => {
             } catch (err) {
                 console.error(`Drop distance error for ${_id}:`, err.message);
             }
-
 
             return {
                 requestId: _id,
