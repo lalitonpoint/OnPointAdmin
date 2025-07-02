@@ -123,7 +123,7 @@ const masterDetail = async (req, res) => {
             cancelledCount = tripHistory.filter(trip => trip.orderStatus === 5).length;
 
 
-            const pendingRequest = await FTL.findOne({
+            const pendingRequest = await FTL.find({
                 driverId,
                 transactionStatus: 1,
                 isAccepted: 1,
