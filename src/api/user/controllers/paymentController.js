@@ -266,6 +266,7 @@ const ftlOrderInitiate = async (req, res) => {
         } = req.body;
 
         const userId = req.headers['userid'];
+        const serviceType = req.headers['servicetype'];
         if (!userId) {
             return res.status(200).json({
                 success: false,
@@ -292,6 +293,13 @@ const ftlOrderInitiate = async (req, res) => {
                     message: `${field} is required and must be a string.`
                 });
             }
+        }
+
+        if (serviceType == 2 && checkRadius(pickupLatitude, pickupLongitude, dropLatitude, dropLongitude)) {
+            return res.status(200).json({
+                success: false,
+                message: "Intercity Service Available Only in 100Km"
+            });
         }
 
         const isBiddingNum = parseInt(isBidding);
@@ -358,7 +366,7 @@ const ftlOrderInitiate = async (req, res) => {
             prePayment = (totalPayment * prePaymentPercentage) / 100;
             postPayment = totalPayment - prePayment;
         }
-        const serviceType = req.headers['servicetype'];
+        // const serviceType = req.headers['servicetype'];
 
         const paymentPayload = new FtlPayment({
             pickupLatitude,
