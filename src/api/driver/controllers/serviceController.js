@@ -123,6 +123,7 @@ const orderAssign = async (req, res) => {
             requestObj.dropDuration = dropDuration;
             requestObj.arrivalTime = getArrivalTime(pickupDuration);
             requestObj.userName = requestObj.userId?.fullName || '';
+            requestObj.userId = requestObj.userId?._id || '';
             requestObj.packageName = await requestObj.packageId?.packages
                 ?.map(p => p.packageName)
                 ?.filter(Boolean)

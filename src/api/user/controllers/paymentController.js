@@ -233,7 +233,7 @@ const estimatePriceCalculation = async (req, res) => {
             dropLongitude
         );
 
-        const estimatePrice = parseFloat((distanceInKm * 10).toFixed(2));
+        const estimatePrice = parseFloat((distanceInKm * 5).toFixed(2));
         return res.status(200).json({
             success: true,
             message: 'Estimated Payment',

@@ -14,6 +14,7 @@ const secretKey = process.env.JWT_SECRET;
 const client = new twilio(accountSid, authToken);
 
 const otpStorage = {}; // Use Redis for production
+const nodemailer = require('nodemailer');
 
 const formatMobile = (countryCode, mobileNumber) => {
     try {
@@ -75,6 +76,74 @@ const sendOtp = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Unexpected error in sending OTP.' });
     }
 };
+
+// const sendOtp = async (req, res) => {
+//     try {
+//         const { countryCode, mobileNumber, isEmailLogin, email } = req.body;
+
+//         // const otp = generateOTP(); // 6-digit OTP
+//         const otp = 123456;
+//         let recipientInfo = "";
+
+//         if (isEmailLogin) {
+//             if (!email) {
+//                 return res.status(200).json({ success: false, message: 'Email is required for email login.' });
+//             }
+
+//             // Store OTP using email as key
+//             otpStorage[email] = otp;
+
+//             // Send OTP via Email
+//             const transporter = nodemailer.createTransport({
+//                 service: 'Gmail', // or use SMTP config
+//                 auth: {
+//                     user: 'rajgupta10881088@gmail.com',
+//                     pass: 'Rajgupta1088@@',
+//                 },
+//             });
+
+//             const mailOptions = {
+//                 from: '"Applogix" <rajgupta10881088@gmail.com',
+//                 to: 'rajkeshri10881088@gmail.com',
+//                 subject: 'Your OTP for Login',
+//                 text: `Your OTP for login is: ${otp}`,
+//             };
+
+//             await transporter.sendMail(mailOptions);
+//             console.log(`OTP sent to email: ${email} => ${otp}`);
+
+//             recipientInfo = email;
+//         } else {
+//             if (!countryCode || !mobileNumber) {
+//                 return res.status(200).json({ success: false, message: 'Country code and mobile number are required.' });
+//             }
+
+//             const parsed = formatMobile(countryCode, mobileNumber);
+//             if (!parsed || !isValidPhoneNumber(parsed.formatted)) {
+//                 return res.status(200).json({ success: false, message: 'Invalid mobile number format.' });
+//             }
+
+//             otpStorage[parsed.formatted] = otp;
+//             console.log(`Generated OTP for ${parsed.formatted}: ${otp}`);
+
+//             // Uncomment when integrating with actual SMS
+//             // await sendSms({ otp: otp, mobile: parsed.formatted })
+
+//             recipientInfo = parsed.formatted;
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'OTP sent successfully to ' + recipientInfo,
+//             otp: otp // ⚠️ Don't send OTP in production
+//         });
+
+//     } catch (error) {
+//         console.error('sendOtp Error:', error);
+//         return res.status(500).json({ success: false, message: 'Unexpected error in sending OTP.' });
+//     }
+// };
+
 
 const verifyOtp = async (req, res) => {
     try {
