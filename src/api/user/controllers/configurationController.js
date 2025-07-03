@@ -5,7 +5,7 @@ const Services = require('../../../admin/models/vehcileManagement/serviceManagem
 
 const getSettingData = async (req, res) => {
     try {
-        const [aboutUs, termsAndConditions, helpAndSupport, privacyAndPolicy, faq, services] = await Promise.all([
+        const [aboutUs, termsAndConditions, helpAndSupport, privacyAndPolicy, refundAndPolicy, faq, services] = await Promise.all([
             settingModel.find({ aboutUs: { $exists: true } }).sort({ createdAt: -1 }),
             settingModel.find({ termsAndConditions: { $exists: true } }).sort({ createdAt: -1 }),
             settingModel.find({ helpSupport: { $exists: true } }).sort({ createdAt: -1 }),
