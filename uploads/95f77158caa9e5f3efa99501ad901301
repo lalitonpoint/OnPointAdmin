@@ -1,0 +1,2 @@
+trackingId,pickUpLocation,dropLocation,transportMode,status,deliveryDate,consignerName,estimateDate,currentLocation,pod,invoiceDate,connectionDate,consigneeName,mobile,consignorPincode,referenceNo,invoiceNumber,invoiceValue,boxes,ewayBillNo,connectionPartner,partnerCnNumber,actualWeight,chargedWeight,tat,add,remarks,trackingStatus
+32342,Adilabad,Ahmedabad City,Train,Delivered,,,null,eeeeeeeee,,null,null,AAAAAAAAA,,,,,0,2,,,,0,0,,,333,Pickup -> 20-6-2025 -> Intransit -> Ghaziabad : 21-6-2025 | Noida : 22-6-2025 | Greater Noida : 24-6-2025 | Delhi : 22-6-2025

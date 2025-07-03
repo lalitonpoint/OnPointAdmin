@@ -135,7 +135,7 @@ const addTracking = async (req, res) => {
             const partnerCnNumber = fields.partnerCnNumber ? fields.partnerCnNumber[0] : '';
             const actualWeight = fields.actualWeight ? parseFloat(fields.actualWeight[0]) : 0;
             const chargedWeight = fields.chargedWeight ? parseFloat(fields.chargedWeight[0]) : 0;
-            const connectionDate = fields.connectionDate ? fields.connectionDate[0] : null;
+            const connectionDate = fields.connectionDate ? fields.connectionDate[0] : '';
             const tat = fields.tat ? fields.tat[0] : '';
             // const edd = fields.edd ? fields.edd[0] : '';
             const add = fields.add ? fields.add[0] : '';
@@ -212,7 +212,7 @@ const addTracking = async (req, res) => {
                 partnerCnNumber,
                 actualWeight: parseFloat(actualWeight) || 0,
                 chargedWeight: parseFloat(chargedWeight) || 0,
-                connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
+                connectionDate: connectionDate ? moment(connectionDate).toDate() : '',
                 tat,
                 // edd,
                 add,
@@ -279,12 +279,12 @@ const updateTracking = async (req, res) => {
             const invoiceValue = fields.invoiceValue ? parseFloat(fields.invoiceValue[0]) : 0;
             const boxes = fields.boxes ? parseInt(fields.boxes[0]) : 0;
             const ewayBillNo = fields.ewayBillNo ? fields.ewayBillNo[0] : '';
-            const invoiceDate = fields.invoiceDate ? new Date(fields.invoiceDate[0]) : null;
+            const invoiceDate = fields.invoiceDate ? fields.invoiceDate[0] : '';
             const connectionPartner = fields.connectionPartner ? fields.connectionPartner[0] : '';
             const partnerCnNumber = fields.partnerCnNumber ? fields.partnerCnNumber[0] : '';
             const actualWeight = fields.actualWeight ? parseFloat(fields.actualWeight[0]) : 0;
             const chargedWeight = fields.chargedWeight ? parseFloat(fields.chargedWeight[0]) : 0;
-            const connectionDate = fields.connectionDate ? new Date(fields.connectionDate[0]) : null;
+            const connectionDate = fields.connectionDate ? fields.connectionDate[0] : '';
             const tat = fields.tat ? fields.tat[0] : '';
             // const edd = fields.edd ? fields.edd[0] : '';
             const add = fields.add ? fields.add[0] : '';
@@ -378,12 +378,12 @@ const updateTracking = async (req, res) => {
                     invoiceValue: parseFloat(invoiceValue) || 0,
                     boxes: parseInt(boxes) || 0,
                     ewayBillNo,
-                    invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : null,
+                    invoiceDate: invoiceDate ? moment(invoiceDate).toDate() : '',
                     connectionPartner,
                     partnerCnNumber,
                     actualWeight: parseFloat(actualWeight) || 0,
                     chargedWeight: parseFloat(chargedWeight) || 0,
-                    connectionDate: connectionDate ? moment(connectionDate).toDate() : null,
+                    connectionDate: connectionDate ? moment(connectionDate).toDate() : '',
                     tat,
                     // edd,
                     add,
@@ -677,7 +677,7 @@ const UploadCsv = async (req, res) => {
             })
             .on('end', async () => {
                 for (const row of results) {
-                    console.log('rt67890', row.currentLocation)
+                    console.log('rt67890', row)
                     try {
 
 
@@ -780,7 +780,13 @@ const UploadCsv = async (req, res) => {
                             if (existing.remarks !== remarks) updateFields.remarks = remarks;
 
                             // Dates: convert both sides to string for accurate comparison
-                            const formatDate = (date) => date ? moment(date).format("YYYY-MM-DD") : null;
+                            // const formatDate = (date) => date ? moment(date).format("DD-MM-YYYY") : null;
+                            const formatDate = (date) => {
+                                if (!date || date === 'null' || date === 'undefined') return null;
+
+                                const parsedDate = moment(date, ["DD-MM-YYYY", "YYYY-MM-DD", "MM-DD-YYYY"], true); // strict mode
+                                return parsedDate.isValid() ? parsedDate.format("DD-MM-YYYY") : null;
+                            };
 
                             if (formatDate(existing.deliveryDate) !== formatDate(deliveryDate)) updateFields.deliveryDate = deliveryDate;
                             if (formatDate(existing.estimateDate) !== formatDate(estimateDate)) updateFields.estimateDate = estimateDate;
@@ -840,10 +846,10 @@ const UploadCsv = async (req, res) => {
                             deliveryDate,
                             consignerName,
                             currentLocation,
-                            estimateDate: estimateDate ? moment(estimateDate, 'DD-MM-YYYY').toDate() : null,
+                            estimateDate: estimateDate ? moment(estimateDate, 'DD-MM-YYYY').toDate() : '',
                             pod: statusNumber === 4 ? pod : '',
-                            invoiceDate: invoiceDate ? moment(invoiceDate, 'DD-MM-YYYY').toDate() : null,
-                            connectionDate: connectionDate ? moment(connectionDate, 'DD-MM-YYYY').toDate() : null,
+                            invoiceDate: invoiceDate ? moment(invoiceDate, 'DD-MM-YYYY').toDate() : '',
+                            connectionDate: connectionDate ? moment(connectionDate, 'DD-MM-YYYY').toDate() : '',
                             consigneeName,
                             mobile,
                             consignorPincode,
@@ -864,7 +870,6 @@ const UploadCsv = async (req, res) => {
 
                         await newTracking.save();
                         // console.log('newTracking', newTracking)
-                        console.log('currentLocation', currentLocation)
                         saved.push(trimmedTrackingId);
                     } catch (err) {
                         console.error(`Error saving trackingId ${row.trackingId || 'Unknown'}:`, err.message);
@@ -919,13 +924,10 @@ function trackingStatusToString(deliveryStatus) {
     if (!deliveryStatus || typeof deliveryStatus !== 'object') return '';
 
     function formatDate(dateStr) {
-        console.log('Datstr', dateStr)
         if (!dateStr) return '';
-
         const [year, month, day] = dateStr.trim().split('-');
         return `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year}`;
     }
-
 
     const segments = [];
     const steps = Object.keys(deliveryStatus).sort((a, b) => Number(a) - Number(b));
@@ -966,7 +968,6 @@ function trackingStatusToString(deliveryStatus) {
 // Convert trackingStatus string into JSON deliveryStatus
 function trackingStatusFormat(trackingStatus) {
     function formatDate(dateStr) {
-        console.log(dateStr)
         if (!dateStr) return '';
         const [day, month, year] = dateStr.split('-');
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
@@ -985,7 +986,7 @@ function trackingStatusFormat(trackingStatus) {
                 deliveryStatus[step++] = {
                     key: "pickup",
                     status: 1,
-                    deliveryDateTime: segments[i + 1] != '' ? formatDate(segments[i + 1]) : ''
+                    deliveryDateTime: formatDate(segments[i + 1])
                 };
                 i += 2;
                 break;
@@ -995,7 +996,7 @@ function trackingStatusFormat(trackingStatus) {
                     const [city, date] = item.split(" : ");
                     return {
                         city: city?.trim() || '',
-                        date: date?.trim() != '' ? formatDate(date?.trim()) : ''
+                        date: formatDate(date?.trim())
                     };
                 });
                 deliveryStatus[step++] = {
@@ -1011,7 +1012,7 @@ function trackingStatusFormat(trackingStatus) {
                 deliveryStatus[step++] = {
                     key: "outdelivery",
                     status: 1,
-                    deliveryDateTime: segments[i + 1] != '' ? formatDate(segments[i + 1]) : ''
+                    deliveryDateTime: formatDate(segments[i + 1])
                 };
                 i += 2;
                 break;
@@ -1020,7 +1021,7 @@ function trackingStatusFormat(trackingStatus) {
                 deliveryStatus[step++] = {
                     key: "delivered",
                     status: 1,
-                    deliveryDateTime: segments[i + 1] != '' ? formatDate(segments[i + 1]) : ''
+                    deliveryDateTime: formatDate(segments[i + 1])
                 };
                 i += 2;
                 break;
