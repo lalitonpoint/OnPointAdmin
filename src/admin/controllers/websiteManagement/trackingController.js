@@ -677,7 +677,7 @@ const UploadCsv = async (req, res) => {
             })
             .on('end', async () => {
                 for (const row of results) {
-                    console.log('rt67890', row)
+                    console.log('rt67890', row.currentLocation)
                     try {
 
 
@@ -762,6 +762,7 @@ const UploadCsv = async (req, res) => {
                             if (existing.transportMode !== transportMode) updateFields.transportMode = transportMode;
                             if (existing.status !== statusMapping(status)) updateFields.status = statusMapping(status);
                             if (existing.consignerName !== consignerName) updateFields.consignerName = consignerName;
+                            if (existing.currentLocation !== currentLocation) updateFields.currentLocation = currentLocation;
                             if (existing.consigneeName !== consigneeName) updateFields.consigneeName = consigneeName;
                             if (existing.mobile !== mobile) updateFields.mobile = mobile;
                             if (existing.consignorPincode !== consignorPincode) updateFields.consignorPincode = consignorPincode;
@@ -803,9 +804,9 @@ const UploadCsv = async (req, res) => {
 
 
 
-                        console.log('status', status)
+                        // console.log('status', status)
                         const statusNumber = parseInt(status) || 0;
-                        console.log('Delivery', statusNumber)
+                        // console.log('Delivery', statusNumber)
 
                         let deliveryStatus;
 
@@ -862,7 +863,8 @@ const UploadCsv = async (req, res) => {
                         });
 
                         await newTracking.save();
-                        console.log('newTracking', newTracking)
+                        // console.log('newTracking', newTracking)
+                        console.log('currentLocation', currentLocation)
                         saved.push(trimmedTrackingId);
                     } catch (err) {
                         console.error(`Error saving trackingId ${row.trackingId || 'Unknown'}:`, err.message);
@@ -917,10 +919,13 @@ function trackingStatusToString(deliveryStatus) {
     if (!deliveryStatus || typeof deliveryStatus !== 'object') return '';
 
     function formatDate(dateStr) {
+        console.log('Datstr', dateStr)
         if (!dateStr) return '';
+
         const [year, month, day] = dateStr.trim().split('-');
         return `${day.padStart(2, '0')}-${month.padStart(2, '0')}-${year}`;
     }
+
 
     const segments = [];
     const steps = Object.keys(deliveryStatus).sort((a, b) => Number(a) - Number(b));
@@ -961,6 +966,7 @@ function trackingStatusToString(deliveryStatus) {
 // Convert trackingStatus string into JSON deliveryStatus
 function trackingStatusFormat(trackingStatus) {
     function formatDate(dateStr) {
+        console.log(dateStr)
         if (!dateStr) return '';
         const [day, month, year] = dateStr.split('-');
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
@@ -979,7 +985,7 @@ function trackingStatusFormat(trackingStatus) {
                 deliveryStatus[step++] = {
                     key: "pickup",
                     status: 1,
-                    deliveryDateTime: formatDate(segments[i + 1])
+                    deliveryDateTime: segments[i + 1] != '' ? formatDate(segments[i + 1]) : ''
                 };
                 i += 2;
                 break;
@@ -989,7 +995,7 @@ function trackingStatusFormat(trackingStatus) {
                     const [city, date] = item.split(" : ");
                     return {
                         city: city?.trim() || '',
-                        date: formatDate(date?.trim())
+                        date: date?.trim() != '' ? formatDate(date?.trim()) : ''
                     };
                 });
                 deliveryStatus[step++] = {
@@ -1005,7 +1011,7 @@ function trackingStatusFormat(trackingStatus) {
                 deliveryStatus[step++] = {
                     key: "outdelivery",
                     status: 1,
-                    deliveryDateTime: formatDate(segments[i + 1])
+                    deliveryDateTime: segments[i + 1] != '' ? formatDate(segments[i + 1]) : ''
                 };
                 i += 2;
                 break;
@@ -1014,7 +1020,7 @@ function trackingStatusFormat(trackingStatus) {
                 deliveryStatus[step++] = {
                     key: "delivered",
                     status: 1,
-                    deliveryDateTime: formatDate(segments[i + 1])
+                    deliveryDateTime: segments[i + 1] != '' ? formatDate(segments[i + 1]) : ''
                 };
                 i += 2;
                 break;

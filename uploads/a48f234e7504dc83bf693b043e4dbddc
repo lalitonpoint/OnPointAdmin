@@ -1,0 +1,2 @@
+trackingId,pickUpLocation,dropLocation,transportMode,status,deliveryDate,consignerName,estimateDate,currentLocation,pod,invoiceDate,connectionDate,consigneeName,mobile,consignorPincode,referenceNo,invoiceNumber,invoiceValue,boxes,ewayBillNo,connectionPartner,partnerCnNumber,actualWeight,chargedWeight,tat,add,remarks,trackingStatus
+32342,Adilabad,Ahmedabad City,Train,Delivered,,,null,AADDwwwww,,null,null,AAAAAAAAA,,,,,0,2,,,,0,0,,,333,pickup ->  -> intransit ->  -> outdelivery ->  -> delivered ->  -> cancelled
