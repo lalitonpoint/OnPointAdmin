@@ -354,8 +354,57 @@ const updateDriver = (req, res) => {
     });
 };
 
+// routes/driver.js
+
+const driverOnlineOffline = async (req, res) => {
+    try {
+        const driverId = req.header('driverid');
+        const { isonline } = req.body;
+        console.log(typeof (isonline), isonline)
+        console.log(typeof (driverId), driverId)
+
+
+        if (!driverId || ![0, 1].includes(isonline)) {
+            return res.status(200).json({
+                success: false,
+                message: 'isonline key are required'
+            });
+        }
+
+
+        const updateData = {
+            isOnline: isonline,
+        };
+
+
+        const updatedDriver = await DriverProfile.findByIdAndUpdate(
+            driverId,
+            updateData,
+            { new: true }
+        );
+
+        if (!updatedDriver) {
+            return res.status(200).json({ success: false, message: 'Driver not found' });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Driver is now ${isonline ? 'Online' : 'Offline'}`,
+            data: {
+                driverId: updatedDriver._id,
+                isOnline: updatedDriver.isonline ? 1 : 0,
+            }
+        });
+
+    } catch (err) {
+        console.error('Error updating driver status:', err);
+        return res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 
 module.exports = {
     createDriver,
     updateDriver,
+    driverOnlineOffline
 };

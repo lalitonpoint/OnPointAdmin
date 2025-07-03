@@ -57,6 +57,7 @@ const driverProfileSchema = new mongoose.Schema({
         pollutionCertificate: { type: String },
     },
     status: { type: Number, enum: [1, 2, 3], default: 1 }, // 1 = Active, 2 = Inactive , 3 => Delete
+    isOnline: { type: Number, enum: [0, 1], default: 0 }, // 1 = Online, 2 = Offline 
     step: { type: Number, enum: [1, 2, 3, 4, 5] }, // 1 = Screen 1, 2 = Screen 2 , 3 => Screen 3
     approvedBy: {
         adminId: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
