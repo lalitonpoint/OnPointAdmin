@@ -10,6 +10,9 @@ const SettingsSchema = new mongoose.Schema({
     privacyAndPolicy: {
         content: { type: String, default: "" }
     },
+    refundAndPolicy: {
+        content: { type: String, default: "" }
+    },
     driverInstruction: {
         content: { type: String, default: "" }
     },

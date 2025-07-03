@@ -10,6 +10,7 @@ const getSettingData = async (req, res) => {
             settingModel.find({ termsAndConditions: { $exists: true } }).sort({ createdAt: -1 }),
             settingModel.find({ helpSupport: { $exists: true } }).sort({ createdAt: -1 }),
             settingModel.find({ privacyAndPolicy: { $exists: true } }).sort({ createdAt: -1 }),
+            settingModel.find({ refundAndPolicy: { $exists: true } }).sort({ createdAt: -1 }),
             FAQ.find({ status: 1 }).sort({ createdAt: -1 }),
             Services.find({ status: 1 }).sort({ createdAt: -1 })
 
@@ -23,6 +24,7 @@ const getSettingData = async (req, res) => {
                 termsAndConditions: termsAndConditions[0].termsAndConditions || null,
                 helpAndSupport: helpAndSupport[0].helpSupport || null,
                 privacyAndPolicy: privacyAndPolicy[0].privacyAndPolicy || null,
+                refundAndPolicy: refundAndPolicy[0].refundAndPolicy || null,
                 faq,
                 services: services || null,
 

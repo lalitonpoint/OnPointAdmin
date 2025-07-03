@@ -20,6 +20,7 @@ const saveDocument = async (req, res) => {
         await newDocument.save();
         await generateLogs(req, 'Add', newDocument);
 
+
         res.json({ success: true, message: 'Document added successfully' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -61,6 +62,7 @@ const documentList = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error fetching documents' });
     }
 }
+
 
 // Delete Document
 const deleteDocument = async (req, res) => {
