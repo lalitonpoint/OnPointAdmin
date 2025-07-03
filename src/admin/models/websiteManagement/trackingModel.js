@@ -33,6 +33,9 @@ const shipmentSchema = new mongoose.Schema({
     transportMode: {
         type: String
     },
+    currentLocation: {
+        type: String
+    },
     // noOfPacking: {
     //     type: Number,
     //     required: true

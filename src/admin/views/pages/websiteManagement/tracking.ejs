@@ -211,6 +211,15 @@
                             <input type="date" class="form-control" id="estimateDate" name="estimateDate">
                         </div>
 
+
+                        <div class="col-md-6">
+                            <label for="currentLocation" class="form-label">Current Location<strong
+                                    class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" id="currentLocation" name="currentLocation"
+                                placeholder="Enter Current Location">
+                        </div>
+
+
                         <div class="col-md-6 pod d-none">
                             <label for="pod" class="form-label">POD</label>
                             <input type="file" class="form-control image_view" id="pod" name="pod" accept="image/*">
@@ -531,6 +540,7 @@
             const deliveryDate = $('#deliveryDate').val().trim();
             const estimateDate = $('#estimateDate').val().trim();
             const consignerName = $('#consignerName').val().trim();
+            const currentLocation = $('#currentLocation').val().trim();
 
             // const deliveryTime = $('#deliveryTime').val().trim();
             const trackingStatus = $('#trackingStatus').val().trim();
@@ -588,6 +598,11 @@
             //     toastr.error('Please select a Estimate date.', 'Error');
             //     return;
             // }
+
+            if (!currentLocation || isNaN(currentLocation)) {
+                toastr.error('Please enter number of Current Status.', 'Error');
+                return;
+            }
 
             const invoiceDate = $('#invoiceDate').val();
             const connectionDate = $('#connectionDate').val();
@@ -689,6 +704,7 @@
             // formData.append('noOfPacking', noOfPacking);
             formData.append('deliveryDate', deliveryDate);
             formData.append('estimateDate', estimateDate);
+            formData.append('currentLocation', currentLocation);
             formData.append('consignerName', consignerName);
             formData.append('status', trackingStatus);
             formData.append('pod', pod);
@@ -873,13 +889,14 @@
                     // Ensure seconds are added if missing
                     let formattedDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DD');
                     $('#estimateDate').val(formattedDate);
+                    $('#currentLocation').val(data.currentLocation);
 
                     let estiInvoiceDate = moment(data.invoiceDate, moment.ISO_8601).format('YYYY-MM-DD');
                     $('#invoiceDate').val(estiInvoiceDate);
 
 
 
-                    let formattedconnectionDate = moment(data.estimateDate, moment.ISO_8601).format('YYYY-MM-DD');
+                    let formattedconnectionDate = moment(data.currentLocation, moment.ISO_8601).format('YYYY-MM-DD');
 
                     $('#connectionDate').val(formattedconnectionDate);
 

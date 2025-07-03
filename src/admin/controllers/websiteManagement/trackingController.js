@@ -117,6 +117,7 @@ const addTracking = async (req, res) => {
             // const noOfPacking = fields.noOfPacking ? parseInt(fields.noOfPacking[0]) : 1; // Default to Active
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : ''; // Default to Active
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : ''; // Default to Active
+            const currentLocation = fields.currentLocation ? fields.currentLocation[0] : ''; // Default to Active
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
 
 
@@ -192,6 +193,7 @@ const addTracking = async (req, res) => {
                 pickUpLocation: pickUpLocation || null,
                 dropLocation: dropLocation || null,
                 transportMode: transportMode || null,
+                currentLocation: currentLocation || '',
                 // noOfPacking: parseInt(noOfPacking),
                 createdAt: new Date(),// Add createdAt timestamp on creation,
                 deliveryStatus: statusMap,
@@ -264,6 +266,7 @@ const updateTracking = async (req, res) => {
             // const noOfPacking = fields.noOfPacking ? fields.noOfPacking[0] : '';
             const deliveryDate = fields.deliveryDate ? fields.deliveryDate[0] : '';
             const estimateDate = fields.estimateDate ? fields.estimateDate[0] : '';
+            const currentLocation = fields.currentLocation ? fields.currentLocation[0] : '';
             const transitTracking = fields.transitData ? fields.transitData : []; // not [0] if you want full array
 
 
@@ -358,6 +361,7 @@ const updateTracking = async (req, res) => {
                     consignerName,
                     status: parseInt(status), //currentstatus
                     estimateDate,
+                    currentLocation,
                     pickUpLocation,
                     dropLocation,
                     transportMode,
@@ -574,6 +578,7 @@ const downloadTrackingCsv = async (req, res) => {
             "deliveryDate",
             "consignerName",
             "estimateDate",
+            "currentLocation",
             "pod",
             "invoiceDate",
             "connectionDate",
@@ -685,6 +690,7 @@ const UploadCsv = async (req, res) => {
                             deliveryDate,
                             consignerName,
                             estimateDate,
+                            currentLocation,
                             pod,
                             invoiceDate,
                             connectionDate,
@@ -832,6 +838,7 @@ const UploadCsv = async (req, res) => {
                             status: status ? statusMapping(status.replace(/\b\w/g, c => c.toUpperCase())) : '',
                             deliveryDate,
                             consignerName,
+                            currentLocation,
                             estimateDate: estimateDate ? moment(estimateDate, 'DD-MM-YYYY').toDate() : null,
                             pod: statusNumber === 4 ? pod : '',
                             invoiceDate: invoiceDate ? moment(invoiceDate, 'DD-MM-YYYY').toDate() : null,
