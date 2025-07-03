@@ -109,10 +109,10 @@ const orderAssign = async (req, res) => {
                     request.dropLongitude
                 ));
 
-                console.log('iuygf', request.pickupLatitude)
-                console.log('8765', request.pickupLongitude)
-                console.log('8765ss', request.dropLatitude)
-                console.log('wwwww', request.dropLongitude)
+                // console.log('iuygf', request.pickupLatitude)
+                // console.log('8765', request.pickupLongitude)
+                // console.log('8765ss', request.dropLatitude)
+                // console.log('wwwww', request.dropLongitude)
             } catch (e) {
                 console.error(`Error in drop distance for request ${request._id}:`, e.message);
             }
