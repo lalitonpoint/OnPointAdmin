@@ -972,7 +972,10 @@ const ftlOrderAssign = async (req, res) => {
 
         let driver = await DriverModal.findById(driverId).select('vehicleDetail.vehicleId');
         let vehicleId = driver?.vehicleDetail?.vehicleId;
-
+        let isOnline = driver?.isOnline;
+        if (isOnline == 0) {
+            return res.status(200).json({ success: false, message: "Driver is Currently Offline" });
+        }
         const driverCurrentLocation = await getDriverLocation(driverId);
         if (!driverCurrentLocation.success) {
             return res.status(200).json({ success: false, message: "Please update driver's current location" });
