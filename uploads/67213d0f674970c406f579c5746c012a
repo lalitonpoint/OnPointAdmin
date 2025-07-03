@@ -1,0 +1,129 @@
+trackingId,pickUpLocation,dropLocation,transportMode,status,deliveryDate,consignerName,estimateDate,currentLocation,pod,invoiceDate,connectionDate,consigneeName,mobile,consignorPincode,referenceNo,invoiceNumber,invoiceValue,boxes,ewayBillNo,connectionPartner,partnerCnNumber,actualWeight,chargedWeight,tat,add,remarks,trackingStatus
+53532,Adilabad,Aizawl,Surface,In Transit,,,null,3321DD,,2025+AC0-07+AC0-18,null,Ramu,,,,,0,2,,,,0,0,,,1,Pickup +AC0APg- 20+AC0-6+AC0-2025 +AC0APg- Intransit +AC0APg- Ghaziabad : 21+AC0-6+AC0-2025 +AHw- Noida : 22+AC0-6+AC0-2025 +AHw- Greater Noida : 24+AC0-6+AC0-2025 +AHw- Delhi : 22+AC0-6+AC0-2025
+15190,Bangalore,Delhi,Surface,In Transit,null,Hero,null,Bangalore,,null,null,Sumit Hardware,,,,,0,1,,,,0,0,,,66664567,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15188,Bangalore,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,EN Vision Solutions,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15191,Bangalore,Thane,Surface,In Transit,null,Hero,null,,,null,null,Smart Vision,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15192,Bangalore,Mumbai,Surface,In Transit,null,Hero,null,32,,null,null,Unisoft,,,,,0,1,,,,0,0,,,312,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15189,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Himalya Sales Corporation,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15128,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Himalya Sales Corporation,,,,,null,22,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15194,Bangalore,Pune,Surface,In Transit,null,Hero,null,,,null,null,Vianet,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15195,Bangalore,Visakhapatnam,Surface,In Transit,null,Hero,null,,,null,null,Capital Enterprises,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15193,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Alok Auto Mobile,,,,,null,8,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15130,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,AK International,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15124,Bangalore,Darjeeling,Surface,In Transit,null,Hero,null,,,null,null,MKG Automation,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15131,Bangalore,Delhi,Surface,In Transit,null,Hero,null,,,null,null,HRK Enterprises,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15132,Bangalore,Dehradun,Surface,In Transit,null,Hero,null,,,null,null,MS Classic Watch Centre,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15126,Bangalore,Ludhiana,Surface,In Transit,null,Hero,null,,,null,null,Bir Chand +ACY- Sons,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15127,Bangalore,Visakhapatnam,Surface,In Transit,null,Hero,null,,,null,null,Capital Enterprises,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15129,Bangalore,Pune,Surface,In Transit,null,Hero,null,,,null,null,Light Idea,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15125,Bangalore,Ghaziabad,Surface,In Transit,null,Hero,null,,,null,null,Esarthak Bharat,,,,,null,8,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15123,Bangalore,Kolkata,Surface,In Transit,null,Hero,null,,,null,null,Mohit Home Automation,,,,,null,4,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15122,Bangalore,Thane,Surface,In Transit,null,Hero,null,,,null,null,Smart Vision,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15175,Bangalore,Ahmedabad,Surface,In Transit,null,Hero,null,,,null,null,Vardan Enterprises,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15176,Bangalore,Mumbai,Surface,In Transit,null,Hero,null,,,null,null,Unisoft,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15177,Bangalore,Delhi,Surface,In Transit,null,Hero,null,,,null,null,HRK Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15178,Bangalore,Surat,Surface,In Transit,null,Hero,null,,,null,null,Reinansh Corporation,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15179,Bangalore,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,Jagdamba Motors,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15181,Bangalore,Coimbatore,Surface,In Transit,null,Hero,null,,,null,null,Mayur marketing,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15180,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Alok Auto Mobile,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15182,Bangalore,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,Sri Sai Corporation,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15184,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Himalya Sales Corporation,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15183,Bangalore,Delhi,Surface,In Transit,null,Hero,null,,,null,null,,,,,,null,10,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15168,Bangalore,Secunderabad,Surface,In Transit,null,Hero,null,,,null,null,Flipkart India PVT LTD,,,,,null,24,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15186,Bangalore,Kochi,Surface,In Transit,null,Hero,null,,,null,null,Jupiterkart,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15185,Bangalore,Bhiwandi,Surface,In Transit,null,Hero,null,,,null,null,Cloudstore Retail,,,,,null,7,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15187,Bangalore,Kochi,Surface,In Transit,null,Hero,null,,,null,null,Jupiterkart,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15167,Bangalore,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,Cloudkart Ventures,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15169,Bangalore,Telegana,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15172,Bangalore,Telegana,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15170,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15171,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15174,Bangalore,Pune,Surface,In Transit,null,Hero,null,,,null,null,Cloudstore Retail,,,,,null,4,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15173,Bangalore,Coimbatore,Surface,In Transit,null,Hero,null,,,null,null,Jupiterkart,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+14519,Gurugram,Delhi,Surface,In Transit,null,Hero,null,,,null,null,Show N Shine PVT LTD,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+14528,Gurugram,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,Jagadamba Motors Hyderabad,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+14525,Gurugram,Delhi,Surface,In Transit,null,Hero,null,,,null,null,Gifts Curry,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+14526,Gurugram,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,EN Vision Solutions,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+16467,Gurugram,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Alok Auto Mobile,,,,,null,20,,,,null,null,,,,pickup +AC0APg- 02+AC0-07+AC0-2025 +AC0APg- cancelled
+15121,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Jain interio,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15120,Bangalore,Sonipat,Surface,In Transit,null,Hero,null,,,null,null,Aman Tyres,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15110,Bangalore,Delhi,Surface,In Transit,null,Hero,null,,,null,null,Sumit Hardware,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15115,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Plutus Electronics,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15113,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Plutus Electronics,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15112,Bangalore,Kolkata,Surface,In Transit,null,Hero,null,,,null,null,Ghosh Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15118,Bangalore,Chandigharh,Surface,In Transit,null,Hero,null,,,null,null,nalanda enteprises,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15119,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Dolphin Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15102,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Dolphin Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15107,Bangalore,Coimbatore,Surface,In Transit,null,Hero,null,,,null,null,Mayur marketing,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15106,Bangalore,Mysuru,Surface,In Transit,null,Hero,null,,,null,null,Jasar Group,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15108,Bangalore,New delhi,Surface,In Transit,null,Hero,null,,,null,null,The Creative enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+140603,Bangalore,Zirakpur,Surface,In Transit,null,Hero,null,,,null,null,Wood kraft,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15104,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Jain interio,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15103,Bangalore,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Incubus India,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15105,Bangalore,Salem,Surface,In Transit,null,Hero,null,,,null,null,Jaisri Associate,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15117,Bangalore,Thane,Surface,In Transit,null,Hero,null,,,null,null,Smart Vission,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15114,Bangalore,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Plutus Electronics,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+15116,Bangalore,Kozhikode,Surface,In Transit,null,Hero,null,,,null,null,Triangle Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14510,Gurugram,Dehradun,Surface,In Transit,null,Hero,null,,,null,null,MS Classic Watch Centre,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+16440,Gurugram,Krodha,Surface,In Transit,null,Hero,null,,,null,null,Bhawani Distributors,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14523,Gurugram,Ahmedabad,Surface,In Transit,null,Hero,null,,,null,null,Vardan Enterprises,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14529,Gurugram,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,Jagadamba Motors,,,,,null,20,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14511,Gurugram,Pune,Surface,In Transit,null,Hero,null,,,null,null,Nived Enterprises,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14587,Gurugram,Ranchi,Surface,In Transit,null,Hero,null,,,null,null,R.S Trading Co,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14545,Gurugram,Raigad,Surface,In Transit,null,Hero,null,,,null,null,Meer Traders,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14517,Gurugram,Chennai,Surface,In Transit,null,Hero,null,,,null,null,AK International,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14508,Gurugram,Darjeeling,Surface,In Transit,null,Hero,null,,,null,null,MKG Automation,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14503,Gurugram,Salem,Surface,In Transit,null,Hero,null,,,null,null,Jaisri Associates,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14506,Gurugram,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Jain Interio,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+16443,Gurugram,Bhopal,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,4,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14515,Gurugram,Pune,Surface,In Transit,null,Hero,null,,,null,null,Light Idea,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14520,Gurugram,Mumbai,Surface,In Transit,null,Hero,null,,,null,null,Vianet,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14518,Gurugram,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Himalya Sales Corporation,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14521,Gurugram,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Himalya Sales Corporation,,,,,null,20,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+16445,Gurugram,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Dolphin Enterprises,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+16444,Gurugram,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,Sri Sai Corporation,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14516,Gurugram,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Dolphin Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14502,Gurugram,Ludhiana,Surface,In Transit,null,Hero,null,,,null,null,Bir Chand +ACY- Sons,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14513,Gurugram,Delhi,Surface,In Transit,null,Hero,null,,,null,null,Show N Shine PVT LTD,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14501,Gurugram,Ludhiana,Surface,In Transit,null,Hero,null,,,null,null,Bir Chand +ACY- Sons,,,,,null,8,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14524,Gurugram,Delhi,Surface,In Transit,null,Hero,null,,,null,null,HRK Enterprises,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14512,Gurugram,Delhi,Surface,In Transit,null,Hero,null,,,null,null,Show N Shine PVT LTD,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14564,Gurugram,Jaipur,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14507,Gurugram,Hisar,Surface,In Transit,null,Hero,null,,,null,null,VS International,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14514,Gurugram,Hisar,Surface,In Transit,null,Hero,null,,,null,null,VS International,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14522,Gurugram,Jalandhar,Surface,In Transit,null,Hero,null,,,null,null,New Age Auto Agency,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+16439,Gurugram,Kalyan,Surface,In Transit,null,Hero,null,,,null,null,Agarwal Traders,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+16442,Gurugram,Kalyan,Surface,In Transit,null,Hero,null,,,null,null,Agarwal Traders,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14572,Gurugram,Manglore,Surface,In Transit,null,Hero,null,,,null,null,Car D+//3//f/9-cor,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14582,Gurugram,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Dolphin Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14580,Gurugram,Bangalore,Surface,In Transit,null,Hero,null,,,null,null,Car Decoration and Spa,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14574,Gurugram,Visakhapatnam,Surface,In Transit,null,Hero,null,,,null,null,Capital Enterprises,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+16466,Gurugram,Indore,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14561,Gurugram,Ahmedabad,Surface,In Transit,null,Hero,null,,,null,null,Cloudstore Retail,,,,,null,13,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14562,Gurugram,Mumbai,Surface,In Transit,null,Hero,null,,,null,null,Flipkart India PVT LTD,,,,,null,8,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14504,Gurugram,Surat,Surface,In Transit,null,Hero,null,,,null,null,Moonstone Venture LLP,,,,,null,4,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14553,Gurugram,Coimbatore,Surface,In Transit,null,Hero,null,,,null,null,Mayur Marketing,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14555,Gurugram,Surat,Surface,In Transit,null,Hero,null,,,null,null,Reinansh Corporation,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14554,Gurugram,Mumbai,Surface,In Transit,null,Hero,null,,,null,null,Navjivan Hardware,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14552,Gurugram,Chennai,Surface,In Transit,null,Hero,null,,,null,null,AK International,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14581,Gurugram,Hyderabad,Surface,In Transit,null,Hero,null,,,null,null,EN Vision Solutions,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14576,Gurugram,Aurangabad,Surface,In Transit,null,Hero,null,,,null,null,Amit Car Accessories,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14567,Gurugram,Kolkata,Surface,In Transit,null,Hero,null,,,null,null,Ghosh Enterprises,,,,,null,5,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14579,Gurugram,Kolkata,Surface,In Transit,null,Hero,null,,,null,null,4 Wheels Decor,,,,,null,11,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14550,Gurugram,Mumbai,Surface,In Transit,null,Hero,null,,,null,null,Eastern Agro Foods Pvt Ltd,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14551,Gurugram,Chennai,Surface,In Transit,null,Hero,null,,,null,null,AK International,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14549,Gurugram,Thane,Surface,In Transit,null,Hero,null,,,null,null,Smart Vision,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14568,Gurugram,Salem,Surface,In Transit,null,Hero,null,,,null,null,Jaisri Associates,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14566,Gurugram,Chennai,Surface,In Transit,null,Hero,null,,,null,null,Plutus Electronics,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14571,Gurugram,Indore,Surface,In Transit,null,Hero,null,,,null,null,Amit Enterprises,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14573,Gurugram,Aurangabad,Surface,In Transit,null,Hero,null,,,null,null,Amit Car Accessories,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14586,Gurugram,Pune,Surface,In Transit,null,Hero,null,,,null,null,Homevista D+//3//f/9-cor And Furnishing,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14578,Gurugram,Kolkata,Surface,In Transit,null,Hero,null,,,null,null,4 Wheels Decor,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14558,Gurugram,Lucknow,Surface,In Transit,null,Hero,null,,,null,null,PJTJ Technologies,,,,,null,3,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14584,Gurugram,Lucknow,Surface,In Transit,null,Hero,null,,,null,null,Garg Distributors,,,,,null,6,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14557,Gurugram,Mohali,Surface,In Transit,null,Hero,null,,,null,null,PJTJ Technologies,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14570,Gurugram,Gurugram,Surface,In Transit,null,Hero,null,,,null,null,Elegant Car Interior,,,,,null,1,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14569,Gurugram,Gurugram,Surface,In Transit,null,Hero,null,,,null,null,Elegant Car Interior,,,,,null,11,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14583,Gurugram,Jaipur,Surface,In Transit,null,Hero,null,,,null,null,Hardware And More,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+14548,Gurugram,Ludhiana,Surface,In Transit,null,Hero,null,,,null,null,Sagar international,,,,,null,2,,,,null,null,,,,pickup +AC0APg- 01+AC0-07+AC0-2025 +AC0APg- cancelled
+32342,Adilabad,Ahmedabad City,Train,Delivered,,,null,eeeeeeeee,,null,null,AAAAAAAAA,,,,,0,2,,,,0,0,,,333,cancelled

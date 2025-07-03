@@ -1,6 +1,17 @@
 const { json } = require('body-parser');
 const mongoose = require('mongoose');
 
+
+const deliveryStatusDefault = () => ({
+    1: { key: 'pickup', status: 0, deliveryDateTime: '', pod: '' },
+    2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [], pod: '' },
+    3: { key: 'outdelivery', status: 0, deliveryDateTime: '', pod: '' },
+    4: { key: 'delivered', status: 0, deliveryDateTime: '', pod: '' },
+    5: { key: 'cancelled', status: 0, deliveryDateTime: '', pod: '' },
+    6: { key: 'hold', status: 0, deliveryDateTime: '', pod: '' }
+});
+
+
 const shipmentSchema = new mongoose.Schema({
     trackingId: {
         type: String,
@@ -45,7 +56,7 @@ const shipmentSchema = new mongoose.Schema({
     },
     deliveryStatus: {
         type: mongoose.Schema.Types.Mixed,
-        default: {}
+        default: deliveryStatusDefault
     },
     invoiceDate: {
         type: Date,
