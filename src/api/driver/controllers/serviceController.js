@@ -134,7 +134,7 @@ const orderAssign = async (req, res) => {
             delete requestObj.updatedAt;
             delete requestObj.__v;
             delete requestObj.deliveryStatus;
-            delete requestObj.userId;
+            // delete requestObj.userId;
             // delete requestObj.packageId;
 
 
