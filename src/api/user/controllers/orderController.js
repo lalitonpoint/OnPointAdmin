@@ -175,20 +175,20 @@ const getOrderList = async (req, res) => {
     }
 };
 const singleOrderDetail = async (req, res) => {
-    const { packageid } = req.body;
+    const { packageId } = req.body;
 
-    if (!packageid) {
-        return res.status(400).json({
+    if (!packageId) {
+        return res.status(200).json({
             success: false,
-            message: 'packageid is required'
+            message: 'packageId is required'
         });
     }
 
     try {
-        const order = await Order.findById(packageid).lean();
+        const order = await Order.findById(packageId).lean();
 
         if (!order) {
-            return res.status(404).json({
+            return res.status(200).json({
                 success: false,
                 message: 'Order not found'
             });
@@ -196,7 +196,7 @@ const singleOrderDetail = async (req, res) => {
 
         // 🔍 Fetch all assignments for building orderTracking
         const allAssignments = await driverPackageAssign.find({
-            packageId: packageid
+            packageId: packageId
         })
             .sort({ createdAt: 1 })
             .populate({ path: 'driverId', select: 'personalInfo vehicleDetail' })
@@ -425,7 +425,7 @@ const ftlSingleOrderDetail = async (req, res) => {
                 dropLatitude: order.dropLatitude || '',
                 dropLongitude: order.dropLongitude || '',
                 orderStatus: order.orderStatus,
-                distance: order.distance || '',
+                distance: order.distance?.toString() || '',
                 duration: order.duration || '',
                 orderDate: order.createdAt || '',
 

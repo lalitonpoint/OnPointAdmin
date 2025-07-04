@@ -7,6 +7,8 @@ const { uploadImage } = require("../../utils/uploadHelper"); // Import helper fo
 const statesCities = require('./states-cities.json');
 const City = require('../../models/websiteManagement/cityModal');
 
+const iconv = require('iconv-lite');
+// const moment = require('moment');
 
 
 
@@ -546,99 +548,99 @@ const deleteTracking = async (req, res) => {
 //     }
 // };
 
-const downloadTrackingCsv = async (req, res) => {
-    try {
-        const { trackingCode, status, date } = req.query;
-        let query = {};
+// const downloadTrackingCsv = async (req, res) => {
+//     try {
+//         const { trackingCode, status, date } = req.query;
+//         let query = {};
 
-        if (trackingCode) {
-            query.trackingId = new RegExp(trackingCode, 'i');
-        }
-        if (status) {
-            query.status = parseInt(status);
-        }
-        if (date) {
-            const startDate = moment(date).startOf('day');
-            const endDate = moment(date).endOf('day');
-            query.estimateDate = {
-                $gte: startDate.toDate(),
-                $lte: endDate.toDate()
-            };
-        }
+//         if (trackingCode) {
+//             query.trackingId = new RegExp(trackingCode, 'i');
+//         }
+//         if (status) {
+//             query.status = parseInt(status);
+//         }
+//         if (date) {
+//             const startDate = moment(date).startOf('day');
+//             const endDate = moment(date).endOf('day');
+//             query.estimateDate = {
+//                 $gte: startDate.toDate(),
+//                 $lte: endDate.toDate()
+//             };
+//         }
 
-        const trackings = await Tracking.find(query).sort({ createdAt: -1 });
+//         const trackings = await Tracking.find(query).sort({ createdAt: -1 });
 
-        if (trackings.length === 0) {
-            return res.status(200).send("No tracking data found for the current filters.");
-        }
+//         if (trackings.length === 0) {
+//             return res.status(200).send("No tracking data found for the current filters.");
+//         }
 
-        const csvHeaders = [
-            "trackingId",
-            "pickUpLocation",
-            "dropLocation",
-            "transportMode",
-            "status",
-            "deliveryDate",
-            "consignerName",
-            "estimateDate",
-            "currentLocation",
-            "pod",
-            "invoiceDate",
-            "connectionDate",
-            "consigneeName",
-            "mobile",
-            "consignorPincode",
-            "referenceNo",
-            "invoiceNumber",
-            "invoiceValue",
-            "boxes",
-            "ewayBillNo",
-            "connectionPartner",
-            "partnerCnNumber",
-            "actualWeight",
-            "chargedWeight",
-            "tat",
-            "add",
-            "remarks",
-            "trackingStatus"
-        ];
+//         const csvHeaders = [
+//             "trackingId",
+//             "pickUpLocation",
+//             "dropLocation",
+//             "transportMode",
+//             "status",
+//             "deliveryDate",
+//             "consignerName",
+//             "estimateDate",
+//             "currentLocation",
+//             "pod",
+//             "invoiceDate",
+//             "connectionDate",
+//             "consigneeName",
+//             "mobile",
+//             "consignorPincode",
+//             "referenceNo",
+//             "invoiceNumber",
+//             "invoiceValue",
+//             "boxes",
+//             "ewayBillNo",
+//             "connectionPartner",
+//             "partnerCnNumber",
+//             "actualWeight",
+//             "chargedWeight",
+//             "tat",
+//             "add",
+//             "remarks",
+//             "trackingStatus"
+//         ];
 
-        const csvData = trackings.map(tracking =>
-            csvHeaders.map(key => {
-                let value = tracking[key];
+//         const csvData = trackings.map(tracking =>
+//             csvHeaders.map(key => {
+//                 let value = tracking[key];
 
-                // Format date fields
-                if (value instanceof Date) {
-                    return moment(value).format('DD-MM-YYYY');
-                }
+//                 // Format date fields
+//                 if (value instanceof Date) {
+//                     return moment(value).format('DD-MM-YYYY');
+//                 }
 
-                // Format trackingStatus
-                if (key === 'trackingStatus') {
-                    return trackingStatusToString(tracking.deliveryStatus);
-                }
-                if (key === 'status') {
-                    return formatTrackingStatus(tracking.status);
-                }
+//                 // Format trackingStatus
+//                 if (key === 'trackingStatus') {
+//                     return trackingStatusToString(tracking.deliveryStatus);
+//                 }
+//                 if (key === 'status') {
+//                     return formatTrackingStatus(tracking.status);
+//                 }
 
-                // Handle undefined/null
-                return value !== undefined ? String(value).replace(/"/g, '""') : '';
-            })
-        );
+//                 // Handle undefined/null
+//                 return value !== undefined ? String(value).replace(/"/g, '""') : '';
+//             })
+//         );
 
 
-        const csvRows = [csvHeaders, ...csvData].map(row =>
-            row.map(val => `"${val}"`).join(',')
-        ).join('\n');
+//         const csvRows = [csvHeaders, ...csvData].map(row =>
+//             row.map(val => `"${val}"`).join(',')
+//         ).join('\n');
 
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
-        res.status(200).send(csvRows);
+//         res.setHeader('Content-Type', 'text/csv');
+//         res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
+//         res.status(200).send(csvRows);
 
-    } catch (error) {
-        console.error('Error downloading tracking CSV:', error);
-        res.status(500).send("Error generating CSV file.");
-    }
-};
+//     } catch (error) {
+//         console.error('Error downloading tracking CSV:', error);
+//         res.status(500).send("Error generating CSV file.");
+//     }
+// };
 
 
 const checkAndInsertCity = async (cityName) => {
@@ -917,9 +919,244 @@ const defaultDeliveryStatus = {
 
 const formatDate = (date) => {
     if (!date || date === 'null' || date === 'undefined') return null;
-    const parsed = moment(date.trim(), ["DD-MM-YYYY", "YYYY-MM-DD", "MM-DD-YYYY"], true);
+    const parsed = moment(date, ["DD-MM-YYYY", "YYYY-MM-DD", "MM-DD-YYYY"], true);
     return parsed.isValid() ? parsed.format("DD-MM-YYYY") : null;
 };
+
+// const UploadCsv = async (req, res) => {
+//     try {
+//         if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+
+//         const results = [];
+//         const duplicates = [];
+//         const saved = [];
+
+//         fs.createReadStream(req.file.path)
+//             .pipe(csv())
+//             .on('data', (row) => {
+//                 const cleanedRow = {};
+//                 for (const key in row) {
+//                     cleanedRow[key.trim()] = typeof row[key] === 'string' ? row[key].trim() : row[key];
+//                 }
+//                 results.push(cleanedRow);
+//             })
+//             .on('end', async () => {
+//                 for (const row of results) {
+//                     try {
+//                         const {
+//                             trackingId,
+//                             pickUpLocation,
+//                             dropLocation,
+//                             transportMode,
+//                             status,
+//                             deliveryDate,
+//                             consignerName,
+//                             estimateDate,
+//                             currentLocation,
+//                             pod,
+//                             invoiceDate,
+//                             connectionDate,
+//                             consigneeName,
+//                             mobile,
+//                             consignorPincode,
+//                             referenceNo,
+//                             invoiceNumber,
+//                             invoiceValue,
+//                             boxes,
+//                             ewayBillNo,
+//                             connectionPartner,
+//                             partnerCnNumber,
+//                             actualWeight,
+//                             chargedWeight,
+//                             tat,
+//                             add,
+//                             remarks,
+//                             trackingStatus
+//                         } = row;
+
+//                         if (!trackingId) continue;
+//                         const trimmedTrackingId = trackingId.trim();
+
+//                         // Ensure cities exist
+//                         await Promise.all([
+//                             checkAndInsertCity(pickUpLocation),
+//                             checkAndInsertCity(dropLocation)
+//                         ]);
+
+//                         const existing = await Tracking.findOne({ trackingId: trimmedTrackingId });
+
+//                         // Format date fields
+//                         const formattedDeliveryDate = formatDate(deliveryDate);
+//                         const formattedEstimateDate = formatDate(estimateDate);
+//                         const formattedInvoiceDate = formatDate(invoiceDate);
+//                         const formattedConnectionDate = formatDate(connectionDate);
+
+//                         if (existing) {
+//                             const updateFields = {};
+
+//                             if (trackingStatus) {
+//                                 const modifiedStatus = parseTracking(trackingStatus);
+
+//                                 // Only update if the parsed structure is different from what's already stored
+//                                 if (JSON.stringify(existing.deliveryStatus || {}) !== JSON.stringify(modifiedStatus)) {
+//                                     updateFields.deliveryStatus = modifiedStatus;
+//                                 }
+//                             }
+
+//                             const fieldsToCompare = {
+//                                 pickUpLocation,
+//                                 dropLocation,
+//                                 transportMode,
+//                                 status: statusMapping(status),
+//                                 consignerName,
+//                                 currentLocation,
+//                                 consigneeName,
+//                                 mobile,
+//                                 consignorPincode,
+//                                 referenceNo,
+//                                 invoiceNumber,
+//                                 invoiceValue,
+//                                 boxes,
+//                                 ewayBillNo,
+//                                 connectionPartner,
+//                                 partnerCnNumber,
+//                                 actualWeight,
+//                                 chargedWeight,
+//                                 tat,
+//                                 add,
+//                                 remarks
+//                             };
+
+//                             for (const field in fieldsToCompare) {
+//                                 if (existing[field] !== fieldsToCompare[field]) {
+//                                     updateFields[field] = fieldsToCompare[field];
+//                                 }
+//                             }
+
+//                             const dateFields = {
+//                                 deliveryDate: formattedDeliveryDate,
+//                                 estimateDate: formattedEstimateDate,
+//                                 invoiceDate: formattedInvoiceDate,
+//                                 connectionDate: formattedConnectionDate
+//                             };
+
+//                             for (const field in dateFields) {
+//                                 if (formatDate(existing[field]) !== dateFields[field]) {
+//                                     updateFields[field] = dateFields[field];
+//                                 }
+//                             }
+
+//                             if (Object.keys(updateFields).length > 0) {
+//                                 await Tracking.updateOne({ trackingId: trimmedTrackingId }, { $set: updateFields });
+//                                 duplicates.push({ trackingId: trimmedTrackingId, reason: 'Updated existing record' });
+//                             } else {
+//                                 duplicates.push({ trackingId: trimmedTrackingId, reason: 'Already exists with same data' });
+//                             }
+//                             continue;
+//                         }
+
+//                         // If new tracking record
+//                         const statusNum = parseInt(status) || 0;
+
+//                         let deliveryStatus = structuredClone(defaultDeliveryStatus);
+
+//                         if (trackingStatus) {
+//                             deliveryStatus = trackingStatusFormat(trackingStatus, deliveryStatus);
+//                         } else if (deliveryStatus[statusNum]) {
+//                             deliveryStatus[statusNum].status = 1;
+//                             deliveryStatus[statusNum].deliveryDateTime = new Date();
+//                             if (statusNum === 4) {
+//                                 deliveryStatus[statusNum].pod = pod || '';
+//                             }
+//                         }
+
+//                         const newTracking = new Tracking({
+//                             trackingId: trimmedTrackingId,
+//                             pickUpLocation,
+//                             dropLocation,
+//                             transportMode,
+//                             status: status ? statusMapping(status) : '',
+//                             deliveryDate: formattedDeliveryDate,
+//                             consignerName,
+//                             currentLocation,
+//                             estimateDate: formattedEstimateDate ? moment(formattedEstimateDate, 'DD-MM-YYYY').toDate() : '',
+//                             pod: statusNum === 4 ? pod : '',
+//                             invoiceDate: formattedInvoiceDate ? moment(formattedInvoiceDate, 'DD-MM-YYYY').toDate() : '',
+//                             connectionDate: formattedConnectionDate ? moment(formattedConnectionDate, 'DD-MM-YYYY').toDate() : '',
+//                             consigneeName,
+//                             mobile,
+//                             consignorPincode,
+//                             referenceNo,
+//                             invoiceNumber,
+//                             invoiceValue,
+//                             boxes,
+//                             ewayBillNo,
+//                             connectionPartner,
+//                             partnerCnNumber,
+//                             actualWeight,
+//                             chargedWeight,
+//                             tat,
+//                             add,
+//                             remarks,
+//                             deliveryStatus
+//                         });
+
+//                         await newTracking.save();
+//                         saved.push(trimmedTrackingId);
+
+//                     } catch (err) {
+//                         console.error(`Error saving trackingId ${row.trackingId || 'Unknown'}:`, err.message);
+//                         duplicates.push({ trackingId: row.trackingId || 'Unknown', reason: err.message });
+//                     }
+//                 }
+
+//                 res.status(200).json({
+//                     success: true,
+//                     message: "CSV uploaded and processed.",
+//                     savedCount: saved.length,
+//                     duplicateCount: duplicates.length,
+//                     duplicates
+//                 });
+//             })
+//             .on('error', (err) => {
+//                 console.error("CSV parse error:", err.message);
+//                 res.status(500).json({ success: false, message: 'CSV file processing error' });
+//             });
+
+//     } catch (err) {
+//         console.error("UploadCsv error:", err.message);
+//         res.status(500).json({ success: false, message: "Server error" });
+//     }
+// };
+
+function decodeMimeUtf7String(input) {
+    return input
+        .replace(/\+AC0/g, '-')     // +AC0 → -
+        .replace(/\+AHw/g, '|')     // +AHw → |
+        .replace(/\+AC8/g, '/')     // +AC8 → /
+        .replace(/\+AC8-/g, '/')    // just in case
+        .replace(/\+AC0APg-/g, '->') // +AC0APg- → ->
+        .replace(/\+AC0APg/g, '->') // fallback
+        .replace(/\+AC0/g, '-')     // again, in case
+        .replace(/\+ADs/g, ';')     // +ADs → ;
+        .replace(/\+AD0/g, '=')     // +AD0 → =
+        .replace(/\+AF8/g, '_')     // +AF8 → _
+        .replace(/\+ACo/g, '*')     // +ACo → *
+        .replace(/\+ACI/g, '"')     // +ACI → "
+        .replace(/\+ACQ/g, '$')     // +ACQ → $
+        .replace(/\+AF8-/g, '_');   // +AF8- → _
+}
+
+const qp = require('quoted-printable');
+
+function cleanCorruptedTrackingStatus(str) {
+    return str
+        .replace(/-APg-/g, '->')   // Replace "-APg-" with "->"
+        .replace(/--/g, '-')       // Replace double dashes with single dash
+        .replace(/\|-/g, '|')      // Replace "|-" with "|"
+        .replace(/->cancelled/g, '->cancelled') // Ensure valid keyword spacing
+        .trim();
+}
 
 const UploadCsv = async (req, res) => {
     try {
@@ -929,16 +1166,70 @@ const UploadCsv = async (req, res) => {
         const duplicates = [];
         const saved = [];
 
+        // UTF-8 safe read + CSV parse
         fs.createReadStream(req.file.path)
+            .pipe(iconv.decodeStream('utf8')) // 👈 Fix encoding issue here
             .pipe(csv())
             .on('data', (row) => {
                 const cleanedRow = {};
                 for (const key in row) {
-                    cleanedRow[key.trim()] = typeof row[key] === 'string' ? row[key].trim() : row[key];
+                    let value = row[key];
+                    if (typeof value === 'string') {
+                        value = decodeMimeUtf7String(value); // 💡 decode here
+                        cleanedRow[key.trim()] = value.trim();
+                    } else {
+                        cleanedRow[key.trim()] = value;
+                    }
                 }
                 results.push(cleanedRow);
             })
             .on('end', async () => {
+
+                // console.log('8', deliveryStatus)
+
+                // ✅ Tracking status parser function
+                const parseTrackingStatus = (input, deliveryStatus) => {
+                    let input1 = cleanCorruptedTrackingStatus(input);
+                    console.log('input', input1)
+                    console.log('7', deliveryStatus)
+
+                    const keyToIndex = {
+                        pickup: 1,
+                        intransit: 2,
+                        outdelivery: 3,
+                        delivered: 4,
+                        cancelled: 5,
+                        hold: 6
+                    };
+
+                    const parts = input1.split('->').map(p => p.trim());
+                    let i = 0;
+
+                    while (i < parts.length) {
+                        const key = parts[i].toLowerCase();
+                        const value = parts[i + 1] ? parts[i + 1].trim() : '';
+
+                        if (keyToIndex[key]) {
+                            const index = keyToIndex[key];
+                            deliveryStatus[index].status = 1;
+
+                            if (key === 'intransit') {
+                                deliveryStatus[index].transitData = value.split('|').map(item => {
+                                    const [city, date] = item.split(':').map(s => s.trim());
+                                    return { city, date };
+                                });
+                            } else {
+                                deliveryStatus[index].deliveryDateTime = value;
+                            }
+                            i += 2;
+                        } else {
+                            i++;
+                        }
+                    }
+
+                    return deliveryStatus;
+                };
+
                 for (const row of results) {
                     try {
                         const {
@@ -983,7 +1274,7 @@ const UploadCsv = async (req, res) => {
 
                         const existing = await Tracking.findOne({ trackingId: trimmedTrackingId });
 
-                        // Format date fields
+                        // Format dates
                         const formattedDeliveryDate = formatDate(deliveryDate);
                         const formattedEstimateDate = formatDate(estimateDate);
                         const formattedInvoiceDate = formatDate(invoiceDate);
@@ -993,8 +1284,8 @@ const UploadCsv = async (req, res) => {
                             const updateFields = {};
 
                             if (trackingStatus) {
-                                const modifiedStatus = trackingStatusFormat(trackingStatus, existing.deliveryStatus);
-                                if (JSON.stringify(existing.deliveryStatus) !== JSON.stringify(modifiedStatus)) {
+                                const modifiedStatus = parseTrackingStatus(trackingStatus, structuredClone(defaultDeliveryStatus));
+                                if (JSON.stringify(existing.deliveryStatus || {}) !== JSON.stringify(modifiedStatus)) {
                                     updateFields.deliveryStatus = modifiedStatus;
                                 }
                             }
@@ -1051,13 +1342,12 @@ const UploadCsv = async (req, res) => {
                             continue;
                         }
 
-                        // If new tracking record
+                        // If new record
                         const statusNum = parseInt(status) || 0;
-
                         let deliveryStatus = structuredClone(defaultDeliveryStatus);
 
                         if (trackingStatus) {
-                            deliveryStatus = trackingStatusFormat(trackingStatus, deliveryStatus);
+                            deliveryStatus = parseTrackingStatus(trackingStatus, deliveryStatus);
                         } else if (deliveryStatus[statusNum]) {
                             deliveryStatus[statusNum].status = 1;
                             deliveryStatus[statusNum].deliveryDateTime = new Date();
@@ -1125,7 +1415,6 @@ const UploadCsv = async (req, res) => {
     }
 };
 
-
 function formatTrackingStatus(status) {
     switch (status) {
         case 1: return 'Pickup';
@@ -1152,6 +1441,7 @@ function statusMapping(status) {
 }
 
 function trackingStatusToString(deliveryStatus) {
+    console.log('deliveryStatus', deliveryStatus)
     if (!deliveryStatus || typeof deliveryStatus !== 'object') return '';
 
     function formatDate(dateStr) {
@@ -1170,6 +1460,9 @@ function trackingStatusToString(deliveryStatus) {
         switch (key) {
             case 'pickup':
             case 'outdelivery':
+                segments.push(key);
+                segments.push(formatDate(entry.deliveryDateTime));
+                break;
             case 'delivered':
                 segments.push(key);
                 segments.push(formatDate(entry.deliveryDateTime));
@@ -1225,9 +1518,11 @@ function trackingStatusFormat(trackingStatus, deliveryStatus) {
             case 'intransit':
                 const transitItems = (segments[i + 1] || '').split('|').map(item => {
                     const [city, date] = item.split(" : ");
+                    console.log('date', date);
+
                     return {
                         city: city?.trim() || '',
-                        date: formatDate(date?.trim())
+                        date: date ? formatDate(date) : ''
                     };
                 });
                 deliveryStatus[step++] = {
@@ -1316,6 +1611,193 @@ const states = (req, res) => {
 const cities = (req, res) => {
     const state = req.query.state;
     res.json(statesCities[state] || []);
+};
+
+function parseTracking(input) {
+    const deliveryStatus = {
+        1: { key: 'pickup', status: 0, deliveryDateTime: '' },
+        2: { key: 'intransit', status: 0, deliveryDateTime: '', transitData: [] },
+        3: { key: 'outdelivery', status: 0, deliveryDateTime: '' },
+        4: { key: 'delivered', status: 0, deliveryDateTime: '' },
+        5: { key: 'cancelled', status: 0, deliveryDateTime: '' },
+        6: { key: 'hold', status: 0, deliveryDateTime: '' }
+    };
+
+    const keyToIndex = {
+        pickup: 1,
+        intransit: 2,
+        outdelivery: 3,
+        delivered: 4,
+        cancelled: 5,
+        hold: 6
+    };
+
+    const parts = input.split('->').map(p => p.trim());
+    let i = 0;
+
+    while (i < parts.length) {
+        const key = parts[i].toLowerCase();
+        const value = parts[i + 1] ? parts[i + 1].trim() : '';
+
+        if (keyToIndex[key]) {
+            const index = keyToIndex[key];
+            deliveryStatus[index].status = 1;
+
+            if (key === 'intransit') {
+                const transitPoints = value.split('|').map(item => {
+                    const [location, date] = item.split(':').map(s => s.trim());
+                    return { location, date };
+                });
+                deliveryStatus[index].transitData = transitPoints;
+            } else {
+                deliveryStatus[index].deliveryDateTime = value;
+            }
+            i += 2;
+        } else {
+            i++;
+        }
+    }
+
+    return deliveryStatus;
+}
+
+
+function trackingStatusToString(deliveryStatus) {
+    const statusMap = {
+        1: 'Pickup',
+        2: 'Intransit',
+        3: 'outdelivery',
+        4: 'delivered',
+        5: 'cancelled',
+        6: 'hold'
+    };
+
+    let parts = [];
+
+    for (const key in deliveryStatus) {
+        const entry = deliveryStatus[key];
+        if (entry.status === 1) {
+            const statusLabel = statusMap[key];
+            if (key === "2" && Array.isArray(entry.transitData) && entry.transitData.length > 0) {
+                const transitStr = entry.transitData.map(t => `${t.city} : ${t.date}`).join(' | ');
+                parts.push(`${statusLabel} -> ${transitStr}`);
+            } else {
+                parts.push(`${statusLabel} -> ${entry.deliveryDateTime}`);
+            }
+        }
+    }
+
+    return parts.join(' -> ');
+}
+
+// Optional: format status from int to label
+function formatTrackingStatus(status) {
+    const mapping = {
+        1: 'Pickup',
+        2: 'Intransit',
+        3: 'Out for Delivery',
+        4: 'Delivered',
+        5: 'Cancelled',
+        6: 'Hold'
+    };
+    return mapping[status] || '';
+}
+
+const downloadTrackingCsv = async (req, res) => {
+    try {
+        const { trackingCode, status, date } = req.query;
+        let query = {};
+
+        if (trackingCode) {
+            query.trackingId = new RegExp(trackingCode, 'i');
+        }
+
+        if (status) {
+            query.status = parseInt(status);
+        }
+
+        if (date) {
+            const startDate = moment(date, 'YYYY-MM-DD').startOf('day');
+            const endDate = moment(date, 'YYYY-MM-DD').endOf('day');
+            query.estimateDate = {
+                $gte: startDate.toDate(),
+                $lte: endDate.toDate()
+            };
+        }
+
+        const trackings = await Tracking.find(query).sort({ createdAt: -1 });
+
+        if (trackings.length === 0) {
+            return res.status(200).send("No tracking data found for the current filters.");
+        }
+
+        const csvHeaders = [
+            "trackingId",
+            "pickUpLocation",
+            "dropLocation",
+            "transportMode",
+            "status",
+            "deliveryDate",
+            "consignerName",
+            "estimateDate",
+            "currentLocation",
+            "pod",
+            "invoiceDate",
+            "connectionDate",
+            "consigneeName",
+            "mobile",
+            "consignorPincode",
+            "referenceNo",
+            "invoiceNumber",
+            "invoiceValue",
+            "boxes",
+            "ewayBillNo",
+            "connectionPartner",
+            "partnerCnNumber",
+            "actualWeight",
+            "chargedWeight",
+            "tat",
+            "add",
+            "remarks",
+            "trackingStatus"
+        ];
+
+        const csvData = trackings.map(tracking =>
+            csvHeaders.map(key => {
+                let value = tracking[key];
+
+                if (key === 'trackingStatus') {
+                    return trackingStatusToString(tracking.deliveryStatus || {});
+                }
+
+                if (key === 'status') {
+                    return formatTrackingStatus(tracking.status);
+                }
+
+                if (value instanceof Date) {
+                    return moment(value).format('DD-MM-YYYY');
+                }
+
+                if (value === undefined || value === null) {
+                    return '';
+                }
+
+                return String(value).replace(/"/g, '""'); // escape quotes
+            })
+        );
+
+        const csvRows = [csvHeaders, ...csvData].map(row =>
+            row.map(val => `"${val}"`).join(',')
+        ).join('\n');
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="tracking_data.csv"');
+        res.status(200).send(csvRows);
+
+    } catch (error) {
+        console.error('Error downloading tracking CSV:', error);
+        res.status(500).send("Error generating CSV file.");
+    }
 };
 
 

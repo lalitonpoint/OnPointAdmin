@@ -345,8 +345,8 @@
             <form id="uploadCsvForm" action="/tracking/upload-csv" method="post" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="uploadModalLabel">Upload CSV File</h5>
-                    <a href="https://onadmin.onpointlogistics.in/uploads/11229380_shipment-data.csv"
-                        class="small text-decoration-underline" target="_blank" rel="noopener">
+                    <a href="/uploads/tracking_data.csv" class="small text-decoration-underline" target="_blank"
+                        rel="noopener">
                         Use Demo CSV
                     </a>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -918,7 +918,8 @@
                                 // console.log('xxx', item);
 
                                 // Convert date to the required format for date input (YYYY-MM-DDTHH:mm)
-                                let formattedDateTime = moment(item.date, moment.ISO_8601).format('YYYY-MM-DD');
+                                // let formattedDateTime = moment(item.date, moment.ISO_8601).format('DD-MM-YYYY');
+                                let formattedDateTime = moment(item.date, 'D-M-YYYY').format('YYYY-MM-DD');
 
                                 // Append transit data HTML
                                 $('#transitDeliveryContainer').append(`
