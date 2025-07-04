@@ -85,7 +85,7 @@ const sendOtp = async (req, res) => {
         const otp = 123456;
         let recipientInfo = "";
 
-        if (isEmailLogin) {
+        if (isEmailLogin == 1) {
             if (!email) {
                 return res.status(200).json({ success: false, message: 'Email is required for email login.' });
             }

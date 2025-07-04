@@ -174,36 +174,92 @@ const getOrderList = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error', error: err.message });
     }
 };
-
-
-
 const singleOrderDetail = async (req, res) => {
-    const { orderId } = req.body;
+    const { packageid } = req.body;
 
-    if (!orderId) {
-        return res.status(200).json({
+    if (!packageid) {
+        return res.status(400).json({
             success: false,
-            message: 'orderId is required'
+            message: 'packageid is required'
         });
     }
 
     try {
-        const order = await Order.findOne({ orderId }).sort({ createdAt: -1 });
+        const order = await Order.findById(packageid).lean();
 
         if (!order) {
-            return res.status(200).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Order not found'
             });
         }
 
-        res.status(200).json({
+        // 🔍 Fetch all assignments for building orderTracking
+        const allAssignments = await driverPackageAssign.find({
+            packageId: packageid
+        })
+            .sort({ createdAt: 1 })
+            .populate({ path: 'driverId', select: 'personalInfo vehicleDetail' })
+            .lean();
+
+        // ✅ Get latest assignment for driver info
+        const latestAssignment = allAssignments[allAssignments.length - 1] || null;
+        const driver = latestAssignment?.driverId || {};
+
+        // 🧠 Build orderTracking steps
+        const buildOrderStatus = (assignmentList) => {
+            const steps = [];
+
+            assignmentList.forEach((detail, index) => {
+                if (index === 0) {
+                    steps.push({
+                        orderStatus: 'Pick Up',
+                        address: detail.pickupAddress || '',
+                        dateTime: detail.createdAt || null
+                    });
+                }
+
+                const label = detail.assignType === 2 ? 'Delivered' : 'Warehouse';
+
+                steps.push({
+                    orderStatus: label,
+                    address: detail.dropAddress || '',
+                    dateTime: detail.createdAt || null
+                });
+            });
+
+            return steps;
+        };
+
+        const orderTracking = buildOrderStatus(allAssignments);
+
+        const packages = Array.isArray(order.packages) ? order.packages : [];
+        const packageName = packages.map(p => p.packageName).filter(Boolean).join(', ');
+
+        const enrichedOrder = {
+            ...order,
+            packageId: order._id,
+            packageName,
+            driverId: driver._id || '',
+            driverName: driver.personalInfo?.name || '',
+            driverContact: driver.personalInfo?.mobile || '',
+            driverProfile: driver.personalInfo?.profilePicture || '',
+            vehicleNumber: driver.vehicleDetail?.truckNumber || '',
+            orderTracking
+        };
+
+        return res.status(200).json({
             success: true,
-            data: { order }
+            data: enrichedOrder
         });
+
     } catch (err) {
         console.error('Error fetching Order Detail:', err);
-        res.status(500).json({ success: false, message: 'Server Error', error: err.message });
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error',
+            error: err.message
+        });
     }
 };
 
@@ -271,7 +327,7 @@ const ftlOrderList = async (req, res) => {
                 dropLatitude: order.dropLatitude || '',
                 dropLongitude: order.dropLongitude || '',
                 orderStatus: order.orderStatus || 0,
-                distance: order.distance || '',
+                distance: order.distance ? order.distance.toString() : '',
                 duration: order.duration || '',
                 orderDate: order.createdAt || '',
 

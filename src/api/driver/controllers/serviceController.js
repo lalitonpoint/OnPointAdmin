@@ -1112,7 +1112,7 @@ const ftlUpdateOrderStatus = async (req, res) => {
                 return res.status(200).json({ success: false, message: 'Invalid step. Must be between 0 and 9.' });
             }
 
-            const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 3, 8: 4, 9: 4 };
+            const stepStatusMap = { 0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 3, 8: 3, 9: 4 };
             if (stepStatusMap[step] !== orderStatus) {
                 return res.status(200).json({ success: false, message: 'Order status is not aligned with step' });
             }
@@ -1135,8 +1135,8 @@ const ftlUpdateOrderStatus = async (req, res) => {
                     { _id: requestId },
                     { $set: updatePayload }
                 );
-
-                return res.status(200).json({ success: true, message: isAccepted == 1 ? 'Order Accepted Successfully' : 'Order Rejected Successfully' });
+                if (isAccepted == 2)
+                    return res.status(200).json({ success: true, message: isAccepted == 1 ? 'Order Accepted Successfully' : 'Order Rejected Successfully' });
 
 
             }
